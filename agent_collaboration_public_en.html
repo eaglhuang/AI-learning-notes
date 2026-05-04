@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>我怎麼把多 Agent 協作做成 3KProject 裡真正可執行的工作流</title>
-  <meta name="description" content="整理我在 3KProject 裡建立多 Agent 協作流程的經驗，說明如何用 task lock、compute gate、handoff 與 context budget 把協作變成可執行的工作流。">
+  <title>How I Turned Multi-Agent Collaboration into a Real Workflow Inside 3KProject</title>
+  <meta name="description" content="A first-person technical article on how I turned multi-agent collaboration inside 3KProject into an executable workflow with task locks, gates, handoffs, and context-budget control.">
+  <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/agent_collaboration_public_en.html">
   <style>
     :root {
       --paper: #f6f1e7;
@@ -451,50 +452,50 @@
   <div class="page">
     <main class="main-column">
       <p class="back-links">
-        <a href="./">回首頁</a>
-        ｜
-        <a href="articles/">回文章列表</a>
-        ｜
-        <a href="agent_collaboration_public_en.html">English version</a>
+        <a href="./">Home</a>
+        |
+        <a href="articles/">Archive</a>
+        |
+        <a href="agent_collaboration_public.html">Chinese version</a>
       </p>
       <header class="hero">
         <p class="eyebrow">3KProject Agent Workflow Notes</p>
-        <h1>我怎麼把多 Agent 協作做成 3KProject 裡真正可執行的工作流</h1>
-        <p class="lede">這篇文章整理的是我在 3KProject 裡處理 Agents 協作的做法。真正讓流程穩下來的，不是再加一個更聰明的模型，而是把協作拆成鎖卡、閘門、handoff、context budget 四條主線，並且讓它們各自對應到明確的文件與工具。</p>
+        <h1>How I Turned Multi-Agent Collaboration into a Real Workflow Inside 3KProject</h1>
+        <p class="lede">This article is about how I actually run agent collaboration inside 3KProject. What finally stabilized the flow was not adding a smarter model, but breaking the collaboration into four concrete lanes: task locking, gates, handoff, and context budget, then wiring each lane to specific documents and tools.</p>
         <div class="hero-grid">
           <div class="stat-card">
             <strong>Lock</strong>
-            <span>先鎖 task 再開始做，避免多個 Agent 在同一張卡上互撞，或同時改同一個高風險檔。</span>
+            <span>Lock the task before doing any real work so multiple agents do not collide on the same card or the same high-risk file.</span>
           </div>
           <div class="stat-card">
             <strong>Gate</strong>
-            <span>把 pre-flight、in-flight、post-flight 的檢查固定下來，讓規則不只存在於文件裡。</span>
+            <span>Keep pre-flight, in-flight, and post-flight checks fixed so the rules do not live only inside documents.</span>
           </div>
           <div class="stat-card">
             <strong>Handoff</strong>
-            <span>交接不是丟一段長文，而是把 changed files、決策、blocker 與下一步壓成可接手的摘要卡。</span>
+            <span>Handoff is not a long paragraph. It compresses changed files, decisions, blockers, and next actions into a summary the next agent can actually take over.</span>
           </div>
         </div>
       </header>
 
       <section class="panel" id="summary">
-        <h2>我後來發現，問題不在模型夠不夠強</h2>
-        <p class="quote">多 Agent 協作最難的地方，不是生成能力，而是接手能力。只要接手時沒有清楚的範圍、狀態與驗證方式，再強的模型也會把 repo 搞亂。</p>
-        <p>我一開始其實也把問題想得太簡單，覺得只要 instructions 寫得夠細，Agents 就會自然協作。但實際做下去才發現，真正的失敗場景都很工程化：同一張卡被兩個人碰、上一位改了什麼下一位看不懂、handoff 帶了太多背景導致 context 爆掉、規則寫在文件裡卻沒有被工具執行。</p>
-        <p>所以我最後不是去追一個更厲害的 prompt，而是反過來收斂出一套 repo operating system。這套 operating system 背後對應的，就是幾份我在專案裡反覆打開的文件：協作指令、任務卡手冊、keep workflow shard、context budget guideline，以及多 Agent 協作協議。</p>
-        <div class="callout">如果把單一 Agent 想成 Unity 裡一個很會幹活的 component，那多 Agent 協作就比較像整個 scene 的 execution order、event contract 與 runtime guard。單個 component 再強，也不能取代整個執行順序與生命週期管理。</div>
+        <h2>I Eventually Realized the Problem Wasn't Model Strength</h2>
+        <p class="quote">The hardest part of multi-agent collaboration is not generation. It is takeover quality. If scope, state, and validation are unclear when the next agent steps in, even a strong model can still turn the repo into a mess.</p>
+        <p>At first I oversimplified the problem too. I thought that if the instructions were detailed enough, agents would naturally collaborate. In practice, the real failure cases were much more engineering-shaped: two agents touching the same card, the next person not being able to tell what the previous one changed, handoffs carrying so much background that the context exploded, and rules written in docs but never executed by tools.</p>
+        <p>So I stopped chasing a more clever prompt and instead collapsed things into a repo operating system. Behind that operating system is a set of documents I open over and over again: collaboration instructions, the task-card handbook, keep workflow shards, the context budget guideline, and the multi-agent collaboration protocol.</p>
+        <div class="callout">If a single agent is like a very capable component inside a Unity project, then multi-agent collaboration is closer to scene execution order, event contracts, and runtime guards. A strong component alone still cannot replace lifecycle management for the whole scene.</div>
       </section>
 
       <section class="panel" id="loop">
-        <h2>我最後收斂出的協作主鏈</h2>
-        <p>看完整個 repo 之後，我把協作流程收斂成一條很短的主鏈：先讀共識摘要、先做 context budget 檢查、先鎖卡，接著只在局部範圍內修改，再用 focused validation 做第一輪驗證，最後把結果壓成 handoff 交給下一位 Agent。這條鏈一短，很多隱性風險就會直接浮出來。</p>
+        <h2>The Collaboration Spine I Finally Settled On</h2>
+        <p>After reading through the repo, I reduced the collaboration loop into a short spine: read the consensus summary, run the context budget check, lock the task, edit only within a local slice, run focused validation as the first check, then compress the result into a handoff for the next agent. Once the chain gets short, hidden risks become obvious very quickly.</p>
 
         <figure class="figure-card" data-figure-name="multi-agent-collaboration-loop">
           <div class="figure-actions">
-            <button type="button" data-download-svg>下載 SVG</button>
-            <button type="button" data-download-png>下載 PNG</button>
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
           </div>
-          <svg viewBox="0 0 1120 860" role="img" aria-label="多 Agent 協作主鏈流程圖">
+          <svg viewBox="0 0 1120 860" role="img" aria-label="Multi-agent collaboration flow">
             <style>
               :scope .f1-bg { fill: #fffaf2; }
               :scope .f1-box1 { fill: #16222d; }
@@ -515,22 +516,22 @@
             </defs>
             <rect class="f1-bg" x="0" y="0" width="1120" height="860" rx="28" ry="28"></rect>
             <rect class="f1-box1" x="330" y="40" width="460" height="88" rx="26" ry="26"></rect>
-            <text class="f1-title" x="460" y="94">接到新需求或任務卡</text>
+            <text class="f1-title" x="392" y="94">New request or task card arrives</text>
             <rect class="f1-box2" x="250" y="172" width="620" height="116" rx="24" ry="24"></rect>
             <text class="f1-heading" x="485" y="214">Pre-flight</text>
-            <text class="f1-body" x="305" y="246">讀 keep.summary → 跑 check-context-budget → task-lock.js check / lock → 確認本輪 scope</text>
+            <text class="f1-body" x="284" y="246">Read keep.summary -> run check-context-budget -> task-lock.js check / lock -> confirm this round's scope</text>
             <rect class="f1-box3" x="250" y="336" width="620" height="116" rx="24" ry="24"></rect>
             <text class="f1-heading" x="495" y="378">In-flight</text>
-            <text class="f1-body" x="314" y="410">只改局部檔案與局部行為，修改後立刻做第一個 focused validation，不在同一輪擴大範圍</text>
+            <text class="f1-body" x="277" y="410">Edit only the local files and local behavior, then run the first focused validation immediately without expanding scope</text>
             <polygon class="f1-diamond" points="560,496 730,588 560,680 390,588"></polygon>
-            <text class="f1-heading" x="485" y="578">驗證是否通過</text>
-            <text class="f1-body" x="466" y="606">cheap check 優先</text>
+            <text class="f1-heading" x="453" y="578">Did validation pass?</text>
+            <text class="f1-body" x="473" y="606">cheap checks first</text>
             <rect class="f1-box4" x="110" y="724" width="380" height="98" rx="24" ry="24"></rect>
-            <text class="f1-heading" x="226" y="766">失敗：就地修補</text>
-            <text class="f1-body" x="147" y="796">回到同一 slice，修同一個缺口，再跑同一個檢查</text>
+            <text class="f1-heading" x="213" y="766">Fail: repair in place</text>
+            <text class="f1-body" x="138" y="796">Return to the same slice, patch the same gap, and rerun the same check</text>
             <rect class="f1-box2" x="630" y="724" width="380" height="98" rx="24" ry="24"></rect>
-            <text class="f1-heading" x="720" y="766">成功：handoff + unlock</text>
-            <text class="f1-body" x="661" y="796">寫 changedFiles / decisions / blockers / nextAction，交給下一位 Agent</text>
+            <text class="f1-heading" x="710" y="766">Pass: handoff + unlock</text>
+            <text class="f1-body" x="653" y="796">Write changedFiles / decisions / blockers / nextAction, then hand it to the next agent</text>
             <line class="f1-line" x1="560" y1="128" x2="560" y2="172"></line>
             <line class="f1-line" x1="560" y1="288" x2="560" y2="336"></line>
             <line class="f1-line" x1="560" y1="452" x2="560" y2="496"></line>
@@ -540,32 +541,32 @@
             <text class="f1-label" x="287" y="638">FAIL</text>
             <text class="f1-label" x="840" y="638">PASS</text>
           </svg>
-          <figcaption>圖 1：我最後讓所有 Agents 都走同一條主鏈，目的不是增加流程感，而是把「何時該擴範圍、何時不能擴」變成明確規則。</figcaption>
+          <figcaption>Figure 1: I eventually made every agent follow the same short spine. The point was not more process theater, but making it explicit when scope may expand and when it absolutely may not.</figcaption>
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
         <div class="split">
           <div class="mini-card">
-            <h3>為什麼要先鎖卡</h3>
-            <p>我不再把 task lock 當成流程負擔，而是把它當成最便宜的碰撞避免器。只要一開始沒鎖，後面所有 handoff 都會變得很難信任。</p>
+            <h3>Why lock first</h3>
+            <p>I no longer treat task lock as bureaucratic overhead. I treat it as the cheapest collision avoider. If the task is not locked at the beginning, everything after that becomes much harder to trust.</p>
           </div>
           <div class="mini-card">
-            <h3>為什麼要先做 cheap check</h3>
-            <p>最先跑的驗證一定要夠便宜、夠局部。這樣它才能真的跟著每次修改一起跑，而不是變成收工前才想起來的儀式。</p>
+            <h3>Why cheap checks first</h3>
+            <p>The first validation must be cheap and local. That is the only way it will actually run after each small edit, instead of becoming a ritual people remember only at the end.</p>
           </div>
         </div>
       </section>
 
       <section class="panel" id="files">
-        <h2>我真正常打開的協作文件</h2>
-        <p>如果要把這套協作方法拆回文件層，我最常打開的是五組文件。它們不是平行存在，而是各自扮演不同層級的角色：入口層、共識層、協作層、任務層與節流層。也因為這樣，我不需要把所有規則都塞進一份超大文件裡。</p>
+        <h2>The Collaboration Documents I Actually Keep Opening</h2>
+        <p>If I unpack this method back into documents, I keep opening five groups of files. They are not parallel duplicates. Each one plays a different role: entry layer, consensus layer, collaboration layer, task layer, and throttling layer. That separation is exactly why I do not need to cram every rule into one giant handbook.</p>
 
         <figure class="figure-card" data-figure-name="agent-collaboration-doc-stack">
           <div class="figure-actions">
-            <button type="button" data-download-svg>下載 SVG</button>
-            <button type="button" data-download-png>下載 PNG</button>
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
           </div>
-          <svg viewBox="0 0 1120 760" role="img" aria-label="Agent 協作文件分層圖">
+          <svg viewBox="0 0 1120 760" role="img" aria-label="Agent collaboration document stack">
             <style>
               :scope .f2-bg { fill: #fffaf2; }
               :scope .f2-card1 { fill: #16222d; }
@@ -580,55 +581,55 @@
             </style>
             <rect class="f2-bg" x="0" y="0" width="1120" height="760" rx="28" ry="28"></rect>
             <rect class="f2-card1" x="90" y="70" width="940" height="100" rx="24" ry="24"></rect>
-            <text class="f2-title1" x="128" y="112">入口層：AGENTS.md / .github/copilot-instructions.md</text>
-            <text class="f2-body1" x="128" y="144">先把語言、硬規則、pre-flight 與 task lock 的第一層入口收斂起來，讓任何 Agent 進場都有同樣的起手式。</text>
+            <text class="f2-title1" x="128" y="112">Entry layer: AGENTS.md / .github/copilot-instructions.md</text>
+            <text class="f2-body1" x="128" y="144">Put language rules, hard rules, pre-flight, and task lock into the first screen so every agent starts from the same opening move.</text>
             <rect class="f2-card2" x="90" y="204" width="450" height="150" rx="24" ry="24"></rect>
-            <text class="f2-title2" x="122" y="246">共識層：docs/keep.summary.md</text>
+            <text class="f2-title2" x="122" y="246">Consensus layer: docs/keep.summary.md</text>
             <text class="f2-title2" x="122" y="276">+ docs/keep-shards/keep-workflow.md</text>
-            <text class="f2-body2" x="122" y="312">- 用摘要而不是全文保留專案共識</text>
-            <text class="f2-body2" x="122" y="338">- 任務卡、交接、撞檔與 Git 規則都在這裡落地</text>
+            <text class="f2-body2" x="122" y="312">- Keep project consensus in summary form instead of full-text rereads</text>
+            <text class="f2-body2" x="122" y="338">- Land task-card, handoff, collision, and Git rules here</text>
             <rect class="f2-card3" x="580" y="204" width="450" height="150" rx="24" ry="24"></rect>
-            <text class="f2-title2" x="612" y="246">協作層：.github/instructions/</text>
+            <text class="f2-title2" x="612" y="246">Collaboration layer: .github/instructions/</text>
             <text class="f2-title2" x="612" y="276">agent-collaboration.instructions.md</text>
-            <text class="f2-body2" x="612" y="312">- 三道防線：pre-flight / in-flight / post-flight</text>
-            <text class="f2-body2" x="612" y="338">- 直接把 task lock、compute gate、handoff 變成操作流程</text>
+            <text class="f2-body2" x="612" y="312">- Three defenses: pre-flight / in-flight / post-flight</text>
+            <text class="f2-body2" x="612" y="338">- Turn task lock, compute gate, and handoff into an actual operating flow</text>
             <rect class="f2-card4" x="90" y="392" width="450" height="150" rx="24" ry="24"></rect>
-            <text class="f2-title2" x="122" y="434">任務層：docs/agent-briefs/Readme.md</text>
-            <text class="f2-body2" x="122" y="470">- 任務卡 lifecycle、notes 格式、commit 批次與交接規則</text>
-            <text class="f2-body2" x="122" y="496">- 讓「誰在做什麼」與「做到哪裡」有正式落點</text>
+            <text class="f2-title2" x="122" y="434">Task layer: docs/agent-briefs/Readme.md</text>
+            <text class="f2-body2" x="122" y="470">- Task-card lifecycle, notes format, commit batches, and handoff rules</text>
+            <text class="f2-body2" x="122" y="496">- Give "who is doing what" and "how far along" a formal place to live</text>
             <rect class="f2-card5" x="580" y="392" width="450" height="150" rx="24" ry="24"></rect>
-            <text class="f2-title2" x="612" y="434">節流層：docs/agent-context-budget.md</text>
+            <text class="f2-title2" x="612" y="434">Throttle layer: docs/agent-context-budget.md</text>
             <text class="f2-title2" x="612" y="464">+ docs/agent-collaboration-protocol.md</text>
-            <text class="f2-body2" x="612" y="500">- handoff 摘要卡、圖片節流、token hard-stop</text>
-            <text class="f2-body2" x="612" y="526">- 規定下一位 Agent 接手前要驗證什麼</text>
+            <text class="f2-body2" x="612" y="500">- Handoff summary cards, image throttling, and token hard-stops</text>
+            <text class="f2-body2" x="612" y="526">- Define what the next agent must verify before taking over</text>
             <rect class="f2-card2" x="250" y="580" width="620" height="112" rx="24" ry="24"></rect>
-            <text class="f2-title2" x="315" y="626">支援腳本：task-lock.js / compute-gate.js / check-context-budget.js / report-turn-usage.js</text>
-            <text class="f2-body2" x="315" y="660">文件負責講清楚規則，腳本負責把規則真的跑起來。這兩邊分開，協作才不會退化成口頭約定。</text>
+            <text class="f2-title2" x="312" y="626">Support scripts: task-lock.js / compute-gate.js / check-context-budget.js / report-turn-usage.js</text>
+            <text class="f2-body2" x="315" y="660">Docs explain the rules. Scripts actually run them. Keeping those two separate is what stops collaboration from degrading into a verbal agreement.</text>
           </svg>
-          <figcaption>圖 2：我最後不是用一份大全文件處理所有協作問題，而是把它拆成多層文件，各自負責入口、共識、執行、節流與交接。</figcaption>
+          <figcaption>Figure 2: I did not solve collaboration with one mega-document. I split it into layers so entry, consensus, execution, throttling, and handoff each have their own job.</figcaption>
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
         <ul>
-          <li><strong>AGENTS.md / CLAUDE.md / .github/copilot-instructions.md</strong>：這三個專屬入口負責讓 Codex、Claude Code、Copilot 一進場就先看到硬規則，而不是先做事再回頭補流程。</li>
-          <li><strong>.github/instructions/agent-collaboration.instructions.md</strong>：共享入口層，讓 Antigravity 與其他共用流程的 Agent 也能先吃到同一條鎖卡規則與三道防線。</li>
-          <li><strong>docs/agent-briefs/Readme.md</strong>：任務卡與 notes 格式的正式落點，負責把協作狀態變成可回查紀錄。</li>
-          <li><strong>docs/keep.summary.md / docs/keep-shards/keep-workflow.md</strong>：專案共識層，讓 Agents 不必重讀整份 keep 也能知道目前母規則。</li>
-          <li><strong>docs/agent-context-budget.md / docs/agent-collaboration-protocol.md</strong>：把上下文節流與 handoff contract 明文化，防止協作在訊息層失控。</li>
+          <li><strong>AGENTS.md / CLAUDE.md / .github/copilot-instructions.md</strong>: these entry files make Codex, Claude Code, and Copilot see the hard rules first instead of discovering the process only after they already started working.</li>
+          <li><strong>.github/instructions/agent-collaboration.instructions.md</strong>: the shared entry layer that lets Antigravity and any other shared-flow agent see the same lock rule and the same three defenses first.</li>
+          <li><strong>docs/agent-briefs/Readme.md</strong>: the formal home of task-card lifecycle and notes format, so collaboration state becomes a traceable record.</li>
+          <li><strong>docs/keep.summary.md / docs/keep-shards/keep-workflow.md</strong>: the consensus layer that lets agents know the current project rules without rereading the whole keep.</li>
+          <li><strong>docs/agent-context-budget.md / docs/agent-collaboration-protocol.md</strong>: the documents that make context throttling and handoff contracts explicit, so message-layer chaos does not eat the workflow.</li>
         </ul>
       </section>
 
       <section class="panel" id="entrypoints">
-        <h2>一個我後來認定必修的補洞：四大入口都要先看到鎖卡硬規則</h2>
-        <p>我後來發現一個很危險的空洞：`task-lock` 規則其實早就存在，但它主要躲在 `docs/agent-briefs/Readme.md` 這種深層文件裡。這代表如果 Agent 是從 Copilot、Codex、Claude Code 或 Antigravity 的入口直接進場，它完全可能在不知情的情況下就跳過鎖卡流程。</p>
-        <p>這個問題的本質不是「規則不存在」，而是「規則沒有放在必經入口」。只要入口沒看到，後面的手冊寫再完整，也只是事後補課，而不是真正的 pre-flight guard。</p>
+        <h2>One Patch I Now Treat as Mandatory: All Four Entry Points Must See the Lock Rule First</h2>
+        <p>I eventually noticed a dangerous hole: the `task-lock` rule already existed, but it mostly lived deep inside files like `docs/agent-briefs/Readme.md`. That means if an agent enters directly through Copilot, Codex, Claude Code, or Antigravity, it can easily skip the lock flow without even realizing it.</p>
+        <p>The real issue was not that the rule did not exist. The issue was that it did not live in a must-pass entry point. If the entry does not show it, the downstream handbook is only remedial reading, not a real pre-flight guard.</p>
 
         <figure class="figure-card" data-figure-name="agent-entry-lock-funnel">
           <div class="figure-actions">
-            <button type="button" data-download-svg>下載 SVG</button>
-            <button type="button" data-download-png>下載 PNG</button>
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
           </div>
-          <svg viewBox="0 0 1120 860" role="img" aria-label="四大 Agent 入口都先鎖卡的流程圖">
+          <svg viewBox="0 0 1120 860" role="img" aria-label="All four agent entry points see the lock rule first">
             <style>
               :scope .f3a-bg { fill: #fffaf2; }
               :scope .f3a-entry1 { fill: #eaf7f4; stroke: #9bd0ca; stroke-width: 2; }
@@ -652,27 +653,27 @@
               </marker>
             </defs>
             <rect class="f3a-bg" x="0" y="0" width="1120" height="860" rx="28" ry="28"></rect>
-            <text class="f3a-title" x="70" y="70">四大 Agent 入口如果不先看到鎖卡規則，後面所有流程都有可能從第一步就偏掉</text>
+            <text class="f3a-title" x="60" y="70">If the four agent entry points do not show the lock rule first, the whole workflow can drift from step zero</text>
 
             <rect class="f3a-entry1" x="70" y="120" width="220" height="170" rx="24" ry="24"></rect>
             <text class="f3a-entryhead" x="135" y="170">Copilot</text>
-            <text class="f3a-entrybody" x="100" y="210">入口：</text>
+            <text class="f3a-entrybody" x="100" y="210">Entry:</text>
             <text class="f3a-entrybody" x="100" y="238">.github/copilot-</text>
             <text class="f3a-entrybody" x="100" y="264">instructions.md</text>
 
             <rect class="f3a-entry2" x="330" y="120" width="220" height="170" rx="24" ry="24"></rect>
             <text class="f3a-entryhead" x="407" y="170">Codex</text>
-            <text class="f3a-entrybody" x="360" y="210">入口：</text>
+            <text class="f3a-entrybody" x="360" y="210">Entry:</text>
             <text class="f3a-entrybody" x="360" y="238">AGENTS.md</text>
 
             <rect class="f3a-entry3" x="590" y="120" width="220" height="170" rx="24" ry="24"></rect>
             <text class="f3a-entryhead" x="640" y="170">Claude Code</text>
-            <text class="f3a-entrybody" x="620" y="210">入口：</text>
+            <text class="f3a-entrybody" x="620" y="210">Entry:</text>
             <text class="f3a-entrybody" x="620" y="238">CLAUDE.md</text>
 
             <rect class="f3a-entry4" x="850" y="120" width="220" height="170" rx="24" ry="24"></rect>
             <text class="f3a-entryhead" x="900" y="170">Antigravity</text>
-            <text class="f3a-entrybody" x="880" y="210">共享入口：</text>
+            <text class="f3a-entrybody" x="880" y="210">Shared entry:</text>
             <text class="f3a-entrybody" x="880" y="238">agent-collaboration</text>
             <text class="f3a-entrybody" x="880" y="264">instructions + keep.summary</text>
 
@@ -682,53 +683,53 @@
             <path class="f3a-line" d="M 960 290 C 960 360, 720 360, 625 435"></path>
 
             <rect class="f3a-lock" x="285" y="440" width="550" height="168" rx="28" ry="28"></rect>
-            <text class="f3a-locktitle" x="462" y="492">硬規則 #0：先鎖卡</text>
+            <text class="f3a-locktitle" x="448" y="492">Hard Rule #0: lock first</text>
             <text class="f3a-lockbody" x="360" y="534">node tools_node/task-lock.js check &lt;task-id&gt;</text>
             <text class="f3a-lockbody" x="375" y="566">node tools_node/task-lock.js lock &lt;task-id&gt; &lt;agent-name&gt;</text>
-            <text class="f3a-lockbody" x="340" y="598">並立即補 status / started_at / started_by_agent</text>
+            <text class="f3a-lockbody" x="329" y="598">Then immediately update status / started_at / started_by_agent</text>
 
             <path class="f3a-line" d="M 560 608 L 560 690"></path>
 
             <rect class="f3a-next" x="280" y="700" width="560" height="108" rx="24" ry="24"></rect>
-            <text class="f3a-nexthead" x="450" y="742">之後才准進 Pre-flight / 修改 / 驗證 / Handoff</text>
-            <text class="f3a-nextbody" x="348" y="776">如果這條規則沒有出現在入口，Agent 可能在第一步就直接繞過整個協作防線</text>
+            <text class="f3a-nexthead" x="383" y="742">Only after that may the agent enter Pre-flight / edits / validation / handoff</text>
+            <text class="f3a-nextbody" x="320" y="776">If the entry point hides this rule, the agent can bypass the whole collaboration defense line in the very first step</text>
           </svg>
-          <figcaption>圖 3：我後來把鎖卡規則往前搬到所有入口，因為只要入口沒看到，Agent 很可能在完全不知情的情況下就直接開工。</figcaption>
+          <figcaption>Figure 3: I moved the lock rule into every entry point because if the entry does not show it, an agent can start working while being completely unaware of the collaboration guard.</figcaption>
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
-        <div class="callout">我最後採取的修補方式，不是再寫一篇更長的協作手冊，而是把硬規則 #0 直接前推到所有 Agent 的第一層入口。這件事看起來很小，但它對協作成功率的影響非常大。</div>
+        <div class="callout">The patch I landed was not "write an even longer handbook." It was to move Hard Rule #0 directly into the first layer of every agent entry. That sounds small, but it changes collaboration reliability a lot.</div>
 
         <ul>
-          <li><strong>新建 `CLAUDE.md`</strong>：把 Claude Code 主入口的硬規則 #0 放到最上面，讓它在任何 pre-flight 之前先出現。</li>
-          <li><strong>更新 `AGENTS.md`</strong>：讓 Codex 入口一打開就先看到鎖卡規則，而不是只看到一般工作準則。</li>
-          <li><strong>更新 `.github/copilot-instructions.md`</strong>：在 Copilot 的 pre-flight 之前先補上硬規則，避免它把鎖卡誤當成次要流程。</li>
-          <li><strong>更新 `.github/instructions/agent-collaboration.instructions.md`</strong>：把鎖卡規則從 pre-flight 的其中一步，提升成共享的顯眼硬規則。</li>
-          <li><strong>更新 `docs/keep.summary.md` §5</strong>：把原本一句話的規則升級成明確指令區塊，讓共享共識層也能第一時間提醒這件事。</li>
+          <li><strong>Create `CLAUDE.md`</strong>: put Hard Rule #0 at the top of the Claude Code main entry so it appears before any other pre-flight steps.</li>
+          <li><strong>Update `AGENTS.md`</strong>: make the Codex entry show the lock rule before general work guidance.</li>
+          <li><strong>Update `.github/copilot-instructions.md`</strong>: insert the hard rule ahead of Copilot's pre-flight flow so it is not treated like a secondary detail.</li>
+          <li><strong>Update `.github/instructions/agent-collaboration.instructions.md`</strong>: lift the lock rule from "one step in pre-flight" into a highly visible shared hard rule.</li>
+          <li><strong>Update `docs/keep.summary.md` section 5</strong>: turn the one-line reminder into an explicit command block so the shared consensus layer also surfaces it immediately.</li>
         </ul>
 
         <div class="split">
           <div class="mini-card">
-            <h3>錯誤做法</h3>
-            <p>把鎖卡規則放在深層文件，期待所有 Agent 都會自己往下讀到那一段。這在單人時可能還撐得住，但多人接力時幾乎一定會漏。</p>
+            <h3>Wrong move</h3>
+            <p>Hide the lock rule in a deep document and assume every agent will keep reading until it eventually finds that section. That may survive in solo work, but it almost always fails in relay-style collaboration.</p>
           </div>
           <div class="mini-card">
-            <h3>正確做法</h3>
-            <p>每個入口第一屏就先看到 `check`、`lock` 和 frontmatter 更新要求。讓 Agent 一進場就知道「現在還不能改檔，先上鎖」。</p>
+            <h3>Right move</h3>
+            <p>Make every entry show `check`, `lock`, and the required frontmatter update on the first screen. The agent should learn "you cannot edit yet, lock first" before it touches anything.</p>
           </div>
         </div>
       </section>
 
       <section class="panel" id="guards">
-        <h2>這些文件實際在攔什麼錯</h2>
-        <p>對我來說，這些文件最有價值的地方不在「寫得完整」，而在它們各自擋住了不同類型的失敗。只要把失敗類型拆出來，協作規則就會變得很具體，不再只是抽象口號。</p>
+        <h2>What These Documents Actually Prevent</h2>
+        <p>For me, the value of these documents is not that they are comprehensive. The value is that each one blocks a different kind of failure. Once failure types are separated, the collaboration rules stop sounding like vague slogans and become operational.</p>
 
         <figure class="figure-card" data-figure-name="failure-guard-map">
           <div class="figure-actions">
-            <button type="button" data-download-svg>下載 SVG</button>
-            <button type="button" data-download-png>下載 PNG</button>
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
           </div>
-          <svg viewBox="0 0 1120 760" role="img" aria-label="協作失敗與防線對照表">
+          <svg viewBox="0 0 1120 760" role="img" aria-label="Collaboration failures and defenses map">
             <style>
               :scope .f3-bg { fill: #fffaf2; }
               :scope .f3-head { fill: #16222d; }
@@ -739,7 +740,7 @@
             </style>
             <rect class="f3-bg" x="0" y="0" width="1120" height="760" rx="28" ry="28"></rect>
             <rect class="f3-head" x="60" y="70" width="1000" height="74" rx="16" ry="16"></rect>
-            <text class="f3-headtext" x="95" y="116">常見失敗不是抽象的「Agent 變笨」，而是這四種具體事故</text>
+            <text class="f3-headtext" x="95" y="116">The common failures are not abstract "the agent got worse". They are these four concrete incidents.</text>
             <line class="f3-grid" x1="60" y1="180" x2="1060" y2="180"></line>
             <line class="f3-grid" x1="60" y1="310" x2="1060" y2="310"></line>
             <line class="f3-grid" x1="60" y1="440" x2="1060" y2="440"></line>
@@ -747,106 +748,106 @@
             <line class="f3-grid" x1="60" y1="700" x2="1060" y2="700"></line>
             <line class="f3-grid" x1="300" y1="144" x2="300" y2="700"></line>
             <line class="f3-grid" x1="690" y1="144" x2="690" y2="700"></line>
-            <text class="f3-label" x="110" y="230">撞 task / 撞檔</text>
-            <text class="f3-body" x="330" y="214">主要靠 task-lock.js、docs/agent-briefs/Readme.md、agent-collaboration.instructions.md</text>
-            <text class="f3-body" x="330" y="242">先鎖卡、補 started_by_agent、限制高風險檔同時修改</text>
-            <text class="f3-body" x="720" y="230">先把同時做事的人分流開</text>
-            <text class="f3-label" x="110" y="360">接手失憶</text>
-            <text class="f3-body" x="330" y="344">主要靠 handoff contract、notes 格式、changedFiles 檢查</text>
-            <text class="f3-body" x="330" y="372">下一位 Agent 不是猜上一位做了什麼，而是先對照摘要與實際 diff</text>
-            <text class="f3-body" x="720" y="360">讓交接變成可驗證，不是靠記憶</text>
-            <text class="f3-label" x="110" y="490">context 爆量</text>
-            <text class="f3-body" x="330" y="474">主要靠 docs/agent-context-budget.md 與摘要卡格式</text>
-            <text class="f3-body" x="330" y="502">限制只帶 1 到 3 個必要檔、禁止整份 keep 與大圖直接塞進 handoff</text>
-            <text class="f3-body" x="720" y="490">讓下一輪仍然能保持局部推理</text>
-            <text class="f3-label" x="110" y="620">規則只停留在文件</text>
-            <text class="f3-body" x="330" y="604">主要靠 compute-gate、validate、encoding check、report-turn-usage 等腳本</text>
-            <text class="f3-body" x="330" y="632">把規則變成 pre-flight 與 post-flight 命令，而不是只靠 review 時口頭提醒</text>
-            <text class="f3-body" x="720" y="620">讓文件變成可執行流程</text>
+            <text class="f3-label" x="110" y="230">Task / file collision</text>
+            <text class="f3-body" x="330" y="214">Main defense: task-lock.js, docs/agent-briefs/Readme.md, agent-collaboration.instructions.md</text>
+            <text class="f3-body" x="330" y="242">Lock first, fill started_by_agent, and restrict concurrent edits on high-risk files</text>
+            <text class="f3-body" x="720" y="230">Split concurrent work before it collides</text>
+            <text class="f3-label" x="110" y="360">Handoff amnesia</text>
+            <text class="f3-body" x="330" y="344">Main defense: handoff contract, notes format, changedFiles checks</text>
+            <text class="f3-body" x="330" y="372">The next agent should not guess what happened. It should compare the summary against the actual diff.</text>
+            <text class="f3-body" x="720" y="360">Make takeover verifiable instead of memory-based</text>
+            <text class="f3-label" x="110" y="490">Context overload</text>
+            <text class="f3-body" x="330" y="474">Main defense: docs/agent-context-budget.md and handoff summary-card format</text>
+            <text class="f3-body" x="330" y="502">Limit the payload to 1 to 3 necessary files, and keep full keep files or huge images out of the handoff</text>
+            <text class="f3-body" x="720" y="490">Keep the next round capable of local reasoning</text>
+            <text class="f3-label" x="110" y="620">Rules living only in docs</text>
+            <text class="f3-body" x="330" y="604">Main defense: compute-gate, validate, encoding checks, report-turn-usage, and other scripts</text>
+            <text class="f3-body" x="330" y="632">Turn the rules into pre-flight and post-flight commands instead of review-time reminders</text>
+            <text class="f3-body" x="720" y="620">Make documents behave like executable process</text>
           </svg>
-          <figcaption>圖 4：協作文件之所以有效，是因為每一份文件都在攔不同類型的事故，而不是所有規則都混在一起。</figcaption>
+          <figcaption>Figure 4: The collaboration documents work because each one stops a different kind of incident, not because every rule was piled into the same place.</figcaption>
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
         <div class="split">
           <div class="mini-card">
-            <h3>我最怕的不是 bug</h3>
-            <p>我真正怕的是「改動已經發生，但沒有人能確定它是誰改的、基於什麼規則改的、現在還能不能回放」。多 Agent 協作一旦沒有這三件事，就會很快變成無法維護的黑盒。</p>
+            <h3>What scares me most is not the bug</h3>
+            <p>What really scares me is this: a change already happened, but nobody can say who made it, under which rule, or whether the move can still be replayed. Once multi-agent collaboration loses those three things, it quickly becomes an unmaintainable black box.</p>
           </div>
           <div class="mini-card">
-            <h3>所以我才一直把規則拆小</h3>
-            <p>規則拆小之後，每一層都只解一個問題。這種分層方式比一份總規範更實用，因為它真的能在當下支援某個具體動作。</p>
+            <h3>That is why I keep splitting rules into smaller layers</h3>
+            <p>Once rules are split, each layer solves one problem only. That layered design is more practical than a giant governance document because it actually supports a concrete move in the current moment.</p>
           </div>
         </div>
       </section>
 
       <section class="panel" id="routine">
-        <h2>我每天實際怎麼用這套文件</h2>
-        <p>把這些規範看完之後，我的日常工作流其實變得很固定。每次接手前，我會先確認共識摘要、跑健康掃描與 context budget，接著鎖卡；改完之後先跑最便宜的檢查，再視情況補完整 gate，最後把 changed files 與 decisions 壓成 handoff。</p>
+        <h2>How I Actually Use This Stack Day to Day</h2>
+        <p>Once these rules settled down, my daily workflow became very fixed. Before taking over, I check the consensus summary, run the health scan and context budget, then lock the task. After the edit, I run the cheapest validation first, then add the fuller gate if needed, then compress changed files and decisions into a handoff.</p>
 
-        <h3>Pre-flight：開始前固定跑的東西</h3>
+        <h3>Pre-flight: what I always run before starting</h3>
         <pre><code>node tools_node/compute-gate.js --profile quick --agent-feedback --no-stop
 node tools_node/check-context-budget.js --changed
 node tools_node/task-lock.js check &lt;task-id&gt;
 node tools_node/task-lock.js lock &lt;task-id&gt; &lt;agent-name&gt;</code></pre>
 
-        <h3>Post-flight：收工前固定跑的東西</h3>
+        <h3>Post-flight: what I always run before leaving</h3>
         <pre><code>node tools_node/compute-gate.js --profile standard --agent-feedback
 node tools_node/check-encoding-touched.js &lt;changed-files...&gt;
 node tools_node/task-lock.js unlock &lt;task-id&gt; &lt;agent-name&gt;
 node tools_node/report-turn-usage.js --changed --emit-final-line</code></pre>
 
-        <div class="callout">這裡我最重視的不是命令本身，而是順序。先讀摘要再鎖卡，先做 focused validation 再擴範圍，先寫 handoff 再離場。順序一亂，後面的規則就算存在，也很容易變成補救而不是防守。</div>
+        <div class="callout">What I care about most here is not the commands themselves, but the order. Read the summary before locking. Do focused validation before expanding scope. Write the handoff before leaving. Once the order breaks, even existing rules start acting like cleanup instead of defense.</div>
 
-        <p>這種工作流的好處，是它非常適合小模型與接力式協作。只要每一輪都被限制在很小的 slice，模型不需要理解整個系統，也能穩定完成其中一段工作。這也是我後來越來越確定的一件事：多 Agent 協作不是在追求「同時很多人做事」，而是在追求「任何一個人接上來都還看得懂」。</p>
+        <p>This workflow is especially friendly to smaller models and relay-style collaboration. If each round stays inside a small slice, the model does not need to understand the whole system to finish one reliable segment. That is why I now believe multi-agent collaboration is not about many people working at once. It is about making sure any next person can still understand what they are inheriting.</p>
       </section>
 
       <section class="panel" id="handoff">
-        <h2>我要求每一輪至少留下什麼 handoff</h2>
-        <p>在這個 repo 裡，handoff 已經不是自由發揮的摘要，而是有明確欄位的 contract。對我來說，最好用的格式不是長文，而是讓下一位 Agent 一眼就知道這輪該看哪幾個檔案、哪些事情已經定了、哪些不要重讀。</p>
+        <h2>What I Require Every Round to Leave Behind as Handoff</h2>
+        <p>In this repo, handoff is no longer a freestyle summary. It is a contract with explicit fields. For me, the most useful format is not a long essay. It is something that lets the next agent see immediately which files matter, what has already been decided, and what does not need to be reread.</p>
 
         <pre><code>Task: HARN-ARCH-0002
-Goal: 修掉 battle -&gt; ui 的非法引用
+Goal: Remove the illegal battle -&gt; ui reference
 Read:
 - docs/keep.summary.md
 - docs/agent-briefs/tasks/HARN-ARCH-0002.md
 - shared/interfaces/IBattleUIBridge.ts
 Known:
-- 任務卡已 lock
-- battle 端只能碰 interface，不可直連 ui 元件
-- 目前 blocker 是橋接注入點還未補齊
+- The task card is already locked
+- The battle side may only touch the interface, not UI components directly
+- The current blocker is that the bridge injection point is still missing
 Need:
-- 補 bridge 注入點
-- 用 focused validation 確認非法引用已清掉
+- Add the bridge injection point
+- Use focused validation to confirm the illegal reference is gone
 Avoid:
-- 不要重讀 keep.md 全文
-- 不要擴到無關的 UI contract 檔案</code></pre>
+- Do not reread keep.md in full
+- Do not expand into unrelated UI contract files</code></pre>
 
-        <p>我很喜歡這種摘要卡，因為它讓 handoff 的作用非常明確：不是把所有背景再講一次，而是幫下一位 Agent 限縮他該看的範圍。只要範圍被限縮，接手成本就會直接降下來，token 也不會一下子炸掉。</p>
+        <p>I like this kind of summary card because it makes the function of handoff very explicit. It is not retelling all background. It is narrowing the next agent's reading surface. Once the surface gets smaller, takeover cost drops immediately, and token usage does not blow up.</p>
 
         <div class="split">
           <div class="mini-card">
-            <h3>好的 handoff 長什麼樣子</h3>
-            <p>檔案少、結論短、下一步清楚，並且明確告訴下一位不要重讀哪些大文件或 artifacts。</p>
+            <h3>What a good handoff looks like</h3>
+            <p>Few files, short conclusions, a clear next move, and an explicit note about which large documents or artifacts do not need to be reread.</p>
           </div>
           <div class="mini-card">
-            <h3>壞的 handoff 長什麼樣子</h3>
-            <p>把 keep、manifest、QA notes、長 diff 全部貼上來。表面上很完整，實際上是把下一輪直接推進 hard-stop。</p>
+            <h3>What a bad handoff looks like</h3>
+            <p>Pasting the keep, the manifest, QA notes, and a huge diff into the same message. It looks complete, but in reality it sends the next round straight into hard-stop.</p>
           </div>
         </div>
       </section>
 
       <section class="panel" id="human-role">
-        <h2>人類參與 AI 協作時，真正該扮演的角色</h2>
-        <p>讀 Harness Engineering 時，我覺得最重要的一段提醒是：好的 Harness 不是為了把人類完全移出流程，而是把人類的注意力導向最有價值的地方。人類開發者帶進 codebase 的，不只是寫程式能力，還有品味、組織記憶、技術債取捨、產品目標，以及「這個團隊不會這樣做」的直覺。</p>
-        <p>Agent 沒有這些東西。它不會自然知道哪條慣例是 load-bearing，哪條只是歷史習慣；也不會知道某個 technically correct 的解法，是否符合我現在想讓 3KProject 走的方向。所以我後來把人類角色從「逐行檢查 Agent」改成「調校整個 Harness」。</p>
+        <h2>The Role Humans Should Actually Play in AI Collaboration</h2>
+        <p>When I read about Harness Engineering, one of the most important reminders for me was this: a good harness is not meant to remove humans from the loop. It is meant to direct human attention toward the highest-value places. Human developers bring more than coding skill into a codebase. They bring taste, organizational memory, debt tradeoffs, product goals, and a strong instinct for what the team would or would not accept.</p>
+        <p>Agents do not naturally have those things. They do not know which convention is load-bearing and which one is just historical habit. They also do not know whether a technically correct solution actually matches the direction I want 3KProject to move toward. That is why I gradually shifted the human role from "line-by-line agent inspector" to "harness steward."</p>
 
         <figure class="figure-card" data-figure-name="human-steering-harness-loop">
           <div class="figure-actions">
-            <button type="button" data-download-svg>下載 SVG</button>
-            <button type="button" data-download-png>下載 PNG</button>
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
           </div>
-          <svg viewBox="0 0 1120 760" role="img" aria-label="人類調校 Harness 的角色圖">
+          <svg viewBox="0 0 1120 760" role="img" aria-label="Human role in harness steering">
             <style>
               :scope .f5-bg { fill: #fffaf2; }
               :scope .f5-human { fill: #16222d; }
@@ -867,26 +868,26 @@ Avoid:
             <rect class="f5-bg" x="0" y="0" width="1120" height="760" rx="28" ry="28"></rect>
             <rect class="f5-human" x="360" y="54" width="400" height="104" rx="28" ry="28"></rect>
             <text class="f5-title" x="438" y="100">Human Steering</text>
-            <text class="f5-title" x="410" y="132">目標、品味、取捨、例外批准</text>
+            <text class="f5-title" x="376" y="132">Goals, taste, tradeoffs, exception approvals</text>
 
             <rect class="f5-guide" x="82" y="250" width="290" height="142" rx="24" ry="24"></rect>
             <text class="f5-head" x="126" y="296">Guides</text>
-            <text class="f5-body" x="112" y="332">把經驗寫成入口規則、</text>
-            <text class="f5-body" x="112" y="360">任務卡、how-to、禁區</text>
+            <text class="f5-body" x="109" y="332">Turn experience into entry rules,</text>
+            <text class="f5-body" x="112" y="360">task cards, how-tos, and no-go zones</text>
 
             <rect class="f5-agent" x="415" y="250" width="290" height="142" rx="24" ry="24"></rect>
             <text class="f5-head" x="474" y="296">Coding Agent</text>
-            <text class="f5-body" x="445" y="332">執行局部任務、修正錯誤、</text>
-            <text class="f5-body" x="445" y="360">產出草案與 patch</text>
+            <text class="f5-body" x="446" y="332">Execute local tasks, repair errors,</text>
+            <text class="f5-body" x="454" y="360">produce drafts and patches</text>
 
             <rect class="f5-sensor" x="748" y="250" width="290" height="142" rx="24" ry="24"></rect>
             <text class="f5-head" x="805" y="296">Sensors</text>
-            <text class="f5-body" x="778" y="332">用 type、lint、test、schema、</text>
-            <text class="f5-body" x="778" y="360">runtime smoke 回傳訊號</text>
+            <text class="f5-body" x="771" y="332">Return signals through type, lint, test, schema,</text>
+            <text class="f5-body" x="777" y="360">and runtime smoke checks</text>
 
             <rect class="f5-decision" x="250" y="536" width="620" height="122" rx="26" ry="26"></rect>
-            <text class="f5-head" x="405" y="584">人類處理工具無法決定的部分</text>
-            <text class="f5-body" x="306" y="620">產品方向、技術債是否可接受、架構例外、語意曖昧、最終驗收標準</text>
+            <text class="f5-head" x="366" y="584">What humans decide when tools cannot</text>
+            <text class="f5-body" x="274" y="620">product direction, acceptable debt, architecture exceptions, semantic ambiguity, and final acceptance criteria</text>
 
             <path class="f5-line" d="M 470 158 C 340 190, 240 210, 225 250"></path>
             <path class="f5-line" d="M 560 158 L 560 250"></path>
@@ -896,68 +897,68 @@ Avoid:
             <path class="f5-line" d="M 893 392 C 893 472, 780 520, 666 536"></path>
             <path class="f5-line" d="M 454 536 C 320 500, 230 462, 225 392"></path>
           </svg>
-          <figcaption>圖 5：人類不是被 Harness 排除，而是負責決定目標、調校 guides / sensors，並處理工具與 Agent 都無法可靠判斷的取捨。</figcaption>
+          <figcaption>Figure 5: Humans are not excluded by the harness. They set goals, tune guides and sensors, and handle the tradeoffs that neither tools nor agents can judge reliably.</figcaption>
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
         <div class="split">
           <div class="mini-card">
-            <h3>人類不要一直做低階檢查</h3>
-            <p>格式、schema、模組邊界、encoding、型別錯誤，這些應該交給計算型 sensors。人類一直手動檢查這些東西，只會讓協作成本卡在人工審查。</p>
+            <h3>Humans should not keep doing low-level checks</h3>
+            <p>Formatting, schema, module boundaries, encoding, and type errors should be pushed into computational sensors. If humans keep manually checking those, collaboration cost gets stuck inside review.</p>
           </div>
           <div class="mini-card">
-            <h3>人類要負責調整系統</h3>
-            <p>當同一類錯誤重複發生，我要做的不是罵 Agent，而是補 guide、補 sensor、補 fixture，或把某條規則前推到入口。</p>
+            <h3>Humans should keep tuning the system</h3>
+            <p>When the same class of mistake repeats, my job is not to scold the agent. My job is to add a guide, add a sensor, add a fixture, or move a rule farther forward into the entry point.</p>
           </div>
         </div>
-        <p>所以在 3KProject 裡，我希望自己扮演的是 steward，而不是人工 linter。Agent 負責局部執行，工具負責確定性檢查，人類負責方向、風險與例外。這樣多 Agent 協作才會越跑越穩，而不是把所有不確定性都丟回人腦。</p>
+        <p>So inside 3KProject, the role I want for myself is steward, not human linter. The agent handles local execution. The tools handle deterministic checks. Humans handle direction, risk, and exceptions. That is how multi-agent collaboration gets steadier over time instead of dumping all uncertainty back into human heads.</p>
       </section>
 
       <section class="panel" id="takeaway">
-        <h2>最後我給自己的判斷準則</h2>
-        <p>如果要用一句話講我現在對多 Agent 協作的理解，那就是：<strong>不要把協作寄望在大家都很聰明，而要把協作建立在任何人接手時都能立刻對齊的系統上。</strong></p>
-        <p>在 3KProject 裡，我現在更願意把這套東西看成 Harness Engineering 的延伸。單一 Agent 的 Harness 解的是「怎麼讓模型少犯錯」，多 Agent 的 Harness 解的則是「怎麼讓多個人接力時，錯誤不會因為交接而放大」。</p>
+        <h2>The Final Decision Rule I Keep for Myself</h2>
+        <p>If I had to reduce my current understanding of multi-agent collaboration to one sentence, it would be this: <strong>do not bet collaboration on everyone being individually brilliant; build it on a system that lets any next person align immediately at takeover time.</strong></p>
+        <p>Inside 3KProject, I now see this as an extension of Harness Engineering. A single-agent harness solves "how do we make the model fail less often." A multi-agent harness solves "how do we keep relay-style work from amplifying errors during handoff."</p>
         <div class="split">
           <div class="mini-card">
-            <h3>適合交給 Agent 的部分</h3>
-            <p>需求拆解、局部修改、文件整理、語意歧義判讀，以及高階方案比較。</p>
+            <h3>Better handed to the agent</h3>
+            <p>Requirement decomposition, local edits, document cleanup, semantic ambiguity reading, and higher-level option comparison.</p>
           </div>
           <div class="mini-card">
-            <h3>適合交給系統的部分</h3>
-            <p>task lock、scope 管理、驗證順序、handoff 結構、context budget 與檔案邊界。</p>
+            <h3>Better handed to the system</h3>
+            <p>Task lock, scope management, validation order, handoff structure, context budget, and file-boundary enforcement.</p>
           </div>
         </div>
-        <p class="quote">我現在不再把多 Agent 協作理解成「多開幾個聊天視窗」，而是把它理解成：我要先把 repo 的生命週期、執行順序與 guard 寫好，Agents 才會真的變成團隊，而不是一群彼此看不到彼此的臨時工。</p>
+        <p class="quote">I no longer think of multi-agent collaboration as "opening several chat windows." I think of it as writing the repo's lifecycle, execution order, and guards clearly enough that agents can act like a team instead of a crowd of temporary workers who cannot see one another.</p>
       </section>
 
       <div class="footer">
-        3KProject 技術筆記。本文整理自專案內的 Agent 協作規範、task card 手冊、workflow shard 與 context budget 文件。
-        <div class="footer-counter" aria-label="網站流量計數器">
-          <span class="footer-counter-label">網站流量</span>
-          <img src="https://hits.sh/eaglhuang.github.io/AI-learning-notes.svg?label=traffic&color=10252D&labelColor=0C6F68" alt="網站累積流量計數器" loading="lazy">
+        3KProject technical notes. This article is based on the repo's agent collaboration rules, task-card handbook, workflow shards, and context budget documents.
+        <div class="footer-counter" aria-label="Site traffic counter">
+          <span class="footer-counter-label">Site traffic</span>
+          <img src="https://hits.sh/eaglhuang.github.io/AI-learning-notes.svg?label=traffic&color=10252D&labelColor=0C6F68" alt="Site traffic counter" loading="lazy">
         </div>
       </div>
     </main>
 
     <aside class="toc">
-      <h2>文章目錄</h2>
+      <h2>Table of Contents</h2>
       <ol>
-        <li><a href="#summary">核心問題</a></li>
-        <li><a href="#loop">協作主鏈</a></li>
-        <li><a href="#files">核心文件</a></li>
-        <li><a href="#entrypoints">四大入口硬規則</a></li>
-        <li><a href="#guards">失敗與防線</a></li>
-        <li><a href="#routine">日常工作流</a></li>
-        <li><a href="#handoff">Handoff 摘要</a></li>
-        <li><a href="#human-role">人類角色</a></li>
-        <li><a href="#takeaway">最後準則</a></li>
+        <li><a href="#summary">Core Problem</a></li>
+        <li><a href="#loop">Collaboration Spine</a></li>
+        <li><a href="#files">Key Documents</a></li>
+        <li><a href="#entrypoints">Hard Rules at Four Entry Points</a></li>
+        <li><a href="#guards">Failures and Defenses</a></li>
+        <li><a href="#routine">Daily Workflow</a></li>
+        <li><a href="#handoff">Handoff Summary</a></li>
+        <li><a href="#human-role">Human Role</a></li>
+        <li><a href="#takeaway">Final Rule</a></li>
       </ol>
       <div class="note">
-        使用方式：
-        <br>1. 直接用瀏覽器打開本檔。
-        <br>2. 每張圖卡右上角可下載 SVG 或 PNG。
-        <br>3. 這篇文章整理的是 3KProject 的多 Agent 協作方法。
-        <br>4. 已提供英文版，可從頁首切換閱讀。
+        How to use this page:
+        <br>1. Open it directly in a browser.
+        <br>2. Use the buttons at the top right of each figure card to download SVG or PNG.
+        <br>3. This article explains the multi-agent collaboration method I use in 3KProject.
+        <br>4. A Chinese version is available from the top links.
       </div>
     </aside>
   </div>
@@ -1006,9 +1007,9 @@ Avoid:
         const svgMarkup = serializeSvg(svg);
         const blob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
         triggerDownload(blob, figureDownloadName(figure, 'svg'));
-        showStatus(figure, '已下載 SVG');
+        showStatus(figure, 'Downloaded SVG');
       } catch (error) {
-        showStatus(figure, '下載 SVG 失敗');
+        showStatus(figure, 'SVG download failed');
       }
     }
 
@@ -1055,9 +1056,9 @@ Avoid:
         });
 
         triggerDownload(pngBlob, figureDownloadName(figure, 'png'));
-        showStatus(figure, '已下載 PNG');
+        showStatus(figure, 'Downloaded PNG');
       } catch (error) {
-        showStatus(figure, '下載 PNG 失敗');
+        showStatus(figure, 'PNG download failed');
       } finally {
         URL.revokeObjectURL(url);
       }
