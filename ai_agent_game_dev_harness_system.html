@@ -223,6 +223,24 @@
     .top-links a:hover {
       text-decoration: underline;
     }
+    .traffic-counter {
+      margin: 1.4em 0 3em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: #6b7280;
+      font-size: 0.82em;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .traffic-counter img {
+      display: block;
+      width: auto;
+      height: 28px;
+    }
   </style>
 </head>
 <body>
@@ -675,6 +693,11 @@
 <p class="credit">
   本文基於 Martin Fowler《Harness Engineering for Coding Agent Users》(2026-04-02) 的核心框架，結合個人 Cocos Creator 遊戲專案（3KLife）的實際工程經驗撰寫。
 </p>
+
+<div class="traffic-counter" aria-label="網站流量計數器">
+  <span>網站流量</span>
+  <img src="https://hits.sh/eaglhuang.github.io/AI-learning-notes.svg?label=traffic&color=10252D&labelColor=0C6F68" alt="網站累積流量計數器" loading="lazy">
+</div>
 
 </body>
 </html>

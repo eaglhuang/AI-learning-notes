@@ -20,6 +20,24 @@
     h1 { font-size: 2em; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
     h2 { font-size: 1.45em; font-weight: 700; margin-top: 2.4em; border-left: 5px solid #0a66c2; padding-left: 14px; }
     h3 { font-size: 1.15em; font-weight: 700; margin-top: 1.8em; color: #333; }
+        .traffic-counter {
+          margin: 1.4em 0 3em;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          flex-wrap: wrap;
+          color: #6b7280;
+          font-size: 0.82em;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+        .traffic-counter img {
+          display: block;
+          width: auto;
+          height: 28px;
+        }
     p  { margin: 0.9em 0; }
     ul, ol { padding-left: 1.6em; margin: 0.8em 0; }
     li { margin: 0.35em 0; }
@@ -671,6 +689,11 @@
 <p class="credit">
   This article is based on the core framework from Martin Fowler’s <em>Harness Engineering for Coding Agent Users</em> (2026-04-02), combined with practical engineering lessons from my own Cocos Creator game project, 3KLife.
 </p>
+
+<div class="traffic-counter" aria-label="Site traffic counter">
+  <span>Site traffic</span>
+  <img src="https://hits.sh/eaglhuang.github.io/AI-learning-notes.svg?label=traffic&color=10252D&labelColor=0C6F68" alt="Site traffic counter" loading="lazy">
+</div>
 
 </body>
 </html>

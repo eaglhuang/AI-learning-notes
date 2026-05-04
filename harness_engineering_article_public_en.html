@@ -372,6 +372,29 @@
       padding: 10px 0 20px;
     }
 
+    .footer-counter {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .footer-counter-label {
+      color: var(--ink-soft);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .footer-counter img {
+      display: block;
+      width: auto;
+      height: 28px;
+    }
+
     @media (max-width: 1080px) {
       .page {
         grid-template-columns: 1fr;
@@ -827,7 +850,13 @@
         <p class="quote">Inside 3KProject, my rule now is to turn as much model-side judgment as possible into scripts, and save the LLM for the work that really needs understanding and creation.</p>
       </section>
 
-      <div class="footer">3KProject engineering notes. Figure cards support Download SVG and Download PNG, which work better for external publishing.</div>
+      <div class="footer">
+        3KProject engineering notes. Figure cards support Download SVG and Download PNG, which work better for external publishing.
+        <div class="footer-counter" aria-label="Site traffic counter">
+          <span class="footer-counter-label">Site traffic</span>
+          <img src="https://hits.sh/eaglhuang.github.io/AI-learning-notes.svg?label=traffic&color=10252D&labelColor=0C6F68" alt="Site traffic counter" loading="lazy">
+        </div>
+      </div>
     </main>
 
     <aside class="toc">

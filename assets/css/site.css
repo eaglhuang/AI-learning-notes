@@ -376,9 +376,41 @@ h3 {
   padding: 34px 0 50px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 18px;
   color: var(--ink-soft);
   font-size: 0.92rem;
+}
+
+.site-footer-main {
+  display: grid;
+  gap: 6px;
+}
+
+.site-footer-main p {
+  margin: 0;
+}
+
+.site-counter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.site-counter-label {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.site-counter img {
+  display: block;
+  width: auto;
+  height: 28px;
 }
 
 .site-footer a {
