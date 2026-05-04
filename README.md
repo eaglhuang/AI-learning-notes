@@ -2,7 +2,7 @@
 
 這是 Eagle Huang 的 AI 學習與工程實作筆記站，使用 GitHub Pages 發布。
 
-網站首頁：<https://eaglhuang.github.io/ai-learning-notes/>
+網站首頁：<https://eaglhuang.github.io/AI-learning-notes/>
 
 ## 目前內容
 

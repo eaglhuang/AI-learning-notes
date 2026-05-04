@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://eaglhuang.github.io/ai-learning-notes/sitemap.xml
+Sitemap: https://eaglhuang.github.io/AI-learning-notes/sitemap.xml
