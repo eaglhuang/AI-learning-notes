@@ -608,12 +608,113 @@
         </figure>
 
         <ul>
-          <li><strong>AGENTS.md / .github/copilot-instructions.md</strong>：進場入口，先把繁中、pre-flight 與硬規則固定住。</li>
-          <li><strong>.github/instructions/agent-collaboration.instructions.md</strong>：我最常回頭看的操作層文件，因為三道防線都寫在這裡。</li>
+          <li><strong>AGENTS.md / CLAUDE.md / .github/copilot-instructions.md</strong>：這三個專屬入口負責讓 Codex、Claude Code、Copilot 一進場就先看到硬規則，而不是先做事再回頭補流程。</li>
+          <li><strong>.github/instructions/agent-collaboration.instructions.md</strong>：共享入口層，讓 Antigravity 與其他共用流程的 Agent 也能先吃到同一條鎖卡規則與三道防線。</li>
           <li><strong>docs/agent-briefs/Readme.md</strong>：任務卡與 notes 格式的正式落點，負責把協作狀態變成可回查紀錄。</li>
           <li><strong>docs/keep.summary.md / docs/keep-shards/keep-workflow.md</strong>：專案共識層，讓 Agents 不必重讀整份 keep 也能知道目前母規則。</li>
           <li><strong>docs/agent-context-budget.md / docs/agent-collaboration-protocol.md</strong>：把上下文節流與 handoff contract 明文化，防止協作在訊息層失控。</li>
         </ul>
+      </section>
+
+      <section class="panel" id="entrypoints">
+        <h2>一個我後來認定必修的補洞：四大入口都要先看到鎖卡硬規則</h2>
+        <p>我後來發現一個很危險的空洞：`task-lock` 規則其實早就存在，但它主要躲在 `docs/agent-briefs/Readme.md` 這種深層文件裡。這代表如果 Agent 是從 Copilot、Codex、Claude Code 或 Antigravity 的入口直接進場，它完全可能在不知情的情況下就跳過鎖卡流程。</p>
+        <p>這個問題的本質不是「規則不存在」，而是「規則沒有放在必經入口」。只要入口沒看到，後面的手冊寫再完整，也只是事後補課，而不是真正的 pre-flight guard。</p>
+
+        <figure class="figure-card" data-figure-name="agent-entry-lock-funnel">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>下載 SVG</button>
+            <button type="button" data-download-png>下載 PNG</button>
+          </div>
+          <svg viewBox="0 0 1120 860" role="img" aria-label="四大 Agent 入口都先鎖卡的流程圖">
+            <style>
+              :scope .f3a-bg { fill: #fffaf2; }
+              :scope .f3a-entry1 { fill: #eaf7f4; stroke: #9bd0ca; stroke-width: 2; }
+              :scope .f3a-entry2 { fill: #eef5fb; stroke: #a9c4e1; stroke-width: 2; }
+              :scope .f3a-entry3 { fill: #fbf0e9; stroke: #e1b98f; stroke-width: 2; }
+              :scope .f3a-entry4 { fill: #f6edf2; stroke: #d6adc1; stroke-width: 2; }
+              :scope .f3a-lock { fill: #16222d; }
+              :scope .f3a-next { fill: #fff7ee; stroke: #cb7d2e; stroke-width: 2; }
+              :scope .f3a-line { stroke: #516477; stroke-width: 3; fill: none; marker-end: url(#arrow3a); }
+              :scope .f3a-title { font: 700 24px 'Aptos','Microsoft JhengHei',sans-serif; fill: #16222d; }
+              :scope .f3a-entryhead { font: 700 20px 'Aptos','Microsoft JhengHei',sans-serif; fill: #16222d; }
+              :scope .f3a-entrybody { font: 500 15px 'Aptos','Microsoft JhengHei',sans-serif; fill: #425161; }
+              :scope .f3a-locktitle { font: 700 24px 'Aptos','Microsoft JhengHei',sans-serif; fill: #ffffff; }
+              :scope .f3a-lockbody { font: 600 17px 'Aptos','Microsoft JhengHei',sans-serif; fill: #eff7ff; }
+              :scope .f3a-nexthead { font: 700 20px 'Aptos','Microsoft JhengHei',sans-serif; fill: #16222d; }
+              :scope .f3a-nextbody { font: 500 16px 'Aptos','Microsoft JhengHei',sans-serif; fill: #425161; }
+            </style>
+            <defs>
+              <marker id="arrow3a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#516477"></path>
+              </marker>
+            </defs>
+            <rect class="f3a-bg" x="0" y="0" width="1120" height="860" rx="28" ry="28"></rect>
+            <text class="f3a-title" x="70" y="70">四大 Agent 入口如果不先看到鎖卡規則，後面所有流程都有可能從第一步就偏掉</text>
+
+            <rect class="f3a-entry1" x="70" y="120" width="220" height="170" rx="24" ry="24"></rect>
+            <text class="f3a-entryhead" x="135" y="170">Copilot</text>
+            <text class="f3a-entrybody" x="100" y="210">入口：</text>
+            <text class="f3a-entrybody" x="100" y="238">.github/copilot-</text>
+            <text class="f3a-entrybody" x="100" y="264">instructions.md</text>
+
+            <rect class="f3a-entry2" x="330" y="120" width="220" height="170" rx="24" ry="24"></rect>
+            <text class="f3a-entryhead" x="407" y="170">Codex</text>
+            <text class="f3a-entrybody" x="360" y="210">入口：</text>
+            <text class="f3a-entrybody" x="360" y="238">AGENTS.md</text>
+
+            <rect class="f3a-entry3" x="590" y="120" width="220" height="170" rx="24" ry="24"></rect>
+            <text class="f3a-entryhead" x="640" y="170">Claude Code</text>
+            <text class="f3a-entrybody" x="620" y="210">入口：</text>
+            <text class="f3a-entrybody" x="620" y="238">CLAUDE.md</text>
+
+            <rect class="f3a-entry4" x="850" y="120" width="220" height="170" rx="24" ry="24"></rect>
+            <text class="f3a-entryhead" x="900" y="170">Antigravity</text>
+            <text class="f3a-entrybody" x="880" y="210">共享入口：</text>
+            <text class="f3a-entrybody" x="880" y="238">agent-collaboration</text>
+            <text class="f3a-entrybody" x="880" y="264">instructions + keep.summary</text>
+
+            <path class="f3a-line" d="M 180 290 C 180 360, 420 360, 520 435"></path>
+            <path class="f3a-line" d="M 440 290 C 440 350, 500 360, 545 435"></path>
+            <path class="f3a-line" d="M 700 290 C 700 350, 640 360, 600 435"></path>
+            <path class="f3a-line" d="M 960 290 C 960 360, 720 360, 625 435"></path>
+
+            <rect class="f3a-lock" x="285" y="440" width="550" height="168" rx="28" ry="28"></rect>
+            <text class="f3a-locktitle" x="462" y="492">硬規則 #0：先鎖卡</text>
+            <text class="f3a-lockbody" x="360" y="534">node tools_node/task-lock.js check &lt;task-id&gt;</text>
+            <text class="f3a-lockbody" x="375" y="566">node tools_node/task-lock.js lock &lt;task-id&gt; &lt;agent-name&gt;</text>
+            <text class="f3a-lockbody" x="340" y="598">並立即補 status / started_at / started_by_agent</text>
+
+            <path class="f3a-line" d="M 560 608 L 560 690"></path>
+
+            <rect class="f3a-next" x="280" y="700" width="560" height="108" rx="24" ry="24"></rect>
+            <text class="f3a-nexthead" x="450" y="742">之後才准進 Pre-flight / 修改 / 驗證 / Handoff</text>
+            <text class="f3a-nextbody" x="348" y="776">如果這條規則沒有出現在入口，Agent 可能在第一步就直接繞過整個協作防線</text>
+          </svg>
+          <figcaption>圖 3：我後來把鎖卡規則往前搬到所有入口，因為只要入口沒看到，Agent 很可能在完全不知情的情況下就直接開工。</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+
+        <div class="callout">我最後採取的修補方式，不是再寫一篇更長的協作手冊，而是把硬規則 #0 直接前推到所有 Agent 的第一層入口。這件事看起來很小，但它對協作成功率的影響非常大。</div>
+
+        <ul>
+          <li><strong>新建 `CLAUDE.md`</strong>：把 Claude Code 主入口的硬規則 #0 放到最上面，讓它在任何 pre-flight 之前先出現。</li>
+          <li><strong>更新 `AGENTS.md`</strong>：讓 Codex 入口一打開就先看到鎖卡規則，而不是只看到一般工作準則。</li>
+          <li><strong>更新 `.github/copilot-instructions.md`</strong>：在 Copilot 的 pre-flight 之前先補上硬規則，避免它把鎖卡誤當成次要流程。</li>
+          <li><strong>更新 `.github/instructions/agent-collaboration.instructions.md`</strong>：把鎖卡規則從 pre-flight 的其中一步，提升成共享的顯眼硬規則。</li>
+          <li><strong>更新 `docs/keep.summary.md` §5</strong>：把原本一句話的規則升級成明確指令區塊，讓共享共識層也能第一時間提醒這件事。</li>
+        </ul>
+
+        <div class="split">
+          <div class="mini-card">
+            <h3>錯誤做法</h3>
+            <p>把鎖卡規則放在深層文件，期待所有 Agent 都會自己往下讀到那一段。這在單人時可能還撐得住，但多人接力時幾乎一定會漏。</p>
+          </div>
+          <div class="mini-card">
+            <h3>正確做法</h3>
+            <p>每個入口第一屏就先看到 `check`、`lock` 和 frontmatter 更新要求。讓 Agent 一進場就知道「現在還不能改檔，先上鎖」。</p>
+          </div>
+        </div>
       </section>
 
       <section class="panel" id="guards">
@@ -661,7 +762,7 @@
             <text class="f3-body" x="330" y="632">把規則變成 pre-flight 與 post-flight 命令，而不是只靠 review 時口頭提醒</text>
             <text class="f3-body" x="720" y="620">讓文件變成可執行流程</text>
           </svg>
-          <figcaption>圖 3：協作文件之所以有效，是因為每一份文件都在攔不同類型的事故，而不是所有規則都混在一起。</figcaption>
+          <figcaption>圖 4：協作文件之所以有效，是因為每一份文件都在攔不同類型的事故，而不是所有規則都混在一起。</figcaption>
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
@@ -765,6 +866,7 @@ Avoid:
         <li><a href="#summary">核心問題</a></li>
         <li><a href="#loop">協作主鏈</a></li>
         <li><a href="#files">核心文件</a></li>
+        <li><a href="#entrypoints">四大入口硬規則</a></li>
         <li><a href="#guards">失敗與防線</a></li>
         <li><a href="#routine">日常工作流</a></li>
         <li><a href="#handoff">Handoff 摘要</a></li>
