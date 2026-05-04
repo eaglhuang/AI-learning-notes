@@ -328,6 +328,22 @@
       font-size: 1.08rem;
     }
 
+    .back-links {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 0.92rem;
+    }
+
+    .back-links a {
+      color: var(--accent-strong);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .back-links a:hover {
+      text-decoration: underline;
+    }
+
     .toc {
       position: sticky;
       top: 24px;
@@ -433,6 +449,13 @@
 <body>
   <div class="page">
     <main class="main-column">
+      <p class="back-links">
+        <a href="./">回首頁</a>
+        ｜
+        <a href="articles/">回文章列表</a>
+        ｜
+        <a href="rag_etl_pipeline_public_en.html">English version</a>
+      </p>
       <header class="hero">
         <p class="eyebrow">3KProject Data Pipeline Notes</p>
         <h1>我怎麼把 RAG / ETL 做成一條真的能落地的資料生產線</h1>
