@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我怎麼把多 Agent 協作做成 3KProject 裡真正可執行的工作流</title>
+  <meta name="description" content="整理我在 3KProject 裡建立多 Agent 協作流程的經驗，說明如何用 task lock、compute gate、handoff 與 context budget 把協作變成可執行的工作流。">
+  <style>
+    :root {
+      --paper: #f6f1e7;
+      --paper-strong: #fbf8f2;
+      --ink: #19242f;
+      --ink-soft: #465464;
+      --line: rgba(25, 36, 47, 0.12);
+      --line-strong: rgba(25, 36, 47, 0.22);
+      --accent: #0d7a73;
+      --accent-strong: #085d58;
+      --accent-warm: #cb7d2e;
+      --rose: #8f425e;
+      --shadow: 0 24px 80px rgba(26, 40, 55, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --content-width: 1160px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Aptos", "IBM Plex Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(13, 122, 115, 0.16), transparent 28%),
+        radial-gradient(circle at 80% 12%, rgba(203, 125, 46, 0.14), transparent 26%),
+        linear-gradient(180deg, #f8f4eb 0%, #f2ecdf 48%, #ebe5d8 100%);
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+      background-size: 36px 36px;
+      -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      opacity: 0.35;
+    }
+
+    a {
+      color: var(--accent-strong);
+    }
+
+    .page {
+      width: min(calc(100% - 40px), var(--content-width));
+      margin: 0 auto;
+      padding: 40px 0 80px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .main-column {
+      display: grid;
+      gap: 24px;
+    }
+
+    .hero,
+    .panel,
+    .toc {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.72));
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+
+    .hero {
+      border-radius: 32px;
+      padding: 36px;
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -120px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(13, 122, 115, 0.22), transparent 68%);
+      z-index: -1;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Iowan Old Style", "Noto Serif TC", "Source Han Serif TC", serif;
+      letter-spacing: 0.01em;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      line-height: 1.06;
+      max-width: 11.5em;
+    }
+
+    h2 {
+      font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      margin-bottom: 10px;
+    }
+
+    .lede {
+      margin: 18px 0 0;
+      max-width: 780px;
+      color: var(--ink-soft);
+      font-size: 1.08rem;
+      line-height: 1.84;
+    }
+
+    .hero-grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.74);
+      border: 1px solid var(--line);
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+      color: var(--accent-strong);
+    }
+
+    .stat-card span {
+      color: var(--ink-soft);
+      line-height: 1.65;
+      display: block;
+    }
+
+    .panel {
+      border-radius: var(--radius-xl);
+      padding: 28px;
+    }
+
+    .panel p {
+      margin: 0;
+      color: var(--ink-soft);
+      line-height: 1.82;
+    }
+
+    .panel p + p,
+    .panel .callout,
+    .panel .split,
+    .panel figure,
+    .panel pre,
+    .panel ul,
+    .panel ol {
+      margin-top: 18px;
+    }
+
+    .callout {
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      border: 1px solid rgba(13, 122, 115, 0.14);
+      background: linear-gradient(135deg, rgba(13, 122, 115, 0.08), rgba(203, 125, 46, 0.08));
+      color: var(--ink);
+      line-height: 1.8;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .mini-card {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 18px;
+    }
+
+    .mini-card p {
+      margin-top: 8px;
+    }
+
+    ul,
+    ol {
+      padding-left: 1.25rem;
+      color: var(--ink-soft);
+      line-height: 1.8;
+    }
+
+    li + li {
+      margin-top: 6px;
+    }
+
+    .figure-card {
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(250, 247, 242, 0.94));
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .figure-actions {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .figure-actions button {
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 0.82rem;
+      background: rgba(25, 36, 47, 0.86);
+      color: #fff;
+      cursor: pointer;
+      transition: transform 140ms ease, background 140ms ease;
+    }
+
+    .figure-actions button:hover {
+      transform: translateY(-1px);
+      background: rgba(13, 122, 115, 0.92);
+    }
+
+    .copy-status {
+      position: absolute;
+      left: 20px;
+      bottom: 18px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(25, 36, 47, 0.82);
+      color: #fff;
+      font-size: 0.76rem;
+      letter-spacing: 0.02em;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 160ms ease, transform 160ms ease;
+      pointer-events: none;
+    }
+
+    .copy-status.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    figure svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 18px;
+    }
+
+    figcaption {
+      margin-top: 12px;
+      padding-right: 188px;
+      color: var(--ink-soft);
+      font-size: 0.94rem;
+      line-height: 1.7;
+    }
+
+    pre {
+      margin: 0;
+      padding: 18px;
+      border-radius: 18px;
+      background: #16222d;
+      color: #eff7ff;
+      overflow-x: auto;
+      font-family: "Cascadia Code", "JetBrains Mono", monospace;
+      font-size: 0.92rem;
+      line-height: 1.7;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    code {
+      font-family: "Cascadia Code", "JetBrains Mono", monospace;
+    }
+
+    .quote {
+      border-left: 4px solid var(--accent);
+      padding: 8px 0 8px 16px;
+      color: var(--ink);
+      font-size: 1.08rem;
+    }
+
+    .back-links {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 0.92rem;
+    }
+
+    .back-links a {
+      color: var(--accent-strong);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .back-links a:hover {
+      text-decoration: underline;
+    }
+
+    .toc {
+      position: sticky;
+      top: 24px;
+      align-self: start;
+      border-radius: 24px;
+      padding: 22px;
+    }
+
+    .toc h2 {
+      font-size: 1.15rem;
+      margin-bottom: 12px;
+    }
+
+    .toc ol {
+      margin: 0;
+      padding-left: 1.1rem;
+    }
+
+    .toc a {
+      text-decoration: none;
+      color: var(--ink-soft);
+    }
+
+    .toc a:hover {
+      color: var(--accent-strong);
+    }
+
+    .toc .note {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+      padding: 10px 0 20px;
+    }
+
+    .footer-counter {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .footer-counter-label {
+      color: var(--ink-soft);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .footer-counter img {
+      display: block;
+      width: auto;
+      height: 28px;
+    }
+
+    @media (max-width: 1080px) {
+      .page {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: relative;
+        top: auto;
+        order: -1;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .hero,
+      .panel,
+      .toc {
+        padding: 22px;
+        border-radius: 24px;
+      }
+
+      .hero-grid,
+      .split {
+        grid-template-columns: 1fr;
+      }
+
+      .figure-actions {
+        position: static;
+        margin-bottom: 12px;
+      }
+
+      figcaption {
+        padding-right: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <main class="main-column">
+      <p class="back-links">
+        <a href="./">回首頁</a>
+        ｜
+        <a href="articles/">回文章列表</a>
+      </p>
+      <header class="hero">
+        <p class="eyebrow">3KProject Agent Workflow Notes</p>
+        <h1>我怎麼把多 Agent 協作做成 3KProject 裡真正可執行的工作流</h1>
+        <p class="lede">這篇文章整理的是我在 3KProject 裡處理 Agents 協作的做法。真正讓流程穩下來的，不是再加一個更聰明的模型，而是把協作拆成鎖卡、閘門、handoff、context budget 四條主線，並且讓它們各自對應到明確的文件與工具。</p>
+        <div class="hero-grid">
+          <div class="stat-card">
+            <strong>Lock</strong>
+            <span>先鎖 task 再開始做，避免多個 Agent 在同一張卡上互撞，或同時改同一個高風險檔。</span>
+          </div>
+          <div class="stat-card">
+            <strong>Gate</strong>
+            <span>把 pre-flight、in-flight、post-flight 的檢查固定下來，讓規則不只存在於文件裡。</span>
+          </div>
+          <div class="stat-card">
+            <strong>Handoff</strong>
+            <span>交接不是丟一段長文，而是把 changed files、決策、blocker 與下一步壓成可接手的摘要卡。</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="panel" id="summary">
+        <h2>我後來發現，問題不在模型夠不夠強</h2>
+        <p class="quote">多 Agent 協作最難的地方，不是生成能力，而是接手能力。只要接手時沒有清楚的範圍、狀態與驗證方式，再強的模型也會把 repo 搞亂。</p>
+        <p>我一開始其實也把問題想得太簡單，覺得只要 instructions 寫得夠細，Agents 就會自然協作。但實際做下去才發現，真正的失敗場景都很工程化：同一張卡被兩個人碰、上一位改了什麼下一位看不懂、handoff 帶了太多背景導致 context 爆掉、規則寫在文件裡卻沒有被工具執行。</p>
+        <p>所以我最後不是去追一個更厲害的 prompt，而是反過來收斂出一套 repo operating system。這套 operating system 背後對應的，就是幾份我在專案裡反覆打開的文件：協作指令、任務卡手冊、keep workflow shard、context budget guideline，以及多 Agent 協作協議。</p>
+        <div class="callout">如果把單一 Agent 想成 Unity 裡一個很會幹活的 component，那多 Agent 協作就比較像整個 scene 的 execution order、event contract 與 runtime guard。單個 component 再強，也不能取代整個執行順序與生命週期管理。</div>
+      </section>
+
+      <section class="panel" id="loop">
+        <h2>我最後收斂出的協作主鏈</h2>
+        <p>看完整個 repo 之後，我把協作流程收斂成一條很短的主鏈：先讀共識摘要、先做 context budget 檢查、先鎖卡，接著只在局部範圍內修改，再用 focused validation 做第一輪驗證，最後把結果壓成 handoff 交給下一位 Agent。這條鏈一短，很多隱性風險就會直接浮出來。</p>
+
+        <figure class="figure-card" data-figure-name="multi-agent-collaboration-loop">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>下載 SVG</button>
+            <button type="button" data-download-png>下載 PNG</button>
+          </div>
+          <svg viewBox="0 0 1120 860" role="img" aria-label="多 Agent 協作主鏈流程圖">
+            <style>
+              :scope .f1-bg { fill: #fffaf2; }
+              :scope .f1-box1 { fill: #16222d; }
+              :scope .f1-box2 { fill: #eaf7f4; stroke: #9bd0ca; stroke-width: 2; }
+              :scope .f1-box3 { fill: #eef5fb; stroke: #a9c4e1; stroke-width: 2; }
+              :scope .f1-box4 { fill: #fbf0e9; stroke: #e1b98f; stroke-width: 2; }
+              :scope .f1-diamond { fill: #fff7ee; stroke: #cb7d2e; stroke-width: 2; }
+              :scope .f1-line { stroke: #516477; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+              :scope .f1-title { font: 700 24px 'Aptos','Microsoft JhengHei',sans-serif; fill: #ffffff; }
+              :scope .f1-heading { font: 700 20px 'Aptos','Microsoft JhengHei',sans-serif; fill: #16222d; }
+              :scope .f1-body { font: 500 16px 'Aptos','Microsoft JhengHei',sans-serif; fill: #425161; }
+              :scope .f1-label { font: 700 15px 'Aptos','Microsoft JhengHei',sans-serif; fill: #8f425e; }
+            </style>
+            <defs>
+              <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#516477"></path>
+              </marker>
+            </defs>
+            <rect class="f1-bg" x="0" y="0" width="1120" height="860" rx="28" ry="28"></rect>
+            <rect class="f1-box1" x="330" y="40" width="460" height="88" rx="26" ry="26"></rect>
+            <text class="f1-title" x="460" y="94">接到新需求或任務卡</text>
+            <rect class="f1-box2" x="250" y="172" width="620" height="116" rx="24" ry="24"></rect>
+            <text class="f1-heading" x="485" y="214">Pre-flight</text>
+            <text class="f1-body" x="305" y="246">讀 keep.summary → 跑 check-context-budget → task-lock.js check / lock → 確認本輪 scope</text>
+            <rect class="f1-box3" x="250" y="336" width="620" height="116" rx="24" ry="24"></rect>
+            <text class="f1-heading" x="495" y="378">In-flight</text>
+            <text class="f1-body" x="314" y="410">只改局部檔案與局部行為，修改後立刻做第一個 focused validation，不在同一輪擴大範圍</text>
+            <polygon class="f1-diamond" points="560,496 730,588 560,680 390,588"></polygon>
+            <text class="f1-heading" x="485" y="578">驗證是否通過</text>
+            <text class="f1-body" x="466" y="606">cheap check 優先</text>
+            <rect class="f1-box4" x="110" y="724" width="380" height="98" rx="24" ry="24"></rect>
+            <text class="f1-heading" x="226" y="766">失敗：就地修補</text>
+            <text class="f1-body" x="147" y="796">回到同一 slice，修同一個缺口，再跑同一個檢查</text>
+            <rect class="f1-box2" x="630" y="724" width="380" height="98" rx="24" ry="24"></rect>
+            <text class="f1-heading" x="720" y="766">成功：handoff + unlock</text>
+            <text class="f1-body" x="661" y="796">寫 changedFiles / decisions / blockers / nextAction，交給下一位 Agent</text>
+            <line class="f1-line" x1="560" y1="128" x2="560" y2="172"></line>
+            <line class="f1-line" x1="560" y1="288" x2="560" y2="336"></line>
+            <line class="f1-line" x1="560" y1="452" x2="560" y2="496"></line>
+            <path class="f1-line" d="M 390 588 C 245 588, 245 714, 300 724"></path>
+            <path class="f1-line" d="M 490 772 C 560 772, 560 710, 560 680"></path>
+            <path class="f1-line" d="M 730 588 C 875 588, 875 714, 820 724"></path>
+            <text class="f1-label" x="287" y="638">FAIL</text>
+            <text class="f1-label" x="840" y="638">PASS</text>
+          </svg>
+          <figcaption>圖 1：我最後讓所有 Agents 都走同一條主鏈，目的不是增加流程感，而是把「何時該擴範圍、何時不能擴」變成明確規則。</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+
+        <div class="split">
+          <div class="mini-card">
+            <h3>為什麼要先鎖卡</h3>
+            <p>我不再把 task lock 當成流程負擔，而是把它當成最便宜的碰撞避免器。只要一開始沒鎖，後面所有 handoff 都會變得很難信任。</p>
+          </div>
+          <div class="mini-card">
+            <h3>為什麼要先做 cheap check</h3>
+            <p>最先跑的驗證一定要夠便宜、夠局部。這樣它才能真的跟著每次修改一起跑，而不是變成收工前才想起來的儀式。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="files">
+        <h2>我真正常打開的協作文件</h2>
+        <p>如果要把這套協作方法拆回文件層，我最常打開的是五組文件。它們不是平行存在，而是各自扮演不同層級的角色：入口層、共識層、協作層、任務層與節流層。也因為這樣，我不需要把所有規則都塞進一份超大文件裡。</p>
+
+        <figure class="figure-card" data-figure-name="agent-collaboration-doc-stack">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>下載 SVG</button>
+            <button type="button" data-download-png>下載 PNG</button>
+          </div>
+          <svg viewBox="0 0 1120 760" role="img" aria-label="Agent 協作文件分層圖">
+            <style>
+              :scope .f2-bg { fill: #fffaf2; }
+              :scope .f2-card1 { fill: #16222d; }
+              :scope .f2-card2 { fill: #eaf7f4; stroke: #9bd0ca; stroke-width: 2; }
+              :scope .f2-card3 { fill: #eef5fb; stroke: #a9c4e1; stroke-width: 2; }
+              :scope .f2-card4 { fill: #fbf0e9; stroke: #e1b98f; stroke-width: 2; }
+              :scope .f2-card5 { fill: #f6edf2; stroke: #d6adc1; stroke-width: 2; }
+              :scope .f2-title1 { font: 700 22px 'Aptos','Microsoft JhengHei',sans-serif; fill: #ffffff; }
+              :scope .f2-title2 { font: 700 21px 'Aptos','Microsoft JhengHei',sans-serif; fill: #16222d; }
+              :scope .f2-body1 { font: 500 16px 'Aptos','Microsoft JhengHei',sans-serif; fill: #ffffff; }
+              :scope .f2-body2 { font: 500 16px 'Aptos','Microsoft JhengHei',sans-serif; fill: #425161; }
+            </style>
+            <rect class="f2-bg" x="0" y="0" width="1120" height="760" rx="28" ry="28"></rect>
+            <rect class="f2-card1" x="90" y="70" width="940" height="100" rx="24" ry="24"></rect>
+            <text class="f2-title1" x="128" y="112">入口層：AGENTS.md / .github/copilot-instructions.md</text>
+            <text class="f2-body1" x="128" y="144">先把語言、硬規則、pre-flight 與 task lock 的第一層入口收斂起來，讓任何 Agent 進場都有同樣的起手式。</text>
+            <rect class="f2-card2" x="90" y="204" width="450" height="150" rx="24" ry="24"></rect>
+            <text class="f2-title2" x="122" y="246">共識層：docs/keep.summary.md</text>
+            <text class="f2-title2" x="122" y="276">+ docs/keep-shards/keep-workflow.md</text>
+            <text class="f2-body2" x="122" y="312">- 用摘要而不是全文保留專案共識</text>
+            <text class="f2-body2" x="122" y="338">- 任務卡、交接、撞檔與 Git 規則都在這裡落地</text>
+            <rect class="f2-card3" x="580" y="204" width="450" height="150" rx="24" ry="24"></rect>
+            <text class="f2-title2" x="612" y="246">協作層：.github/instructions/</text>
+            <text class="f2-title2" x="612" y="276">agent-collaboration.instructions.md</text>
+            <text class="f2-body2" x="612" y="312">- 三道防線：pre-flight / in-flight / post-flight</text>
+            <text class="f2-body2" x="612" y="338">- 直接把 task lock、compute gate、handoff 變成操作流程</text>
+            <rect class="f2-card4" x="90" y="392" width="450" height="150" rx="24" ry="24"></rect>
+            <text class="f2-title2" x="122" y="434">任務層：docs/agent-briefs/Readme.md</text>
+            <text class="f2-body2" x="122" y="470">- 任務卡 lifecycle、notes 格式、commit 批次與交接規則</text>
+            <text class="f2-body2" x="122" y="496">- 讓「誰在做什麼」與「做到哪裡」有正式落點</text>
+            <rect class="f2-card5" x="580" y="392" width="450" height="150" rx="24" ry="24"></rect>
+            <text class="f2-title2" x="612" y="434">節流層：docs/agent-context-budget.md</text>
+            <text class="f2-title2" x="612" y="464">+ docs/agent-collaboration-protocol.md</text>
+            <text class="f2-body2" x="612" y="500">- handoff 摘要卡、圖片節流、token hard-stop</text>
+            <text class="f2-body2" x="612" y="526">- 規定下一位 Agent 接手前要驗證什麼</text>
+            <rect class="f2-card2" x="250" y="580" width="620" height="112" rx="24" ry="24"></rect>
+            <text class="f2-title2" x="315" y="626">支援腳本：task-lock.js / compute-gate.js / check-context-budget.js / report-turn-usage.js</text>
+            <text class="f2-body2" x="315" y="660">文件負責講清楚規則，腳本負責把規則真的跑起來。這兩邊分開，協作才不會退化成口頭約定。</text>
+          </svg>
+          <figcaption>圖 2：我最後不是用一份大全文件處理所有協作問題，而是把它拆成多層文件，各自負責入口、共識、執行、節流與交接。</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+
+        <ul>
+          <li><strong>AGENTS.md / .github/copilot-instructions.md</strong>：進場入口，先把繁中、pre-flight 與硬規則固定住。</li>
+          <li><strong>.github/instructions/agent-collaboration.instructions.md</strong>：我最常回頭看的操作層文件，因為三道防線都寫在這裡。</li>
+          <li><strong>docs/agent-briefs/Readme.md</strong>：任務卡與 notes 格式的正式落點，負責把協作狀態變成可回查紀錄。</li>
+          <li><strong>docs/keep.summary.md / docs/keep-shards/keep-workflow.md</strong>：專案共識層，讓 Agents 不必重讀整份 keep 也能知道目前母規則。</li>
+          <li><strong>docs/agent-context-budget.md / docs/agent-collaboration-protocol.md</strong>：把上下文節流與 handoff contract 明文化，防止協作在訊息層失控。</li>
+        </ul>
+      </section>
+
+      <section class="panel" id="guards">
+        <h2>這些文件實際在攔什麼錯</h2>
+        <p>對我來說，這些文件最有價值的地方不在「寫得完整」，而在它們各自擋住了不同類型的失敗。只要把失敗類型拆出來，協作規則就會變得很具體，不再只是抽象口號。</p>
+
+        <figure class="figure-card" data-figure-name="failure-guard-map">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>下載 SVG</button>
+            <button type="button" data-download-png>下載 PNG</button>
+          </div>
+          <svg viewBox="0 0 1120 760" role="img" aria-label="協作失敗與防線對照表">
+            <style>
+              :scope .f3-bg { fill: #fffaf2; }
+              :scope .f3-head { fill: #16222d; }
+              :scope .f3-headtext { font: 700 20px 'Aptos','Microsoft JhengHei',sans-serif; fill: #ffffff; }
+              :scope .f3-label { font: 700 18px 'Aptos','Microsoft JhengHei',sans-serif; fill: #16222d; }
+              :scope .f3-body { font: 500 16px 'Aptos','Microsoft JhengHei',sans-serif; fill: #425161; }
+              :scope .f3-grid { stroke: #d8dfdf; stroke-width: 2; }
+            </style>
+            <rect class="f3-bg" x="0" y="0" width="1120" height="760" rx="28" ry="28"></rect>
+            <rect class="f3-head" x="60" y="70" width="1000" height="74" rx="16" ry="16"></rect>
+            <text class="f3-headtext" x="95" y="116">常見失敗不是抽象的「Agent 變笨」，而是這四種具體事故</text>
+            <line class="f3-grid" x1="60" y1="180" x2="1060" y2="180"></line>
+            <line class="f3-grid" x1="60" y1="310" x2="1060" y2="310"></line>
+            <line class="f3-grid" x1="60" y1="440" x2="1060" y2="440"></line>
+            <line class="f3-grid" x1="60" y1="570" x2="1060" y2="570"></line>
+            <line class="f3-grid" x1="60" y1="700" x2="1060" y2="700"></line>
+            <line class="f3-grid" x1="300" y1="144" x2="300" y2="700"></line>
+            <line class="f3-grid" x1="690" y1="144" x2="690" y2="700"></line>
+            <text class="f3-label" x="110" y="230">撞 task / 撞檔</text>
+            <text class="f3-body" x="330" y="214">主要靠 task-lock.js、docs/agent-briefs/Readme.md、agent-collaboration.instructions.md</text>
+            <text class="f3-body" x="330" y="242">先鎖卡、補 started_by_agent、限制高風險檔同時修改</text>
+            <text class="f3-body" x="720" y="230">先把同時做事的人分流開</text>
+            <text class="f3-label" x="110" y="360">接手失憶</text>
+            <text class="f3-body" x="330" y="344">主要靠 handoff contract、notes 格式、changedFiles 檢查</text>
+            <text class="f3-body" x="330" y="372">下一位 Agent 不是猜上一位做了什麼，而是先對照摘要與實際 diff</text>
+            <text class="f3-body" x="720" y="360">讓交接變成可驗證，不是靠記憶</text>
+            <text class="f3-label" x="110" y="490">context 爆量</text>
+            <text class="f3-body" x="330" y="474">主要靠 docs/agent-context-budget.md 與摘要卡格式</text>
+            <text class="f3-body" x="330" y="502">限制只帶 1 到 3 個必要檔、禁止整份 keep 與大圖直接塞進 handoff</text>
+            <text class="f3-body" x="720" y="490">讓下一輪仍然能保持局部推理</text>
+            <text class="f3-label" x="110" y="620">規則只停留在文件</text>
+            <text class="f3-body" x="330" y="604">主要靠 compute-gate、validate、encoding check、report-turn-usage 等腳本</text>
+            <text class="f3-body" x="330" y="632">把規則變成 pre-flight 與 post-flight 命令，而不是只靠 review 時口頭提醒</text>
+            <text class="f3-body" x="720" y="620">讓文件變成可執行流程</text>
+          </svg>
+          <figcaption>圖 3：協作文件之所以有效，是因為每一份文件都在攔不同類型的事故，而不是所有規則都混在一起。</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+
+        <div class="split">
+          <div class="mini-card">
+            <h3>我最怕的不是 bug</h3>
+            <p>我真正怕的是「改動已經發生，但沒有人能確定它是誰改的、基於什麼規則改的、現在還能不能回放」。多 Agent 協作一旦沒有這三件事，就會很快變成無法維護的黑盒。</p>
+          </div>
+          <div class="mini-card">
+            <h3>所以我才一直把規則拆小</h3>
+            <p>規則拆小之後，每一層都只解一個問題。這種分層方式比一份總規範更實用，因為它真的能在當下支援某個具體動作。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="routine">
+        <h2>我每天實際怎麼用這套文件</h2>
+        <p>把這些規範看完之後，我的日常工作流其實變得很固定。每次接手前，我會先確認共識摘要、跑健康掃描與 context budget，接著鎖卡；改完之後先跑最便宜的檢查，再視情況補完整 gate，最後把 changed files 與 decisions 壓成 handoff。</p>
+
+        <h3>Pre-flight：開始前固定跑的東西</h3>
+        <pre><code>node tools_node/compute-gate.js --profile quick --agent-feedback --no-stop
+node tools_node/check-context-budget.js --changed
+node tools_node/task-lock.js check &lt;task-id&gt;
+node tools_node/task-lock.js lock &lt;task-id&gt; &lt;agent-name&gt;</code></pre>
+
+        <h3>Post-flight：收工前固定跑的東西</h3>
+        <pre><code>node tools_node/compute-gate.js --profile standard --agent-feedback
+node tools_node/check-encoding-touched.js &lt;changed-files...&gt;
+node tools_node/task-lock.js unlock &lt;task-id&gt; &lt;agent-name&gt;
+node tools_node/report-turn-usage.js --changed --emit-final-line</code></pre>
+
+        <div class="callout">這裡我最重視的不是命令本身，而是順序。先讀摘要再鎖卡，先做 focused validation 再擴範圍，先寫 handoff 再離場。順序一亂，後面的規則就算存在，也很容易變成補救而不是防守。</div>
+
+        <p>這種工作流的好處，是它非常適合小模型與接力式協作。只要每一輪都被限制在很小的 slice，模型不需要理解整個系統，也能穩定完成其中一段工作。這也是我後來越來越確定的一件事：多 Agent 協作不是在追求「同時很多人做事」，而是在追求「任何一個人接上來都還看得懂」。</p>
+      </section>
+
+      <section class="panel" id="handoff">
+        <h2>我要求每一輪至少留下什麼 handoff</h2>
+        <p>在這個 repo 裡，handoff 已經不是自由發揮的摘要，而是有明確欄位的 contract。對我來說，最好用的格式不是長文，而是讓下一位 Agent 一眼就知道這輪該看哪幾個檔案、哪些事情已經定了、哪些不要重讀。</p>
+
+        <pre><code>Task: HARN-ARCH-0002
+Goal: 修掉 battle -&gt; ui 的非法引用
+Read:
+- docs/keep.summary.md
+- docs/agent-briefs/tasks/HARN-ARCH-0002.md
+- shared/interfaces/IBattleUIBridge.ts
+Known:
+- 任務卡已 lock
+- battle 端只能碰 interface，不可直連 ui 元件
+- 目前 blocker 是橋接注入點還未補齊
+Need:
+- 補 bridge 注入點
+- 用 focused validation 確認非法引用已清掉
+Avoid:
+- 不要重讀 keep.md 全文
+- 不要擴到無關的 UI contract 檔案</code></pre>
+
+        <p>我很喜歡這種摘要卡，因為它讓 handoff 的作用非常明確：不是把所有背景再講一次，而是幫下一位 Agent 限縮他該看的範圍。只要範圍被限縮，接手成本就會直接降下來，token 也不會一下子炸掉。</p>
+
+        <div class="split">
+          <div class="mini-card">
+            <h3>好的 handoff 長什麼樣子</h3>
+            <p>檔案少、結論短、下一步清楚，並且明確告訴下一位不要重讀哪些大文件或 artifacts。</p>
+          </div>
+          <div class="mini-card">
+            <h3>壞的 handoff 長什麼樣子</h3>
+            <p>把 keep、manifest、QA notes、長 diff 全部貼上來。表面上很完整，實際上是把下一輪直接推進 hard-stop。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="takeaway">
+        <h2>最後我給自己的判斷準則</h2>
+        <p>如果要用一句話講我現在對多 Agent 協作的理解，那就是：<strong>不要把協作寄望在大家都很聰明，而要把協作建立在任何人接手時都能立刻對齊的系統上。</strong></p>
+        <p>在 3KProject 裡，我現在更願意把這套東西看成 Harness Engineering 的延伸。單一 Agent 的 Harness 解的是「怎麼讓模型少犯錯」，多 Agent 的 Harness 解的則是「怎麼讓多個人接力時，錯誤不會因為交接而放大」。</p>
+        <div class="split">
+          <div class="mini-card">
+            <h3>適合交給 Agent 的部分</h3>
+            <p>需求拆解、局部修改、文件整理、語意歧義判讀，以及高階方案比較。</p>
+          </div>
+          <div class="mini-card">
+            <h3>適合交給系統的部分</h3>
+            <p>task lock、scope 管理、驗證順序、handoff 結構、context budget 與檔案邊界。</p>
+          </div>
+        </div>
+        <p class="quote">我現在不再把多 Agent 協作理解成「多開幾個聊天視窗」，而是把它理解成：我要先把 repo 的生命週期、執行順序與 guard 寫好，Agents 才會真的變成團隊，而不是一群彼此看不到彼此的臨時工。</p>
+      </section>
+
+      <div class="footer">
+        3KProject 技術筆記。本文整理自專案內的 Agent 協作規範、task card 手冊、workflow shard 與 context budget 文件。
+        <div class="footer-counter" aria-label="網站流量計數器">
+          <span class="footer-counter-label">網站流量</span>
+          <img src="https://hits.sh/eaglhuang.github.io/AI-learning-notes.svg?label=traffic&color=10252D&labelColor=0C6F68" alt="網站累積流量計數器" loading="lazy">
+        </div>
+      </div>
+    </main>
+
+    <aside class="toc">
+      <h2>文章目錄</h2>
+      <ol>
+        <li><a href="#summary">核心問題</a></li>
+        <li><a href="#loop">協作主鏈</a></li>
+        <li><a href="#files">核心文件</a></li>
+        <li><a href="#guards">失敗與防線</a></li>
+        <li><a href="#routine">日常工作流</a></li>
+        <li><a href="#handoff">Handoff 摘要</a></li>
+        <li><a href="#takeaway">最後準則</a></li>
+      </ol>
+      <div class="note">
+        使用方式：
+        <br>1. 直接用瀏覽器打開本檔。
+        <br>2. 每張圖卡右上角可下載 SVG 或 PNG。
+        <br>3. 這篇文章整理的是 3KProject 的多 Agent 協作方法。
+        <br>4. 若之後要補英文版，可沿用同一份圖卡與結構。
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    function showStatus(figure, message) {
+      const status = figure.querySelector('.copy-status');
+      if (!status) {
+        return;
+      }
+      status.textContent = message;
+      status.classList.add('is-visible');
+      window.clearTimeout(status._timer);
+      status._timer = window.setTimeout(() => {
+        status.classList.remove('is-visible');
+      }, 1800);
+    }
+
+    function serializeSvg(svg) {
+      const clone = svg.cloneNode(true);
+      clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+      return new XMLSerializer().serializeToString(clone);
+    }
+
+    function figureDownloadName(figure, extension) {
+      const name = figure.getAttribute('data-figure-name') || 'figure';
+      return `${name}.${extension}`;
+    }
+
+    function triggerDownload(blob, fileName) {
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = fileName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    }
+
+    async function downloadSvg(button) {
+      const figure = button.closest('figure');
+      const svg = figure.querySelector('svg');
+      try {
+        const svgMarkup = serializeSvg(svg);
+        const blob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
+        triggerDownload(blob, figureDownloadName(figure, 'svg'));
+        showStatus(figure, '已下載 SVG');
+      } catch (error) {
+        showStatus(figure, '下載 SVG 失敗');
+      }
+    }
+
+    function svgViewBoxSize(svg) {
+      const viewBox = svg.viewBox && svg.viewBox.baseVal;
+      if (viewBox && viewBox.width && viewBox.height) {
+        return { width: viewBox.width, height: viewBox.height };
+      }
+      return {
+        width: Number(svg.getAttribute('width')) || 1200,
+        height: Number(svg.getAttribute('height')) || 800,
+      };
+    }
+
+    async function downloadPng(button) {
+      const figure = button.closest('figure');
+      const svg = figure.querySelector('svg');
+      const svgMarkup = serializeSvg(svg);
+      const blob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const image = new Image();
+      const { width, height } = svgViewBoxSize(svg);
+
+      try {
+        const pngBlob = await new Promise((resolve, reject) => {
+          image.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = width * 2;
+            canvas.height = height * 2;
+            const context = canvas.getContext('2d');
+            context.fillStyle = '#fffaf2';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob((result) => {
+              if (result) {
+                resolve(result);
+              } else {
+                reject(new Error('png blob failed'));
+              }
+            }, 'image/png');
+          };
+          image.onerror = () => reject(new Error('svg load failed'));
+          image.src = url;
+        });
+
+        triggerDownload(pngBlob, figureDownloadName(figure, 'png'));
+        showStatus(figure, '已下載 PNG');
+      } catch (error) {
+        showStatus(figure, '下載 PNG 失敗');
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    }
+
+    document.querySelectorAll('[data-download-svg]').forEach((button) => {
+      button.addEventListener('click', () => downloadSvg(button));
+    });
+
+    document.querySelectorAll('[data-download-png]').forEach((button) => {
+      button.addEventListener('click', () => downloadPng(button));
+    });
+  </script>
+</body>
+</html>
