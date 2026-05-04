@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How I Use Harness Engineering to Make 3KProject More Stable</title>
+  <meta name="description" content="A practical note on how I apply Harness Engineering in 3KProject, using guides, sensors, and computational gates to make Coding Agent delivery more reliable.">
+  <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/harness_engineering_article_public_en.html">
+  <style>
+    :root {
+      --paper: #f6f1e7;
+      --paper-strong: #fbf8f2;
+      --ink: #19242f;
+      --ink-soft: #465464;
+      --line: rgba(25, 36, 47, 0.12);
+      --line-strong: rgba(25, 36, 47, 0.22);
+      --accent: #0d7a73;
+      --accent-strong: #085d58;
+      --accent-warm: #cb7d2e;
+      --rose: #8f425e;
+      --shadow: 0 24px 80px rgba(26, 40, 55, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --content-width: 1160px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Aptos", "IBM Plex Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(13, 122, 115, 0.16), transparent 28%),
+        radial-gradient(circle at 80% 12%, rgba(203, 125, 46, 0.14), transparent 26%),
+        linear-gradient(180deg, #f8f4eb 0%, #f2ecdf 48%, #ebe5d8 100%);
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+      background-size: 36px 36px;
+      -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      opacity: 0.35;
+    }
+
+    a {
+      color: var(--accent-strong);
+    }
+
+    .page {
+      width: min(calc(100% - 40px), var(--content-width));
+      margin: 0 auto;
+      padding: 40px 0 80px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .main-column {
+      display: grid;
+      gap: 24px;
+    }
+
+    .hero,
+    .panel,
+    .toc {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.72));
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+
+    .hero {
+      border-radius: 32px;
+      padding: 36px;
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -120px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(13, 122, 115, 0.22), transparent 68%);
+      z-index: -1;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Iowan Old Style", "Noto Serif TC", "Source Han Serif TC", serif;
+      letter-spacing: 0.01em;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      line-height: 1.06;
+      max-width: 11.5em;
+    }
+
+    h2 {
+      font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      margin-bottom: 10px;
+    }
+
+    .lede {
+      margin: 18px 0 0;
+      max-width: 760px;
+      color: var(--ink-soft);
+      font-size: 1.08rem;
+      line-height: 1.84;
+    }
+
+    .hero-grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.74);
+      border: 1px solid var(--line);
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+      color: var(--accent-strong);
+    }
+
+    .stat-card span {
+      color: var(--ink-soft);
+      line-height: 1.65;
+      display: block;
+    }
+
+    .panel {
+      border-radius: var(--radius-xl);
+      padding: 28px;
+    }
+
+    .panel p {
+      margin: 0;
+      color: var(--ink-soft);
+      line-height: 1.82;
+    }
+
+    .panel p + p,
+    .panel .callout,
+    .panel .split,
+    .panel figure,
+    .panel pre,
+    .panel ul,
+    .panel ol {
+      margin-top: 18px;
+    }
+
+    .callout {
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      border: 1px solid rgba(13, 122, 115, 0.14);
+      background: linear-gradient(135deg, rgba(13, 122, 115, 0.08), rgba(203, 125, 46, 0.08));
+      color: var(--ink);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .mini-card {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 18px;
+    }
+
+    .mini-card p {
+      margin-top: 8px;
+    }
+
+    ul,
+    ol {
+      padding-left: 1.25rem;
+      color: var(--ink-soft);
+      line-height: 1.8;
+    }
+
+    li + li {
+      margin-top: 6px;
+    }
+
+    .figure-card {
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(250, 247, 242, 0.94));
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .figure-actions {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .figure-actions button {
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 0.82rem;
+      background: rgba(25, 36, 47, 0.86);
+      color: #fff;
+      cursor: pointer;
+      transition: transform 140ms ease, background 140ms ease;
+    }
+
+    .figure-actions button:hover {
+      transform: translateY(-1px);
+      background: rgba(13, 122, 115, 0.92);
+    }
+
+    .copy-status {
+      position: absolute;
+      left: 20px;
+      bottom: 18px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(25, 36, 47, 0.82);
+      color: #fff;
+      font-size: 0.76rem;
+      letter-spacing: 0.02em;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 160ms ease, transform 160ms ease;
+      pointer-events: none;
+    }
+
+    .copy-status.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    figure svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 18px;
+    }
+
+    figcaption {
+      margin-top: 12px;
+      padding-right: 188px;
+      color: var(--ink-soft);
+      font-size: 0.94rem;
+      line-height: 1.7;
+    }
+
+    pre {
+      margin: 0;
+      padding: 18px;
+      border-radius: 18px;
+      background: #16222d;
+      color: #eff7ff;
+      overflow-x: auto;
+      font-family: "Cascadia Code", "JetBrains Mono", monospace;
+      font-size: 0.92rem;
+      line-height: 1.7;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    code {
+      font-family: "Cascadia Code", "JetBrains Mono", monospace;
+    }
+
+    .quote {
+      border-left: 4px solid var(--accent);
+      padding: 8px 0 8px 16px;
+      color: var(--ink);
+      font-size: 1.08rem;
+    }
+
+    .toc {
+      position: sticky;
+      top: 24px;
+      align-self: start;
+      border-radius: 24px;
+      padding: 22px;
+    }
+
+    .toc h2 {
+      font-size: 1.15rem;
+      margin-bottom: 12px;
+    }
+
+    .toc ol {
+      margin: 0;
+      padding-left: 1.1rem;
+    }
+
+    .toc a {
+      text-decoration: none;
+      color: var(--ink-soft);
+    }
+
+    .toc a:hover {
+      color: var(--accent-strong);
+    }
+
+    .toc .note {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+      padding: 10px 0 20px;
+    }
+
+    @media (max-width: 1080px) {
+      .page {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: relative;
+        top: auto;
+        order: -1;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .hero,
+      .panel,
+      .toc {
+        padding: 22px;
+        border-radius: 24px;
+      }
+
+      .hero-grid,
+      .split {
+        grid-template-columns: 1fr;
+      }
+
+      .figure-actions {
+        position: static;
+        margin-bottom: 12px;
+      }
+
+      figcaption {
+        padding-right: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <main class="main-column">
+      <header class="hero">
+        <p class="eyebrow">3KProject Engineering Notes</p>
+        <h1>How I Use Harness Engineering to Make 3KProject More Stable</h1>
+        <p class="lede">This article is my own working note on how I run engineering around 3KProject. The project already had instructions, skills, task cards, a doc-id registry, a context budget guard, UI contract validation, and runtime smoke checks. What really made the agent more stable, though, was moving the workflow from model guessing toward computation-backed validation.</p>
+        <div class="hero-grid">
+          <div class="stat-card">
+            <strong>Guide</strong>
+            <span>Give the agent clear routes, boundaries, and task contracts before it starts, so it is less likely to drift off course on the first try.</span>
+          </div>
+          <div class="stat-card">
+            <strong>Sensor</strong>
+            <span>Run executable checks immediately after edits so mistakes are blocked before they reach human review.</span>
+          </div>
+          <div class="stat-card">
+            <strong>Loop</strong>
+            <span>Feed failure messages straight into the next repair round so even smaller models can converge through repetition and ship reliably.</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="panel" id="summary">
+        <h2>A Core Idea</h2>
+        <p class="quote">Harness is not the model itself. It is the full set of mechanisms around the model that make mistakes less likely and make recovery easier when mistakes do happen.</p>
+        <p>If you think of a Coding Agent as a fast engine for producing code, then the harness is the steering wheel, the brakes, the dashboard, and the fuse box. My experience inside 3KProject is simple: without that engineering harness, the model can look brilliant at times but stays unstable; with it, spec summaries, task cards, validators, and handoffs start behaving like a repeatable production line.</p>
+        <div class="callout">Inside 3KProject, I treat the harness as an internal engineering control panel: `keep.summary` sets direction, task cards define slices, encoding and contract checks block mistakes before review, and runtime checks plus screenshot regression handle the closing validation.</div>
+      </section>
+
+      <section class="panel" id="model">
+        <h2>The Two Axes That Matter Most</h2>
+        <p>When I planned these tools for 3KProject, the most useful move was reducing control into two simple dimensions. The first is guidance before action versus feedback after action. The second is what can be decided computationally versus what still requires semantic judgment. That framing changes where I invest first instead of blindly piling on more prompt text.</p>
+
+        <figure class="figure-card" data-figure-name="harness-control-matrix">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
+          </div>
+          <svg viewBox="0 0 1120 720" role="img" aria-label="Harness control matrix">
+            <style>
+              :scope .f1-bg { fill: #fffaf2; }
+              :scope .f1-title { font: 700 26px 'Aptos','Microsoft JhengHei',sans-serif; fill: #16222d; }
+              :scope .f1-label { font: 700 22px 'Aptos','Microsoft JhengHei',sans-serif; fill: #16222d; }
+              :scope .f1-body { font: 500 18px 'Aptos','Microsoft JhengHei',sans-serif; fill: #425161; }
+              :scope .f1-small { font: 600 16px 'Aptos','Microsoft JhengHei',sans-serif; fill: #0d7a73; }
+              :scope .f1-axis { stroke: #cfd8dc; stroke-width: 2; }
+              :scope .f1-card { stroke: #d7ddd8; stroke-width: 2; }
+              :scope .f1-strong { fill: #16222d; font: 700 18px 'Aptos','Microsoft JhengHei',sans-serif; }
+            </style>
+            <rect class="f1-bg" x="0" y="0" width="1120" height="720" rx="28" ry="28"></rect>
+            <text class="f1-title" x="60" y="70">The Four Quadrants of Harness: steer first, verify second; if it can be computed, give it to tools first</text>
+            <text class="f1-label" x="225" y="150">Feedforward</text>
+            <text class="f1-body" x="215" y="178">Guidance before the agent acts</text>
+            <text class="f1-label" x="730" y="150">Feedback</text>
+            <text class="f1-body" x="713" y="178">Feedback after the agent acts</text>
+            <text class="f1-label" transform="translate(70 470) rotate(-90)">Computational</text>
+            <text class="f1-body" transform="translate(98 510) rotate(-90)">Deterministic, high-frequency</text>
+            <text class="f1-label" transform="translate(70 680) rotate(-90)">Inferential</text>
+            <text class="f1-body" transform="translate(98 702) rotate(-90)">Semantic judgment, selectively used</text>
+            <line class="f1-axis" x1="160" y1="210" x2="1040" y2="210"></line>
+            <line class="f1-axis" x1="160" y1="470" x2="1040" y2="470"></line>
+            <line class="f1-axis" x1="600" y1="110" x2="600" y2="650"></line>
+            <rect class="f1-card" x="180" y="230" width="390" height="205" rx="24" ry="24" fill="#eaf7f4"></rect>
+            <text class="f1-small" x="210" y="275">Computational × Feedforward</text>
+            <text class="f1-strong" x="210" y="315">Highest-leverage place to invest first</text>
+            <text class="f1-body" x="210" y="352">• Task-card input/output contracts</text>
+            <text class="f1-body" x="210" y="382">• File routing rules and module boundaries</text>
+            <text class="f1-body" x="210" y="412">• Executable scaffolds and templates</text>
+            <rect class="f1-card" x="630" y="230" width="390" height="205" rx="24" ry="24" fill="#eef5fb"></rect>
+            <text class="f1-small" x="660" y="275">Computational × Feedback</text>
+            <text class="f1-strong" x="660" y="315">Backbone of stable quality</text>
+            <text class="f1-body" x="660" y="352">• Type checks, lint, unit tests</text>
+            <text class="f1-body" x="660" y="382">• JSON, contract, and snapshot validation</text>
+            <text class="f1-body" x="660" y="412">• Encoding, guardrail, and dependency checks</text>
+            <rect class="f1-card" x="180" y="500" width="390" height="130" rx="24" ry="24" fill="#fbf0e9"></rect>
+            <text class="f1-small" x="210" y="545">Inferential × Feedforward</text>
+            <text class="f1-body" x="210" y="580">• Architecture explanations, examples, review rules</text>
+            <text class="f1-body" x="210" y="608">• Teach the model what a good answer looks like</text>
+            <rect class="f1-card" x="630" y="500" width="390" height="130" rx="24" ry="24" fill="#f6edf2"></rect>
+            <text class="f1-small" x="660" y="545">Inferential × Feedback</text>
+            <text class="f1-body" x="660" y="580">• AI code review and semantic review</text>
+            <text class="f1-body" x="660" y="608">• Higher cost, best reserved for key checkpoints</text>
+          </svg>
+          <figcaption>Figure 1: The practical takeaway is not that all four matter equally, but that if a tool can decide it, do not ask the model to guess.</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+
+        <div class="split">
+          <div class="mini-card">
+            <h3>Feedforward</h3>
+            <p>Before the agent edits anything, give it a spec summary, file scope, task contracts, and explicit no-go zones. The goal is not a longer prompt. The goal is fewer wasted attempts.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Feedback</h3>
+            <p>Return executable validation results immediately after changes. If the failure message is short and specific enough, even a smaller model can converge through local fixes.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="governance">
+        <h2>Split Harness Into Three Buckets So Governance Stays Focused</h2>
+        <p>I ran into the same trap early in 3KProject: if something felt important, I kept adding another rule, and eventually it turned into an unmaintainable pile. The steadier approach was to split harness work into three governance dimensions: maintainability, architecture fitness, and behavioural correctness.</p>
+
+        <figure class="figure-card" data-figure-name="harness-governance-map">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
+          </div>
+          <svg viewBox="0 0 1120 640" role="img" aria-label="Harness governance map">
+            <style>
+              :scope .f2-bg { fill: #fffaf2; }
+              :scope .f2-hub { fill: #16222d; }
+              :scope .f2-hubtext { font: 700 24px 'Aptos','Microsoft JhengHei',sans-serif; fill: #ffffff; }
+              :scope .f2-node1 { fill: #eaf7f4; stroke: #9bd0ca; stroke-width: 2; }
+              :scope .f2-node2 { fill: #eef5fb; stroke: #a9c4e1; stroke-width: 2; }
+              :scope .f2-node3 { fill: #fbf0e9; stroke: #e1b98f; stroke-width: 2; }
+              :scope .f2-title { font: 700 22px 'Aptos','Microsoft JhengHei',sans-serif; fill: #16222d; }
+              :scope .f2-body { font: 500 17px 'Aptos','Microsoft JhengHei',sans-serif; fill: #425161; }
+              :scope .f2-line { stroke: #8da1b3; stroke-width: 3; }
+            </style>
+            <rect class="f2-bg" x="0" y="0" width="1120" height="640" rx="28" ry="28"></rect>
+            <circle class="f2-hub" cx="560" cy="160" r="84"></circle>
+            <text class="f2-hubtext" x="483" y="150">Harness</text>
+            <text class="f2-hubtext" x="442" y="183">Engineering</text>
+            <line class="f2-line" x1="485" y1="225" x2="280" y2="312"></line>
+            <line class="f2-line" x1="560" y1="244" x2="560" y2="310"></line>
+            <line class="f2-line" x1="635" y1="225" x2="840" y2="312"></line>
+            <rect class="f2-node1" x="90" y="320" width="320" height="230" rx="24" ry="24"></rect>
+            <text class="f2-title" x="120" y="370">Maintainability</text>
+            <text class="f2-body" x="120" y="408">• Duplicate-code and complexity analysis</text>
+            <text class="f2-body" x="120" y="438">• Type health and test coverage</text>
+            <text class="f2-body" x="120" y="468">• Encoding consistency and dead-code scans</text>
+            <text class="f2-body" x="120" y="512">Purpose: keep the system safe to maintain</text>
+            <text class="f2-body" x="120" y="538">for both humans and agents under change.</text>
+            <rect class="f2-node2" x="400" y="320" width="320" height="230" rx="24" ry="24"></rect>
+            <text class="f2-title" x="430" y="370">Architecture Fitness</text>
+            <text class="f2-body" x="430" y="408">• Module boundaries and dependency limits</text>
+            <text class="f2-body" x="430" y="438">• Performance, memory, and load baselines</text>
+            <text class="f2-body" x="430" y="468">• Observability and API quality guards</text>
+            <text class="f2-body" x="430" y="512">Purpose: turn architecture principles into</text>
+            <text class="f2-body" x="430" y="538">executable rules with visible violations.</text>
+            <rect class="f2-node3" x="710" y="320" width="320" height="230" rx="24" ry="24"></rect>
+            <text class="f2-title" x="740" y="370">Behaviour</text>
+            <text class="f2-body" x="740" y="408">• Functional spec validation</text>
+            <text class="f2-body" x="740" y="438">• Approved fixtures / golden cases</text>
+            <text class="f2-body" x="740" y="468">• Regression snapshots and interaction smoke checks</text>
+            <text class="f2-body" x="740" y="512">Purpose: verify that what the system does</text>
+            <text class="f2-body" x="740" y="538">actually matches product expectations.</text>
+          </svg>
+          <figcaption>Figure 2: Once the team separates harness concerns clearly, the conversation shifts from “should we add a check?” to “what class of risk is this, and which sensor should catch it?”</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+
+        <p>This split matters in 3KProject because it turns quality from an abstract slogan into concrete responsibilities. Maintainability protects day-to-day changeability. Architecture fitness protects long-term evolution. Behaviour checks whether the system actually does the right thing. When all three are mixed together, rules keep growing while the feedback loop gets weaker.</p>
+      </section>
+
+      <section class="panel" id="diagnosis">
+        <h2>3KProject’s Current Strengths and Gaps</h2>
+        <p>Looking back at the current internal flow of 3KProject, feedforward is not in bad shape at all. Instructions, workflow skills, task cards, consensus docs, the doc-id registry, and the context budget guard are all alive. The weaker area is that computational feedback still is not complete enough.</p>
+
+        <figure class="figure-card" data-figure-name="project-capability-matrix">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
+          </div>
+          <svg viewBox="0 0 1120 760" role="img" aria-label="3KProject capability matrix">
+            <style>
+              :scope .f3-bg { fill: #fffaf2; }
+              :scope .f3-head { fill: #16222d; }
+              :scope .f3-headtext { font: 700 22px 'Aptos','Microsoft JhengHei',sans-serif; fill: #ffffff; }
+              :scope .f3-rowtitle { font: 700 18px 'Aptos','Microsoft JhengHei',sans-serif; fill: #16222d; }
+              :scope .f3-body { font: 500 16px 'Aptos','Microsoft JhengHei',sans-serif; fill: #425161; }
+              :scope .f3-grid { stroke: #d8dfdf; stroke-width: 2; }
+            </style>
+            <rect class="f3-bg" x="0" y="0" width="1120" height="760" rx="28" ry="28"></rect>
+            <rect class="f3-head" x="70" y="70" width="980" height="70" rx="16" ry="16"></rect>
+            <text class="f3-headtext" x="110" y="114">Current Harness Capability Snapshot for 3KProject</text>
+            <line class="f3-grid" x1="70" y1="170" x2="1050" y2="170"></line>
+            <line class="f3-grid" x1="70" y1="260" x2="1050" y2="260"></line>
+            <line class="f3-grid" x1="70" y1="350" x2="1050" y2="350"></line>
+            <line class="f3-grid" x1="70" y1="440" x2="1050" y2="440"></line>
+            <line class="f3-grid" x1="70" y1="530" x2="1050" y2="530"></line>
+            <line class="f3-grid" x1="70" y1="620" x2="1050" y2="620"></line>
+            <line class="f3-grid" x1="300" y1="140" x2="300" y2="710"></line>
+            <line class="f3-grid" x1="690" y1="140" x2="690" y2="710"></line>
+            <text class="f3-rowtitle" x="110" y="212">Guidance layer is mature</text>
+            <text class="f3-body" x="330" y="196">• keep.summary, Instructions, Skills, task cards, and the doc-id registry are already in operation</text>
+            <text class="f3-body" x="330" y="224">• Agents usually know the route, no-go zones, naming rules, and handoff style before they begin</text>
+            <text class="f3-body" x="720" y="210">Low risk, but easy to mistake this for enough</text>
+            <text class="f3-rowtitle" x="110" y="302">Structural validation has a foundation</text>
+            <text class="f3-body" x="330" y="286">• We already have encoding checks, UI contract validation, runtime smoke checks, screenshot regression, and data validation</text>
+            <text class="f3-body" x="330" y="314">• 3KProject already knows where eyeballing alone is not enough</text>
+            <text class="f3-body" x="720" y="300">Still missing an integrated gate that feeds results back to the agent</text>
+            <text class="f3-rowtitle" x="110" y="392">Lint and tests are thin</text>
+            <text class="f3-body" x="330" y="376">• Missing high-frequency linting, unit tests, and a type-check pipeline</text>
+            <text class="f3-body" x="330" y="404">• Quality still leans too much on model memory and manual code review</text>
+            <text class="f3-body" x="720" y="390">This is the main stability gap</text>
+            <text class="f3-rowtitle" x="110" y="482">Module boundaries are not tooled</text>
+            <text class="f3-body" x="330" y="466">• We know which dependencies should not happen, but we do not have complete automated guards</text>
+            <text class="f3-body" x="330" y="494">• Some architecture principles still live only in docs and senior-member reminders</text>
+            <text class="f3-body" x="720" y="480">This becomes coupling sprawl over time</text>
+            <text class="f3-rowtitle" x="110" y="572">Approved fixtures are missing</text>
+            <text class="f3-body" x="330" y="556">• Many internal workflows have expected outputs, but they are not stored as reusable regression baselines</text>
+            <text class="f3-body" x="330" y="584">• Validation still has to be judged by people each time, so the cost keeps compounding</text>
+            <text class="f3-body" x="720" y="570">Behaviour correctness cannot be reused consistently</text>
+            <text class="f3-rowtitle" x="110" y="662">Overall judgment</text>
+            <text class="f3-body" x="330" y="646">• 3KProject does not lack rules; feedback is just not cheap, dense, and automated enough yet</text>
+            <text class="f3-body" x="330" y="674">• My next step is not more prompt text, but more computational sensors</text>
+            <text class="f3-body" x="720" y="660">This directly determines whether the agent can scale stably</text>
+          </svg>
+          <figcaption>Figure 3: Many teams do not lack rules. The problem is that the rules never became checks that run often, so quality still gets stuck in manual review.</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+
+        <div class="split">
+          <div class="mini-card">
+            <h3>What 3KProject Already Got Right</h3>
+            <p>Writing experience down as instructions, skill flows, task cards, summary cards, and spec indexes was my first real step in turning an external harness into project infrastructure. Those mechanisms genuinely improved the agent’s first-pass success rate.</p>
+          </div>
+          <div class="mini-card">
+            <h3>What I Most Want to Add Next</h3>
+            <p>Without high-frequency, low-cost computational feedback, the agent is still guessing in the end. On the surface it looks like engineering, but in practice it only moves human review further downstream.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="workflow">
+        <h2>The Small-Model Workflow I Want to Land in 3KProject</h2>
+        <p>The most valuable part of this approach for me is that it does not only serve the strongest models. 3KProject has a lot of internal specs, UI surfaces, data, and tooling. As long as I split work into atomic steps and give every step explicit inputs, outputs, and validation commands, even medium or small models can deliver complex features reliably.</p>
+
+        <figure class="figure-card" data-figure-name="small-model-delivery-loop">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
+          </div>
+          <svg viewBox="0 0 1120 920" role="img" aria-label="Small-model friendly delivery loop">
+            <style>
+              :scope .f4-bg { fill: #fffaf2; }
+              :scope .f4-box1 { fill: #16222d; }
+              :scope .f4-box2 { fill: #eaf7f4; stroke: #9bd0ca; stroke-width: 2; }
+              :scope .f4-box3 { fill: #eef5fb; stroke: #a9c4e1; stroke-width: 2; }
+              :scope .f4-box4 { fill: #fbf0e9; stroke: #e1b98f; stroke-width: 2; }
+              :scope .f4-diamond { fill: #fff7ee; stroke: #cb7d2e; stroke-width: 2; }
+              :scope .f4-line { stroke: #516477; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+              :scope .f4-title { font: 700 24px 'Aptos','Microsoft JhengHei',sans-serif; fill: #ffffff; }
+              :scope .f4-heading { font: 700 20px 'Aptos','Microsoft JhengHei',sans-serif; fill: #16222d; }
+              :scope .f4-body { font: 500 16px 'Aptos','Microsoft JhengHei',sans-serif; fill: #425161; }
+              :scope .f4-yesno { font: 700 15px 'Aptos','Microsoft JhengHei',sans-serif; fill: #8f425e; }
+            </style>
+            <defs>
+              <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#516477"></path>
+              </marker>
+            </defs>
+            <rect class="f4-bg" x="0" y="0" width="1120" height="920" rx="28" ry="28"></rect>
+            <rect class="f4-box1" x="360" y="44" width="400" height="88" rx="26" ry="26"></rect>
+            <text class="f4-title" x="400" y="98">Complex requirements and milestone breakdown</text>
+            <rect class="f4-box2" x="280" y="182" width="560" height="96" rx="24" ry="24"></rect>
+            <text class="f4-heading" x="455" y="222">Atomic task cards</text>
+            <text class="f4-body" x="302" y="252">Each card defines INPUT_CONTRACT, OUTPUT_CONTRACT, VALIDATION_CMD, and ROLLBACK_CMD</text>
+            <rect class="f4-box3" x="280" y="328" width="560" height="96" rx="24" ry="24"></rect>
+            <text class="f4-heading" x="474" y="368">Agent makes local edits</text>
+            <text class="f4-body" x="315" y="398">The model focuses on the local code and known context of the current card, not the entire system at once</text>
+            <polygon class="f4-diamond" points="560,470 730,560 560,650 390,560"></polygon>
+            <text class="f4-heading" x="445" y="548">Computational validation</text>
+            <text class="f4-body" x="470" y="576">Type, Lint, Test, Schema</text>
+            <rect class="f4-box4" x="120" y="720" width="360" height="104" rx="24" ry="24"></rect>
+            <text class="f4-heading" x="213" y="760">Fail: auto-repair</text>
+            <text class="f4-body" x="146" y="792">Feed the error message directly back to the agent</text>
+            <rect class="f4-box2" x="640" y="720" width="360" height="104" rx="24" ry="24"></rect>
+            <text class="f4-heading" x="715" y="760">Pass: output summary</text>
+            <text class="f4-body" x="666" y="792">Update status and move to the next task card</text>
+            <line class="f4-line" x1="560" y1="132" x2="560" y2="182"></line>
+            <line class="f4-line" x1="560" y1="278" x2="560" y2="328"></line>
+            <line class="f4-line" x1="560" y1="424" x2="560" y2="470"></line>
+            <path class="f4-line" d="M 390 560 C 250 560, 250 700, 300 720"></path>
+            <path class="f4-line" d="M 480 772 C 560 772, 560 680, 560 650"></path>
+            <path class="f4-line" d="M 730 560 C 870 560, 870 700, 820 720"></path>
+            <text class="f4-yesno" x="300" y="612">FAIL</text>
+            <text class="f4-yesno" x="820" y="612">PASS</text>
+          </svg>
+          <figcaption>Figure 4: What helps smaller models most is not longer prompts, but shorter task slices and more deterministic validation signals.</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+
+        <p>Once the workflow looks like the diagram above, the LLM’s job inside 3KProject becomes very simple: read the task card, edit locally, read the failure message, and repair locally. Any judgment about whether something is actually correct, I try to hand over to the type system, spec validators, boundary checkers, and fixture comparisons.</p>
+
+        <h3>Example 1: Atomic Task Decomposer</h3>
+          <pre><code>node tools/task-decomposer.js \
+        --feature "UI contract gate consolidation" \
+        --spec "docs/ui/UI-tech-spec.md" \
+  --output-dir "docs/tasks/"</code></pre>
+
+        <h3>Example 2: Computational Gate Configuration</h3>
+        <pre><code>{
+  "gates": [
+    {
+      "name": "syntax-check",
+      "cmd": "npx tsc --noEmit --project tsconfig.json",
+      "priority": 1
+    },
+    {
+      "name": "encoding-check",
+      "cmd": "node tools_node/check-encoding-touched.js",
+      "priority": 2
+    },
+    {
+      "name": "domain-data",
+      "cmd": "node tools_node/validate-generals-data.js",
+      "priority": 3
+    },
+    {
+      "name": "ui-contract",
+      "cmd": "node tools_node/validate-ui-specs.js",
+      "priority": 4
+    },
+    {
+      "name": "runtime-registry",
+      "cmd": "node tools_node/check-ui-runtime-state-registry.js",
+      "priority": 5
+    },
+    {
+      "name": "import-boundary",
+      "cmd": "node tools_node/check-import-boundaries.js",
+      "priority": 5
+    }
+  ]
+}</code></pre>
+
+        <div class="callout">The real key is not the gate name. It is whether the failure message is local enough and actionable enough. As long as the agent can tell which file, which rule, and which field failed, the repair success rate goes up sharply. That is why I keep saying inside 3KProject that the error message itself is also a prompt.</div>
+      </section>
+
+      <section class="panel" id="tooling">
+        <h2>The Five Tools I Most Want to Add Next</h2>
+        <p>3KProject does not really lack process documents. What it lacks are feedback gates that can run every day and feed results straight back into the agent. So for me, the efficient move is not writing more policy, but filling in a few tools that would actually be used daily.</p>
+        <ol>
+          <li><strong>compute-gate.js</strong>: unify type checks, encoding checks, data validation, and contract validation behind one entry point.</li>
+          <li><strong>check-import-boundaries.js</strong>: turn module boundaries from verbal convention into tool-enforced guardrails.</li>
+          <li><strong>approved-fixture-check.js</strong>: preserve human-approved expected outputs as comparable baselines.</li>
+          <li><strong>task-decomposer.js</strong>: split large requests into atomic task cards that can be executed in sequence.</li>
+          <li><strong>harness-health-report.js</strong>: produce a fixed report showing which guides and sensors are still hollow.</li>
+        </ol>
+        <p>What these five tools share is that they translate abstract knowledge into repeatable operations. In 3KProject, once a rule becomes executable, the agent can actually be governed. Once a result becomes measurable, I can discuss improvement with the team instead of debating feelings.</p>
+      </section>
+
+      <section class="panel" id="roadmap">
+        <h2>Rollout Order: Patch the Cheap, Stable, Daily Sensors First</h2>
+        <p>When I rank this rollout order for 3KProject, I care about which checks are cheapest, most stable, and likely to run every day. The best strategy is to start with low-cost high-frequency checks, then add behaviour and architecture guards, and only later handle expensive semantic review.</p>
+
+        <figure class="figure-card" data-figure-name="harness-roadmap-table">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
+          </div>
+          <svg viewBox="0 0 1120 720" role="img" aria-label="Harness rollout priority table">
+            <style>
+              :scope .f5-bg { fill: #fffaf2; }
+              :scope .f5-head { fill: #16222d; }
+              :scope .f5-headtext { font: 700 20px 'Aptos','Microsoft JhengHei',sans-serif; fill: #ffffff; }
+              :scope .f5-prio { font: 700 18px 'Aptos','Microsoft JhengHei',sans-serif; fill: #16222d; }
+              :scope .f5-body { font: 500 16px 'Aptos','Microsoft JhengHei',sans-serif; fill: #425161; }
+              :scope .f5-grid { stroke: #d8dfdf; stroke-width: 2; }
+            </style>
+            <rect class="f5-bg" x="0" y="0" width="1120" height="720" rx="28" ry="28"></rect>
+            <rect class="f5-head" x="70" y="70" width="980" height="72" rx="16" ry="16"></rect>
+            <text class="f5-headtext" x="110" y="114">Rollout order: stabilize the feedback chain first, then expand semantic and governance layers</text>
+            <line class="f5-grid" x1="70" y1="170" x2="1050" y2="170"></line>
+            <line class="f5-grid" x1="70" y1="280" x2="1050" y2="280"></line>
+            <line class="f5-grid" x1="70" y1="390" x2="1050" y2="390"></line>
+            <line class="f5-grid" x1="70" y1="500" x2="1050" y2="500"></line>
+            <line class="f5-grid" x1="70" y1="610" x2="1050" y2="610"></line>
+            <line class="f5-grid" x1="220" y1="142" x2="220" y2="660"></line>
+            <line class="f5-grid" x1="530" y1="142" x2="530" y2="660"></line>
+            <line class="f5-grid" x1="820" y1="142" x2="820" y2="660"></line>
+            <text class="f5-prio" x="120" y="233">P0</text>
+            <text class="f5-body" x="250" y="212">Type-check integration</text>
+            <text class="f5-body" x="250" y="240">Basic lint and encoding checks</text>
+            <text class="f5-body" x="560" y="212">Eliminate the most common and cheapest-to-catch errors first</text>
+            <text class="f5-body" x="850" y="226">Immediate stability lift</text>
+            <text class="f5-prio" x="120" y="343">P1</text>
+            <text class="f5-body" x="250" y="322">Import boundary checks</text>
+            <text class="f5-body" x="250" y="350">Atomic task-card tooling</text>
+            <text class="f5-body" x="560" y="322">Make architecture rules and task slicing executable by machines</text>
+            <text class="f5-body" x="850" y="336">Reduce long-term coupling</text>
+            <text class="f5-prio" x="120" y="453">P2</text>
+            <text class="f5-body" x="250" y="432">Approved fixtures</text>
+            <text class="f5-body" x="250" y="460">Health report</text>
+            <text class="f5-body" x="560" y="432">Institutionalize behaviour validation and governance coverage</text>
+            <text class="f5-body" x="850" y="446">Build sustainable regression</text>
+            <text class="f5-prio" x="120" y="563">P3</text>
+            <text class="f5-body" x="250" y="542">AI semantic review</text>
+            <text class="f5-body" x="250" y="570">High-cost inferential sensors</text>
+            <text class="f5-body" x="560" y="542">Reserve them for high-value checkpoints instead of every change</text>
+            <text class="f5-body" x="850" y="556">Control cost and latency</text>
+          </svg>
+          <figcaption>Figure 5: If the order is wrong, teams spend real money on expensive review while still leaving the basic daily failures untouched.</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+
+        <p>In one sentence, my priority order in 3KProject is this: <strong>let machines do the deterministic judgment they are good at first, then let models do the new-content generation and semantic understanding they are good at.</strong></p>
+      </section>
+
+      <section class="panel" id="takeaway">
+        <h2>The Final Decision Rule</h2>
+        <p>Back in 3KProject, my decision rule is very simple now: if a quality judgment can be made by scripts, the type system, schema checks, snapshots, or fixtures, then I should not leave it to an LLM to guess. The model is most valuable when it generates something new, understands ambiguous requirements, and fills missing context, not when it acts like an expensive unstable if/else engine.</p>
+        <div class="split">
+          <div class="mini-card">
+            <h3>Better Handed to Models</h3>
+            <p>Requirement decomposition, code writing, refactoring suggestions, document consolidation, semantic diff reading, and high-level design tradeoffs.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Better Handed to Tools</h3>
+            <p>Type correctness, naming rules, module boundaries, data formats, fixed-output comparison, and encoding integrity.</p>
+          </div>
+        </div>
+        <p class="quote">Inside 3KProject, my rule now is to turn as much model-side judgment as possible into scripts, and save the LLM for the work that really needs understanding and creation.</p>
+      </section>
+
+      <div class="footer">3KProject engineering notes. Figure cards support Download SVG and Download PNG, which work better for external publishing.</div>
+    </main>
+
+    <aside class="toc">
+      <h2>Table of Contents</h2>
+      <ol>
+        <li><a href="#summary">Core Idea</a></li>
+        <li><a href="#model">Two Axes</a></li>
+        <li><a href="#governance">Governance Buckets</a></li>
+        <li><a href="#diagnosis">Strengths and Gaps</a></li>
+        <li><a href="#workflow">Small-Model Workflow</a></li>
+        <li><a href="#tooling">Five Priority Tools</a></li>
+        <li><a href="#roadmap">Rollout Order</a></li>
+        <li><a href="#takeaway">Decision Rule</a></li>
+      </ol>
+      <div class="note">
+        How to use this page:
+        <br>1. Open it directly in a browser.
+        <br>2. Use the buttons on each figure card to download SVG or PNG.
+        <br>3. For LinkedIn, uploading PNG is more reliable than clipboard paste.
+        <br>4. This is a shareable engineering write-up based on 3KProject practice.
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    function showStatus(figure, message) {
+      const status = figure.querySelector('.copy-status');
+      if (!status) {
+        return;
+      }
+      status.textContent = message;
+      status.classList.add('is-visible');
+      window.clearTimeout(status._timer);
+      status._timer = window.setTimeout(() => {
+        status.classList.remove('is-visible');
+      }, 1800);
+    }
+
+    function serializeSvg(svg) {
+      const clone = svg.cloneNode(true);
+      clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+      return new XMLSerializer().serializeToString(clone);
+    }
+
+    function figureDownloadName(figure, extension) {
+      const name = figure.getAttribute('data-figure-name') || 'figure';
+      return `${name}.${extension}`;
+    }
+
+    function triggerDownload(blob, fileName) {
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = fileName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    }
+
+    async function downloadSvg(button) {
+      const figure = button.closest('figure');
+      const svg = figure.querySelector('svg');
+      try {
+        const svgMarkup = serializeSvg(svg);
+        const blob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
+        triggerDownload(blob, figureDownloadName(figure, 'svg'));
+        showStatus(figure, 'Downloaded SVG');
+      } catch (error) {
+        showStatus(figure, 'SVG download failed');
+      }
+    }
+
+    function svgViewBoxSize(svg) {
+      const viewBox = svg.viewBox && svg.viewBox.baseVal;
+      if (viewBox && viewBox.width && viewBox.height) {
+        return { width: viewBox.width, height: viewBox.height };
+      }
+      return {
+        width: Number(svg.getAttribute('width')) || 1200,
+        height: Number(svg.getAttribute('height')) || 800,
+      };
+    }
+
+    async function downloadPng(button) {
+      const figure = button.closest('figure');
+      const svg = figure.querySelector('svg');
+      const svgMarkup = serializeSvg(svg);
+      const blob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const image = new Image();
+      const { width, height } = svgViewBoxSize(svg);
+
+      try {
+        const pngBlob = await new Promise((resolve, reject) => {
+          image.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = width * 2;
+            canvas.height = height * 2;
+            const context = canvas.getContext('2d');
+            context.fillStyle = '#fffaf2';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob((result) => {
+              if (result) {
+                resolve(result);
+              } else {
+                reject(new Error('png blob failed'));
+              }
+            }, 'image/png');
+          };
+          image.onerror = () => reject(new Error('svg load failed'));
+          image.src = url;
+        });
+
+        triggerDownload(pngBlob, figureDownloadName(figure, 'png'));
+        showStatus(figure, 'Downloaded PNG');
+      } catch (error) {
+        showStatus(figure, 'PNG download failed');
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    }
+
+    document.querySelectorAll('[data-download-svg]').forEach((button) => {
+      button.addEventListener('click', () => downloadSvg(button));
+    });
+
+    document.querySelectorAll('[data-download-png]').forEach((button) => {
+      button.addEventListener('click', () => downloadPng(button));
+    });
+  </script>
+</body>
+</html>
