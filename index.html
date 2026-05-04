@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Learning Notes | Eagle Huang</title>
+  <meta name="description" content="Eagle Huang 的 AI Learning Notes，整理 AI 工具、Coding Agent、Harness Engineering 與工程自動化的實作筆記。">
+  <meta property="og:title" content="AI Learning Notes | Eagle Huang">
+  <meta property="og:description" content="把 AI 工具學習整理成可重複、可驗證、可分享的工程方法。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://eaglhuang.github.io/ai-learning-notes/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://eaglhuang.github.io/ai-learning-notes/">
+  <link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="AI Learning Notes home">
+      <span class="brand-mark">AI</span>
+      <span>
+        <strong>AI Learning Notes</strong>
+        <small>Eagle Huang</small>
+      </span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="#articles">文章</a>
+      <a href="#focus">主題</a>
+      <a href="#about">關於</a>
+      <a class="nav-button" href="https://github.com/eaglhuang/AI-learning-notes">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero-section">
+      <div class="hero-copy">
+        <p class="eyebrow">AI Engineering · Agent Workflow · Technical Notes</p>
+        <h1>把 AI 工具學習，整理成能重複使用的工程方法。</h1>
+        <p class="hero-lede">這裡收錄我在 AI 工具、Coding Agent、工程自動化與知識工作流上的實作筆記。重點不是追逐工具清單，而是把每次實驗沉澱成可以檢查、可以複用、也可以分享的工作方法。</p>
+        <div class="hero-actions">
+          <a class="primary-action" href="#articles">閱讀最新文章</a>
+          <a class="secondary-action" href="articles/">瀏覽文章列表</a>
+        </div>
+      </div>
+      <aside class="hero-panel" aria-label="Site principles">
+        <div class="signal-card strong">
+          <span>Current Theme</span>
+          <strong>Harness Engineering</strong>
+          <p>讓 Coding Agent 從偶爾聰明，變成穩定可驗證的協作者。</p>
+        </div>
+        <div class="signal-grid">
+          <div class="signal-card">
+            <span>Guide</span>
+            <strong>前饋引導</strong>
+          </div>
+          <div class="signal-card">
+            <span>Sensor</span>
+            <strong>計算回饋</strong>
+          </div>
+          <div class="signal-card">
+            <span>Loop</span>
+            <strong>自我修正</strong>
+          </div>
+          <div class="signal-card">
+            <span>Artifact</span>
+            <strong>可分享成果</strong>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section-block" id="articles">
+      <div class="section-heading">
+        <p class="eyebrow">Featured Article</p>
+        <h2>最新技術文章</h2>
+        <p>目前先放上第一篇完整長文，後續會逐步補上 AI 學習筆記、Agent workflow、工具鏈設計與專案實作回顧。</p>
+      </div>
+      <article class="article-card featured-card">
+        <div class="article-meta">
+          <span>Harness Engineering</span>
+          <span>2026.05</span>
+        </div>
+        <h3>我如何使用 Harness Engineering 讓 3KProject 變得更穩定</h3>
+        <p>整理我在 3KProject 裡建立 instructions、skills、任務卡、context budget guard、UI contract 驗證與 runtime smoke check 的經驗，說明如何把 Coding Agent 工作流從「靠模型猜」改成「靠計算驗證」。</p>
+        <div class="article-footer">
+          <a class="text-link" href="harness_engineering_article_public.html">閱讀文章</a>
+          <span>約 10 分鐘閱讀</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="section-block" id="focus">
+      <div class="section-heading">
+        <p class="eyebrow">Focus Areas</p>
+        <h2>我會持續整理的主題</h2>
+      </div>
+      <div class="focus-grid">
+        <div class="focus-card">
+          <span>01</span>
+          <h3>Coding Agent Workflow</h3>
+          <p>如何拆任務、寫任務卡、設計 handoff，讓 Agent 不只是回答問題，而是能穩定完成一段工程流程。</p>
+        </div>
+        <div class="focus-card">
+          <span>02</span>
+          <h3>Harness Engineering</h3>
+          <p>把 rules、guides、sensors、fixtures 與驗證腳本組成可運作的外部韁繩，而不是只靠提示詞祈禱。</p>
+        </div>
+        <div class="focus-card">
+          <span>03</span>
+          <h3>AI Tooling Notes</h3>
+          <p>記錄 AI 工具、模型、MCP、瀏覽器自動化與本地工具鏈整合的實測心得。</p>
+        </div>
+        <div class="focus-card">
+          <span>04</span>
+          <h3>Technical Writing</h3>
+          <p>把專案內部學到的東西整理成可分享文章、圖卡、簡報與長期可維護的文件。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-block split-block" id="about">
+      <div>
+        <p class="eyebrow">About This Site</p>
+        <h2>這是一個偏工程實作的 AI 學習筆記站。</h2>
+      </div>
+      <div class="about-copy">
+        <p>我會把 AI 工具學習過程中的想法整理成技術文章，尤其關注「怎麼把 AI 放進真的工程流程裡」。文章會盡量保留實作脈絡、決策原因、踩坑紀錄與可重複使用的工具化方法。</p>
+        <p>這個網站用 GitHub Pages 發布，維持純靜態、低維護成本，方便未來累積文章與分享連結。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2026 Eagle Huang. AI Learning Notes.</p>
+    <a href="https://github.com/eaglhuang/AI-learning-notes">View source on GitHub</a>
+  </footer>
+</body>
+</html>
