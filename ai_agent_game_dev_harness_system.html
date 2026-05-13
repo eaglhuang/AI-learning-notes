@@ -242,8 +242,17 @@
       height: 28px;
     }
   </style>
+  <link rel="stylesheet" href="assets/css/dark-override.css">
 </head>
 <body>
+  <!-- Page transition overlay -->
+  <div id="page-overlay" aria-hidden="true">
+    <div class="cell-stage">
+      <div class="cell-a"></div>
+      <div class="cell-bridge"></div>
+      <div class="cell-b"></div>
+    </div>
+  </div>
 
 <h1>當我用 AI Agent 開發遊戲：我如何為自己的專案打造「韁繩系統」</h1>
 
@@ -701,5 +710,23 @@
   <img src="https://hits.sh/eaglhuang.github.io/AI-learning-notes.svg?label=traffic&color=10252D&labelColor=0C6F68" alt="網站累積流量計數器" loading="lazy">
 </div>
 
+  <script>
+    (function(){
+      var overlay = document.getElementById('page-overlay');
+      if (!overlay) return;
+      document.addEventListener('click', function(e) {
+        var a = e.target.closest('a[href]');
+        if (!a || a.target === '_blank') return;
+        try {
+          var url = new URL(a.href, location.href);
+          if (url.origin !== location.origin) return;
+          if (url.hash && url.pathname === location.pathname) return;
+          e.preventDefault();
+          overlay.classList.add('active');
+          setTimeout(function(){ window.location.href = a.href; }, 560);
+        } catch(err) {}
+      });
+    })();
+  </script>
 </body>
 </html>

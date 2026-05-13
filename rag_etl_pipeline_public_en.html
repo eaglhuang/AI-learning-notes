@@ -446,8 +446,17 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="assets/css/dark-override.css">
 </head>
 <body>
+  <!-- Page transition overlay -->
+  <div id="page-overlay" aria-hidden="true">
+    <div class="cell-stage">
+      <div class="cell-a"></div>
+      <div class="cell-bridge"></div>
+      <div class="cell-b"></div>
+    </div>
+  </div>
   <div class="page">
     <main class="main-column">
       <p class="back-links">
@@ -918,6 +927,25 @@
     document.querySelectorAll('[data-download-png]').forEach((button) => {
       button.addEventListener('click', () => downloadPng(button));
     });
+  </script>
+
+  <script>
+    (function(){
+      var overlay = document.getElementById('page-overlay');
+      if (!overlay) return;
+      document.addEventListener('click', function(e) {
+        var a = e.target.closest('a[href]');
+        if (!a || a.target === '_blank') return;
+        try {
+          var url = new URL(a.href, location.href);
+          if (url.origin !== location.origin) return;
+          if (url.hash && url.pathname === location.pathname) return;
+          e.preventDefault();
+          overlay.classList.add('active');
+          setTimeout(function(){ window.location.href = a.href; }, 560);
+        } catch(err) {}
+      });
+    })();
   </script>
 </body>
 </html>

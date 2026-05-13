@@ -6,100 +6,239 @@
   <title>文章列表 | AI Learning Notes</title>
   <meta name="description" content="AI Learning Notes 的技術文章列表，收錄 AI 工具、Coding Agent 與工程自動化實作筆記。">
   <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/articles/">
-  <link rel="stylesheet" href="../assets/css/site.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1c211c; --muted: #58645d;
+      --paper: #f6f0df; --paper-2: #ece4cf;
+      --jade: #1f6d5c; --jade-2: #17493f;
+      --cinnabar: #9e4337; --gold: #b69042; --river: #527b8a;
+      --line: rgba(28,33,28,0.14);
+      --shadow: 0 18px 56px rgba(20,28,23,0.14);
+      --r: 10px; --r-sm: 8px; --w: 960px; --t: 0.18s ease;
+      --serif: "Noto Serif TC","Source Han Serif TC","Microsoft JhengHei",serif;
+      --mono: "JetBrains Mono",monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--serif); font-size: 0.9rem; line-height: 1.82;
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, rgba(31,109,92,0.09), transparent 30%),
+        linear-gradient(220deg, rgba(158,67,55,0.07), transparent 28%),
+        repeating-linear-gradient(0deg, rgba(28,33,28,0.022), rgba(28,33,28,0.022) 1px, transparent 1px, transparent 18px),
+        var(--paper);
+      min-height: 100vh; overflow-x: hidden;
+      animation: pageEnter 0.45s ease both;
+    }
+    @keyframes pageEnter {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(calc(100% - 48px), var(--w)); margin: 0 auto; position: relative; z-index: 1; }
+
+    /* Header */
+    .site-header {
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 1px solid transparent;
+      transition: background var(--t), border-color var(--t), box-shadow var(--t);
+    }
+    .site-header.scrolled {
+      background: rgba(246,240,223,0.94); border-color: var(--line);
+      box-shadow: 0 1px 14px rgba(20,28,23,0.08);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    }
+    .header-inner {
+      width: min(calc(100% - 48px), var(--w)); margin: 0 auto; padding: 15px 0;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      width: 34px; height: 34px; border-radius: var(--r-sm);
+      border: 1px solid rgba(31,109,92,0.28); background: rgba(31,109,92,0.07);
+      display: grid; place-items: center;
+      font-family: var(--mono); font-size: 0.58rem; color: var(--jade-2);
+    }
+    .brand-text strong { font-size: 0.88rem; font-weight: 700; color: var(--ink); }
+    .site-nav { display: flex; align-items: center; gap: 2px; }
+    .nav-link {
+      padding: 5px 11px; border-radius: 6px; font-size: 0.82rem; color: var(--muted);
+      transition: color var(--t), background var(--t);
+    }
+    .nav-link:hover { color: var(--jade-2); background: rgba(31,109,92,0.07); }
+    .nav-cta {
+      margin-left: 6px; padding: 5px 12px; border-radius: 6px;
+      font-family: var(--mono); font-size: 0.7rem; border: 1px solid var(--line); color: var(--muted);
+      transition: color var(--t), border-color var(--t);
+    }
+    .nav-cta:hover { color: var(--jade); border-color: rgba(31,109,92,0.32); }
+
+    /* Page header */
+    .page-header { padding: 80px 0 0; margin-bottom: 28px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+    .page-eyebrow { font-family: var(--mono); font-size: 0.61rem; letter-spacing: 0.10em; color: var(--cinnabar); text-transform: uppercase; margin-bottom: 7px; }
+    h1.page-title { font-size: 1.22rem; font-weight: 700; color: var(--ink); line-height: 1.3; }
+    .page-desc { font-size: 0.84rem; color: var(--muted); margin-top: 5px; }
+
+    /* Article cards */
+    .article-list { display: grid; gap: 10px; }
+    .article-card {
+      padding: 22px 24px; background: rgba(255,255,255,0.54);
+      border: 1px solid var(--line); border-radius: var(--r);
+      box-shadow: 0 2px 10px rgba(20,28,23,0.04);
+      transition: border-color var(--t), background var(--t), box-shadow var(--t), transform var(--t);
+    }
+    .article-card:hover {
+      border-color: rgba(31,109,92,0.28); background: rgba(255,255,255,0.76);
+      box-shadow: 0 6px 24px rgba(20,28,23,0.09); transform: translateY(-2px);
+    }
+    .article-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .tag { font-family: var(--mono); font-size: 0.57rem; font-weight: 500; padding: 2px 8px; border-radius: 999px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .tag-jade   { background: rgba(31,109,92,0.09);  color: var(--jade-2); border: 1px solid rgba(31,109,92,0.16); }
+    .tag-warm   { background: rgba(182,144,66,0.09); color: #8a6020;       border: 1px solid rgba(182,144,66,0.18); }
+    .tag-river  { background: rgba(82,123,138,0.09); color: var(--river);  border: 1px solid rgba(82,123,138,0.18); }
+    .article-date { font-family: var(--mono); font-size: 0.61rem; color: var(--muted); margin-left: auto; opacity: 0.65; }
+    h2.article-title { font-size: 1.04rem; font-weight: 700; color: var(--ink); line-height: 1.45; margin-bottom: 8px; }
+    .article-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.84; margin-bottom: 16px; }
+    .article-footer { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .link { font-size: 0.8rem; font-weight: 700; color: var(--jade); display: inline-flex; align-items: center; gap: 4px; transition: color var(--t), gap var(--t); }
+    .link::after { content: '→'; transition: transform var(--t); }
+    .link:hover { color: var(--jade-2); gap: 7px; }
+    .link-dim { color: var(--muted); font-weight: 400; }
+    .link-dim::after { content: ''; }
+    .link-dim:hover { color: var(--river); }
+    .read-time { font-family: var(--mono); font-size: 0.59rem; color: var(--muted); margin-left: auto; opacity: 0.65; }
+
+    /* Footer */
+    .site-footer { border-top: 1px solid var(--line); margin-top: 96px; padding: 26px 0 52px; }
+    .footer-inner { width: min(calc(100% - 48px), var(--w)); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .footer-copy { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); opacity: 0.7; }
+    .footer-link { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); transition: color var(--t); }
+    .footer-link:hover { color: var(--jade); }
+
+    /* Transition overlay */
+    #page-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(246,240,223,0.97);
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    }
+    #page-overlay.active { opacity: 1; pointer-events: all; }
+    .cell-stage { position: relative; width: 100px; height: 60px; }
+    .cell-a, .cell-b { position: absolute; top: 50%; width: 38px; height: 38px; }
+    .cell-a { right: calc(50% + 4px); transform: translateY(-50%); background: var(--jade); opacity: 0.65; animation: cellA 2.6s ease-in-out infinite; }
+    .cell-b { left: calc(50% + 4px); transform: translateY(-50%); background: rgba(31,109,92,0.45); animation: cellB 2.6s ease-in-out infinite; }
+    .cell-bridge { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 16px; height: 14px; background: rgba(31,109,92,0.28); border-radius: 50%; animation: bridgePulse 2.6s ease-in-out infinite; }
+    @keyframes cellA { 0%,100% { border-radius: 55% 45% 48% 52%/52% 48% 52% 48%; transform: translateY(-50%) translateX(0); } 50% { border-radius: 58% 42% 44% 56%/56% 44% 56% 44%; transform: translateY(-48%) translateX(2px); } }
+    @keyframes cellB { 0%,100% { border-radius: 45% 55% 52% 48%/48% 52% 48% 52%; transform: translateY(-50%) translateX(0); } 50% { border-radius: 42% 58% 56% 44%/44% 56% 44% 56%; transform: translateY(-52%) translateX(-2px); } }
+    @keyframes bridgePulse { 0%,100% { width: 14px; opacity: 0.35; } 50% { width: 22px; opacity: 0.6; } }
+
+    @media (max-width: 640px) {
+      .page-header { padding-top: 52px; }
+      h1.page-title { font-size: 1.1rem; }
+    }
+  </style>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="../" aria-label="AI Learning Notes home">
-      <span class="brand-mark">AI</span>
-      <span>
-        <strong>AI Learning Notes</strong>
-        <small>Eagl Huang</small>
-      </span>
-    </a>
-    <nav class="site-nav" aria-label="Primary navigation">
-      <a href="../#articles">文章</a>
-      <a href="../#focus">主題</a>
-      <a href="../#about">關於</a>
-      <a class="nav-button" href="https://github.com/eaglhuang/AI-learning-notes">GitHub</a>
-    </nav>
+  <div id="page-overlay" aria-hidden="true">
+    <div class="cell-stage">
+      <div class="cell-a"></div><div class="cell-bridge"></div><div class="cell-b"></div>
+    </div>
+  </div>
+
+  <header class="site-header" id="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../">
+        <div class="brand-mark">AI</div>
+        <div class="brand-text"><strong>AI Learning Notes</strong></div>
+      </a>
+      <nav class="site-nav">
+        <a class="nav-link" href="../#articles">文章</a>
+        <a class="nav-link" href="../#focus">主題</a>
+        <a class="nav-link" href="../#about">關於</a>
+        <a class="nav-cta" href="https://github.com/eaglhuang/AI-learning-notes" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
   </header>
 
   <main>
-    <section class="page-title">
-      <p class="eyebrow">Archive</p>
-      <h1>技術文章列表</h1>
-      <p>目前先整理四篇核心長文。後續文章會依主題慢慢補上。</p>
-    </section>
-
-    <section class="article-list">
-      <article class="article-card">
-        <div class="article-meta">
-          <span>Agent Workflow</span>
-          <span>2026.05</span>
-        </div>
-        <h2>我怎麼把多 Agent 協作做成 3KProject 裡真正可執行的工作流</h2>
-        <p>整理我在 3KProject 裡實際依賴的協作文件，說明 task lock、compute gate、handoff 與 context budget 如何一起把多 Agent 協作變成可執行的工作流。</p>
-        <div class="article-footer">
-          <a class="text-link" href="../agent_collaboration_public.html">閱讀文章</a>
-          <a class="text-link" href="../agent_collaboration_public_en.html">English version</a>
-          <span>約 9 分鐘閱讀</span>
-        </div>
-      </article>
-
-      <article class="article-card">
-        <div class="article-meta">
-          <span>Harness Engineering</span>
-          <span>2026.05</span>
-        </div>
-        <h2>當我用 AI Agent 開發遊戲：我如何為自己的專案打造「韁繩系統」</h2>
-        <p>從 3KLife 的實作經驗出發，整理我如何為 AI Agent 開發流程建立 Harness Engineering 韁繩系統，降低無聲錯誤並把品質判斷從模型猜測轉成計算型驗證。</p>
-        <div class="article-footer">
-          <a class="text-link" href="../ai_agent_game_dev_harness_system.html">閱讀文章</a>
-          <a class="text-link" href="../ai_agent_game_dev_harness_system_en.html">English version</a>
-          <span>約 9 分鐘閱讀</span>
-        </div>
-      </article>
-
-      <article class="article-card">
-        <div class="article-meta">
-          <span>Harness Engineering</span>
-          <span>2026.05</span>
-        </div>
-        <h2>我如何使用 Harness Engineering 讓 3KProject 變得更穩定</h2>
-        <p>從 3KProject 的實作經驗出發，整理如何用 guides、sensors、compute gates 與任務切片，讓 Coding Agent 更穩定。</p>
-        <div class="article-footer">
-          <a class="text-link" href="../harness_engineering_article_public.html">閱讀文章</a>
-          <a class="text-link" href="../harness_engineering_article_public_en.html">English version</a>
-          <span>約 10 分鐘閱讀</span>
-        </div>
-      </article>
-
-      <article class="article-card">
-        <div class="article-meta">
-          <span>RAG / ETL</span>
-          <span>2026.05</span>
-        </div>
-        <h2>我怎麼把 RAG / ETL 做成一條真的能落地的資料生產線</h2>
-        <p>用比較口語的方式拆解這條三國知識管線，說明它怎麼從原文、抽取、review、repair 一路走到 NPC brain 與 Cocos UI。</p>
-        <div class="article-footer">
-          <a class="text-link" href="../rag_etl_pipeline_public.html">閱讀文章</a>
-          <a class="text-link" href="../rag_etl_pipeline_public_en.html">English version</a>
-          <span>約 8 分鐘閱讀</span>
-        </div>
-      </article>
-    </section>
+    <div class="wrap">
+      <div class="page-header">
+        <p class="page-eyebrow">Archive</p>
+        <h1 class="page-title">技術文章列表</h1>
+        <p class="page-desc">目前先整理四篇核心長文。後續文章會依主題慢慢補上。</p>
+      </div>
+      <div class="article-list">
+        <article class="article-card">
+          <div class="article-meta"><span class="tag tag-jade">Agent Workflow</span><span class="article-date">2026.05</span></div>
+          <h2 class="article-title">我怎麼把多 Agent 協作做成 3KProject 裡真正可執行的工作流</h2>
+          <p class="article-desc">整理我在 3KProject 裡實際依賴的協作文件，說明 task lock、compute gate、handoff 與 context budget 如何一起把多 Agent 協作變成可執行的工作流。</p>
+          <div class="article-footer">
+            <a class="link" href="../agent_collaboration_public.html">閱讀文章</a>
+            <a class="link link-dim" href="../agent_collaboration_public_en.html">English</a>
+            <span class="read-time">≈ 9 min</span>
+          </div>
+        </article>
+        <article class="article-card">
+          <div class="article-meta"><span class="tag tag-warm">Harness Engineering</span><span class="article-date">2026.05</span></div>
+          <h2 class="article-title">當我用 AI Agent 開發遊戲：我如何為自己的專案打造「韁繩系統」</h2>
+          <p class="article-desc">從 3KLife 的實作經驗出發，整理我如何為 AI Agent 開發流程建立 Harness Engineering 韁繩系統，降低無聲錯誤並把品質判斷從模型猜測轉成計算型驗證。</p>
+          <div class="article-footer">
+            <a class="link" href="../ai_agent_game_dev_harness_system.html">閱讀文章</a>
+            <a class="link link-dim" href="../ai_agent_game_dev_harness_system_en.html">English</a>
+            <span class="read-time">≈ 9 min</span>
+          </div>
+        </article>
+        <article class="article-card">
+          <div class="article-meta"><span class="tag tag-warm">Harness Engineering</span><span class="article-date">2026.05</span></div>
+          <h2 class="article-title">我如何使用 Harness Engineering 讓 3KProject 變得更穩定</h2>
+          <p class="article-desc">從 3KProject 的實作經驗出發，整理如何用 guides、sensors、compute gates 與任務切片，讓 Coding Agent 更穩定。</p>
+          <div class="article-footer">
+            <a class="link" href="../harness_engineering_article_public.html">閱讀文章</a>
+            <a class="link link-dim" href="../harness_engineering_article_public_en.html">English</a>
+            <span class="read-time">≈ 10 min</span>
+          </div>
+        </article>
+        <article class="article-card">
+          <div class="article-meta"><span class="tag tag-river">RAG / ETL</span><span class="article-date">2026.05</span></div>
+          <h2 class="article-title">我怎麼把 RAG / ETL 做成一條真的能落地的資料生產線</h2>
+          <p class="article-desc">用比較口語的方式拆解這條三國知識管線，說明它怎麼從原文、抽取、review、repair 一路走到 NPC brain 與 Cocos UI。</p>
+          <div class="article-footer">
+            <a class="link" href="../rag_etl_pipeline_public.html">閱讀文章</a>
+            <a class="link link-dim" href="../rag_etl_pipeline_public_en.html">English</a>
+            <span class="read-time">≈ 8 min</span>
+          </div>
+        </article>
+      </div>
+    </div>
   </main>
 
   <footer class="site-footer">
-    <div class="site-footer-main">
-      <p>© 2026 Eagl Huang. AI Learning Notes.</p>
-      <a href="../">回首頁</a>
-    </div>
-    <div class="site-counter" aria-label="網站流量計數器">
-      <span class="site-counter-label">網站流量</span>
-      <img src="https://hits.sh/eaglhuang.github.io/AI-learning-notes.svg?label=traffic&color=10252D&labelColor=0C6F68" alt="網站累積流量計數器" loading="lazy">
+    <div class="footer-inner">
+      <span class="footer-copy">© 2026 Eagl Huang</span>
+      <a class="footer-link" href="../">回首頁</a>
     </div>
   </footer>
+
+  <script>
+    const hdr = document.getElementById('site-header');
+    window.addEventListener('scroll', () => { hdr.classList.toggle('scrolled', window.scrollY > 20); }, { passive: true });
+    const overlay = document.getElementById('page-overlay');
+    document.addEventListener('click', e => {
+      const a = e.target.closest('a[href]');
+      if (!a || a.target === '_blank') return;
+      try {
+        const url = new URL(a.href, location.href);
+        if (url.origin !== location.origin) return;
+        if (url.hash && url.pathname === location.pathname) return;
+        e.preventDefault();
+        overlay.classList.add('active');
+        setTimeout(() => { window.location.href = a.href; }, 560);
+      } catch(err) {}
+    });
+  </script>
 </body>
 </html>
