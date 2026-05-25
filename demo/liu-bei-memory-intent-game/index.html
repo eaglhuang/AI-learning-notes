@@ -865,7 +865,9 @@
     const DEFAULT_AUTO_DELAY = 12000;
     const DEFAULT_DIALOGUE_TIMEOUT_MS = 12000;
     const DEFAULT_ILLUSTRATION_TIMEOUT_MS = 32000;
-    const DEFAULT_PROFILE_TIMEOUT_MS = 10000;
+    const DEFAULT_PROFILE_TIMEOUT_MS = 65000;
+    const DEFAULT_PROFILE_RETRY_DELAY_MS = 1800;
+    const DEFAULT_PROFILE_MAX_ATTEMPTS = 2;
     const DEFAULT_NARRATIVE_TIMEOUT_MS = 16000;
     const DEFAULT_STORY_FUSION_TIMEOUT_MS = 18000;
 
@@ -2481,28 +2483,55 @@
       };
     }
 
-    async function loadNarrativeData() {
-      const timeout = createTimeoutController(DEFAULT_PROFILE_TIMEOUT_MS);
-      try {
-        const response = await fetch(`${API_BASE}/v1/npc/narrative-profile?generalId=${encodeURIComponent(GENERAL_ID)}`, {
-          signal: timeout.signal,
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-        const payload = await response.json();
-        const hasUsableNarrativeData = Array.isArray(payload.evidenceCards) && payload.evidenceCards.length > 0
-          && Array.isArray(payload.interactionTargets) && payload.interactionTargets.length > 0;
-        if (!hasUsableNarrativeData) {
-          throw new Error("Narrative payload is empty.");
-        }
-        return normalizeNarrativePayload(payload);
-      } catch (error) {
-        console.warn("narrative-profile fallback:", error);
-        return { ...fallbackNarrativeData };
-      } finally {
-        timeout.clear();
+    function shouldRetryNarrativeProfile(error) {
+      if (!error) {
+        return false;
       }
+      if (error.name === "AbortError") {
+        return true;
+      }
+      return /HTTP 5\d\d/i.test(String(error.message || error));
+    }
+
+    async function fetchNarrativeProfilePayload(signal) {
+      const response = await fetch(`${API_BASE}/v1/npc/narrative-profile?generalId=${encodeURIComponent(GENERAL_ID)}`, {
+        signal,
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const payload = await response.json();
+      const hasUsableNarrativeData = Array.isArray(payload.evidenceCards) && payload.evidenceCards.length > 0
+        && Array.isArray(payload.interactionTargets) && payload.interactionTargets.length > 0;
+      if (!hasUsableNarrativeData) {
+        throw new Error("Narrative payload is empty.");
+      }
+      return payload;
+    }
+
+    async function loadNarrativeData() {
+      let lastError = null;
+      for (let attempt = 1; attempt <= DEFAULT_PROFILE_MAX_ATTEMPTS; attempt += 1) {
+        const timeout = createTimeoutController(DEFAULT_PROFILE_TIMEOUT_MS);
+        try {
+          const payload = await fetchNarrativeProfilePayload(timeout.signal);
+          return normalizeNarrativePayload(payload);
+        } catch (error) {
+          lastError = error;
+          if (attempt < DEFAULT_PROFILE_MAX_ATTEMPTS && shouldRetryNarrativeProfile(error)) {
+            console.warn(`narrative-profile retry ${attempt}/${DEFAULT_PROFILE_MAX_ATTEMPTS}:`, error);
+            await wait(DEFAULT_PROFILE_RETRY_DELAY_MS);
+            continue;
+          }
+        } finally {
+          timeout.clear();
+        }
+      }
+      console.warn("narrative-profile fallback:", lastError);
+      return {
+        ...fallbackNarrativeData,
+        dataHint: "npc-brain 公開服務仍在冷啟動或暫時忙碌，先切回示範資料；稍後重整通常會恢復真資料模式。",
+      };
     }
 
     function applyData(data) {
