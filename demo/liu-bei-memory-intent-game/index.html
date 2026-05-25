@@ -753,7 +753,7 @@
       <aside>
         <section class="panel profile">
           <div class="portrait-wrap">
-            <img class="portrait" id="portraitImage" src="./assets/liu_bei_portrait.png" alt="三國人物肖像" onerror="this.style.display='none';">
+            <img class="portrait" id="portraitImage" src="../../assets/resources/sprites/generals/liu_bei_portrait.png" alt="三國人物肖像" onerror="this.style.display='none';">
           </div>
           <div class="profile-body">
             <div class="profile-title">
@@ -919,7 +919,7 @@
       "liu-bei": {
         label: "劉備",
         shortRole: "仁義領袖",
-        portraitSrc: "./assets/liu_bei_portrait.png",
+        portraitSrc: "../../assets/resources/sprites/generals/liu_bei_portrait.png",
         portraitAlt: "劉備肖像",
         defaultTargetId: "guan-yu",
         defaultAngle: "emotion",
@@ -930,7 +930,7 @@
       "guan-yu": {
         label: "關羽",
         shortRole: "義烈名將",
-        portraitSrc: "./assets/guan_yu_portrait.png",
+        portraitSrc: "../../assets/resources/sprites/generals/guan_yu_portrait.png",
         portraitAlt: "關羽肖像",
         defaultTargetId: "liu-bei",
         defaultAngle: "bond",
@@ -941,7 +941,7 @@
       "zhang-fei": {
         label: "張飛",
         shortRole: "烈氣猛將",
-        portraitSrc: "./assets/zhang_fei_portrait.png",
+        portraitSrc: "../../assets/resources/sprites/generals/zhang_fei_portrait.png",
         portraitAlt: "張飛肖像",
         defaultTargetId: "liu-bei",
         defaultAngle: "battlefield",
@@ -1784,7 +1784,7 @@
     }
 
     function composeMergedNarrative(bundle, parts) {
-      const speaker = currentSpeakerName();
+      const speaker = state.data?.displayName || "劉備";
       const targetName = bundle?.target?.label || "對方";
       const scene = collectConciseSentences(stripSceneLeadRedundancy(parts.sceneText, speaker, targetName), {
         maxSentences: 1,
@@ -2602,7 +2602,6 @@
     }
 
     function adaptCardForTarget(card, target) {
-      const speaker = currentSpeakerName();
       const directMatch = !Array.isArray(card.relatedTargetIds)
         || card.relatedTargetIds.length === 0
         || card.relatedTargetIds.includes(target.targetId);
@@ -2616,7 +2615,7 @@
       }
       return {
         title: `借鏡舊事，對照${target.label}`,
-        summary: `這段線索原本不是直接描述${target.label}，但${speaker}把其中的得失借來對照眼前局勢。`,
+        summary: `這段線索原本不是直接描述${target.label}，但劉備把其中的得失借來對照眼前局勢。`,
         quote: "",
         sourceRefs: card.sourceRefs || [],
       };
@@ -2661,17 +2660,16 @@
     }
 
     function decorateRelationshipTarget(raw) {
-      const speaker = currentSpeakerName();
       const relationType = String(raw.relationshipType || "");
       const fallbackTone = raw.femaleFocus ? {
         role: "女性互動線索",
-        thoughtTone: `一牽涉到女性與家室，${speaker}的念頭就會從單純的勝負轉成更細的去留與安置。`,
+        thoughtTone: "一牽涉到女性與家室，劉備的念頭就會從單純的勝負轉成更細的去留與安置。",
         dialogueTone: "「此事不只關乎成敗，也關乎誰要承擔餘波。」",
         actionBias: "先顧家室與去留，再談出兵與否",
         meterDelta: { benevolence: 2, bond: 2, longing: 5, prudence: 1 },
       } : {
         role: raw.role || "人物線索",
-        thoughtTone: `這個人會把${speaker}的心事往另一個方向推去，讓他重新衡量自己該先守住什麼。`,
+        thoughtTone: "這個人會把劉備的心事往另一個方向推去，讓他重新衡量自己該先守住什麼。",
         dialogueTone: "「此事不可只看一時快慢，還要看後頭的人心會怎麼散。」",
         actionBias: "先看局面與人心，再定下一步",
         meterDelta: { benevolence: 2, prudence: 2, resolve: 1 },
@@ -2679,42 +2677,42 @@
       const relationToneMap = {
         sworn_sibling: {
           role: raw.role || "兄弟 / 義氣相託",
-          thoughtTone: `想到這段義氣，${speaker}往往先想起自己還欠下多少不該由對方獨扛的風浪。`,
+          thoughtTone: "想到這段義氣，劉備往往先想起自己還欠下多少不該由對方獨扛的風浪。",
           dialogueTone: "「先讓我把人護住，再談勝負也不遲。」",
           actionBias: "先護住兄弟與退路，再談推進",
           meterDelta: { bond: 6, longing: 2, resolve: 2 },
         },
         battle_ally: {
           role: raw.role || "戰陣同盟",
-          thoughtTone: `對方一出現，${speaker}會立刻把心神轉到聯手與護側上。`,
+          thoughtTone: "對方一出現，劉備會立刻把心神轉到聯手與護側上。",
           dialogueTone: "「你先守住那一翼，我來把剩下的人心整回來。」",
           actionBias: "先協同與補位，再追下一步",
           meterDelta: { bond: 4, resolve: 2, prudence: 1 },
         },
         enemy_rival: {
           role: raw.role || "宿敵 / 勝負對照",
-          thoughtTone: `想到宿敵，${speaker}不只是起戒心，也會更清楚自己不想失掉的底線。`,
+          thoughtTone: "想到宿敵，劉備不只是起戒心，也會更清楚自己不想失掉的底線。",
           dialogueTone: "「若要贏得只剩手段，便連自己也輸了。」",
           actionBias: "先衡量代價，再決定是否用強",
           meterDelta: { prudence: 4, resolve: 4, benevolence: 1 },
         },
         battlefield_opponent: {
           role: raw.role || "戰場對手",
-          thoughtTone: `這種對手會讓${speaker}立刻警覺起來，但他仍會先看己方是否穩得住。`,
+          thoughtTone: "這種對手會讓劉備立刻警覺起來，但他仍會先看己方是否穩得住。",
           dialogueTone: "「先別躁進，把隊形收緊，讓人心站穩。」",
           actionBias: "先整隊與試探，再決定強攻",
           meterDelta: { prudence: 3, resolve: 3, bond: 1 },
         },
         patron_client: {
           role: raw.role || "舊恩 / 倚重",
-          thoughtTone: `這種人物會讓${speaker}先想到自己受過的援手，以及該如何把恩義還回去。`,
+          thoughtTone: "這種人物會讓劉備先想到自己受過的援手，以及該如何把恩義還回去。",
           dialogueTone: "「恩義不是口頭記著就夠，得落到實際安置上。」",
           actionBias: "先盤點支援與安置，再談用兵",
           meterDelta: { benevolence: 4, bond: 4, prudence: -1 },
         },
         betrayal_surrender: {
           role: raw.role || "降附 / 去留未定",
-          thoughtTone: `這樣的人會讓${speaker}同時想到機會與反噬，心裡多半不會完全放鬆。`,
+          thoughtTone: "這樣的人會讓劉備同時想到機會與反噬，心裡多半不會完全放鬆。",
           dialogueTone: "「能收人，卻未必能立刻收心，得先把防線留好。」",
           actionBias: "先設防與觀望，再決定是否倚重",
           meterDelta: { prudence: 4, resolve: 1, longing: -1 },
@@ -3030,7 +3028,6 @@
       const adjustedCard = adaptCardForTarget(card, target);
       const persona = state.data.persona || {};
       const profile = persona.profile || {};
-      const speaker = currentSpeakerName();
       const safeLine = persona.safeFallbackLine || "備所念者，不過百姓得安、兄弟不離。";
       const affect = humanizeSymbolicText(pickFromArray(profile.affectTags || [], 0, "牽掛"));
       const activity = humanizeSymbolicText(pickFromArray(state.data.activitySeeds.map((seed) => seed.label), 1, "巡營問細事"));
@@ -3039,7 +3036,7 @@
       const locationLead = card.location ? `在${card.location}的記憶邊上，` : "夜色一沉，";
       const quoteLine = adjustedCard.quote ? `他記得那句原文：「${shortenText(adjustedCard.quote, 72)}」` : `那股${affect}的感受沒有完全散去。`;
       const emotionalLead = target.femaleFocus
-        ? `一牽涉到女性與家室，${speaker}的心思就不再只剩勝負。`
+        ? "一牽涉到女性與家室，劉備的心思就不再只剩勝負。"
         : target.relationshipType === "enemy_rival" || target.relationshipType === "battlefield_opponent"
         ? "想到對手時，他的戒心會先升起，但還是會忍住躁進。"
         : "想到眼前這個人時，他的心先被情義與責任拉住。";
@@ -3159,11 +3156,10 @@
     }
 
     function buildTemplateChorusLine(bundle, target) {
-      const speaker = currentSpeakerName();
       const roleLead = target.femaleFocus ? "她" : "他";
       const angleLabel = angleDefinitions[bundle.card.angle]?.label || "這幕";
       const humanizedTitle = humanizeSymbolicText(bundle.card.title || "這幕舊事");
-      const base = `${target.label}看著${speaker}提起「${humanizedTitle}」，${roleLead}先想到${angleLabel}背後的代價。`;
+      const base = `${target.label}看著劉備提起「${humanizedTitle}」，${roleLead}先想到${angleLabel}背後的代價。`;
       if (target.relationshipType === "enemy_rival" || target.relationshipType === "battlefield_opponent") {
         return `${base}「若此刻躁進，反而會被人心反噬。」`;
       }
@@ -3200,7 +3196,7 @@
           saveId: `demo-chorus-${GENERAL_ID}`,
           shortTerm: shortenText(bundle.sceneText || "", 140),
           longTerm: shortenText(`${bundle.memoryText || ""} ${bundle.emotionText || ""}`.trim(), 140),
-          playerProfile: shortenText(`${currentSpeakerName()}正在對${target.label}相關局勢做判斷。`, 96),
+          playerProfile: shortenText(`劉備正在對${target.label}相關局勢做判斷。`, 96),
           promises: shortenText(bundle.intentText || "", 120),
         },
       };
@@ -3292,7 +3288,7 @@
         elements.sceneText.innerHTML = `<span class="loading-pulse">正在把這幕慢慢演出來……</span>`;
         elements.memoryText.innerHTML = "";
         elements.emotionText.innerHTML = "";
-        elements.dialogueText.innerHTML = `<span class="loading-pulse">正在依據 persona 與證據生成一句更像${currentSpeakerName()}會說的話……</span>`;
+        elements.dialogueText.innerHTML = `<span class="loading-pulse">正在依據 persona 與證據生成一句更像劉備會說的話……</span>`;
         elements.intentText.innerHTML = "";
         elements.storyText.innerHTML = `<span class="loading-pulse">正在把四段敘事融合成完整劇情……</span>`;
         refreshIllustrationPrompt();
@@ -3385,9 +3381,6 @@
       const nextAngleIndex = (angleKeys.indexOf(state.activeAngle) + 1) % angleKeys.length;
       state.activeAngle = angleKeys[nextAngleIndex];
       const people = state.data.relationships;
-      if (!people.length) {
-        return;
-      }
       const personIndex = people.findIndex((target) => target.targetId === state.activePerson);
       state.activePerson = people[(personIndex + 1 + people.length) % people.length].targetId;
       renderAngles();
@@ -3431,8 +3424,6 @@
     }
 
     function resetStageTexts() {
-      const showcaseConfig = resolveGeneralShowcaseConfig(GENERAL_ID);
-      const speaker = currentSpeakerName();
       state.revealToken += 1;
       state.imageRequestToken += 1;
       state.dialogueRequestToken += 1;
@@ -3443,15 +3434,15 @@
       state.imageAbortController = null;
       state.dialogueAbortController = null;
       state.currentBundle = null;
-      elements.sceneTitle.textContent = showcaseConfig.stageTitle;
-      elements.sceneNote.textContent = showcaseConfig.stageNote;
+      elements.sceneTitle.textContent = "營火未熄，劉備正在聽風";
+      elements.sceneNote.textContent = "請先選擇一個角度與互動對象。這個頁面會慢慢把劉備的心事與下一步行動演出來。";
       elements.sourceBadge.textContent = state.data.sourceMode === "runtime-general-profiles" ? "真資料待命" : "示範待命";
       elements.sceneMeta.innerHTML = "";
-      elements.sceneText.textContent = showcaseConfig.stageSceneText;
+      elements.sceneText.textContent = "劉備立在帳前，聽見遠處巡哨回報，卻沒有立刻下令。他只是把手按在案邊，像是在等某段舊事自己慢慢浮上來。";
       elements.memoryText.textContent = "等待資料與第一幕。";
       elements.emotionText.textContent = "人物情緒會依照角度與互動對象慢慢出現。";
-      elements.dialogueText.textContent = `等第一幕觸發後，這裡會出現更像${speaker}會說的話。`;
-      elements.intentText.textContent = `每一幕都會把資料轉成${speaker}下一步的行動意圖。`;
+      elements.dialogueText.textContent = "等第一幕觸發後，這裡會出現更像劉備會說的話。";
+      elements.intentText.textContent = "每一幕都會把資料轉成劉備下一步的行動意圖。";
       elements.storyText.textContent = "等這一幕的四段內容都出現後，這裡會自動融合成一段更有畫面感的完整敘事。";
       elements.illustrationPrompt.textContent = "等待第一幕生成後，這裡會自動整理一段可以直接餵給圖像模型的 prompt。";
       elements.illustrationHint.textContent = "現在這段 prompt 會保留在左側，真正生成的插圖會顯示在右側。";
@@ -3465,16 +3456,11 @@
     }
 
     function resetGame() {
-      const showcaseConfig = resolveGeneralShowcaseConfig(GENERAL_ID);
-      const relationships = state.data.relationships || [];
       clearAutoTimer();
       state.auto = false;
       state.turn = 1;
-      state.activeAngle = state.data.defaultAngle || showcaseConfig.defaultAngle;
-      state.activePerson = relationships.find((target) => target.targetId === state.data.defaultTargetId)?.targetId
-        || relationships.find((target) => target.targetId === showcaseConfig.defaultTargetId)?.targetId
-        || relationships[0]?.targetId
-        || showcaseConfig.defaultTargetId;
+      state.activeAngle = "emotion";
+      state.activePerson = state.data.relationships.find((target) => target.femaleFocus)?.targetId || state.data.relationships[0].targetId;
       state.meters = {
         benevolence: 74,
         bond: 83,
@@ -3507,9 +3493,6 @@
         }
         const angleKeys = Object.keys(angleDefinitions);
         const people = state.data.relationships;
-        if (!people.length) {
-          return;
-        }
         state.activeAngle = angleKeys[Math.floor(Math.random() * angleKeys.length)];
         state.activePerson = people[Math.floor(Math.random() * people.length)].targetId;
         renderAngles();
@@ -3527,7 +3510,6 @@
 
     async function init() {
       bindEvents();
-      renderGeneralSelector();
       updateSpeedLabel();
       renderMeters();
       const data = await loadNarrativeData();
@@ -3540,7 +3522,6 @@
     init().catch((error) => {
       console.error(error);
       applyData({ ...fallbackNarrativeData });
-      renderGeneralSelector();
       renderAngles();
       renderRelationships();
       resetStageTexts();
