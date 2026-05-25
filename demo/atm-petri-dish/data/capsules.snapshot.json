@@ -1,0 +1,619 @@
+{
+  "_meta": {
+    "generatedAt": "2026-05-25T01:00:27.115Z",
+    "generatedBy": "TASK-WEB-0001",
+    "source": "atomic_workbench/capsules/<slug>/capsule.manifest.json",
+    "selected": [
+      "parse-color",
+      "normalize-css-color-to-hex",
+      "build-draft-from-html",
+      "collect-behavior",
+      "merge-computed-style",
+      "parse-fragment-list",
+      "resolve-font-family-to-asset",
+      "apply-text-transform-general",
+      "compute-letter-spacing",
+      "infer-tab-semantic-hints",
+      "build-font-face-registry",
+      "normalize-rect"
+    ],
+    "isSnapshot": true,
+    "note": "這是某一時點的 ATM 快照。重生指令見本目錄的 README.md。"
+  },
+  "capsules": [
+    {
+      "capsuleId": "H2U-CAPSULE-PARSE-COLOR",
+      "symbolName": "parseColor",
+      "anchorId": "H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F",
+      "moduleSlug": "draft-builder-core-82992a5f",
+      "source": {
+        "file": "tools_node/lib/dom-to-ui/draft-builder-core.js",
+        "sourceRange": {
+          "startLine": 2942,
+          "endLine": 2970
+        },
+        "semanticFingerprint": "sf:sha256:ea87d4317083ab80a78a7bd6658cb87d6a24da32337f873e84daf5f83a5ec337"
+      },
+      "tier": "local-capsule-candidate",
+      "recommendedTier": "governed-atom",
+      "classification": {
+        "exported": true,
+        "lineCount": 29,
+        "severity": "block-if-untested",
+        "riskScore": 85,
+        "sideEffectRisk": false
+      },
+      "behaviorContract": {
+        "oracleMode": "template-contract",
+        "manualTestRequired": false,
+        "templateCompletenessRequired": true
+      },
+      "usageRefStats": {
+        "totalRefs": 15,
+        "distinctFiles": 4,
+        "distinctKinds": 1,
+        "externalRefs": 10,
+        "kinds": [
+          "tooling"
+        ]
+      },
+      "lineage": {
+        "bornBy": "authoring-time-auto-atomization",
+        "parentRefs": [
+          "legacy://3KLife/tools_node/lib/dom-to-ui/draft-builder-core.js#L2942-L2970"
+        ]
+      },
+      "promotion": {
+        "currentTier": "local-capsule-candidate",
+        "history": [],
+        "sourceIdentityStable": true,
+        "semanticFingerprint": "sf:sha256:ea87d4317083ab80a78a7bd6658cb87d6a24da32337f873e84daf5f83a5ec337"
+      }
+    },
+    {
+      "capsuleId": "H2U-CAPSULE-NORMALIZE-CSS-COLOR-TO-HEX",
+      "symbolName": "normalizeCssColorToHex",
+      "anchorId": "H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F",
+      "moduleSlug": "draft-builder-core-82992a5f",
+      "source": {
+        "file": "tools_node/lib/dom-to-ui/draft-builder-core.js",
+        "sourceRange": {
+          "startLine": 2867,
+          "endLine": 2900
+        },
+        "semanticFingerprint": "sf:sha256:da5cdbdf923c795bc164cee4b8f270f0d7843cf2e378a15dfadc0f5f6d669a4a"
+      },
+      "tier": "local-capsule-candidate",
+      "recommendedTier": "governed-atom",
+      "classification": {
+        "exported": true,
+        "lineCount": 34,
+        "severity": "block-if-untested",
+        "riskScore": 85,
+        "sideEffectRisk": false
+      },
+      "behaviorContract": {
+        "oracleMode": "template-contract",
+        "manualTestRequired": false,
+        "templateCompletenessRequired": true
+      },
+      "usageRefStats": {
+        "totalRefs": 3,
+        "distinctFiles": 2,
+        "distinctKinds": 1,
+        "externalRefs": 1,
+        "kinds": [
+          "tooling"
+        ]
+      },
+      "lineage": {
+        "bornBy": "authoring-time-auto-atomization",
+        "parentRefs": [
+          "legacy://3KLife/tools_node/lib/dom-to-ui/draft-builder-core.js#L2867-L2900"
+        ]
+      },
+      "promotion": {
+        "currentTier": "local-capsule-candidate",
+        "history": [],
+        "sourceIdentityStable": true,
+        "semanticFingerprint": "sf:sha256:da5cdbdf923c795bc164cee4b8f270f0d7843cf2e378a15dfadc0f5f6d669a4a"
+      }
+    },
+    {
+      "capsuleId": "H2U-CAPSULE-BUILD-DRAFT-FROM-HTML",
+      "symbolName": "buildDraftFromHtml",
+      "anchorId": "H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F",
+      "moduleSlug": "draft-builder-core-82992a5f",
+      "source": {
+        "file": "tools_node/lib/dom-to-ui/draft-builder-core.js",
+        "sourceRange": {
+          "startLine": 60,
+          "endLine": 172
+        },
+        "semanticFingerprint": "sf:sha256:f920b4c95046c721ad803446582b24d3f11574cdbaab907313299c56d15cd2f2"
+      },
+      "tier": "local-capsule-candidate",
+      "recommendedTier": "governed-atom",
+      "classification": {
+        "exported": true,
+        "lineCount": 113,
+        "severity": "block-if-untested",
+        "riskScore": 100,
+        "sideEffectRisk": false
+      },
+      "behaviorContract": {
+        "oracleMode": "template-contract",
+        "manualTestRequired": false,
+        "templateCompletenessRequired": true
+      },
+      "usageRefStats": {
+        "totalRefs": 24,
+        "distinctFiles": 5,
+        "distinctKinds": 2,
+        "externalRefs": 23,
+        "kinds": [
+          "test",
+          "tooling"
+        ]
+      },
+      "lineage": {
+        "bornBy": "authoring-time-auto-atomization",
+        "parentRefs": [
+          "legacy://3KLife/tools_node/lib/dom-to-ui/draft-builder-core.js#L60-L172"
+        ]
+      },
+      "promotion": {
+        "currentTier": "local-capsule-candidate",
+        "history": [],
+        "sourceIdentityStable": true,
+        "semanticFingerprint": "sf:sha256:f920b4c95046c721ad803446582b24d3f11574cdbaab907313299c56d15cd2f2"
+      }
+    },
+    {
+      "capsuleId": "H2U-CAPSULE-COLLECT-BEHAVIOR",
+      "symbolName": "collectBehavior",
+      "anchorId": "H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F",
+      "moduleSlug": "draft-builder-core-82992a5f",
+      "source": {
+        "file": "tools_node/lib/dom-to-ui/draft-builder-core.js",
+        "sourceRange": {
+          "startLine": 1086,
+          "endLine": 1101
+        },
+        "semanticFingerprint": "sf:sha256:d055feff873b793330a6d48993cb58a1a4c5bc5db91f66a82f7b8d9f996b8c95"
+      },
+      "tier": "local-capsule-candidate",
+      "recommendedTier": "governed-atom",
+      "classification": {
+        "exported": true,
+        "lineCount": 16,
+        "severity": "block-if-untested",
+        "riskScore": 75,
+        "sideEffectRisk": false
+      },
+      "behaviorContract": {
+        "oracleMode": "template-contract",
+        "manualTestRequired": false,
+        "templateCompletenessRequired": true
+      },
+      "usageRefStats": {
+        "totalRefs": 5,
+        "distinctFiles": 2,
+        "distinctKinds": 1,
+        "externalRefs": 1,
+        "kinds": [
+          "tooling"
+        ]
+      },
+      "lineage": {
+        "bornBy": "authoring-time-auto-atomization",
+        "parentRefs": [
+          "legacy://3KLife/tools_node/lib/dom-to-ui/draft-builder-core.js#L1086-L1101"
+        ]
+      },
+      "promotion": {
+        "currentTier": "local-capsule-candidate",
+        "history": [],
+        "sourceIdentityStable": true,
+        "semanticFingerprint": "sf:sha256:d055feff873b793330a6d48993cb58a1a4c5bc5db91f66a82f7b8d9f996b8c95"
+      }
+    },
+    {
+      "capsuleId": "H2U-CAPSULE-MERGE-COMPUTED-STYLE",
+      "symbolName": "mergeComputedStyle",
+      "anchorId": "H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F",
+      "moduleSlug": "draft-builder-core-82992a5f",
+      "source": {
+        "file": "tools_node/lib/dom-to-ui/draft-builder-core.js",
+        "sourceRange": {
+          "startLine": 2406,
+          "endLine": 2489
+        },
+        "semanticFingerprint": "sf:sha256:0b5ebd85a74f2a39cc9626692a3811bf21dd00e8ad7e53f8273725f3dae8d4e1"
+      },
+      "tier": "local-capsule",
+      "recommendedTier": "local-capsule",
+      "classification": {
+        "exported": false,
+        "lineCount": 84,
+        "severity": "advisory",
+        "riskScore": 65,
+        "sideEffectRisk": false
+      },
+      "behaviorContract": {
+        "oracleMode": "template-contract",
+        "manualTestRequired": false,
+        "templateCompletenessRequired": false
+      },
+      "usageRefStats": {
+        "totalRefs": 1,
+        "distinctFiles": 1,
+        "distinctKinds": 1,
+        "externalRefs": 0,
+        "kinds": [
+          "tooling"
+        ]
+      },
+      "lineage": {
+        "bornBy": "authoring-time-auto-atomization",
+        "parentRefs": [
+          "legacy://3KLife/tools_node/lib/dom-to-ui/draft-builder-core.js#L2406-L2489"
+        ]
+      },
+      "promotion": {
+        "currentTier": "local-capsule",
+        "history": [],
+        "sourceIdentityStable": true,
+        "semanticFingerprint": "sf:sha256:0b5ebd85a74f2a39cc9626692a3811bf21dd00e8ad7e53f8273725f3dae8d4e1"
+      }
+    },
+    {
+      "capsuleId": "H2U-CAPSULE-PARSE-FRAGMENT-LIST",
+      "symbolName": "parseFragmentList",
+      "anchorId": "H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F",
+      "moduleSlug": "draft-builder-core-82992a5f",
+      "source": {
+        "file": "tools_node/lib/dom-to-ui/draft-builder-core.js",
+        "sourceRange": {
+          "startLine": 868,
+          "endLine": 875
+        },
+        "semanticFingerprint": "sf:sha256:856d78fb8f80aa8b321c704509044e0f2c3cef223908b81a88400bed847632ac"
+      },
+      "tier": "local-capsule-candidate",
+      "recommendedTier": "governed-atom",
+      "classification": {
+        "exported": true,
+        "lineCount": 8,
+        "severity": "block-if-untested",
+        "riskScore": 85,
+        "sideEffectRisk": false
+      },
+      "behaviorContract": {
+        "oracleMode": "template-contract",
+        "manualTestRequired": false,
+        "templateCompletenessRequired": true
+      },
+      "usageRefStats": {
+        "totalRefs": 6,
+        "distinctFiles": 5,
+        "distinctKinds": 3,
+        "externalRefs": 4,
+        "kinds": [
+          "case-study",
+          "other",
+          "tooling"
+        ]
+      },
+      "lineage": {
+        "bornBy": "authoring-time-auto-atomization",
+        "parentRefs": [
+          "legacy://3KLife/tools_node/lib/dom-to-ui/draft-builder-core.js#L868-L875"
+        ]
+      },
+      "promotion": {
+        "currentTier": "local-capsule-candidate",
+        "history": [],
+        "sourceIdentityStable": true,
+        "semanticFingerprint": "sf:sha256:856d78fb8f80aa8b321c704509044e0f2c3cef223908b81a88400bed847632ac"
+      }
+    },
+    {
+      "capsuleId": "H2U-CAPSULE-RESOLVE-FONT-FAMILY-TO-ASSET",
+      "symbolName": "resolveFontFamilyToAsset",
+      "anchorId": "H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F",
+      "moduleSlug": "draft-builder-core-82992a5f",
+      "source": {
+        "file": "tools_node/lib/dom-to-ui/draft-builder-core.js",
+        "sourceRange": {
+          "startLine": 2743,
+          "endLine": 2835
+        },
+        "semanticFingerprint": "sf:sha256:aa9f7f72f502741594e75bf0ef2bbad4acdd50d093ee2510316a4a92bcfccc53"
+      },
+      "tier": "local-capsule-candidate",
+      "recommendedTier": "governed-atom",
+      "classification": {
+        "exported": true,
+        "lineCount": 93,
+        "severity": "block-if-untested",
+        "riskScore": 100,
+        "sideEffectRisk": false
+      },
+      "behaviorContract": {
+        "oracleMode": "template-contract",
+        "manualTestRequired": false,
+        "templateCompletenessRequired": true
+      },
+      "usageRefStats": {
+        "totalRefs": 17,
+        "distinctFiles": 3,
+        "distinctKinds": 2,
+        "externalRefs": 16,
+        "kinds": [
+          "test",
+          "tooling"
+        ]
+      },
+      "lineage": {
+        "bornBy": "authoring-time-auto-atomization",
+        "parentRefs": [
+          "legacy://3KLife/tools_node/lib/dom-to-ui/draft-builder-core.js#L2743-L2835"
+        ]
+      },
+      "promotion": {
+        "currentTier": "local-capsule-candidate",
+        "history": [],
+        "sourceIdentityStable": true,
+        "semanticFingerprint": "sf:sha256:aa9f7f72f502741594e75bf0ef2bbad4acdd50d093ee2510316a4a92bcfccc53"
+      }
+    },
+    {
+      "capsuleId": "H2U-CAPSULE-APPLY-TEXT-TRANSFORM-GENERAL",
+      "symbolName": "applyTextTransformGeneral",
+      "anchorId": "H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F",
+      "moduleSlug": "draft-builder-core-82992a5f",
+      "source": {
+        "file": "tools_node/lib/dom-to-ui/draft-builder-core.js",
+        "sourceRange": {
+          "startLine": 1848,
+          "endLine": 1861
+        },
+        "semanticFingerprint": "sf:sha256:10829fb9d2417a9614b0b08dcc0ac88a989d11242bcb25ac4ecd4d96d5caae40"
+      },
+      "tier": "local-capsule-candidate",
+      "recommendedTier": "governed-atom",
+      "classification": {
+        "exported": true,
+        "lineCount": 14,
+        "severity": "block-if-untested",
+        "riskScore": 85,
+        "sideEffectRisk": false
+      },
+      "behaviorContract": {
+        "oracleMode": "template-contract",
+        "manualTestRequired": false,
+        "templateCompletenessRequired": true
+      },
+      "usageRefStats": {
+        "totalRefs": 12,
+        "distinctFiles": 3,
+        "distinctKinds": 2,
+        "externalRefs": 10,
+        "kinds": [
+          "test",
+          "tooling"
+        ]
+      },
+      "lineage": {
+        "bornBy": "authoring-time-auto-atomization",
+        "parentRefs": [
+          "legacy://3KLife/tools_node/lib/dom-to-ui/draft-builder-core.js#L1848-L1861"
+        ]
+      },
+      "promotion": {
+        "currentTier": "local-capsule-candidate",
+        "history": [],
+        "sourceIdentityStable": true,
+        "semanticFingerprint": "sf:sha256:10829fb9d2417a9614b0b08dcc0ac88a989d11242bcb25ac4ecd4d96d5caae40"
+      }
+    },
+    {
+      "capsuleId": "H2U-CAPSULE-COMPUTE-LETTER-SPACING",
+      "symbolName": "computeLetterSpacing",
+      "anchorId": "H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F",
+      "moduleSlug": "draft-builder-core-82992a5f",
+      "source": {
+        "file": "tools_node/lib/dom-to-ui/draft-builder-core.js",
+        "sourceRange": {
+          "startLine": 2711,
+          "endLine": 2722
+        },
+        "semanticFingerprint": "sf:sha256:744d871dcabfba6496305acc415010e41c68a2f47c4fd49efd121ce886c90562"
+      },
+      "tier": "local-capsule-candidate",
+      "recommendedTier": "governed-atom",
+      "classification": {
+        "exported": true,
+        "lineCount": 12,
+        "severity": "block-if-untested",
+        "riskScore": 85,
+        "sideEffectRisk": false
+      },
+      "behaviorContract": {
+        "oracleMode": "template-contract",
+        "manualTestRequired": false,
+        "templateCompletenessRequired": true
+      },
+      "usageRefStats": {
+        "totalRefs": 3,
+        "distinctFiles": 2,
+        "distinctKinds": 1,
+        "externalRefs": 1,
+        "kinds": [
+          "tooling"
+        ]
+      },
+      "lineage": {
+        "bornBy": "authoring-time-auto-atomization",
+        "parentRefs": [
+          "legacy://3KLife/tools_node/lib/dom-to-ui/draft-builder-core.js#L2711-L2722"
+        ]
+      },
+      "promotion": {
+        "currentTier": "local-capsule-candidate",
+        "history": [],
+        "sourceIdentityStable": true,
+        "semanticFingerprint": "sf:sha256:744d871dcabfba6496305acc415010e41c68a2f47c4fd49efd121ce886c90562"
+      }
+    },
+    {
+      "capsuleId": "H2U-CAPSULE-INFER-TAB-SEMANTIC-HINTS",
+      "symbolName": "inferTabSemanticHints",
+      "anchorId": "H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F",
+      "moduleSlug": "draft-builder-core-82992a5f",
+      "source": {
+        "file": "tools_node/lib/dom-to-ui/draft-builder-core.js",
+        "sourceRange": {
+          "startLine": 730,
+          "endLine": 779
+        },
+        "semanticFingerprint": "sf:sha256:1c10eef576a230c5b591a536c7f8e35090120addc5043b62a994df789ebf9b02"
+      },
+      "tier": "local-capsule-candidate",
+      "recommendedTier": "governed-atom",
+      "classification": {
+        "exported": true,
+        "lineCount": 50,
+        "severity": "block-if-untested",
+        "riskScore": 85,
+        "sideEffectRisk": false
+      },
+      "behaviorContract": {
+        "oracleMode": "template-contract",
+        "manualTestRequired": false,
+        "templateCompletenessRequired": true
+      },
+      "usageRefStats": {
+        "totalRefs": 3,
+        "distinctFiles": 2,
+        "distinctKinds": 1,
+        "externalRefs": 1,
+        "kinds": [
+          "tooling"
+        ]
+      },
+      "lineage": {
+        "bornBy": "authoring-time-auto-atomization",
+        "parentRefs": [
+          "legacy://3KLife/tools_node/lib/dom-to-ui/draft-builder-core.js#L730-L779"
+        ]
+      },
+      "promotion": {
+        "currentTier": "local-capsule-candidate",
+        "history": [],
+        "sourceIdentityStable": true,
+        "semanticFingerprint": "sf:sha256:1c10eef576a230c5b591a536c7f8e35090120addc5043b62a994df789ebf9b02"
+      }
+    },
+    {
+      "capsuleId": "H2U-CAPSULE-BUILD-FONT-FACE-REGISTRY",
+      "symbolName": "buildFontFaceRegistry",
+      "anchorId": "H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F",
+      "moduleSlug": "draft-builder-core-82992a5f",
+      "source": {
+        "file": "tools_node/lib/dom-to-ui/draft-builder-core.js",
+        "sourceRange": {
+          "startLine": 2772,
+          "endLine": 2787
+        },
+        "semanticFingerprint": "sf:sha256:20bccfd827328b58044e2452c6ac5c790329966dfc767174ddb77811a6530001"
+      },
+      "tier": "local-capsule-candidate",
+      "recommendedTier": "governed-atom",
+      "classification": {
+        "exported": true,
+        "lineCount": 16,
+        "severity": "block-if-untested",
+        "riskScore": 85,
+        "sideEffectRisk": false
+      },
+      "behaviorContract": {
+        "oracleMode": "template-contract",
+        "manualTestRequired": false,
+        "templateCompletenessRequired": true
+      },
+      "usageRefStats": {
+        "totalRefs": 7,
+        "distinctFiles": 3,
+        "distinctKinds": 2,
+        "externalRefs": 5,
+        "kinds": [
+          "test",
+          "tooling"
+        ]
+      },
+      "lineage": {
+        "bornBy": "authoring-time-auto-atomization",
+        "parentRefs": [
+          "legacy://3KLife/tools_node/lib/dom-to-ui/draft-builder-core.js#L2772-L2787"
+        ]
+      },
+      "promotion": {
+        "currentTier": "local-capsule-candidate",
+        "history": [],
+        "sourceIdentityStable": true,
+        "semanticFingerprint": "sf:sha256:20bccfd827328b58044e2452c6ac5c790329966dfc767174ddb77811a6530001"
+      }
+    },
+    {
+      "capsuleId": "H2U-CAPSULE-NORMALIZE-RECT",
+      "symbolName": "normalizeRect",
+      "anchorId": "H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F",
+      "moduleSlug": "draft-builder-core-82992a5f",
+      "source": {
+        "file": "tools_node/lib/dom-to-ui/draft-builder-core.js",
+        "sourceRange": {
+          "startLine": 983,
+          "endLine": 992
+        },
+        "semanticFingerprint": "sf:sha256:4225c8e6ea5ee14c37c137628be38db5425ca560d3f45ff02578fde590576c43"
+      },
+      "tier": "local-capsule",
+      "recommendedTier": "local-capsule",
+      "classification": {
+        "exported": false,
+        "lineCount": 10,
+        "severity": "advisory",
+        "riskScore": 50,
+        "sideEffectRisk": false
+      },
+      "behaviorContract": {
+        "oracleMode": "template-contract",
+        "manualTestRequired": false,
+        "templateCompletenessRequired": false
+      },
+      "usageRefStats": {
+        "totalRefs": 8,
+        "distinctFiles": 3,
+        "distinctKinds": 1,
+        "externalRefs": 6,
+        "kinds": [
+          "tooling"
+        ]
+      },
+      "lineage": {
+        "bornBy": "authoring-time-auto-atomization",
+        "parentRefs": [
+          "legacy://3KLife/tools_node/lib/dom-to-ui/draft-builder-core.js#L983-L992"
+        ]
+      },
+      "promotion": {
+        "currentTier": "local-capsule",
+        "history": [],
+        "sourceIdentityStable": true,
+        "semanticFingerprint": "sf:sha256:4225c8e6ea5ee14c37c137628be38db5425ca560d3f45ff02578fde590576c43"
+      }
+    }
+  ]
+}

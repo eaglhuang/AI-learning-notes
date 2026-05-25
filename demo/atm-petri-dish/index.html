@@ -1,0 +1,1808 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>ATM Petri 培養皿 — 原子行為互動劇場</title>
+  <meta name="description" content="把 ATM 框架的 12 種原子行為視覺化為培養皿生物事件，玩家透過反應 demand-police findings 觸發正確 behavior，看著代碼健康度上升。">
+  <style>
+    /* ────────────────────────────────────────────────
+       Design tokens — 與 AI-learning-notes 首頁同步
+    ──────────────────────────────────────────────── */
+    :root {
+      --ink:        #1c211c;
+      --muted:      #58645d;
+      --paper:      #f6f0df;
+      --paper-2:    #ece4cf;
+      --panel:      rgba(252,248,238,0.92);
+      --jade:       #1f6d5c;
+      --jade-2:     #17493f;
+      --cinnabar:   #9e4337;
+      --gold:       #b69042;
+      --river:      #527b8a;
+      --line:       rgba(28,33,28,0.14);
+      --shadow:     0 18px 56px rgba(20,28,23,0.14);
+      --r:          10px;
+      --r-sm:       8px;
+      --t:          0.18s ease;
+      --serif:      "Noto Serif TC","Source Han Serif TC","Microsoft JhengHei",serif;
+      --mono:       "JetBrains Mono",monospace;
+
+      /* Tier 配色：local-capsule / candidate / governed-atom / shared-atom */
+      --tier-local:     #98a39c;
+      --tier-candidate: var(--jade);
+      --tier-governed:  var(--gold);
+      --tier-shared:    var(--cinnabar);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--serif);
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, rgba(31,109,92,0.10), transparent 30%),
+        linear-gradient(220deg, rgba(158,67,55,0.08), transparent 30%),
+        repeating-linear-gradient(
+          0deg,
+          rgba(28,33,28,0.022), rgba(28,33,28,0.022) 1px,
+          transparent 1px, transparent 18px
+        ),
+        var(--paper);
+      min-height: 100vh;
+      overflow: hidden;
+      animation: pageEnter 0.45s ease both;
+    }
+
+    @keyframes pageEnter {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    button, input { font: inherit; cursor: pointer; }
+    a { color: inherit; }
+
+    /* ── 培養皿主畫面 layout ──────────────────────────── */
+    .app {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      grid-template-rows: auto 1fr auto;
+      grid-template-areas:
+        "topbar topbar"
+        "stage  findings"
+        "dock   findings";
+      gap: 12px;
+      padding: 14px 16px;
+      height: 100vh;
+      width: 100vw;
+      max-width: 1480px;
+      margin: 0 auto;
+    }
+
+    /* ── Topbar ─────────────────────────────────────── */
+    .topbar {
+      grid-area: topbar;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 18px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    .brand {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .brand-mark {
+      width: 36px; height: 36px; border-radius: var(--r-sm);
+      border: 1px solid rgba(31,109,92,0.28);
+      background: rgba(31,109,92,0.08);
+      display: grid; place-items: center;
+      font-family: var(--mono); font-size: 0.62rem; font-weight: 700;
+      color: var(--jade-2);
+    }
+    .brand-text { display: grid; gap: 1px; }
+    .brand-text strong { font-size: 0.95rem; font-weight: 700; }
+    .brand-text small {
+      font-family: var(--mono); font-size: 0.62rem; color: var(--muted);
+    }
+
+    .health-gauge {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .health-label {
+      font-family: var(--mono); font-size: 0.7rem; color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+    .health-bar-wrap {
+      position: relative;
+      width: 240px; height: 14px;
+      background: rgba(28,33,28,0.07);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      overflow: hidden;
+    }
+    .health-bar {
+      position: absolute; inset: 0 auto 0 0;
+      width: 100%;
+      background: linear-gradient(90deg, var(--jade), var(--jade-2));
+      transition: width 0.4s ease, background 0.4s ease;
+    }
+    .health-bar.low  { background: linear-gradient(90deg, var(--gold), #8a6020); }
+    .health-bar.crit { background: linear-gradient(90deg, var(--cinnabar), #6d2018); }
+    .health-num {
+      font-family: var(--mono); font-size: 0.82rem; font-weight: 700;
+      color: var(--jade-2); min-width: 40px; text-align: right;
+    }
+
+    .step-badge {
+      font-family: var(--mono); font-size: 0.7rem;
+      padding: 4px 10px; border-radius: 999px;
+      background: rgba(31,109,92,0.10); color: var(--jade-2);
+      border: 1px solid rgba(31,109,92,0.22);
+    }
+    .step-badge.sandbox {
+      background: rgba(182,144,66,0.12); color: #8a6020;
+      border-color: rgba(182,144,66,0.30);
+    }
+
+    .stats {
+      display: flex; gap: 14px;
+      font-family: var(--mono); font-size: 0.7rem; color: var(--muted);
+    }
+    .stats b { color: var(--ink); font-weight: 700; }
+
+    .reset-btn {
+      padding: 6px 12px; border-radius: var(--r-sm);
+      background: transparent; border: 1px solid var(--line);
+      font-family: var(--mono); font-size: 0.7rem; color: var(--muted);
+      transition: all var(--t);
+    }
+    .reset-btn:hover {
+      border-color: rgba(31,109,92,0.32); color: var(--jade-2);
+      background: rgba(31,109,92,0.04);
+    }
+
+    /* ── 培養皿 (canvas stage) ───────────────────────── */
+    .stage {
+      grid-area: stage;
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(31,109,92,0.06), transparent 60%),
+        radial-gradient(ellipse at 70% 80%, rgba(158,67,55,0.05), transparent 60%),
+        rgba(252,248,238,0.65);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(2px);
+    }
+    .stage.crit::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(158,67,55,0.18));
+      pointer-events: none;
+      animation: critPulse 1.4s ease-in-out infinite;
+    }
+    @keyframes critPulse {
+      0%,100% { opacity: 0.6; } 50% { opacity: 1; }
+    }
+    #petri-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      display: block;
+    }
+    .stage-hint {
+      position: absolute; left: 50%; bottom: 14px;
+      transform: translateX(-50%);
+      font-family: var(--mono); font-size: 0.66rem;
+      color: var(--muted);
+      background: rgba(252,248,238,0.85);
+      padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--line);
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    /* ── Finding 面板 ───────────────────────────────── */
+    .findings {
+      grid-area: findings;
+      display: flex; flex-direction: column;
+      gap: 10px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      overflow: hidden;
+    }
+    .findings-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 8px; border-bottom: 1px solid var(--line);
+    }
+    .findings-title {
+      font-size: 0.86rem; font-weight: 700; color: var(--ink);
+    }
+    .findings-eyebrow {
+      font-family: var(--mono); font-size: 0.6rem; color: var(--cinnabar);
+      letter-spacing: 0.08em;
+    }
+    .findings-list {
+      flex: 1; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 8px;
+      padding-right: 4px;
+    }
+    .finding-card {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-sm);
+      background: rgba(255,255,255,0.62);
+      transition: all var(--t);
+      cursor: pointer;
+      position: relative;
+    }
+    .finding-card:hover {
+      border-color: rgba(158,67,55,0.32);
+      background: rgba(255,255,255,0.86);
+      transform: translateX(-2px);
+    }
+    .finding-card.selected {
+      border-color: var(--cinnabar);
+      background: rgba(158,67,55,0.06);
+      box-shadow: 0 0 0 2px rgba(158,67,55,0.18);
+    }
+    .finding-card.error::before {
+      content: '';
+      position: absolute; left: 0; top: 8px; bottom: 8px;
+      width: 3px; border-radius: 2px;
+      background: var(--cinnabar);
+    }
+    .finding-card.warning::before {
+      content: '';
+      position: absolute; left: 0; top: 8px; bottom: 8px;
+      width: 3px; border-radius: 2px;
+      background: var(--gold);
+    }
+    .finding-rule {
+      font-family: var(--mono); font-size: 0.66rem;
+      color: var(--cinnabar);
+      letter-spacing: 0.04em;
+      margin-bottom: 3px;
+    }
+    .finding-card.warning .finding-rule { color: #8a6020; }
+    .finding-target {
+      font-size: 0.8rem; font-weight: 700; color: var(--ink);
+      line-height: 1.4;
+    }
+    .finding-hint {
+      font-size: 0.72rem; color: var(--muted);
+      margin-top: 4px; line-height: 1.5;
+    }
+    .findings-empty {
+      padding: 20px 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-style: italic;
+    }
+    .findings-empty .pulse {
+      display: inline-block;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--jade); margin-right: 6px;
+      animation: pulseDot 2.6s ease-in-out infinite;
+      vertical-align: middle;
+    }
+    @keyframes pulseDot {
+      0%,100% { opacity: 1; } 50% { opacity: 0.3; }
+    }
+
+    /* ── Behavior dock ──────────────────────────────── */
+    .dock {
+      grid-area: dock;
+      display: flex; gap: 8px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+    }
+    .behavior-btn {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-width: 72px;
+      padding: 8px 10px;
+      border-radius: var(--r-sm);
+      background: rgba(255,255,255,0.55);
+      border: 1px solid var(--line);
+      transition: all var(--t);
+      position: relative;
+    }
+    .behavior-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      border-color: rgba(31,109,92,0.32);
+      box-shadow: 0 6px 20px rgba(20,28,23,0.07);
+    }
+    .behavior-btn:disabled {
+      opacity: 0.32; cursor: not-allowed; transform: none;
+    }
+    .behavior-btn.active {
+      border-color: var(--jade);
+      background: rgba(31,109,92,0.10);
+    }
+    .behavior-btn.suggested {
+      border-color: var(--gold);
+      background: rgba(182,144,66,0.10);
+      box-shadow: 0 0 0 2px rgba(182,144,66,0.22);
+      animation: suggestPulse 1.6s ease-in-out infinite;
+    }
+    @keyframes suggestPulse {
+      0%,100% { box-shadow: 0 0 0 2px rgba(182,144,66,0.22); }
+      50%     { box-shadow: 0 0 0 6px rgba(182,144,66,0.10); }
+    }
+    .behavior-emoji {
+      font-size: 1.6rem; line-height: 1;
+      margin-bottom: 3px;
+      filter: drop-shadow(0 2px 4px rgba(20,28,23,0.18));
+    }
+    .behavior-label {
+      font-family: var(--mono); font-size: 0.66rem;
+      color: var(--ink); font-weight: 700;
+    }
+    .behavior-tooltip {
+      position: absolute; bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 10px;
+      width: 220px;
+      background: var(--ink); color: var(--paper);
+      border-radius: var(--r-sm);
+      font-size: 0.72rem; line-height: 1.6;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.18s ease;
+      z-index: 10;
+    }
+    .behavior-tooltip::after {
+      content: '';
+      position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--ink);
+    }
+    .behavior-btn:hover .behavior-tooltip { opacity: 1; }
+
+    /* ── Toast (錯誤 / 教學氣泡) ─────────────────────── */
+    .toast-stack {
+      position: fixed;
+      top: 80px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; gap: 8px;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .toast {
+      padding: 10px 16px;
+      border-radius: var(--r-sm);
+      background: var(--ink); color: var(--paper);
+      font-size: 0.82rem;
+      box-shadow: 0 8px 24px rgba(20,28,23,0.25);
+      opacity: 0; transform: translateY(-8px);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+      max-width: 460px;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success {
+      background: var(--jade-2); color: var(--paper);
+    }
+    .toast.error {
+      background: var(--cinnabar); color: var(--paper);
+    }
+    .toast.lesson {
+      background: var(--ink); color: var(--paper);
+      border-left: 4px solid var(--gold);
+    }
+
+    /* ── Modal (tutorial intro / 結算) ────────────────── */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(28,33,28,0.55);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+      backdrop-filter: blur(4px);
+    }
+    .modal-backdrop.show { opacity: 1; pointer-events: auto; }
+    .modal {
+      width: min(540px, calc(100vw - 48px));
+      padding: 28px 30px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      box-shadow: 0 24px 80px rgba(20,28,23,0.32);
+      transform: scale(0.94);
+      transition: transform 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .modal-backdrop.show .modal { transform: scale(1); }
+    .modal-eyebrow {
+      font-family: var(--mono); font-size: 0.66rem;
+      letter-spacing: 0.1em;
+      color: var(--cinnabar);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .modal-title {
+      font-size: 1.3rem; font-weight: 700; line-height: 1.4;
+      margin-bottom: 12px;
+    }
+    .modal-body p {
+      font-size: 0.88rem; line-height: 1.84;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .modal-body p:last-child { margin-bottom: 0; }
+    .modal-body code {
+      font-family: var(--mono); font-size: 0.82rem;
+      background: rgba(31,109,92,0.08);
+      color: var(--jade-2);
+      padding: 1px 6px; border-radius: 4px;
+    }
+    .modal-actions {
+      display: flex; gap: 10px; margin-top: 22px;
+      justify-content: flex-end;
+    }
+    .modal-btn {
+      padding: 9px 18px; border-radius: var(--r-sm);
+      font-size: 0.86rem; font-weight: 500;
+      transition: all var(--t);
+      border: none;
+    }
+    .modal-btn-primary {
+      background: linear-gradient(180deg, var(--jade), var(--jade-2));
+      color: var(--paper);
+      box-shadow: 0 4px 16px rgba(23,73,63,0.28);
+    }
+    .modal-btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(23,73,63,0.36);
+    }
+    .modal-btn-ghost {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .modal-btn-ghost:hover { color: var(--jade-2); border-color: rgba(31,109,92,0.32); }
+
+    .stars {
+      display: flex; gap: 8px; margin: 14px 0 8px;
+    }
+    .star {
+      font-size: 2rem; line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(182,144,66,0.40));
+    }
+    .star.dim { opacity: 0.2; filter: grayscale(0.8); }
+
+    /* ── Tier legend (右下角) ─────────────────────────── */
+    .tier-legend {
+      position: absolute;
+      right: 12px; bottom: 12px;
+      display: flex; flex-direction: column; gap: 4px;
+      padding: 8px 10px;
+      background: rgba(252,248,238,0.85);
+      border: 1px solid var(--line);
+      border-radius: var(--r-sm);
+      font-family: var(--mono); font-size: 0.62rem;
+      backdrop-filter: blur(4px);
+      pointer-events: none;
+    }
+    .tier-legend-row {
+      display: flex; align-items: center; gap: 6px;
+      color: var(--muted);
+    }
+    .tier-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      border: 1px solid rgba(28,33,28,0.2);
+    }
+
+    /* ── 響應式 ─────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto auto;
+        grid-template-areas:
+          "topbar"
+          "stage"
+          "dock"
+          "findings";
+      }
+      .findings { max-height: 240px; }
+      .stats { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ── Topbar ─────────────────────────────────── -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">ATM</div>
+        <div class="brand-text">
+          <strong>ATM Petri 培養皿</strong>
+          <small>Atom Behavior Interactive Theatre</small>
+        </div>
+      </div>
+
+      <div class="health-gauge">
+        <span class="health-label">HEALTH</span>
+        <div class="health-bar-wrap">
+          <div class="health-bar" id="health-bar"></div>
+        </div>
+        <span class="health-num" id="health-num">100</span>
+      </div>
+
+      <div class="step-badge" id="step-badge">TUTORIAL · Step 0 / 4</div>
+
+      <div class="stats">
+        <span>✅ 治療 <b id="stat-correct">0</b></span>
+        <span>❌ 失誤 <b id="stat-wrong">0</b></span>
+        <span>🧬 Capsules <b id="stat-capsules">0</b></span>
+      </div>
+
+      <button class="reset-btn" id="reset-btn">⟲ Reset</button>
+    </header>
+
+    <!-- ── Petri dish stage ───────────────────────── -->
+    <div class="stage" id="stage">
+      <canvas id="petri-canvas"></canvas>
+      <div class="stage-hint">滑鼠 hover 細胞 → 看 capsule 詳細資訊；點 finding → 選 behavior</div>
+      <div class="tier-legend">
+        <div class="tier-legend-row"><span class="tier-dot" style="background:var(--tier-local)"></span>local-capsule</div>
+        <div class="tier-legend-row"><span class="tier-dot" style="background:var(--tier-candidate)"></span>local-candidate</div>
+        <div class="tier-legend-row"><span class="tier-dot" style="background:var(--tier-governed)"></span>governed-atom</div>
+        <div class="tier-legend-row"><span class="tier-dot" style="background:var(--tier-shared)"></span>shared-atom</div>
+      </div>
+    </div>
+
+    <!-- ── Findings panel ─────────────────────────── -->
+    <aside class="findings">
+      <div class="findings-header">
+        <div>
+          <div class="findings-eyebrow">DEMAND POLICE</div>
+          <div class="findings-title">病灶警示</div>
+        </div>
+        <span class="findings-eyebrow" id="findings-count">0</span>
+      </div>
+      <div class="findings-list" id="findings-list">
+        <div class="findings-empty">
+          <span class="pulse"></span>等待 police 巡邏中⋯
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── Behavior dock ──────────────────────────── -->
+    <footer class="dock" id="dock"></footer>
+
+  </div>
+
+  <!-- ── Toast stack ─────────────────────────────── -->
+  <div class="toast-stack" id="toast-stack"></div>
+
+  <!-- ── Modal ────────────────────────────────────── -->
+  <div class="modal-backdrop" id="modal-backdrop">
+    <div class="modal" id="modal">
+      <div class="modal-eyebrow" id="modal-eyebrow">TUTORIAL</div>
+      <div class="modal-title" id="modal-title">歡迎來到 ATM 培養皿</div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-actions" id="modal-actions"></div>
+    </div>
+  </div>
+
+  <script>
+    'use strict';
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 1 — Behavior 定義（對應 原子行為參考手冊.md）
+    ═══════════════════════════════════════════════════ */
+
+    const BEHAVIORS = {
+      'anchorize': {
+        emoji: '🫧',
+        label: '錨點化',
+        desc: '為孤兒 capsule 建立 anchor (semantic parent)。orphan-capsule → anchorize',
+        validFor: ['orphan-capsule'],
+      },
+      'dedup-merge': {
+        emoji: '🔬',
+        label: '合併去重',
+        desc: '兩顆 capsule 的 semantic fingerprint 相同，merge 成 1 顆，被吸收者變 deprecated。',
+        validFor: ['duplicate-fingerprint'],
+      },
+      'polymorphize': {
+        emoji: '🧬',
+        label: '多形化',
+        desc: '同 family ≥3 顆 capsule，包成 template + dimension params，registry slot 數量驟降。',
+        validFor: ['family-promotion-threshold'],
+      },
+      'promote': {
+        emoji: '⬆️',
+        label: '晉升',
+        desc: 'local-candidate → governed-atom（驗證通過）或 governed → shared（跨 workflow 使用）。',
+        validFor: ['high-fan-in-shared-suggestion', 'ready-for-governed'],
+      },
+      'split': {
+        emoji: '✂️',
+        label: '分裂',
+        desc: '原子內部子功能被 ≥2 caller 引用 → split 成 2+ atoms。',
+        validFor: ['high-fan-in-split-suggestion'],
+      },
+      'sweep': {
+        emoji: '🧹',
+        label: '清理',
+        desc: 'unused-caller scan 偵測 0 callers 持續 N 天 → active → deprecated。',
+        validFor: ['unused-capsule'],
+      },
+      'expire': {
+        emoji: '⏳',
+        label: '退場',
+        desc: 'deprecated 已過 TTL → expired（終態，不可 rollback）。',
+        validFor: ['ttl-expired'],
+      },
+      'atomize': {
+        emoji: '🔱',
+        label: '原子化',
+        desc: '從 legacy 區段抽出新 capsule，走 candidate → governed 流程。',
+        validFor: ['legacy-blob'],
+      },
+    };
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 2 — Tier → 顏色 / 文案
+    ═══════════════════════════════════════════════════ */
+
+    const TIER_COLOR = {
+      'local-capsule':           'var(--tier-local)',
+      'local-capsule-candidate': 'var(--tier-candidate)',
+      'governed-atom':           'var(--tier-governed)',
+      'shared-atom':             'var(--tier-shared)',
+    };
+    const TIER_HEX = {
+      'local-capsule':           '#98a39c',
+      'local-capsule-candidate': '#1f6d5c',
+      'governed-atom':           '#b69042',
+      'shared-atom':             '#9e4337',
+    };
+    const TIER_NEXT = {
+      'local-capsule-candidate': 'governed-atom',
+      'governed-atom':           'shared-atom',
+    };
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 3 — Tutorial 腳本
+    ═══════════════════════════════════════════════════ */
+
+    const TUTORIAL_STEPS = [
+      {
+        intro: {
+          eyebrow: 'TUTORIAL · STEP 1 / 4',
+          title: '🫧 第一個培養皿，先補上失蹤的「細胞膜」',
+          body: `
+            <p>你眼前有 5 顆從 <code>tools_node/lib/dom-to-ui/draft-builder-core.js</code> 抽出的真實 H2U capsule，每顆都是 <code>local-capsule-candidate</code>。</p>
+            <p>白血球（demand-police）發現其中 1 顆的 <code>anchorId</code> 指向不存在的 anchor —— 這就是 <b><code>orphan-capsule</code></b> finding。</p>
+            <p>解法：點右側紅條 finding → 在底部選 <b>🫧 錨點化</b>。系統會為孤兒生出 anchor 細胞膜，再把所有目標 capsule 吸入。</p>
+          `,
+        },
+        seed: 'orphan-capsule',
+        teach: 'anchorize',
+        successToast: '✅ Anchor 細胞膜生成。所有 capsule 找到 semantic parent。',
+      },
+      {
+        intro: {
+          eyebrow: 'TUTORIAL · STEP 2 / 4',
+          title: '🔬 雙胞胎細胞 — semantic fingerprint 撞號',
+          body: `
+            <p>Police 發現兩顆 capsule 的 <code>semanticFingerprint</code> 一模一樣（<code>duplicate-fingerprint</code>）。這在 registry 裡是 error 等級 finding：相同行為不該佔 2 個 slot。</p>
+            <p>解法：選那條 finding → 觸發 <b>🔬 合併去重</b>。兩顆細胞會飛向對方融合成 1 顆，被吸收者 deprecated，caller refs 自動導向存活者。</p>
+          `,
+        },
+        seed: 'duplicate-fingerprint',
+        teach: 'dedup-merge',
+        successToast: '✅ 兩顆細胞融合。caller refs 已導向存活者。',
+      },
+      {
+        intro: {
+          eyebrow: 'TUTORIAL · STEP 3 / 4',
+          title: '🧬 同家族細胞 — 該多形化了',
+          body: `
+            <p>同 family 已經有 3 顆 capsule（<code>family-promotion-threshold</code>）。它們 sf 都不同，但差異可以被「維度參數」解釋 —— 這是廣義多形化原則的核心。</p>
+            <p>解法：選那條 finding → 觸發 <b>🧬 多形化</b>。中央會留下 1 個 template，其他變成 lazy ghost instance，registry slot 數量驟降。</p>
+          `,
+        },
+        seed: 'family-promotion-threshold',
+        teach: 'polymorphize',
+        successToast: '✅ Template 確立。多形實例 lazy 化，registry 瘦身完成。',
+      },
+      {
+        intro: {
+          eyebrow: 'TUTORIAL · STEP 4 / 4',
+          title: '⬆️ 通過驗證，晉升 governed-atom',
+          body: `
+            <p>剩下的 capsule 全部通過 <code>validate --strict</code> 與 demand-police PASS。任一顆都可以從 <code>local-capsule-candidate</code> 晉升為 <code>governed-atom</code>。</p>
+            <p>選 <code>ready-for-governed</code> finding → 觸發 <b>⬆️ 晉升</b>。細胞會閃金光、tier 轉色，從此成為 ATM registry 的正式 governed atom。</p>
+          `,
+        },
+        seed: 'ready-for-governed',
+        teach: 'promote',
+        successToast: '✅ Capsule 晉升為 governed-atom。registry 紀錄已更新。',
+      },
+    ];
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 4 — 全域 state
+    ═══════════════════════════════════════════════════ */
+
+    const state = {
+      cells: [],
+      anchors: [],
+      findings: [],
+      particles: [],
+      selectedFinding: null,
+      hoveredCell: null,
+      health: 100,
+      tutorialStep: -1,   // -1 = pre-intro modal, 0..3 = steps, 4 = done → sandbox
+      mode: 'tutorial',
+      sandboxLastSpawn: 0,
+      stats: { correctActions: 0, wrongActions: 0 },
+      anim: { time: 0, lastT: performance.now() },
+      snapshots: null,
+      tooltip: null,
+      stage: { width: 0, height: 0, dpr: 1 },
+    };
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 5 — 載入 snapshot 資料
+    ═══════════════════════════════════════════════════ */
+
+    async function loadSnapshots() {
+      const fetchOrFallback = async (path) => {
+        try {
+          const r = await fetch(path);
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          return await r.json();
+        } catch (err) {
+          console.warn(`[snapshot] ${path} unavailable → 走 fallback`, err.message);
+          return null;
+        }
+      };
+      const capsules = await fetchOrFallback('./data/capsules.snapshot.json');
+      const anchors  = await fetchOrFallback('./data/anchors.snapshot.json');
+      const dp       = await fetchOrFallback('./data/demand-police.snapshot.json');
+      if (capsules && anchors && dp) {
+        console.log('%c[ATM Petri] 已載入真實 ATM 快照', 'color:#1f6d5c;font-weight:bold');
+        console.log('  capsules:', capsules._meta);
+        console.log('  anchors:',  anchors._meta);
+        console.log('  demand-police:', dp._meta);
+        return { capsules, anchors, dp };
+      }
+      console.log('%c[ATM Petri] 走 fallback demo 資料', 'color:#9e4337');
+      return { capsules: FALLBACK_CAPSULES, anchors: FALLBACK_ANCHORS, dp: FALLBACK_DP };
+    }
+
+    // ── Fallback 資料（沒有 server 時用）─────────────
+    const FALLBACK_CAPSULES = {
+      _meta: { isSnapshot: false, note: 'fallback demo data' },
+      capsules: [
+        { capsuleId: 'H2U-CAPSULE-PARSE-COLOR', symbolName: 'parseColor', anchorId: 'H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F', tier: 'local-capsule-candidate', classification: { lineCount: 29, riskScore: 85, sideEffectRisk: false } },
+        { capsuleId: 'H2U-CAPSULE-NORMALIZE-CSS-COLOR-TO-HEX', symbolName: 'normalizeCssColorToHex', anchorId: 'H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F', tier: 'local-capsule-candidate', classification: { lineCount: 34, riskScore: 85, sideEffectRisk: false } },
+        { capsuleId: 'H2U-CAPSULE-BUILD-DRAFT-FROM-HTML', symbolName: 'buildDraftFromHtml', anchorId: 'H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F', tier: 'local-capsule-candidate', classification: { lineCount: 113, riskScore: 100, sideEffectRisk: false } },
+        { capsuleId: 'H2U-CAPSULE-COLLECT-BEHAVIOR', symbolName: 'collectBehavior', anchorId: 'H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F', tier: 'local-capsule-candidate', classification: { lineCount: 16, riskScore: 75, sideEffectRisk: false } },
+        { capsuleId: 'H2U-CAPSULE-MERGE-COMPUTED-STYLE', symbolName: 'mergeComputedStyle', anchorId: 'H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F', tier: 'local-capsule-candidate', classification: { lineCount: 22, riskScore: 80, sideEffectRisk: false } },
+      ],
+    };
+    const FALLBACK_ANCHORS = {
+      _meta: { isSnapshot: false },
+      anchors: [{ anchorId: 'H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F', logicalName: 'anchor.draft-builder-core-82992a5f' }],
+    };
+    const FALLBACK_DP = {
+      _meta: { isSnapshot: false },
+      summary: { capsules: 5, anchors: 1, duplicateGroups: 0, familyPromotionGroups: 0, sharedSuggestions: 0 },
+      passed: true, blockingCount: 0, findings: [],
+    };
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 6 — 細胞 / Anchor 初始化
+    ═══════════════════════════════════════════════════ */
+
+    function familyOf(symbolName) {
+      // 取 symbolName 第一個 token：parseColor → parse；buildDraftFromHtml → build
+      const m = String(symbolName || '').match(/^[a-z]+/);
+      return m ? m[0] : 'misc';
+    }
+
+    function initializeFromSnapshots() {
+      const { capsules } = state.snapshots;
+      const list = capsules.capsules || [];
+
+      // Anchor placement: 中央一個大膜
+      state.anchors = [{
+        id: 'H2U-ANCHOR-DRAFT-BUILDER-CORE-82992A5F',
+        label: 'draft-builder-core',
+        x: state.stage.width / 2,
+        y: state.stage.height / 2,
+        baseR: Math.min(state.stage.width, state.stage.height) * 0.42,
+        phase: 0,
+        present: true,
+      }];
+
+      // Cells: 排列在 anchor 內部，slight orbital
+      state.cells = list.map((cap, i) => {
+        const total = list.length;
+        const angle = (i / total) * Math.PI * 2 + 0.3;
+        const orbit = state.anchors[0].baseR * 0.55;
+        const cx = state.anchors[0].x + Math.cos(angle) * orbit;
+        const cy = state.anchors[0].y + Math.sin(angle) * orbit;
+        return {
+          id: cap.capsuleId,
+          capsuleId: cap.capsuleId,
+          symbolName: cap.symbolName,
+          family: familyOf(cap.symbolName),
+          tier: cap.tier || 'local-capsule-candidate',
+          sf: cap.source?.semanticFingerprint || 'sf:unknown',
+          lineCount: cap.classification?.lineCount || 30,
+          sideEffectRisk: cap.classification?.sideEffectRisk || false,
+          anchorId: cap.anchorId,
+          x: cx, y: cy,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          r: 14 + Math.min(20, Math.sqrt(cap.classification?.lineCount || 30) * 1.6),
+          phase: Math.random() * Math.PI * 2,
+          opacity: 1,
+          ghost: false,         // 多形化後的 lazy instance
+          state: 'active',       // active | deprecated | expired
+        };
+      });
+    }
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 7 — Finding 生成
+    ═══════════════════════════════════════════════════ */
+
+    function fingerprintShort(sf) {
+      return String(sf || '').replace(/^sf:[a-z0-9]+:/i, '').slice(0, 7);
+    }
+
+    function makeFinding(ruleId, opts = {}) {
+      const id = 'F_' + Math.random().toString(36).slice(2, 8);
+      const base = { id, ruleId, severity: 'error', selectedAt: 0, ...opts };
+      const targetCells = (opts.cellIds || []).map((id) => state.cells.find((c) => c.id === id)).filter(Boolean);
+
+      switch (ruleId) {
+        case 'orphan-capsule': {
+          const cell = targetCells[0] || state.cells[0];
+          return { ...base, severity: 'error',
+            rule: 'orphan-capsule',
+            title: `${cell.symbolName} 沒有 anchor`,
+            hint: `anchorId 指向不存在的 ${cell.anchorId}。需 anchorize。`,
+            cellIds: [cell.id], expectBehavior: 'anchorize' };
+        }
+        case 'duplicate-fingerprint': {
+          const [a, b] = targetCells.length === 2 ? targetCells : [state.cells[0], state.cells[1]];
+          return { ...base, severity: 'error',
+            rule: 'duplicate-fingerprint',
+            title: `${a.symbolName} ↔ ${b.symbolName}`,
+            hint: `semanticFingerprint 撞號 (${fingerprintShort(a.sf)}…). 需 dedup-merge。`,
+            cellIds: [a.id, b.id], expectBehavior: 'dedup-merge' };
+        }
+        case 'family-promotion-threshold': {
+          const fam = targetCells[0]?.family || 'parse';
+          const cells = targetCells.length >= 3 ? targetCells : state.cells.slice(0, 3);
+          return { ...base, severity: 'warning',
+            rule: 'family-promotion-threshold',
+            title: `family="${fam}" 已有 ${cells.length} 顆`,
+            hint: `差異可被維度參數解釋。建議 polymorphize 成 template。`,
+            cellIds: cells.map((c) => c.id), expectBehavior: 'polymorphize' };
+        }
+        case 'high-fan-in-shared-suggestion': {
+          const cell = targetCells[0] || state.cells.find((c) => c.tier === 'governed-atom') || state.cells[0];
+          return { ...base, severity: 'warning',
+            rule: 'high-fan-in-shared-suggestion',
+            title: `${cell.symbolName} 跨 workflow 高使用`,
+            hint: `usageRefs ≥2 / distinctFiles ≥2 / 跨 kinds。建議 promote → shared-atom。`,
+            cellIds: [cell.id], expectBehavior: 'promote' };
+        }
+        case 'ready-for-governed': {
+          const cell = targetCells[0] || state.cells.find((c) => c.tier === 'local-capsule-candidate') || state.cells[0];
+          return { ...base, severity: 'warning',
+            rule: 'ready-for-governed',
+            title: `${cell.symbolName} 已通過 validate`,
+            hint: `local-capsule-candidate → governed-atom。`,
+            cellIds: [cell.id], expectBehavior: 'promote' };
+        }
+        case 'unused-capsule': {
+          const cell = targetCells[0] || state.cells[state.cells.length - 1];
+          return { ...base, severity: 'warning',
+            rule: 'unused-capsule',
+            title: `${cell.symbolName} 0 callers`,
+            hint: `已 14 天無 caller。建議 sweep → deprecated。`,
+            cellIds: [cell.id], expectBehavior: 'sweep' };
+        }
+        case 'ttl-expired': {
+          const cell = targetCells[0] || state.cells.find((c) => c.state === 'deprecated') || state.cells[state.cells.length - 1];
+          return { ...base, severity: 'warning',
+            rule: 'ttl-expired',
+            title: `${cell.symbolName} TTL 已過`,
+            hint: `deprecated 已過 30 天寬限期。expire 進終態。`,
+            cellIds: [cell.id], expectBehavior: 'expire' };
+        }
+        case 'high-fan-in-split-suggestion': {
+          const cell = targetCells[0] || state.cells.find((c) => c.lineCount > 80) || state.cells[2];
+          return { ...base, severity: 'warning',
+            rule: 'high-fan-in-split-suggestion',
+            title: `${cell.symbolName} 子功能 ≥2 caller`,
+            hint: `內部某子功能被多個外部 caller 引用。建議 split。`,
+            cellIds: [cell.id], expectBehavior: 'split' };
+        }
+        default:
+          return null;
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 8 — Behavior 觸發 + 動畫
+    ═══════════════════════════════════════════════════ */
+
+    function applyBehavior(behaviorId, finding) {
+      const targets = finding.cellIds.map((id) => state.cells.find((c) => c.id === id)).filter(Boolean);
+      switch (behaviorId) {
+        case 'anchorize':
+          // 假設我們“重建”膜：anchor 已存在，這裡就脈動一下 anchor + targets 拉回中心
+          state.anchors[0].pulseUntil = state.anim.time + 1.2;
+          targets.forEach((c) => { c.targetX = state.anchors[0].x + (Math.random() - 0.5) * 80; c.targetY = state.anchors[0].y + (Math.random() - 0.5) * 80; c.targetUntil = state.anim.time + 1.4; });
+          spawnBurst(state.anchors[0].x, state.anchors[0].y, 40, '#1f6d5c', 1.4);
+          break;
+        case 'dedup-merge':
+          if (targets.length >= 2) {
+            const survivor = targets[0], victim = targets[1];
+            victim.mergingTo = survivor.id;
+            victim.mergingUntil = state.anim.time + 1.1;
+            spawnBurst((survivor.x + victim.x) / 2, (survivor.y + victim.y) / 2, 30, '#9e4337', 1.0);
+          }
+          break;
+        case 'polymorphize':
+          if (targets.length >= 1) {
+            const template = targets[0];
+            template.tier = 'governed-atom'; // template 升級
+            template.isTemplate = true;
+            template.r += 4;
+            targets.slice(1).forEach((c) => {
+              c.ghost = true;
+              c.orbitOf = template.id;
+              c.orbitPhase = Math.random() * Math.PI * 2;
+              c.orbitRadius = 60 + Math.random() * 30;
+            });
+            spawnBurst(template.x, template.y, 36, '#b69042', 1.2);
+          }
+          break;
+        case 'promote': {
+          targets.forEach((c) => {
+            const next = TIER_NEXT[c.tier];
+            if (next) { c.tier = next; c.promoteUntil = state.anim.time + 1.0; }
+          });
+          if (targets[0]) spawnBurst(targets[0].x, targets[0].y, 32, '#b69042', 1.1);
+          break;
+        }
+        case 'split':
+          if (targets[0]) {
+            const src = targets[0];
+            // 不真的新增 cell（會超出 snapshot），用視覺脈動 + 粒子
+            src.splittingUntil = state.anim.time + 1.4;
+            spawnBurst(src.x, src.y, 28, '#527b8a', 1.2);
+          }
+          break;
+        case 'sweep':
+          targets.forEach((c) => { c.state = 'deprecated'; c.fadeStart = state.anim.time; c.fadeUntil = state.anim.time + 1.6; });
+          if (targets[0]) spawnBurst(targets[0].x, targets[0].y, 20, '#98a39c', 0.8);
+          break;
+        case 'expire':
+          targets.forEach((c) => { c.state = 'expired'; c.expiringUntil = state.anim.time + 1.8; });
+          if (targets[0]) spawnBurst(targets[0].x, targets[0].y, 40, '#58645d', 1.4);
+          break;
+        case 'atomize': {
+          // 沒有真實 legacy blob 物件，給視覺 hint
+          const cx = state.anchors[0].x, cy = state.anchors[0].y;
+          spawnBurst(cx + 100, cy, 36, '#1f6d5c', 1.2);
+          break;
+        }
+      }
+    }
+
+    function spawnBurst(x, y, count, color, duration) {
+      for (let i = 0; i < count; i += 1) {
+        const a = Math.random() * Math.PI * 2;
+        const v = 60 + Math.random() * 120;
+        state.particles.push({
+          x, y,
+          vx: Math.cos(a) * v,
+          vy: Math.sin(a) * v,
+          r: 1.4 + Math.random() * 2.4,
+          color,
+          life: duration,
+          age: 0,
+        });
+        if (state.particles.length > 220) state.particles.shift();
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 9 — Rendering (canvas)
+    ═══════════════════════════════════════════════════ */
+
+    const canvas = document.getElementById('petri-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const stage = document.getElementById('stage');
+      const rect = stage.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(rect.width * dpr);
+      canvas.height = Math.floor(rect.height * dpr);
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      state.stage.width = rect.width;
+      state.stage.height = rect.height;
+      state.stage.dpr = dpr;
+      if (state.anchors[0]) {
+        state.anchors[0].x = rect.width / 2;
+        state.anchors[0].y = rect.height / 2;
+        state.anchors[0].baseR = Math.min(rect.width, rect.height) * 0.42;
+      }
+    }
+    window.addEventListener('resize', () => { resizeCanvas(); });
+
+    function tick(dt) {
+      state.anim.time += dt;
+
+      // Cells physics — gentle jitter + drift toward anchor center
+      for (const c of state.cells) {
+        if (c.state === 'expired') continue;
+        c.phase += dt * 0.7;
+
+        // Merging animation
+        if (c.mergingTo) {
+          const target = state.cells.find((cc) => cc.id === c.mergingTo);
+          if (target) {
+            c.x += (target.x - c.x) * 0.06;
+            c.y += (target.y - c.y) * 0.06;
+            c.r *= 0.985;
+            if (state.anim.time >= c.mergingUntil) {
+              c.state = 'deprecated';
+              c.r = Math.max(c.r, 4);
+              delete c.mergingTo;
+            }
+          }
+        }
+        // Splitting wobble
+        else if (c.splittingUntil && state.anim.time < c.splittingUntil) {
+          const k = (c.splittingUntil - state.anim.time) * 4;
+          c.r = c.baseR ? c.baseR : (c.baseR = c.r);
+          c.r = c.baseR * (1 + 0.18 * Math.sin(k * 4));
+        }
+        // Targeted move (anchorize)
+        else if (c.targetX !== undefined && state.anim.time < (c.targetUntil || 0)) {
+          c.x += (c.targetX - c.x) * 0.08;
+          c.y += (c.targetY - c.y) * 0.08;
+        }
+        else if (c.targetUntil && state.anim.time >= c.targetUntil) {
+          delete c.targetX; delete c.targetY; delete c.targetUntil;
+        }
+        // Ghost orbital around template
+        else if (c.ghost && c.orbitOf) {
+          const tmpl = state.cells.find((cc) => cc.id === c.orbitOf);
+          if (tmpl) {
+            c.orbitPhase += dt * 0.9;
+            c.x = tmpl.x + Math.cos(c.orbitPhase) * c.orbitRadius;
+            c.y = tmpl.y + Math.sin(c.orbitPhase) * c.orbitRadius;
+          }
+        }
+        // Default jitter
+        else {
+          c.vx += (Math.random() - 0.5) * 0.03;
+          c.vy += (Math.random() - 0.5) * 0.03;
+          c.vx *= 0.94;
+          c.vy *= 0.94;
+          c.x += c.vx;
+          c.y += c.vy;
+
+          // Pull toward anchor center
+          if (state.anchors[0]) {
+            const dx = state.anchors[0].x - c.x;
+            const dy = state.anchors[0].y - c.y;
+            const d = Math.sqrt(dx*dx + dy*dy);
+            if (d > state.anchors[0].baseR * 0.7) {
+              c.vx += dx * 0.0008 * d;
+              c.vy += dy * 0.0008 * d;
+            }
+          }
+          // Repulsion between cells
+          for (const other of state.cells) {
+            if (other === c || other.state === 'expired') continue;
+            const dx = c.x - other.x;
+            const dy = c.y - other.y;
+            const d = Math.sqrt(dx*dx + dy*dy);
+            const minD = c.r + other.r + 6;
+            if (d < minD && d > 0.01) {
+              const f = (minD - d) / minD * 0.6;
+              c.vx += (dx / d) * f;
+              c.vy += (dy / d) * f;
+            }
+          }
+          // Bound to stage
+          const pad = c.r + 6;
+          if (c.x < pad) { c.x = pad; c.vx = Math.abs(c.vx); }
+          if (c.y < pad) { c.y = pad; c.vy = Math.abs(c.vy); }
+          if (c.x > state.stage.width - pad) { c.x = state.stage.width - pad; c.vx = -Math.abs(c.vx); }
+          if (c.y > state.stage.height - pad) { c.y = state.stage.height - pad; c.vy = -Math.abs(c.vy); }
+        }
+
+        // Sweep fade
+        if (c.fadeUntil) {
+          c.opacity = Math.max(0, 1 - (state.anim.time - c.fadeStart) / (c.fadeUntil - c.fadeStart));
+          if (state.anim.time >= c.fadeUntil) { delete c.fadeUntil; }
+        }
+        // Expire dissolve
+        if (c.expiringUntil) {
+          if (state.anim.time >= c.expiringUntil) {
+            c.opacity = 0;
+            delete c.expiringUntil;
+          } else {
+            c.opacity = Math.max(0, 1 - (state.anim.time - (c.expiringUntil - 1.8)) / 1.8);
+          }
+        }
+      }
+
+      // Anchor phase morph
+      for (const a of state.anchors) {
+        a.phase += dt * 0.18;
+      }
+
+      // Particles
+      for (const p of state.particles) {
+        p.age += dt;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vx *= 0.96;
+        p.vy *= 0.96;
+      }
+      state.particles = state.particles.filter((p) => p.age < p.life);
+    }
+
+    function render() {
+      const w = state.stage.width, h = state.stage.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Anchor membranes
+      for (const a of state.anchors) {
+        if (!a.present) continue;
+        const pulse = a.pulseUntil && state.anim.time < a.pulseUntil
+          ? 1 + 0.04 * Math.sin((a.pulseUntil - state.anim.time) * 8)
+          : 1;
+        renderAnchorBlob(a.x, a.y, a.baseR * pulse, a.phase);
+      }
+
+      // Cells
+      for (const c of state.cells) {
+        if (c.opacity <= 0) continue;
+        renderCell(c);
+      }
+
+      // Particles
+      for (const p of state.particles) {
+        const alpha = Math.max(0, 1 - p.age / p.life);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = alpha * 0.85;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      // Finding highlight overlay
+      if (state.selectedFinding) {
+        for (const id of state.selectedFinding.cellIds) {
+          const c = state.cells.find((cc) => cc.id === id);
+          if (!c) continue;
+          const pulse = 1 + 0.18 * Math.sin(state.anim.time * 4);
+          ctx.strokeStyle = state.selectedFinding.severity === 'error' ? 'rgba(158,67,55,0.8)' : 'rgba(182,144,66,0.85)';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.arc(c.x, c.y, (c.r + 8) * pulse, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+    }
+
+    function renderAnchorBlob(cx, cy, r, phase) {
+      // 用 8 段帶 phase 變化的徑向構出一個 morph blob outline
+      ctx.beginPath();
+      const n = 36;
+      for (let i = 0; i <= n; i += 1) {
+        const a = (i / n) * Math.PI * 2;
+        const wob = 1
+          + 0.07 * Math.sin(a * 3 + phase)
+          + 0.04 * Math.sin(a * 5 - phase * 1.3)
+          + 0.03 * Math.cos(a * 2 + phase * 0.8);
+        const rr = r * wob;
+        const x = cx + Math.cos(a) * rr;
+        const y = cy + Math.sin(a) * rr;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+
+      // Fill — very light gradient
+      const grad = ctx.createRadialGradient(cx, cy, r * 0.2, cx, cy, r * 1.1);
+      grad.addColorStop(0, 'rgba(31,109,92,0.06)');
+      grad.addColorStop(0.6, 'rgba(31,109,92,0.04)');
+      grad.addColorStop(1, 'rgba(31,109,92,0.0)');
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Outline
+      ctx.strokeStyle = 'rgba(31,109,92,0.36)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Inner dashed membrane
+      ctx.beginPath();
+      for (let i = 0; i <= n; i += 1) {
+        const a = (i / n) * Math.PI * 2;
+        const wob = 1
+          + 0.05 * Math.sin(a * 4 - phase * 0.6)
+          + 0.03 * Math.cos(a * 6 + phase);
+        const rr = r * 0.92 * wob;
+        const x = cx + Math.cos(a) * rr;
+        const y = cy + Math.sin(a) * rr;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = 'rgba(31,109,92,0.16)';
+      ctx.setLineDash([3, 6]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    function renderCell(c) {
+      ctx.save();
+      ctx.globalAlpha = c.opacity ?? 1;
+
+      // Base wobble — 用 phase + sin 做小幅變形
+      const wob = 1 + 0.06 * Math.sin(c.phase) + 0.03 * Math.cos(c.phase * 1.4);
+
+      // Outer halo when sideEffectRisk
+      if (c.sideEffectRisk) {
+        ctx.strokeStyle = 'rgba(158,67,55,0.55)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.r * wob + 5, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Promotion gold glow
+      if (c.promoteUntil && state.anim.time < c.promoteUntil) {
+        const k = (c.promoteUntil - state.anim.time) / 1.0;
+        ctx.shadowColor = 'rgba(182,144,66,0.85)';
+        ctx.shadowBlur = 22 * k;
+      }
+
+      // Ghost (lazy poly instance)
+      if (c.ghost) ctx.globalAlpha *= 0.45;
+
+      // Body — radial gradient
+      const fill = TIER_HEX[c.tier] || '#1f6d5c';
+      const grad = ctx.createRadialGradient(c.x - c.r * 0.3, c.y - c.r * 0.4, c.r * 0.2, c.x, c.y, c.r * 1.05);
+      grad.addColorStop(0, lighten(fill, 0.25));
+      grad.addColorStop(0.7, fill);
+      grad.addColorStop(1, darken(fill, 0.18));
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      // Slightly irregular blob shape
+      const n = 18;
+      for (let i = 0; i <= n; i += 1) {
+        const a = (i / n) * Math.PI * 2;
+        const rr = c.r * wob * (1 + 0.04 * Math.sin(a * 3 + c.phase));
+        const x = c.x + Math.cos(a) * rr;
+        const y = c.y + Math.sin(a) * rr;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Nucleus (small inner dot)
+      ctx.fillStyle = darken(fill, 0.32);
+      ctx.beginPath();
+      const nx = c.x + Math.sin(c.phase * 0.8) * 2;
+      const ny = c.y + Math.cos(c.phase * 0.8) * 2;
+      ctx.arc(nx, ny, Math.max(2, c.r * 0.22), 0, Math.PI * 2);
+      ctx.fill();
+
+      // Outline
+      ctx.strokeStyle = darken(fill, 0.30);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, c.r * wob, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Template ring
+      if (c.isTemplate) {
+        ctx.strokeStyle = 'rgba(182,144,66,0.6)';
+        ctx.lineWidth = 1.4;
+        ctx.setLineDash([2, 4]);
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.r + 6, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // Label
+      if (c.opacity > 0.6 && !c.ghost) {
+        ctx.fillStyle = 'rgba(28,33,28,0.78)';
+        ctx.font = '600 9px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        const label = c.symbolName.length > 18 ? c.symbolName.slice(0, 16) + '…' : c.symbolName;
+        ctx.fillText(label, c.x, c.y + c.r + 4);
+      }
+
+      ctx.restore();
+    }
+
+    function lighten(hex, amt) { return shade(hex, amt); }
+    function darken(hex, amt) { return shade(hex, -amt); }
+    function shade(hex, amt) {
+      const m = /^#?([a-f0-9]{6})$/i.exec(hex);
+      if (!m) return hex;
+      let n = parseInt(m[1], 16);
+      let r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+      r = Math.max(0, Math.min(255, Math.round(r + 255 * amt)));
+      g = Math.max(0, Math.min(255, Math.round(g + 255 * amt)));
+      b = Math.max(0, Math.min(255, Math.round(b + 255 * amt)));
+      return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+    }
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 10 — DOM UI 更新
+    ═══════════════════════════════════════════════════ */
+
+    function renderFindingsPanel() {
+      const list = document.getElementById('findings-list');
+      const count = document.getElementById('findings-count');
+      count.textContent = state.findings.length;
+      if (state.findings.length === 0) {
+        list.innerHTML = `<div class="findings-empty"><span class="pulse"></span>等待 police 巡邏中⋯</div>`;
+        return;
+      }
+      list.innerHTML = '';
+      for (const f of state.findings) {
+        const card = document.createElement('div');
+        card.className = `finding-card ${f.severity}`;
+        if (state.selectedFinding && state.selectedFinding.id === f.id) card.classList.add('selected');
+        card.innerHTML = `
+          <div class="finding-rule">${f.rule}</div>
+          <div class="finding-target">${escapeHtml(f.title)}</div>
+          <div class="finding-hint">${escapeHtml(f.hint)}</div>
+        `;
+        card.addEventListener('click', () => selectFinding(f.id));
+        list.appendChild(card);
+      }
+    }
+
+    function renderBehaviorDock() {
+      const dock = document.getElementById('dock');
+      dock.innerHTML = '';
+      for (const [id, b] of Object.entries(BEHAVIORS)) {
+        const btn = document.createElement('button');
+        btn.className = 'behavior-btn';
+        btn.dataset.id = id;
+        const valid = state.selectedFinding && b.validFor.includes(state.selectedFinding.rule);
+        if (state.selectedFinding && !valid) btn.disabled = true;
+        if (state.selectedFinding && valid) btn.classList.add('suggested');
+        btn.innerHTML = `
+          <div class="behavior-emoji">${b.emoji}</div>
+          <div class="behavior-label">${b.label}</div>
+          <div class="behavior-tooltip">${escapeHtml(b.desc)}</div>
+        `;
+        btn.addEventListener('click', () => onBehaviorClick(id));
+        dock.appendChild(btn);
+      }
+    }
+
+    function updateHealthUI() {
+      const num = document.getElementById('health-num');
+      const bar = document.getElementById('health-bar');
+      num.textContent = state.health;
+      bar.style.width = state.health + '%';
+      bar.classList.remove('low', 'crit');
+      if (state.health < 40) bar.classList.add('crit');
+      else if (state.health < 70) bar.classList.add('low');
+      document.getElementById('stage').classList.toggle('crit', state.health < 30);
+    }
+
+    function updateStats() {
+      document.getElementById('stat-correct').textContent = state.stats.correctActions;
+      document.getElementById('stat-wrong').textContent = state.stats.wrongActions;
+      document.getElementById('stat-capsules').textContent = state.cells.filter((c) => c.state === 'active').length;
+    }
+
+    function updateStepBadge() {
+      const badge = document.getElementById('step-badge');
+      if (state.mode === 'sandbox') {
+        badge.className = 'step-badge sandbox';
+        badge.textContent = 'SANDBOX · 自由模式';
+      } else {
+        badge.className = 'step-badge';
+        const i = Math.max(0, state.tutorialStep + 1);
+        badge.textContent = `TUTORIAL · Step ${Math.min(i, 4)} / 4`;
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+    }
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 11 — Toast / Modal
+    ═══════════════════════════════════════════════════ */
+
+    function showToast(msg, kind = 'lesson', duration = 3200) {
+      const stack = document.getElementById('toast-stack');
+      const el = document.createElement('div');
+      el.className = `toast ${kind}`;
+      el.textContent = msg;
+      stack.appendChild(el);
+      requestAnimationFrame(() => el.classList.add('show'));
+      setTimeout(() => {
+        el.classList.remove('show');
+        setTimeout(() => el.remove(), 300);
+      }, duration);
+    }
+
+    function showModal({ eyebrow, title, bodyHtml, actions }) {
+      document.getElementById('modal-eyebrow').textContent = eyebrow;
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-body').innerHTML = bodyHtml;
+      const actionsEl = document.getElementById('modal-actions');
+      actionsEl.innerHTML = '';
+      for (const a of actions) {
+        const btn = document.createElement('button');
+        btn.className = `modal-btn ${a.primary ? 'modal-btn-primary' : 'modal-btn-ghost'}`;
+        btn.textContent = a.label;
+        btn.addEventListener('click', () => { hideModal(); a.onClick && a.onClick(); });
+        actionsEl.appendChild(btn);
+      }
+      document.getElementById('modal-backdrop').classList.add('show');
+    }
+
+    function hideModal() {
+      document.getElementById('modal-backdrop').classList.remove('show');
+    }
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 12 — 行為選擇 / 結算
+    ═══════════════════════════════════════════════════ */
+
+    function selectFinding(id) {
+      const f = state.findings.find((ff) => ff.id === id);
+      if (!f) return;
+      state.selectedFinding = f;
+      renderFindingsPanel();
+      renderBehaviorDock();
+    }
+
+    function onBehaviorClick(behaviorId) {
+      if (!state.selectedFinding) {
+        showToast('先從右側面板選一個 finding，再選 behavior。', 'lesson');
+        return;
+      }
+      const b = BEHAVIORS[behaviorId];
+      const f = state.selectedFinding;
+      const isCorrect = b.validFor.includes(f.rule);
+      if (!isCorrect) {
+        state.stats.wrongActions += 1;
+        state.health = Math.max(0, state.health - 8);
+        const expected = BEHAVIORS[f.expectBehavior];
+        showToast(
+          `❌ ${b.label} 不能解 ${f.rule}。對應的行為是 ${expected.emoji} ${expected.label} —— ${expected.desc.split('。')[0]}。`,
+          'error', 5200
+        );
+        updateHealthUI();
+        updateStats();
+        return;
+      }
+
+      // Apply behavior
+      applyBehavior(behaviorId, f);
+      state.stats.correctActions += 1;
+      state.health = Math.min(100, state.health + 5);
+
+      // Remove finding
+      state.findings = state.findings.filter((ff) => ff.id !== f.id);
+      state.selectedFinding = null;
+
+      // Tutorial advance
+      if (state.mode === 'tutorial') {
+        const stepDef = TUTORIAL_STEPS[state.tutorialStep];
+        showToast(stepDef?.successToast || '✅ 治療完成。', 'success');
+        setTimeout(() => advanceTutorial(), 1400);
+      } else {
+        showToast('✅ 治療完成 +5 健康度', 'success', 1800);
+      }
+
+      renderFindingsPanel();
+      renderBehaviorDock();
+      updateHealthUI();
+      updateStats();
+    }
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 13 — Tutorial 流程
+    ═══════════════════════════════════════════════════ */
+
+    function startTutorial() {
+      state.mode = 'tutorial';
+      state.tutorialStep = -1;
+      state.health = 100;
+      state.stats = { correctActions: 0, wrongActions: 0 };
+      // 重置 cells（恢復為全 candidate）
+      for (const c of state.cells) {
+        c.tier = 'local-capsule-candidate';
+        c.ghost = false;
+        delete c.isTemplate;
+        delete c.orbitOf;
+        c.state = 'active';
+        c.opacity = 1;
+      }
+      state.findings = [];
+      state.selectedFinding = null;
+      updateHealthUI();
+      updateStats();
+      updateStepBadge();
+      renderFindingsPanel();
+      renderBehaviorDock();
+
+      // 開場 modal
+      showModal({
+        eyebrow: 'TUTORIAL · 開場',
+        title: '🧫 歡迎來到 ATM 培養皿',
+        bodyHtml: `
+          <p>這個培養皿裡漂浮的每顆細胞，都是從 <code>tools_node/lib/dom-to-ui/draft-builder-core.js</code> 真實抽出的 H2U capsule（spec / code / test 三件套的最小單位）。</p>
+          <p>你扮演 ATM 巡查員。每當 demand-police 在右側丟出 <b>finding</b>，你要從底部 dock 選對的 <b>behavior</b> —— 對的選擇讓 capsule 演進、健康度上升；錯的選擇會跳教學氣泡告訴你為什麼不對。</p>
+          <p>4 個 tutorial step 之後，會進入 <b>Sandbox 自由模式</b>。</p>
+        `,
+        actions: [
+          { label: '開始 →', primary: true, onClick: () => advanceTutorial() },
+        ],
+      });
+    }
+
+    function advanceTutorial() {
+      state.tutorialStep += 1;
+      updateStepBadge();
+      if (state.tutorialStep >= TUTORIAL_STEPS.length) {
+        // 結算 → Sandbox
+        const errors = state.stats.wrongActions;
+        const stars = errors === 0 ? 3 : errors <= 2 ? 2 : 1;
+        const starHtml = `<div class="stars">${[1,2,3].map((i) => `<span class="star ${i <= stars ? '' : 'dim'}">★</span>`).join('')}</div>`;
+        showModal({
+          eyebrow: 'TUTORIAL · 結算',
+          title: `🌟 第一個培養皿完成 — ${stars}/3 stars`,
+          bodyHtml: `
+            ${starHtml}
+            <p>✅ 正確治療：<b>${state.stats.correctActions}</b> 次 ／ ❌ 失誤：<b>${state.stats.wrongActions}</b> 次</p>
+            <p>接下來是 <b>Sandbox 自由模式</b>：12 顆 capsule 全部釋放，每隔 8 秒會冒出隨機 finding。沒有時限，慢慢練手感。</p>
+          `,
+          actions: [
+            { label: '進入 Sandbox →', primary: true, onClick: () => enterSandbox() },
+            { label: '重玩 Tutorial', onClick: () => startTutorial() },
+          ],
+        });
+        return;
+      }
+
+      const step = TUTORIAL_STEPS[state.tutorialStep];
+      showModal({
+        eyebrow: step.intro.eyebrow,
+        title: step.intro.title,
+        bodyHtml: step.intro.body,
+        actions: [
+          { label: 'OK，丟 finding 過來', primary: true, onClick: () => spawnTutorialFinding() },
+        ],
+      });
+    }
+
+    function spawnTutorialFinding() {
+      const step = TUTORIAL_STEPS[state.tutorialStep];
+      let finding;
+
+      // 為不同 step 構造合適的 cell 子集
+      switch (step.seed) {
+        case 'orphan-capsule': {
+          const cell = state.cells[0];
+          // 故意把它的 anchorId 改成不存在的
+          cell.anchorId = 'H2U-ANCHOR-MISSING-ORPHAN-DEMO';
+          finding = makeFinding('orphan-capsule', { cellIds: [cell.id] });
+          break;
+        }
+        case 'duplicate-fingerprint': {
+          const [a, b] = [state.cells[1], state.cells[2]];
+          b.sf = a.sf; // 強制 sf 一致
+          finding = makeFinding('duplicate-fingerprint', { cellIds: [a.id, b.id] });
+          break;
+        }
+        case 'family-promotion-threshold': {
+          // 找同 family 的 3 顆，沒有就硬指 3 顆
+          const fam = state.cells[0].family;
+          let same = state.cells.filter((c) => c.family === fam);
+          if (same.length < 3) {
+            same = state.cells.slice(0, 3);
+            for (const c of same) c.family = fam;
+          }
+          finding = makeFinding('family-promotion-threshold', { cellIds: same.slice(0, 3).map((c) => c.id) });
+          break;
+        }
+        case 'ready-for-governed': {
+          const cell = state.cells.find((c) => c.tier === 'local-capsule-candidate') || state.cells[0];
+          finding = makeFinding('ready-for-governed', { cellIds: [cell.id] });
+          break;
+        }
+      }
+      if (finding) {
+        state.findings.push(finding);
+        renderFindingsPanel();
+        // Auto-select 以便 behavior dock 高亮提示
+        selectFinding(finding.id);
+      }
+    }
+
+    function enterSandbox() {
+      state.mode = 'sandbox';
+      state.sandboxLastSpawn = state.anim.time;
+      updateStepBadge();
+      showToast('🌿 進入 Sandbox。每 8 秒會出現一個隨機 finding。', 'lesson', 3000);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 14 — Sandbox finding 生成器
+    ═══════════════════════════════════════════════════ */
+
+    const SANDBOX_RULES = [
+      'orphan-capsule',
+      'duplicate-fingerprint',
+      'family-promotion-threshold',
+      'high-fan-in-shared-suggestion',
+      'ready-for-governed',
+      'unused-capsule',
+      'ttl-expired',
+      'high-fan-in-split-suggestion',
+    ];
+
+    function tickSandbox(dt) {
+      if (state.mode !== 'sandbox') return;
+      if (state.findings.length >= 3) return; // 最多並存 3 個
+      if (state.anim.time - state.sandboxLastSpawn < 8) return;
+      state.sandboxLastSpawn = state.anim.time;
+      const rule = SANDBOX_RULES[Math.floor(Math.random() * SANDBOX_RULES.length)];
+
+      let finding;
+      switch (rule) {
+        case 'orphan-capsule': {
+          const cell = randomCell();
+          if (!cell) return;
+          cell.anchorId = 'H2U-ANCHOR-MISSING-SAND-' + Math.random().toString(36).slice(2, 6);
+          finding = makeFinding('orphan-capsule', { cellIds: [cell.id] });
+          break;
+        }
+        case 'duplicate-fingerprint': {
+          const [a, b] = [randomCell(), randomCell()];
+          if (!a || !b || a === b) return;
+          b.sf = a.sf;
+          finding = makeFinding('duplicate-fingerprint', { cellIds: [a.id, b.id] });
+          break;
+        }
+        case 'family-promotion-threshold': {
+          // 找一個 family 至少 3 顆，沒有就 fallback 隨機 3 顆
+          const families = {};
+          for (const c of state.cells) (families[c.family] ||= []).push(c);
+          const big = Object.values(families).find((arr) => arr.length >= 3);
+          const picks = big ? big.slice(0, 3) : state.cells.slice(0, 3);
+          finding = makeFinding('family-promotion-threshold', { cellIds: picks.map((c) => c.id) });
+          break;
+        }
+        case 'high-fan-in-shared-suggestion': {
+          const cell = state.cells.find((c) => c.tier === 'governed-atom') || randomCell();
+          if (!cell) return;
+          finding = makeFinding('high-fan-in-shared-suggestion', { cellIds: [cell.id] });
+          break;
+        }
+        case 'ready-for-governed': {
+          const cell = state.cells.find((c) => c.tier === 'local-capsule-candidate' && !c.ghost);
+          if (!cell) return;
+          finding = makeFinding('ready-for-governed', { cellIds: [cell.id] });
+          break;
+        }
+        case 'unused-capsule': {
+          const cell = randomCell();
+          if (!cell) return;
+          finding = makeFinding('unused-capsule', { cellIds: [cell.id] });
+          break;
+        }
+        case 'ttl-expired': {
+          const cell = state.cells.find((c) => c.state === 'deprecated');
+          if (!cell) return; // 沒有 deprecated 就不丟這條
+          finding = makeFinding('ttl-expired', { cellIds: [cell.id] });
+          break;
+        }
+        case 'high-fan-in-split-suggestion': {
+          const cell = state.cells.find((c) => c.lineCount > 80) || randomCell();
+          if (!cell) return;
+          finding = makeFinding('high-fan-in-split-suggestion', { cellIds: [cell.id] });
+          break;
+        }
+      }
+      if (finding) {
+        state.findings.push(finding);
+        renderFindingsPanel();
+      }
+    }
+
+    function randomCell() {
+      const active = state.cells.filter((c) => c.state === 'active' && c.opacity > 0.3);
+      if (active.length === 0) return null;
+      return active[Math.floor(Math.random() * active.length)];
+    }
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 15 — Main loop / 啟動
+    ═══════════════════════════════════════════════════ */
+
+    function loop(t) {
+      const dt = Math.min(0.05, (t - state.anim.lastT) / 1000);
+      state.anim.lastT = t;
+      tick(dt);
+      tickSandbox(dt);
+      render();
+      requestAnimationFrame(loop);
+    }
+
+    async function boot() {
+      state.snapshots = await loadSnapshots();
+      resizeCanvas();
+      initializeFromSnapshots();
+      updateHealthUI();
+      updateStats();
+      updateStepBadge();
+      renderFindingsPanel();
+      renderBehaviorDock();
+      requestAnimationFrame(loop);
+      startTutorial();
+    }
+
+    document.getElementById('reset-btn').addEventListener('click', () => {
+      if (confirm('重新開始 tutorial？目前進度會清掉。')) {
+        initializeFromSnapshots();
+        startTutorial();
+      }
+    });
+
+    boot();
+  </script>
+</body>
+</html>

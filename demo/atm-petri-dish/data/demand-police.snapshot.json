@@ -1,0 +1,334 @@
+{
+  "_meta": {
+    "generatedAt": "2026-05-25T01:00:27.118Z",
+    "generatedBy": "TASK-WEB-0001",
+    "source": "artifacts/atm-atomize/demand-police.report.json",
+    "isSnapshot": true,
+    "filterNote": "只保留 SELECTED 12 顆 capsule 相關的 findings"
+  },
+  "summary": {
+    "capsules": 256,
+    "anchors": 12,
+    "duplicateGroups": 0,
+    "familyPromotionGroups": 0,
+    "sharedSuggestions": 21
+  },
+  "passed": true,
+  "blockingCount": 0,
+  "findings": [
+    {
+      "ruleId": "high-fan-in-shared-suggestion",
+      "severity": "warning",
+      "capsuleId": "H2U-CAPSULE-APPLY-TEXT-TRANSFORM-GENERAL",
+      "usageRefs": [
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L426",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L3086",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder/typography.js#L6",
+        "test:tools_node/test/dom-to-ui-self-test.js#L934",
+        "test:tools_node/test/dom-to-ui-self-test.js#L935",
+        "test:tools_node/test/dom-to-ui-self-test.js#L936",
+        "test:tools_node/test/dom-to-ui-self-test.js#L938",
+        "test:tools_node/test/dom-to-ui-self-test.js#L941",
+        "test:tools_node/test/dom-to-ui-self-test.js#L944",
+        "test:tools_node/test/dom-to-ui-self-test.js#L947",
+        "test:tools_node/test/dom-to-ui-self-test.js#L950",
+        "test:tools_node/test/dom-to-ui-self-test.js#L953"
+      ],
+      "usageRefStats": {
+        "totalRefs": 12,
+        "distinctFiles": 3,
+        "distinctKinds": 2,
+        "externalRefs": 10,
+        "kinds": [
+          "test",
+          "tooling"
+        ],
+        "hasCrossWorkflow": true
+      }
+    },
+    {
+      "ruleId": "high-fan-in-shared-suggestion",
+      "severity": "warning",
+      "capsuleId": "H2U-CAPSULE-BUILD-DRAFT-FROM-HTML",
+      "usageRefs": [
+        "tooling:tools_node/dom-to-ui-json.js#L22",
+        "tooling:tools_node/dom-to-ui-json.js#L432",
+        "tooling:tools_node/dom-to-ui-json.js#L493",
+        "tooling:tools_node/dom-to-ui-json.js#L1049",
+        "tooling:tools_node/lib/dom-to-ui/accuracy-harness.js#L4",
+        "tooling:tools_node/lib/dom-to-ui/accuracy-harness.js#L13",
+        "tooling:tools_node/lib/dom-to-ui/accuracy-harness.js#L178",
+        "tooling:tools_node/lib/dom-to-ui/accuracy-harness.js#L185",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L3077",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder/traverser.js#L6",
+        "test:tools_node/test/dom-to-ui-self-test.js#L19",
+        "test:tools_node/test/dom-to-ui-self-test.js#L144",
+        "test:tools_node/test/dom-to-ui-self-test.js#L465",
+        "test:tools_node/test/dom-to-ui-self-test.js#L500",
+        "test:tools_node/test/dom-to-ui-self-test.js#L508",
+        "test:tools_node/test/dom-to-ui-self-test.js#L531",
+        "test:tools_node/test/dom-to-ui-self-test.js#L553",
+        "test:tools_node/test/dom-to-ui-self-test.js#L575",
+        "test:tools_node/test/dom-to-ui-self-test.js#L588",
+        "test:tools_node/test/dom-to-ui-self-test.js#L603",
+        "test:tools_node/test/dom-to-ui-self-test.js#L620",
+        "test:tools_node/test/dom-to-ui-self-test.js#L668",
+        "test:tools_node/test/dom-to-ui-self-test.js#L682",
+        "test:tools_node/test/dom-to-ui-self-test.js#L2023"
+      ],
+      "usageRefStats": {
+        "totalRefs": 24,
+        "distinctFiles": 5,
+        "distinctKinds": 2,
+        "externalRefs": 23,
+        "kinds": [
+          "test",
+          "tooling"
+        ],
+        "hasCrossWorkflow": true
+      }
+    },
+    {
+      "ruleId": "high-fan-in-shared-suggestion",
+      "severity": "warning",
+      "capsuleId": "H2U-CAPSULE-BUILD-FONT-FACE-REGISTRY",
+      "usageRefs": [
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L114",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L3092",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder/typography.js#L10",
+        "test:tools_node/test/dom-to-ui-self-test.js#L1039",
+        "test:tools_node/test/dom-to-ui-self-test.js#L1074",
+        "test:tools_node/test/dom-to-ui-self-test.js#L1075",
+        "test:tools_node/test/dom-to-ui-self-test.js#L1081"
+      ],
+      "usageRefStats": {
+        "totalRefs": 7,
+        "distinctFiles": 3,
+        "distinctKinds": 2,
+        "externalRefs": 5,
+        "kinds": [
+          "test",
+          "tooling"
+        ],
+        "hasCrossWorkflow": true
+      }
+    },
+    {
+      "ruleId": "single-use-stay-local",
+      "severity": "info",
+      "capsuleId": "H2U-CAPSULE-COLLECT-BEHAVIOR",
+      "usageRefs": [
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L293",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L344",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L398",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L3078",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder/interactions.js#L7"
+      ],
+      "usageRefStats": {
+        "totalRefs": 5,
+        "distinctFiles": 2,
+        "distinctKinds": 1,
+        "externalRefs": 1,
+        "kinds": [
+          "tooling"
+        ],
+        "hasCrossWorkflow": true
+      }
+    },
+    {
+      "ruleId": "single-use-stay-local",
+      "severity": "info",
+      "capsuleId": "H2U-CAPSULE-COMPUTE-LETTER-SPACING",
+      "usageRefs": [
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L2656",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L3085",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder/typography.js#L7"
+      ],
+      "usageRefStats": {
+        "totalRefs": 3,
+        "distinctFiles": 2,
+        "distinctKinds": 1,
+        "externalRefs": 1,
+        "kinds": [
+          "tooling"
+        ],
+        "hasCrossWorkflow": true
+      }
+    },
+    {
+      "ruleId": "single-use-stay-local",
+      "severity": "info",
+      "capsuleId": "H2U-CAPSULE-INFER-TAB-SEMANTIC-HINTS",
+      "usageRefs": [
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L233",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L3079",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder/interactions.js#L8"
+      ],
+      "usageRefStats": {
+        "totalRefs": 3,
+        "distinctFiles": 2,
+        "distinctKinds": 1,
+        "externalRefs": 1,
+        "kinds": [
+          "tooling"
+        ],
+        "hasCrossWorkflow": true
+      }
+    },
+    {
+      "ruleId": "single-use-stay-local",
+      "severity": "info",
+      "capsuleId": "H2U-CAPSULE-MERGE-COMPUTED-STYLE",
+      "usageRefs": [
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L1438"
+      ],
+      "usageRefStats": {
+        "totalRefs": 1,
+        "distinctFiles": 1,
+        "distinctKinds": 1,
+        "externalRefs": 0,
+        "kinds": [
+          "tooling"
+        ],
+        "hasCrossWorkflow": true
+      }
+    },
+    {
+      "ruleId": "single-use-stay-local",
+      "severity": "info",
+      "capsuleId": "H2U-CAPSULE-NORMALIZE-CSS-COLOR-TO-HEX",
+      "usageRefs": [
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L2859",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L3091",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder/backgrounds.js#L7"
+      ],
+      "usageRefStats": {
+        "totalRefs": 3,
+        "distinctFiles": 2,
+        "distinctKinds": 1,
+        "externalRefs": 1,
+        "kinds": [
+          "tooling"
+        ],
+        "hasCrossWorkflow": true
+      }
+    },
+    {
+      "ruleId": "single-use-stay-local",
+      "severity": "info",
+      "capsuleId": "H2U-CAPSULE-NORMALIZE-RECT",
+      "usageRefs": [
+        "tooling:tools_node/lib/dom-to-ui/art-authority-waivers.js#L130",
+        "tooling:tools_node/lib/dom-to-ui/art-authority-waivers.js#L158",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L944",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L981",
+        "tooling:tools_node/lib/dom-to-ui/final-capture-protocol.js#L56",
+        "tooling:tools_node/lib/dom-to-ui/final-capture-protocol.js#L57",
+        "tooling:tools_node/lib/dom-to-ui/final-capture-protocol.js#L58",
+        "tooling:tools_node/lib/dom-to-ui/final-capture-protocol.js#L120"
+      ],
+      "usageRefStats": {
+        "totalRefs": 8,
+        "distinctFiles": 3,
+        "distinctKinds": 1,
+        "externalRefs": 6,
+        "kinds": [
+          "tooling"
+        ],
+        "hasCrossWorkflow": true
+      }
+    },
+    {
+      "ruleId": "single-use-stay-local",
+      "severity": "info",
+      "capsuleId": "H2U-CAPSULE-PARSE-COLOR",
+      "usageRefs": [
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L1913",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L2038",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L2119",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L2657",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L3084",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder/backgrounds.js#L6",
+        "tooling:tools_node/lib/dom-to-ui/snapshot-to-slots.js#L37",
+        "tooling:tools_node/lib/dom-to-ui/snapshot-to-slots.js#L247",
+        "tooling:tools_node/lib/dom-to-ui/snapshot-to-slots.js#L276",
+        "tooling:tools_node/lib/dom-to-ui/snapshot-to-slots.js#L343",
+        "tooling:tools_node/lib/dom-to-ui/snapshot-to-slots.js#L365",
+        "tooling:tools_node/lib/dom-to-ui/snapshot-to-slots.js#L368",
+        "tooling:tools_node/lib/dom-to-ui/token-suggestion.js#L26",
+        "tooling:tools_node/lib/dom-to-ui/token-suggestion.js#L44",
+        "tooling:tools_node/lib/dom-to-ui/token-suggestion.js#L80"
+      ],
+      "usageRefStats": {
+        "totalRefs": 15,
+        "distinctFiles": 4,
+        "distinctKinds": 1,
+        "externalRefs": 10,
+        "kinds": [
+          "tooling"
+        ],
+        "hasCrossWorkflow": true
+      }
+    },
+    {
+      "ruleId": "high-fan-in-shared-suggestion",
+      "severity": "warning",
+      "capsuleId": "H2U-CAPSULE-PARSE-FRAGMENT-LIST",
+      "usageRefs": [
+        "case-study:docs/case-studies/h2u-map-evolution-pilot.md#L41",
+        "other:specs/parse-fragment-list.atom.json#L7",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L259",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L3080",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder/interactions.js#L9",
+        "tooling:tools_node/validate-legacy-h2u-launch.js#L552"
+      ],
+      "usageRefStats": {
+        "totalRefs": 6,
+        "distinctFiles": 5,
+        "distinctKinds": 3,
+        "externalRefs": 4,
+        "kinds": [
+          "case-study",
+          "other",
+          "tooling"
+        ],
+        "hasCrossWorkflow": true
+      }
+    },
+    {
+      "ruleId": "high-fan-in-shared-suggestion",
+      "severity": "warning",
+      "capsuleId": "H2U-CAPSULE-RESOLVE-FONT-FAMILY-TO-ASSET",
+      "usageRefs": [
+        "tooling:tools_node/lib/dom-to-ui/draft-builder-core.js#L3087",
+        "tooling:tools_node/lib/dom-to-ui/draft-builder/typography.js#L8",
+        "test:tools_node/test/dom-to-ui-self-test.js#L963",
+        "test:tools_node/test/dom-to-ui-self-test.js#L968",
+        "test:tools_node/test/dom-to-ui-self-test.js#L971",
+        "test:tools_node/test/dom-to-ui-self-test.js#L974",
+        "test:tools_node/test/dom-to-ui-self-test.js#L977",
+        "test:tools_node/test/dom-to-ui-self-test.js#L981",
+        "test:tools_node/test/dom-to-ui-self-test.js#L985",
+        "test:tools_node/test/dom-to-ui-self-test.js#L988",
+        "test:tools_node/test/dom-to-ui-self-test.js#L992",
+        "test:tools_node/test/dom-to-ui-self-test.js#L995",
+        "test:tools_node/test/dom-to-ui-self-test.js#L998",
+        "test:tools_node/test/dom-to-ui-self-test.js#L1002",
+        "test:tools_node/test/dom-to-ui-self-test.js#L1039",
+        "test:tools_node/test/dom-to-ui-self-test.js#L1077",
+        "test:tools_node/test/dom-to-ui-self-test.js#L1078"
+      ],
+      "usageRefStats": {
+        "totalRefs": 17,
+        "distinctFiles": 3,
+        "distinctKinds": 2,
+        "externalRefs": 16,
+        "kinds": [
+          "test",
+          "tooling"
+        ],
+        "hasCrossWorkflow": true
+      }
+    }
+  ]
+}
