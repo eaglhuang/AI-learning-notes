@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="data:,">
-  <title>三國人物互動劇場</title>
+  <title>劉備回憶意圖劇場</title>
   <style>
     :root {
       --ink: #1c211c;
@@ -261,27 +261,16 @@
       gap: 8px;
     }
 
-    .general-grid,
-    .relationship-grid {
-      display: grid;
-      gap: 8px;
-    }
-
-    .general-grid {
-      grid-template-columns: repeat(3, 1fr);
-      margin-top: 14px;
-    }
-
     .relationship-grid {
       display: grid;
       grid-template-columns: 1fr;
+      gap: 8px;
       margin-top: 14px;
       max-height: 392px;
       overflow: auto;
       padding-right: 4px;
     }
 
-    .general-button,
     .angle-button,
     .relationship-button,
     .command-button {
@@ -295,7 +284,6 @@
       transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
     }
 
-    .general-button:hover,
     .angle-button:hover,
     .relationship-button:hover,
     .command-button:hover {
@@ -304,7 +292,6 @@
       background: rgba(255, 255, 255, 0.72);
     }
 
-    .general-button.active,
     .angle-button.active,
     .relationship-button.active {
       border-color: rgba(31, 109, 92, 0.56);
@@ -314,14 +301,12 @@
       box-shadow: inset 0 0 0 1px rgba(31, 109, 92, 0.18);
     }
 
-    .general-button strong,
     .angle-button strong,
     .relationship-button strong {
       display: block;
       font-size: 14px;
     }
 
-    .general-button span,
     .angle-button span,
     .relationship-button span {
       display: block;
@@ -717,7 +702,6 @@
       }
 
       .stage-showcase,
-      .general-grid,
       .angle-grid,
       .intent-grid,
       .chorus-grid,
@@ -737,10 +721,10 @@
     <header class="topbar">
       <div>
         <p class="eyebrow">資料驅動互動小劇場</p>
-        <h1 id="pageTitle">三國人物互動劇場</h1>
-        <p class="subtitle" id="pageSubtitle">
+        <h1>劉備回憶意圖劇場</h1>
+        <p class="subtitle">
           這個原型會優先讀取 <code>npc-brain</code> 的真實 persona、relationship edges、evidence cards 與 activity seeds，
-          再把它們轉成「想到誰、心裡怎麼變、接下來想做什麼」的互動敘事。現在可直接切換劉備、關羽、張飛三位主角，比較不同人物在同一條知識管線下會怎麼回應。
+          再把它們轉成「想到誰、心裡怎麼變、接下來想做什麼」的互動敘事。女性人物一旦成為互動對象，劉備的情緒與想法也會跟著改變。
         </p>
       </div>
       <div class="status-card">
@@ -753,7 +737,7 @@
       <aside>
         <section class="panel profile">
           <div class="portrait-wrap">
-            <img class="portrait" id="portraitImage" src="../../assets/resources/sprites/generals/liu_bei_portrait.png" alt="三國人物肖像" onerror="this.style.display='none';">
+            <img class="portrait" src="../../assets/resources/sprites/generals/liu_bei_portrait.png" alt="劉備肖像" onerror="this.style.display='none';">
           </div>
           <div class="profile-body">
             <div class="profile-title">
@@ -766,17 +750,13 @@
         </section>
 
         <section class="panel control-panel">
-          <h2 class="panel-title">主角人物</h2>
-          <p class="panel-note">可在劉備、關羽、張飛之間切換；若有接上 <code>npc-brain</code>，會直接改抓對應人物的真資料。</p>
-          <div class="general-grid" id="generalGrid"></div>
-
           <h2 class="panel-title">觸發角度</h2>
-          <p class="panel-note">先選主角現在被什麼觸動，再選互動對象，他的回憶、情緒與行動描述就會跟著轉向。</p>
+          <p class="panel-note">先選劉備現在被什麼觸動，再選互動對象，他的回憶、情緒與行動描述就會跟著轉向。</p>
           <p class="panel-note" id="angleCoverageNote">角度載入中…</p>
           <div class="angle-grid" id="angleGrid"></div>
 
           <h2 class="panel-title" style="margin-top:18px;">互動對象</h2>
-          <p class="panel-note">這裡會優先顯示真資料裡的關係人物；若 API 沒開，則會退回各主角自己的示範關係網。</p>
+          <p class="panel-note">這裡會優先顯示真資料裡的關係人物；女性互動對象會額外強化情感與去留的戲劇感。</p>
           <div class="relationship-grid" id="relationshipGrid"></div>
 
           <div class="speed-wrap">
@@ -813,8 +793,8 @@
       <section class="panel stage">
         <div class="stage-header">
           <div>
-            <h2 id="sceneTitle">營火未熄，主角正在聽風</h2>
-            <p class="stage-note" id="sceneNote">請先選擇一個角度與互動對象。這個頁面會慢慢把主角的心事與下一步行動演出來。</p>
+            <h2 id="sceneTitle">營火未熄，劉備正在聽風</h2>
+            <p class="stage-note" id="sceneNote">請先選擇一個角度與互動對象。這個頁面會慢慢把劉備的心事與下一步行動演出來。</p>
           </div>
           <span class="source-badge" id="sourceBadge">等待資料</span>
         </div>
@@ -822,7 +802,7 @@
         <section class="stage-showcase">
           <article class="current-scene">
             <div class="scene-meta" id="sceneMeta"></div>
-            <p class="scene-text" id="sceneText">夜色一沉，主角立在營前，聽見遠處巡哨回報，卻沒有立刻下令。他只是把手按在案邊，像是在等某段舊事自己慢慢浮上來。</p>
+            <p class="scene-text" id="sceneText">劉備立在帳前，聽見遠處巡哨回報，卻沒有立刻下令。他只是把手按在案邊，像是在等某段舊事自己慢慢浮上來。</p>
           </article>
 
           <aside class="scene-visual">
@@ -832,7 +812,7 @@
             </div>
             <div class="visual-frame">
               <img id="illustrationImage" alt="本幕插圖" hidden>
-              <div class="visual-placeholder" id="illustrationPlaceholder">等待第一幕。<br>一旦劇情開始，右側會直接向圖像 LLM 送出構圖 prompt，生成這一幕的主角插圖。</div>
+              <div class="visual-placeholder" id="illustrationPlaceholder">等待第一幕。<br>一旦劇情開始，右側會直接向圖像 LLM 送出構圖 prompt，生成這一幕的劉備插圖。</div>
             </div>
             <p class="visual-status" id="illustrationStatus">尚未送出插圖請求。</p>
           </aside>
@@ -849,11 +829,11 @@
           </div>
           <div class="intent">
             <strong>對此人的一句話</strong>
-            <p id="dialogueText">等第一幕觸發後，這裡會出現更像主角會說的話。</p>
+            <p id="dialogueText">等第一幕觸發後，這裡會出現更像劉備會說的話。</p>
           </div>
           <div class="intent">
             <strong>接下來想做什麼</strong>
-            <p id="intentText">每一幕都會把資料轉成主角下一步的行動意圖。</p>
+            <p id="intentText">每一幕都會把資料轉成劉備下一步的行動意圖。</p>
           </div>
         </div>
 
@@ -914,64 +894,6 @@
       role: { label: "角色定位", desc: "君主、統帥、治理者等角色職責", focus: "先站回角色責任" },
     };
 
-    const GENERAL_SHOWCASE_ORDER = ["liu-bei", "guan-yu", "zhang-fei"];
-    const GENERAL_SHOWCASE_CONFIGS = {
-      "liu-bei": {
-        label: "劉備",
-        shortRole: "仁義領袖",
-        portraitSrc: "../../assets/resources/sprites/generals/liu_bei_portrait.png",
-        portraitAlt: "劉備肖像",
-        defaultTargetId: "guan-yu",
-        defaultAngle: "emotion",
-        stageTitle: "營火未熄，劉備正在聽風",
-        stageNote: "請先選擇一個角度與互動對象。這個頁面會慢慢把劉備的心事與下一步行動演出來。",
-        stageSceneText: "劉備立在帳前，聽見遠處巡哨回報，卻沒有立刻下令。他只是把手按在案邊，像是在等某段舊事自己慢慢浮上來。",
-      },
-      "guan-yu": {
-        label: "關羽",
-        shortRole: "義烈名將",
-        portraitSrc: "../../assets/resources/sprites/generals/guan_yu_portrait.png",
-        portraitAlt: "關羽肖像",
-        defaultTargetId: "liu-bei",
-        defaultAngle: "bond",
-        stageTitle: "青燈未滅，關羽正在夜讀春秋",
-        stageNote: "請先選擇一個角度與互動對象。這個頁面會慢慢把關羽的義氣、戒心與下一步行動演出來。",
-        stageSceneText: "關羽倚著案幾，手邊的《春秋》還沒闔上。營外風聲一動，他先收住呼吸，像是在等哪段舊義自己回到心頭。",
-      },
-      "zhang-fei": {
-        label: "張飛",
-        shortRole: "烈氣猛將",
-        portraitSrc: "../../assets/resources/sprites/generals/zhang_fei_portrait.png",
-        portraitAlt: "張飛肖像",
-        defaultTargetId: "liu-bei",
-        defaultAngle: "battlefield",
-        stageTitle: "酒氣已散，張飛還在巡營",
-        stageNote: "請先選擇一個角度與互動對象。這個頁面會慢慢把張飛的烈氣、護短與下一步行動演出來。",
-        stageSceneText: "張飛立在營門前，掌心還帶著長矛的溫度。探馬的話才落下，他沒有立刻發作，只是把眉一壓，像在等哪段舊戰先衝回來。",
-      },
-    };
-
-    function resolveGeneralShowcaseConfig(generalId) {
-      return GENERAL_SHOWCASE_CONFIGS[generalId] || GENERAL_SHOWCASE_CONFIGS["liu-bei"];
-    }
-
-    const initialShowcaseConfig = resolveGeneralShowcaseConfig(GENERAL_ID);
-
-    function buildShowcaseSubtitle(displayName = initialShowcaseConfig.label) {
-      return `這裡會先讀取 npc-brain 的 persona、relationship edges、evidence cards 與 activity seeds，再把它們轉成「想到誰、心裡怎麼變、接下來想做什麼」的互動敘事。現在主角是 ${displayName}，也可以隨時切換成劉備、關羽、張飛，比較同一條知識管線如何導出不同回應。`;
-    }
-
-    function buildGeneralUrl(generalId) {
-      const url = new URL(window.location.href);
-      url.searchParams.set("generalId", generalId);
-      if (searchParams.has("apiBase")) {
-        url.searchParams.set("apiBase", API_BASE);
-      } else {
-        url.searchParams.delete("apiBase");
-      }
-      return url.toString();
-    }
-
     const specialTargetOverrides = {
       "mi-shi": {
         role: "家室 / 託付",
@@ -996,569 +918,229 @@
       },
     };
 
-    const fallbackNarrativeDataByGeneralId = {
-      "liu-bei": {
-        displayName: "劉備",
-        grade: "A-romance",
-        dataMode: "示範資料",
-        dataHint: "npc-brain API 尚未連上，目前先用頁面內建示範資料演出。",
-        sourceMode: "fallback-demo",
-        defaultTargetId: "guan-yu",
-        traits: ["仁厚", "重義", "憂民", "重情", "善結人心", "有號召力"],
-        persona: {
-          voiceStyle: ["仁厚", "憂民", "懇切", "重情"],
-          personalityTraits: ["仁德", "重義", "善結人心", "憂患", "有號召力"],
-          safeFallbackLine: "備所念者，不過百姓得安、兄弟不離。",
-          profile: {
-            affectTags: ["family_affection", "mercy_compassion", "grief_regret"],
-            activitySeedHints: ["host_banquet", "family_duty", "suppress_unrest"],
-            personalityTags: ["governance-minded", "family-bound", "persuasive"],
-          },
-        },
-        activitySeeds: [
-          { keywordKey: "activity.family_duty", label: "家室安置" },
-          { keywordKey: "activity.host_banquet", label: "設宴安撫" },
-          { keywordKey: "activity.suppress_unrest", label: "平亂整軍" },
-        ],
-        interactionTargets: [],
-        relationships: [
-          {
-            targetId: "zhang-fei",
-            label: "張飛",
-            role: "兄弟 / 斷後之託",
-            thoughtTone: "想到張飛，劉備會先想到自己還欠他多少次不該由他獨扛的危局。",
-            dialogueTone: "「翼德先頂住，我不能再讓你一個人替全軍擋災。」",
-            actionBias: "先探退路，再查張飛安危",
-            meterDelta: { bond: 6, resolve: 2, longing: 2 },
-            femaleFocus: false,
-            confidence: 0.88,
-            sourceType: "fallback",
-            relationshipType: "battle_ally",
-          },
-          {
-            targetId: "guan-yu",
-            label: "關羽",
-            role: "兄弟 / 義氣與節操",
-            thoughtTone: "想到關羽，劉備會更在意自己是否還配得上當初那份義氣。",
-            dialogueTone: "「雲長在前，我便不能讓此心先散。」",
-            actionBias: "先守承諾，再談勝負",
-            meterDelta: { bond: 7, benevolence: 2, longing: 1 },
-            femaleFocus: false,
-            confidence: 0.9,
-            sourceType: "fallback",
-            relationshipType: "sworn_sibling",
-          },
-          {
-            targetId: "zhuge-liang",
-            label: "諸葛亮",
-            role: "軍師 / 大局與謀定",
-            thoughtTone: "想到孔明時，劉備會願意多忍一步，先把局面想清楚。",
-            dialogueTone: "「孔明既在，這一步不妨先緩，待眾心站穩再動。」",
-            actionBias: "先盤算與整編，再決定推進節奏",
-            meterDelta: { prudence: 4, resolve: -1, bond: 1 },
-            femaleFocus: false,
-            confidence: 0.82,
-            sourceType: "fallback",
-            relationshipType: "patron_client",
-          },
-          {
-            targetId: "cao-cao",
-            label: "曹操",
-            role: "宿敵 / 勝負與人心對照",
-            thoughtTone: "想到曹操，劉備常會更清楚自己想贏，卻不想用同樣的方法去贏。",
-            dialogueTone: "「快可以奪城，未必奪心；我若只學其快，也就失了立足之本。」",
-            actionBias: "先衡量百姓代價，再決定是否用強",
-            meterDelta: { prudence: 4, resolve: 4, benevolence: 2 },
-            femaleFocus: false,
-            confidence: 0.86,
-            sourceType: "fallback",
-            relationshipType: "enemy_rival",
-          },
-          {
-            targetId: "mi-zhu",
-            label: "糜竺",
-            role: "舊恩 / 家業相託",
-            thoughtTone: "想到糜竺，劉備會先想起最困頓時，有人把家業與親族一起託來。",
-            dialogueTone: "「舊恩不能只掛在嘴上，得先讓跟著我的人過得去。」",
-            actionBias: "先開副倉與點名冊，再談調兵",
-            meterDelta: { benevolence: 4, bond: 4, prudence: -1 },
-            femaleFocus: false,
-            confidence: 0.76,
-            sourceType: "fallback",
-            relationshipType: "patron_client",
-          },
-          {
-            targetId: "mi-shi",
-            label: "糜氏",
-            role: "家室 / 託付",
-            thoughtTone: specialTargetOverrides["mi-shi"].thoughtTone,
-            dialogueTone: specialTargetOverrides["mi-shi"].dialogueTone,
-            actionBias: specialTargetOverrides["mi-shi"].actionBias,
-            meterDelta: specialTargetOverrides["mi-shi"].meterDelta,
-            femaleFocus: true,
-            confidence: 0.72,
-            sourceType: "fallback",
-            relationshipType: "female_interaction",
-          },
-          {
-            targetId: "gan-shi",
-            label: "甘氏",
-            role: "舊情 / 家室",
-            thoughtTone: specialTargetOverrides["gan-shi"].thoughtTone,
-            dialogueTone: specialTargetOverrides["gan-shi"].dialogueTone,
-            actionBias: specialTargetOverrides["gan-shi"].actionBias,
-            meterDelta: specialTargetOverrides["gan-shi"].meterDelta,
-            femaleFocus: true,
-            confidence: 0.7,
-            sourceType: "fallback",
-            relationshipType: "female_interaction",
-          },
-          {
-            targetId: "sun-shang-xiang",
-            label: "孫夫人",
-            role: "盟婚 / 去留",
-            thoughtTone: specialTargetOverrides["sun-shang-xiang"].thoughtTone,
-            dialogueTone: specialTargetOverrides["sun-shang-xiang"].dialogueTone,
-            actionBias: specialTargetOverrides["sun-shang-xiang"].actionBias,
-            meterDelta: specialTargetOverrides["sun-shang-xiang"].meterDelta,
-            femaleFocus: true,
-            confidence: 0.74,
-            sourceType: "fallback",
-            relationshipType: "female_interaction",
-          },
-        ],
-        evidenceCards: [
-          {
-            evidenceId: "fallback-people-1",
-            angle: "people",
-            title: "先護百姓，再談天下",
-            summary: "劉備每逢動亂，先想到的往往不是城池，而是跟著自己的人能不能先活下來。",
-            quote: "若連跟隨之人都護不住，談天下便只是空話。",
-            sourceType: "fallback-persona",
-            sourceRefs: ["persona"],
-            relatedTargetIds: ["commoners"],
-            confidence: 0.82,
-          },
-          {
-            evidenceId: "fallback-bond-1",
-            angle: "bond",
-            title: "長坂橋邊的虧欠",
-            summary: "張飛在長坂橋斷後，替劉備爭來退路，卻也把一份虧欠留在他心裡。",
-            quote: "那不是豪勇故事，而是一筆欠在心上的命。",
-            location: "長坂橋",
-            chapterNo: 42,
-            sourceType: "fallback-memory",
-            sourceRefs: ["042#p1", "042#p2", "042#p3"],
-            relatedTargetIds: ["zhang-fei"],
-            confidence: 0.9,
-          },
-          {
-            evidenceId: "fallback-battlefield-1",
-            angle: "battlefield",
-            title: "戰場不是只算快慢",
-            summary: "每次看見追兵與亂隊，劉備都會想起撤退時最怕的從來不是慢，而是人心散。",
-            quote: "仁德若沒有隊伍承接，最後只會變成哭聲。",
-            location: "長坂一帶",
-            sourceType: "fallback-memory",
-            sourceRefs: ["keyword:changban-bridge"],
-            relatedTargetIds: ["cao-cao", "zhang-fei"],
-            confidence: 0.88,
-          },
-          {
-            evidenceId: "fallback-rival-1",
-            angle: "rival",
-            title: "不能只學曹操的快",
-            summary: "曹操式的取勝效率讓劉備敬畏，也讓他更清楚自己想守住什麼。",
-            quote: "人心一失，再快也只是敗路。",
-            sourceType: "fallback-memory",
-            sourceRefs: ["017#p10"],
-            relatedTargetIds: ["cao-cao"],
-            confidence: 0.84,
-          },
-          {
-            evidenceId: "fallback-resource-1",
-            angle: "resource",
-            title: "糜氏與副倉",
-            summary: "軍資告急時，劉備會先想到糜氏舊部是否也在缺糧名冊上。",
-            quote: "舊恩之人，不可先寒心。",
-            sourceType: "fallback-memory",
-            sourceRefs: ["external-evidence"],
-            relatedTargetIds: ["mi-zhu", "mi-shi"],
-            confidence: 0.78,
-          },
-          {
-            evidenceId: "fallback-habit-1",
-            angle: "habit",
-            title: "火邊問傷兵",
-            summary: "夜裡巡營時，劉備常先問傷兵與役夫的細事，再回頭談軍令。",
-            quote: "他先問傷兵痛不痛，再問役夫家在何處。",
-            sourceType: "fallback-worldbuilding",
-            sourceRefs: ["worldbuilding-note"],
-            relatedTargetIds: ["commoners"],
-            confidence: 0.76,
-          },
-          {
-            evidenceId: "fallback-emotion-1",
-            contextKey: null,
-            angle: "emotion",
-            title: "亂世裡的家室牽掛",
-            summary: "一牽涉到家室與女性互動，劉備的念頭常會從勝負轉成安置與去留。",
-            quote: "有些牽掛不必說出口，卻會在每一次行軍時自己壓到心上。",
-            sourceType: "fallback-female",
-            sourceRefs: ["female-interaction"],
-            relatedTargetIds: ["mi-shi", "gan-shi", "sun-shang-xiang"],
-            confidence: 0.8,
-          },
-        ],
-        illustrationPromptBase: "以三國古典敘事插畫描繪劉備，氣質仁厚、憂民、重情，畫面帶水墨與寫實戲劇感，人物像正從回憶裡走出來準備做決定。",
-        keywords: {},
-      },
-      "guan-yu": {
-        displayName: "關羽",
-        grade: "A-guardian",
-        dataMode: "示範資料",
-        dataHint: "npc-brain API 尚未連上，目前先用頁面內建示範資料演出。",
-        sourceMode: "fallback-demo",
-        defaultTargetId: "liu-bei",
-        traits: ["剛正", "守義", "自持", "重諾", "臨陣沉著", "威勢"],
-        persona: {
-          voiceStyle: ["沉毅", "持重", "寡言", "重義"],
-          personalityTraits: ["義烈", "自律", "剛正", "沉穩", "守信"],
-          safeFallbackLine: "義所在，雖千萬人，羽亦往之。",
-          profile: {
-            affectTags: ["oath_loyalty", "measured_pride", "martial_discipline"],
-            activitySeedHints: ["night_reading", "line_guard", "supply_watch"],
-            personalityTags: ["oath_bound", "martial_guardian", "measured"],
-          },
-        },
-        activitySeeds: [
-          { keywordKey: "activity.night_reading", label: "夜讀春秋" },
-          { keywordKey: "activity.line_guard", label: "巡線守營" },
-          { keywordKey: "activity.supply_watch", label: "督糧守線" },
-        ],
-        interactionTargets: [],
-        relationships: [
-          {
-            targetId: "liu-bei",
-            label: "劉備",
-            role: "兄長 / 漢室寄託",
-            thoughtTone: "想到劉備，關羽先想到自己肩上不只是兄弟之義，還有不能讓主公失望的責任。",
-            dialogueTone: "「兄長既以天下蒼生為念，我這口刀便不能先鈍。」",
-            actionBias: "先護主公側翼，再談斬將奪隘",
-            meterDelta: { bond: 7, resolve: 2, prudence: 1 },
-            femaleFocus: false,
-            confidence: 0.9,
-            sourceType: "fallback",
-            relationshipType: "sworn_sibling",
-          },
-          {
-            targetId: "zhang-fei",
-            label: "張飛",
-            role: "義弟 / 烈氣同袍",
-            thoughtTone: "想到張飛，關羽會先算如何讓這股烈氣用在刀口上，而不是讓怒先衝過陣線。",
-            dialogueTone: "「益德可以先猛，我來替他把後頭收住。」",
-            actionBias: "先穩住同袍節奏，再一起推前",
-            meterDelta: { bond: 5, prudence: 2, resolve: 1 },
-            femaleFocus: false,
-            confidence: 0.84,
-            sourceType: "fallback",
-            relationshipType: "battle_ally",
-          },
-          {
-            targetId: "zhao-yun",
-            label: "趙雲",
-            role: "同陣 / 可信援手",
-            thoughtTone: "想到趙雲，關羽更容易把注意力放回陣線協同與接應節奏。",
-            dialogueTone: "「子龍若在，這一路便能多留一步餘裕。」",
-            actionBias: "先安排接應與掩護，再決定出刀時機",
-            meterDelta: { bond: 3, prudence: 2, resolve: 1 },
-            femaleFocus: false,
-            confidence: 0.8,
-            sourceType: "fallback",
-            relationshipType: "battle_ally",
-          },
-          {
-            targetId: "cao-cao",
-            label: "曹操",
-            role: "舊恩 / 宿敵兩難",
-            thoughtTone: "想到曹操，關羽既記恩，也更要守義，心裡反而比平常更緊。",
-            dialogueTone: "「恩可記，義不可移；路終究還是要走回去。」",
-            actionBias: "先辨義理與軍令，再決定是否逼近",
-            meterDelta: { prudence: 4, resolve: 3, bond: -1 },
-            femaleFocus: false,
-            confidence: 0.86,
-            sourceType: "fallback",
-            relationshipType: "enemy_rival",
-          },
-          {
-            targetId: "sun-quan",
-            label: "孫權",
-            role: "盟勢 / 江東變數",
-            thoughtTone: "想到江東變數，關羽會先把防線與糧路擺回心中，不讓一時盛名蓋過風險。",
-            dialogueTone: "「盟勢可借，卻不可把後背全交出去。」",
-            actionBias: "先守糧道與外圍，再看盟勢是否可信",
-            meterDelta: { prudence: 4, resolve: 1, longing: -1 },
-            femaleFocus: false,
-            confidence: 0.78,
-            sourceType: "fallback",
-            relationshipType: "battlefield_opponent",
-          },
-        ],
-        evidenceCards: [
-          {
-            evidenceId: "guan-fallback-people-1",
-            angle: "people",
-            title: "刀下先問誰該護住",
-            summary: "關羽每逢戰局翻湧，先想的往往不是立功，而是這一刀該替誰守住陣線。",
-            quote: "刀快可以斬將，心慢才能不失義。",
-            sourceType: "fallback-persona",
-            sourceRefs: ["persona"],
-            relatedTargetIds: ["commoners", "liu-bei"],
-            confidence: 0.81,
-          },
-          {
-            evidenceId: "guan-fallback-bond-1",
-            angle: "bond",
-            title: "桃園之後，此身有主",
-            summary: "只要牽到劉備與張飛，關羽的判斷就會先回到那份不改的結義責任。",
-            quote: "義既結成，便不是一人一刀的事。",
-            sourceType: "fallback-memory",
-            sourceRefs: ["peach-garden-oath"],
-            relatedTargetIds: ["liu-bei", "zhang-fei"],
-            confidence: 0.9,
-          },
-          {
-            evidenceId: "guan-fallback-battlefield-1",
-            angle: "battlefield",
-            title: "白馬一騎，先斬最急之患",
-            summary: "關羽想到戰場時，常會先找最需要一刀打斷的節點，而不是一味追殺。",
-            quote: "先斷來勢，再談乘勝。",
-            location: "白馬",
-            sourceType: "fallback-memory",
-            sourceRefs: ["white-horse"],
-            relatedTargetIds: ["cao-cao"],
-            confidence: 0.87,
-          },
-          {
-            evidenceId: "guan-fallback-rival-1",
-            angle: "rival",
-            title: "恩義與立場不能混成一條路",
-            summary: "面對曹操與舊恩，關羽更清楚自己能記恩，卻不能失義。",
-            quote: "可記其情，不可亂我所從。",
-            sourceType: "fallback-memory",
-            sourceRefs: ["hua-rong-road"],
-            relatedTargetIds: ["cao-cao"],
-            confidence: 0.85,
-          },
-          {
-            evidenceId: "guan-fallback-habit-1",
-            angle: "habit",
-            title: "夜讀春秋，先把心定住",
-            summary: "局面越躁，關羽反而越會先把心收回經義與軍紀，再決定刀往哪裡落。",
-            quote: "書卷不是退戰，而是先讓心不亂。",
-            sourceType: "fallback-worldbuilding",
-            sourceRefs: ["night-reading"],
-            relatedTargetIds: ["commoners"],
-            confidence: 0.78,
-          },
-          {
-            evidenceId: "guan-fallback-decision-1",
-            angle: "decision",
-            title: "義理先站穩，再談冒進",
-            summary: "若局勢逼人，關羽寧可先守住底線，也不會讓一時之利壓過長久名節。",
-            quote: "寧可慢一著，不可失一生所守。",
-            sourceType: "fallback-persona",
-            sourceRefs: ["decision-style"],
-            relatedTargetIds: ["liu-bei", "sun-quan"],
-            confidence: 0.8,
-          },
-        ],
-        illustrationPromptBase: "以三國古典敘事插畫描繪關羽，氣質沉毅、威嚴、自持，畫面帶水墨與寫實戲劇感，人物像正從義理與戰局之間收束心神準備出刀。",
-        keywords: {},
-      },
-      "zhang-fei": {
-        displayName: "張飛",
-        grade: "A-vanguard",
-        dataMode: "示範資料",
-        dataHint: "npc-brain API 尚未連上，目前先用頁面內建示範資料演出。",
-        sourceMode: "fallback-demo",
-        defaultTargetId: "liu-bei",
-        traits: ["烈直", "護短", "豪勇", "敏銳", "重義", "臨陣果斷"],
-        persona: {
-          voiceStyle: ["直烈", "豪快", "護短", "真性情"],
-          personalityTraits: ["剛烈", "護主", "重義", "臨陣敏捷", "不耐虛詞"],
-          safeFallbackLine: "要打可以打，但先把自家人站穩。",
-          profile: {
-            affectTags: ["protective_fury", "battle_heat", "rough_loyalty"],
-            activitySeedHints: ["camp_patrol", "bridge_guard", "quick_muster"],
-            personalityTags: ["frontline_guard", "rough_honesty", "protective"],
-          },
-        },
-        activitySeeds: [
-          { keywordKey: "activity.camp_patrol", label: "巡營查哨" },
-          { keywordKey: "activity.bridge_guard", label: "扼橋守口" },
-          { keywordKey: "activity.quick_muster", label: "急整隊伍" },
-        ],
-        interactionTargets: [],
-        relationships: [
-          {
-            targetId: "liu-bei",
-            label: "劉備",
-            role: "兄長 / 先得護住的人",
-            thoughtTone: "想到劉備，張飛最先冒出的念頭常不是進攻，而是絕不能讓兄長再陷進亂兵裡。",
-            dialogueTone: "「你們先護好兄長，前頭那口子我來頂！」",
-            actionBias: "先替兄長爭路，再談回頭反打",
-            meterDelta: { bond: 7, resolve: 3, prudence: 1 },
-            femaleFocus: false,
-            confidence: 0.92,
-            sourceType: "fallback",
-            relationshipType: "sworn_sibling",
-          },
-          {
-            targetId: "guan-yu",
-            label: "關羽",
-            role: "義兄 / 默契同陣",
-            thoughtTone: "想到關羽，張飛會比較願意先忍半步，因為他知道有人能替自己把後勢收住。",
-            dialogueTone: "「二哥在後頭看著，我這一吼便更不能亂。」",
-            actionBias: "先把前線扛住，再等關羽接力追斬",
-            meterDelta: { bond: 5, resolve: 2, prudence: 1 },
-            femaleFocus: false,
-            confidence: 0.86,
-            sourceType: "fallback",
-            relationshipType: "battle_ally",
-          },
-          {
-            targetId: "zhao-yun",
-            label: "趙雲",
-            role: "同袍 / 機動接應",
-            thoughtTone: "想到趙雲，張飛會先把膽氣轉成配合，因為知道有人能補上最危險的斷口。",
-            dialogueTone: "「子龍若到，這條線就能從硬頂變成反包。」",
-            actionBias: "先守哨口，再等援手切入",
-            meterDelta: { bond: 3, prudence: 2, resolve: 1 },
-            femaleFocus: false,
-            confidence: 0.8,
-            sourceType: "fallback",
-            relationshipType: "battle_ally",
-          },
-          {
-            targetId: "cao-cao",
-            label: "曹操",
-            role: "強敵 / 最該先嚇住的人",
-            thoughtTone: "想到曹操，張飛的火會先升起來，但他也最清楚這種強敵若不先鎮住，後頭的人心就會散。",
-            dialogueTone: "「你兵多又如何？先過我這一口橋再說！」",
-            actionBias: "先聲奪人鎮住對方，再看能否反逼其退",
-            meterDelta: { resolve: 5, prudence: 2, benevolence: -1 },
-            femaleFocus: false,
-            confidence: 0.87,
-            sourceType: "fallback",
-            relationshipType: "enemy_rival",
-          },
-          {
-            targetId: "yan-yan",
-            label: "嚴顏",
-            role: "老將 / 值得敬的硬骨頭",
-            thoughtTone: "想到像嚴顏這樣的硬骨頭，張飛反而會更想用真本事說服，而不是只靠怒氣壓人。",
-            dialogueTone: "「肯站到最後的人，我張飛罵得起，也敬得起。」",
-            actionBias: "先試膽與試骨，再決定拉攏或硬攻",
-            meterDelta: { bond: 2, prudence: 1, resolve: 2 },
-            femaleFocus: false,
-            confidence: 0.72,
-            sourceType: "fallback",
-            relationshipType: "battlefield_opponent",
-          },
-        ],
-        evidenceCards: [
-          {
-            evidenceId: "zhang-fallback-people-1",
-            angle: "people",
-            title: "粗聲裡先護自家人",
-            summary: "張飛看似先怒，實際上常是先把跟著自己的人護在身後，再讓火氣衝到前面。",
-            quote: "聲可以先響，後頭的人不能先亂。",
-            sourceType: "fallback-persona",
-            sourceRefs: ["persona"],
-            relatedTargetIds: ["liu-bei", "commoners"],
-            confidence: 0.8,
-          },
-          {
-            evidenceId: "zhang-fallback-bond-1",
-            angle: "bond",
-            title: "長坂橋前，先替兄長爭路",
-            summary: "張飛每次想起長坂橋，最先記得的不是自己多勇，而是那一吼替兄長與眾人爭回了多少生路。",
-            quote: "要怕可以怕，但這一步我得先站住。",
-            location: "長坂橋",
-            sourceType: "fallback-memory",
-            sourceRefs: ["changban-bridge"],
-            relatedTargetIds: ["liu-bei", "cao-cao"],
-            confidence: 0.91,
-          },
-          {
-            evidenceId: "zhang-fallback-battlefield-1",
-            angle: "battlefield",
-            title: "先鎮住陣腳，再讓膽氣往前",
-            summary: "張飛真的擅長的不是亂衝，而是先用膽氣把陣腳鎮住，再把攻勢推出去。",
-            quote: "先讓對面心亂，自己這邊才敢快。",
-            sourceType: "fallback-memory",
-            sourceRefs: ["battlefield-style"],
-            relatedTargetIds: ["cao-cao"],
-            confidence: 0.86,
-          },
-          {
-            evidenceId: "zhang-fallback-habit-1",
-            angle: "habit",
-            title: "夜巡不怕吼，就怕哨口真空",
-            summary: "每次夜巡，張飛最怕的不是士兵聽見自己大聲，而是該有人守的地方居然真空。",
-            quote: "嘴可以粗，哨不能空。",
-            sourceType: "fallback-worldbuilding",
-            sourceRefs: ["camp-patrol"],
-            relatedTargetIds: ["commoners"],
-            confidence: 0.77,
-          },
-          {
-            evidenceId: "zhang-fallback-decision-1",
-            angle: "decision",
-            title: "怒能先壓，陣不能先亂",
-            summary: "真到要選的時候，張飛反而比外人想像得更知道哪一步該先壓火，哪一步能放膽。",
-            quote: "我可以先忍一口氣，但不能讓隊伍先散。",
-            sourceType: "fallback-persona",
-            sourceRefs: ["decision-style"],
-            relatedTargetIds: ["guan-yu", "liu-bei"],
-            confidence: 0.79,
-          },
-          {
-            evidenceId: "zhang-fallback-rival-1",
-            angle: "rival",
-            title: "最恨虛張聲勢的敵手",
-            summary: "面對會拿聲勢壓人的敵手，張飛更傾向先把對方膽氣打斷，再談如何追擊。",
-            quote: "你若靠勢，我便先把那口勢砸掉。",
-            sourceType: "fallback-memory",
-            sourceRefs: ["rival-style"],
-            relatedTargetIds: ["cao-cao"],
-            confidence: 0.83,
-          },
-        ],
-        illustrationPromptBase: "以三國古典敘事插畫描繪張飛，氣質剛烈、護主、帶粗豪壓迫感，畫面帶水墨與寫實戲劇感，人物像正壓住怒氣準備把前線重新扛穩。",
-        keywords: {},
-      },
-    };
-
     const fallbackNarrativeData = {
-      ...(fallbackNarrativeDataByGeneralId[GENERAL_ID] || fallbackNarrativeDataByGeneralId["liu-bei"]),
-      defaultAngle: initialShowcaseConfig.defaultAngle,
-      portraitSrc: initialShowcaseConfig.portraitSrc,
-      portraitAlt: initialShowcaseConfig.portraitAlt,
+      displayName: "劉備",
+      grade: "A-romance",
+      dataMode: "示範資料",
+      dataHint: "npc-brain API 尚未連上，目前先用頁面內建示範資料演出。",
+      sourceMode: "fallback-demo",
+      traits: ["仁厚", "重義", "憂民", "重情", "善結人心", "有號召力"],
+      persona: {
+        voiceStyle: ["仁厚", "憂民", "懇切", "重情"],
+        personalityTraits: ["仁德", "重義", "善結人心", "憂患", "有號召力"],
+        safeFallbackLine: "備所念者，不過百姓得安、兄弟不離。",
+        profile: {
+          affectTags: ["family_affection", "mercy_compassion", "grief_regret"],
+          activitySeedHints: ["host_banquet", "family_duty", "suppress_unrest"],
+          personalityTags: ["governance-minded", "family-bound", "persuasive"],
+        },
+      },
+      activitySeeds: [
+        { keywordKey: "activity.family_duty", label: "家室安置" },
+        { keywordKey: "activity.host_banquet", label: "設宴安撫" },
+        { keywordKey: "activity.suppress_unrest", label: "平亂整軍" },
+      ],
+      interactionTargets: [],
+      relationships: [
+        {
+          targetId: "zhang-fei",
+          label: "張飛",
+          role: "兄弟 / 斷後之託",
+          thoughtTone: "想到張飛，劉備會先想到自己還欠他多少次不該由他獨扛的危局。",
+          dialogueTone: "「翼德先頂住，我不能再讓你一個人替全軍擋災。」",
+          actionBias: "先探退路，再查張飛安危",
+          meterDelta: { bond: 6, resolve: 2, longing: 2 },
+          femaleFocus: false,
+          confidence: 0.88,
+          sourceType: "fallback",
+          relationshipType: "battle_ally",
+        },
+        {
+          targetId: "guan-yu",
+          label: "關羽",
+          role: "兄弟 / 義氣與節操",
+          thoughtTone: "想到關羽，劉備會更在意自己是否還配得上當初那份義氣。",
+          dialogueTone: "「雲長在前，我便不能讓此心先散。」",
+          actionBias: "先守承諾，再談勝負",
+          meterDelta: { bond: 7, benevolence: 2, longing: 1 },
+          femaleFocus: false,
+          confidence: 0.9,
+          sourceType: "fallback",
+          relationshipType: "sworn_sibling",
+        },
+        {
+          targetId: "zhuge-liang",
+          label: "諸葛亮",
+          role: "軍師 / 大局與謀定",
+          thoughtTone: "想到孔明時，劉備會願意多忍一步，先把局面想清楚。",
+          dialogueTone: "「孔明既在，這一步不妨先緩，待眾心站穩再動。」",
+          actionBias: "先盤算與整編，再決定推進節奏",
+          meterDelta: { prudence: 4, resolve: -1, bond: 1 },
+          femaleFocus: false,
+          confidence: 0.82,
+          sourceType: "fallback",
+          relationshipType: "patron_client",
+        },
+        {
+          targetId: "cao-cao",
+          label: "曹操",
+          role: "宿敵 / 勝負與人心對照",
+          thoughtTone: "想到曹操，劉備常會更清楚自己想贏，卻不想用同樣的方法去贏。",
+          dialogueTone: "「快可以奪城，未必奪心；我若只學其快，也就失了立足之本。」",
+          actionBias: "先衡量百姓代價，再決定是否用強",
+          meterDelta: { prudence: 4, resolve: 4, benevolence: 2 },
+          femaleFocus: false,
+          confidence: 0.86,
+          sourceType: "fallback",
+          relationshipType: "enemy_rival",
+        },
+        {
+          targetId: "mi-zhu",
+          label: "糜竺",
+          role: "舊恩 / 家業相託",
+          thoughtTone: "想到糜竺，劉備會先想起最困頓時，有人把家業與親族一起託來。",
+          dialogueTone: "「舊恩不能只掛在嘴上，得先讓跟著我的人過得去。」",
+          actionBias: "先開副倉與點名冊，再談調兵",
+          meterDelta: { benevolence: 4, bond: 4, prudence: -1 },
+          femaleFocus: false,
+          confidence: 0.76,
+          sourceType: "fallback",
+          relationshipType: "patron_client",
+        },
+        {
+          targetId: "mi-shi",
+          label: "糜氏",
+          role: "家室 / 託付",
+          thoughtTone: specialTargetOverrides["mi-shi"].thoughtTone,
+          dialogueTone: specialTargetOverrides["mi-shi"].dialogueTone,
+          actionBias: specialTargetOverrides["mi-shi"].actionBias,
+          meterDelta: specialTargetOverrides["mi-shi"].meterDelta,
+          femaleFocus: true,
+          confidence: 0.72,
+          sourceType: "fallback",
+          relationshipType: "female_interaction",
+        },
+        {
+          targetId: "gan-shi",
+          label: "甘氏",
+          role: "舊情 / 家室",
+          thoughtTone: specialTargetOverrides["gan-shi"].thoughtTone,
+          dialogueTone: specialTargetOverrides["gan-shi"].dialogueTone,
+          actionBias: specialTargetOverrides["gan-shi"].actionBias,
+          meterDelta: specialTargetOverrides["gan-shi"].meterDelta,
+          femaleFocus: true,
+          confidence: 0.7,
+          sourceType: "fallback",
+          relationshipType: "female_interaction",
+        },
+        {
+          targetId: "sun-shang-xiang",
+          label: "孫夫人",
+          role: "盟婚 / 去留",
+          thoughtTone: specialTargetOverrides["sun-shang-xiang"].thoughtTone,
+          dialogueTone: specialTargetOverrides["sun-shang-xiang"].dialogueTone,
+          actionBias: specialTargetOverrides["sun-shang-xiang"].actionBias,
+          meterDelta: specialTargetOverrides["sun-shang-xiang"].meterDelta,
+          femaleFocus: true,
+          confidence: 0.74,
+          sourceType: "fallback",
+          relationshipType: "female_interaction",
+        },
+      ],
+      evidenceCards: [
+        {
+          evidenceId: "fallback-people-1",
+          angle: "people",
+          title: "先護百姓，再談天下",
+          summary: "劉備每逢動亂，先想到的往往不是城池，而是跟著自己的人能不能先活下來。",
+          quote: "若連跟隨之人都護不住，談天下便只是空話。",
+          sourceType: "fallback-persona",
+          sourceRefs: ["persona"],
+          relatedTargetIds: ["commoners"],
+          confidence: 0.82,
+        },
+        {
+          evidenceId: "fallback-bond-1",
+          angle: "bond",
+          title: "長坂橋邊的虧欠",
+          summary: "張飛在長坂橋斷後，替劉備爭來退路，卻也把一份虧欠留在他心裡。",
+          quote: "那不是豪勇故事，而是一筆欠在心上的命。",
+          location: "長坂橋",
+          chapterNo: 42,
+          sourceType: "fallback-memory",
+          sourceRefs: ["042#p1", "042#p2", "042#p3"],
+          relatedTargetIds: ["zhang-fei"],
+          confidence: 0.9,
+        },
+        {
+          evidenceId: "fallback-battlefield-1",
+          angle: "battlefield",
+          title: "戰場不是只算快慢",
+          summary: "每次看見追兵與亂隊，劉備都會想起撤退時最怕的從來不是慢，而是人心散。",
+          quote: "仁德若沒有隊伍承接，最後只會變成哭聲。",
+          location: "長坂一帶",
+          sourceType: "fallback-memory",
+          sourceRefs: ["keyword:changban-bridge"],
+          relatedTargetIds: ["cao-cao", "zhang-fei"],
+          confidence: 0.88,
+        },
+        {
+          evidenceId: "fallback-rival-1",
+          angle: "rival",
+          title: "不能只學曹操的快",
+          summary: "曹操式的取勝效率讓劉備敬畏，也讓他更清楚自己想守住什麼。",
+          quote: "人心一失，再快也只是敗路。",
+          sourceType: "fallback-memory",
+          sourceRefs: ["017#p10"],
+          relatedTargetIds: ["cao-cao"],
+          confidence: 0.84,
+        },
+        {
+          evidenceId: "fallback-resource-1",
+          angle: "resource",
+          title: "糜氏與副倉",
+          summary: "軍資告急時，劉備會先想到糜氏舊部是否也在缺糧名冊上。",
+          quote: "舊恩之人，不可先寒心。",
+          sourceType: "fallback-memory",
+          sourceRefs: ["external-evidence"],
+          relatedTargetIds: ["mi-zhu", "mi-shi"],
+          confidence: 0.78,
+        },
+        {
+          evidenceId: "fallback-habit-1",
+          angle: "habit",
+          title: "火邊問傷兵",
+          summary: "夜裡巡營時，劉備常先問傷兵與役夫的細事，再回頭談軍令。",
+          quote: "他先問傷兵痛不痛，再問役夫家在何處。",
+          sourceType: "fallback-worldbuilding",
+          sourceRefs: ["worldbuilding-note"],
+          relatedTargetIds: ["commoners"],
+          confidence: 0.76,
+        },
+        {
+          evidenceId: "fallback-emotion-1",
+          contextKey: null,
+          angle: "emotion",
+          title: "亂世裡的家室牽掛",
+          summary: "一牽涉到家室與女性互動，劉備的念頭常會從勝負轉成安置與去留。",
+          quote: "有些牽掛不必說出口，卻會在每一次行軍時自己壓到心上。",
+          sourceType: "fallback-female",
+          sourceRefs: ["female-interaction"],
+          relatedTargetIds: ["mi-shi", "gan-shi", "sun-shang-xiang"],
+          confidence: 0.8,
+        },
+      ],
+      illustrationPromptBase: "以三國古典敘事插畫描繪劉備，氣質仁厚、憂民、重情，畫面帶水墨與寫實戲劇感，人物像正從回憶裡走出來準備做決定。",
+      keywords: {},
     };
 
     const elements = {
       dataModeValue: document.getElementById("dataModeValue"),
       dataModeHint: document.getElementById("dataModeHint"),
-      pageTitle: document.getElementById("pageTitle"),
-      pageSubtitle: document.getElementById("pageSubtitle"),
-      portraitImage: document.getElementById("portraitImage"),
       profileName: document.getElementById("profileName"),
       profileGrade: document.getElementById("profileGrade"),
       traitList: document.getElementById("traitList"),
       meters: document.getElementById("meters"),
-      generalGrid: document.getElementById("generalGrid"),
       angleCoverageNote: document.getElementById("angleCoverageNote"),
       angleGrid: document.getElementById("angleGrid"),
       relationshipGrid: document.getElementById("relationshipGrid"),
@@ -1593,8 +1175,8 @@
 
     const state = {
       turn: 1,
-      activeAngle: initialShowcaseConfig.defaultAngle,
-      activePerson: initialShowcaseConfig.defaultTargetId,
+      activeAngle: "emotion",
+      activePerson: "mi-shi",
       auto: false,
       timer: null,
       rendering: false,
@@ -1618,10 +1200,6 @@
         longing: 62,
       },
     };
-
-    function currentSpeakerName() {
-      return state.data?.displayName || initialShowcaseConfig.label;
-    }
 
     function wait(ms) {
       return new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -2483,30 +2061,6 @@
       elements.dataModeHint.textContent = hint;
     }
 
-    function renderGeneralSelector() {
-      if (!elements.generalGrid) {
-        return;
-      }
-      elements.generalGrid.innerHTML = GENERAL_SHOWCASE_ORDER.map((generalId) => {
-        const config = resolveGeneralShowcaseConfig(generalId);
-        return `
-          <button class="general-button ${GENERAL_ID === generalId ? "active" : ""}" type="button" data-general-id="${generalId}">
-            <strong>${config.label}</strong>
-            <span>${config.shortRole}${GENERAL_ID === generalId ? "・目前主角" : ""}</span>
-          </button>
-        `;
-      }).join("");
-      elements.generalGrid.querySelectorAll("button").forEach((button) => {
-        button.addEventListener("click", () => {
-          const targetGeneralId = button.dataset.generalId;
-          if (!targetGeneralId || targetGeneralId === GENERAL_ID) {
-            return;
-          }
-          window.location.href = buildGeneralUrl(targetGeneralId);
-        });
-      });
-    }
-
     function countCardsByAngle() {
       const counts = {};
       for (const card of state.data?.evidenceCards || []) {
@@ -2890,7 +2444,6 @@
     function normalizeNarrativePayload(payload) {
       const persona = payload.persona || {};
       const profile = persona.profile || {};
-      const showcaseConfig = resolveGeneralShowcaseConfig(GENERAL_ID);
       const keywordCategories = payload.keywords || fallbackNarrativeData.keywords || {};
       const traits = uniqueList([
         ...(persona.voiceStyle || []),
@@ -2906,15 +2459,11 @@
         label: humanizeSymbolicText(seed.label || seed.rawTag || seed.keywordKey),
       }));
       return {
-        displayName: payload.displayName || persona.displayName || showcaseConfig.label,
+        displayName: payload.displayName || persona.displayName || "劉備",
         grade: persona.runtimeReadiness?.status || "runtime-profile",
         dataMode: "npc-brain 真資料",
         dataHint: `已連到 ${payload.sourceMode || "runtime-general-profiles"}，目前優先使用 runtime persona / relationships / evidence cards。`,
         sourceMode: payload.sourceMode || "runtime-general-profiles",
-        defaultAngle: payload.defaultAngle || fallbackNarrativeData.defaultAngle || showcaseConfig.defaultAngle,
-        defaultTargetId: payload.defaultTargetId || fallbackNarrativeData.defaultTargetId || showcaseConfig.defaultTargetId,
-        portraitSrc: payload.portraitSrc || fallbackNarrativeData.portraitSrc || showcaseConfig.portraitSrc,
-        portraitAlt: payload.portraitAlt || fallbackNarrativeData.portraitAlt || showcaseConfig.portraitAlt,
         traits: traits.length ? traits : fallbackNarrativeData.traits,
         persona: {
           ...fallbackNarrativeData.persona,
@@ -2957,35 +2506,17 @@
     }
 
     function applyData(data) {
-      const showcaseConfig = resolveGeneralShowcaseConfig(GENERAL_ID);
-      const relationships = data.relationships || [];
-      const availableAngles = uniqueList((data.evidenceCards || []).map((card) => card.angle).filter(Boolean), 32);
       state.data = data;
-      document.title = `三國人物互動劇場 · ${data.displayName || showcaseConfig.label}`;
-      elements.pageTitle.textContent = "三國人物互動劇場";
-      elements.pageSubtitle.textContent = buildShowcaseSubtitle(data.displayName || showcaseConfig.label);
-      elements.portraitImage.src = data.portraitSrc || showcaseConfig.portraitSrc;
-      elements.portraitImage.alt = data.portraitAlt || `${data.displayName || showcaseConfig.label}肖像`;
       elements.profileName.textContent = data.displayName;
       elements.profileGrade.textContent = data.grade;
       elements.traitList.innerHTML = data.traits.map((trait) => `<li>${trait}</li>`).join("");
       setStatus(data.dataMode, data.dataHint);
       elements.sourceBadge.textContent = data.sourceMode === "runtime-general-profiles" ? "真資料模式" : "示範模式";
-      elements.timelineTitle.textContent = `${data.displayName}互動時間線`;
       if (elements.chorusHint) {
-        elements.chorusHint.textContent = `每幕最多 4 人；預設 2 人走 LLM，其餘走快速模板。可用互動人物 ${relationships.length} 位。`;
+        elements.chorusHint.textContent = `每幕最多 4 人；預設 2 人走 LLM，其餘走快速模板。可用互動人物 ${data.relationships.length} 位。`;
       }
-      if (!availableAngles.includes(state.activeAngle)) {
-        state.activeAngle = data.defaultAngle || showcaseConfig.defaultAngle;
-      }
-      if (!availableAngles.includes(state.activeAngle)) {
-        state.activeAngle = availableAngles[0] || showcaseConfig.defaultAngle;
-      }
-      if (!relationships.find((target) => target.targetId === state.activePerson)) {
-        state.activePerson = relationships.find((target) => target.targetId === data.defaultTargetId)?.targetId
-          || relationships.find((target) => target.targetId === showcaseConfig.defaultTargetId)?.targetId
-          || relationships[0]?.targetId
-          || showcaseConfig.defaultTargetId;
+      if (!state.data.relationships.find((target) => target.targetId === state.activePerson)) {
+        state.activePerson = state.data.relationships[0]?.targetId || "mi-shi";
       }
     }
 
