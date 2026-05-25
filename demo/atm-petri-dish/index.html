@@ -90,6 +90,7 @@
       border-radius: var(--r);
       background: var(--panel);
       box-shadow: var(--shadow);
+      -webkit-backdrop-filter: blur(8px);
       backdrop-filter: blur(8px);
     }
     .brand {
@@ -177,6 +178,7 @@
         rgba(252,248,238,0.65);
       box-shadow: var(--shadow);
       overflow: hidden;
+      -webkit-backdrop-filter: blur(2px);
       backdrop-filter: blur(2px);
     }
     .stage.crit::after {
@@ -216,6 +218,7 @@
       border-radius: var(--r);
       background: var(--panel);
       box-shadow: var(--shadow);
+      -webkit-backdrop-filter: blur(8px);
       backdrop-filter: blur(8px);
       overflow: hidden;
     }
@@ -412,6 +415,7 @@
       z-index: 200;
       opacity: 0; pointer-events: none;
       transition: opacity 0.3s ease;
+      -webkit-backdrop-filter: blur(4px);
       backdrop-filter: blur(4px);
     }
     .modal-backdrop.show { opacity: 1; pointer-events: auto; }
@@ -496,6 +500,7 @@
       border: 1px solid var(--line);
       border-radius: var(--r-sm);
       font-family: var(--mono); font-size: 0.62rem;
+      -webkit-backdrop-filter: blur(4px);
       backdrop-filter: blur(4px);
       pointer-events: none;
     }
@@ -507,6 +512,10 @@
       width: 10px; height: 10px; border-radius: 50%;
       border: 1px solid rgba(28,33,28,0.2);
     }
+    .tier-dot-local { background: var(--tier-local); }
+    .tier-dot-candidate { background: var(--tier-candidate); }
+    .tier-dot-governed { background: var(--tier-governed); }
+    .tier-dot-shared { background: var(--tier-shared); }
 
     /* ── 響應式 ─────────────────────────────────────── */
     @media (max-width: 900px) {
@@ -562,10 +571,10 @@
       <canvas id="petri-canvas"></canvas>
       <div class="stage-hint">滑鼠 hover 細胞 → 看 capsule 詳細資訊；點 finding → 選 behavior</div>
       <div class="tier-legend">
-        <div class="tier-legend-row"><span class="tier-dot" style="background:var(--tier-local)"></span>local-capsule</div>
-        <div class="tier-legend-row"><span class="tier-dot" style="background:var(--tier-candidate)"></span>local-candidate</div>
-        <div class="tier-legend-row"><span class="tier-dot" style="background:var(--tier-governed)"></span>governed-atom</div>
-        <div class="tier-legend-row"><span class="tier-dot" style="background:var(--tier-shared)"></span>shared-atom</div>
+        <div class="tier-legend-row"><span class="tier-dot tier-dot-local"></span>local-capsule</div>
+        <div class="tier-legend-row"><span class="tier-dot tier-dot-candidate"></span>local-candidate</div>
+        <div class="tier-legend-row"><span class="tier-dot tier-dot-governed"></span>governed-atom</div>
+        <div class="tier-legend-row"><span class="tier-dot tier-dot-shared"></span>shared-atom</div>
       </div>
     </div>
 
