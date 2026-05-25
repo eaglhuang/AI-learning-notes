@@ -1679,6 +1679,17 @@
       showToast('🌿 進入 Sandbox。每 8 秒會出現一個隨機 finding。', 'lesson', 3000);
     }
 
+    function startSandboxDirect() {
+      state.mode = 'sandbox';
+      state.tutorialStep = TUTORIAL_STEPS.length;
+      state.sandboxLastSpawn = state.anim.time;
+      hideModal();
+      updateStepBadge();
+      renderFindingsPanel();
+      renderBehaviorDock();
+      showToast('🌿 已直接進入 Sandbox 自由模式。', 'lesson', 3000);
+    }
+
     /* ═══════════════════════════════════════════════════
        SECTION 14 — Sandbox finding 生成器
     ═══════════════════════════════════════════════════ */
@@ -1792,7 +1803,12 @@
       renderFindingsPanel();
       renderBehaviorDock();
       requestAnimationFrame(loop);
-      startTutorial();
+      const requestedMode = new URLSearchParams(window.location.search).get('mode');
+      if (requestedMode === 'sandbox' || requestedMode === 'play') {
+        startSandboxDirect();
+      } else {
+        startTutorial();
+      }
     }
 
     document.getElementById('reset-btn').addEventListener('click', () => {
