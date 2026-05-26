@@ -2372,43 +2372,29 @@
       };
     }
 
-    function shouldRetryNarrativeProfile(error) {
-      if (!error) {
-        return false;
-      }
-      if (error.name === "AbortError") {
-        return true;
-      }
-      return /HTTP 5\d\d/i.test(String(error.message || error));
-    }
-
-    async function fetchNarrativeProfilePayload(generalId, signal) {
-      const response = await fetch(`${API_BASE}/v1/npc/narrative-profile?generalId=${encodeURIComponent(generalId)}`, {
-        headers: createApiHeaders(),
-        signal,
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      const payload = await response.json();
-      const hasUsableNarrativeData = Array.isArray(payload.evidenceCards) && payload.evidenceCards.length > 0
-        && Array.isArray(payload.interactionTargets) && payload.interactionTargets.length > 0;
-      if (!hasUsableNarrativeData) {
-        throw new Error("Narrative payload is empty.");
-      }
-      return payload;
-    }
-
     async function loadNarrativeData(generalId = currentGeneralId()) {
       let lastError = null;
       for (let attempt = 1; attempt <= DEFAULT_PROFILE_MAX_ATTEMPTS; attempt += 1) {
         const timeout = createTimeoutController(DEFAULT_PROFILE_TIMEOUT_MS);
         try {
-          const payload = await fetchNarrativeProfilePayload(generalId, timeout.signal);
+          const response = await fetch(`${API_BASE}/v1/npc/narrative-profile?generalId=${encodeURIComponent(generalId)}`, {
+            headers: createApiHeaders(),
+            signal: timeout.signal,
+          });
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+          const payload = await response.json();
+          const hasUsableNarrativeData = Array.isArray(payload.evidenceCards) && payload.evidenceCards.length > 0
+            && Array.isArray(payload.interactionTargets) && payload.interactionTargets.length > 0;
+          if (!hasUsableNarrativeData) {
+            throw new Error("Narrative payload is empty.");
+          }
           return normalizeNarrativePayload(payload);
         } catch (error) {
           lastError = error;
-          if (attempt < DEFAULT_PROFILE_MAX_ATTEMPTS && shouldRetryNarrativeProfile(error)) {
+          const shouldRetry = error?.name === "AbortError" || /HTTP 5\d\d/i.test(String(error?.message || error));
+          if (attempt < DEFAULT_PROFILE_MAX_ATTEMPTS && shouldRetry) {
             console.warn(`narrative-profile retry ${attempt}/${DEFAULT_PROFILE_MAX_ATTEMPTS}:`, error);
             await wait(DEFAULT_PROFILE_RETRY_DELAY_MS);
             continue;
@@ -2746,6 +2732,17 @@
       ].filter(Boolean);
     }
 
+    function buildUnavailableNarrativeText() {
+      return {
+        sceneText: "",
+        memoryText: "目前沒有可顯示的回憶資料。",
+        emotionText: "目前沒有可顯示的情緒資料。",
+        dialogueText: "目前沒有可顯示的對話資料。",
+        intentText: "目前沒有可顯示的行動意圖資料。",
+        storyText: "目前沒有可顯示的完整劇情資料。",
+      };
+    }
+
     function buildIllustrationPrompt(bundle) {
       const target = bundle.target;
       const card = bundle.card;
@@ -2861,40 +2858,6 @@ ${evidenceLine}
       elements.chorusGrid.innerHTML = cards.join("");
     }
 
-    function buildBundleFallbackStoryText(bundle) {
-      const targetName = bundle?.target?.label || "對方";
-      const fragments = [
-        bundle?.sceneText || "",
-        bundle?.memoryText || "",
-        bundle?.emotionText || "",
-        bundle?.dialogueText ? `他看向${targetName}，低聲道：「${normalizeSentenceBody(bundle.dialogueText)}」` : "",
-        bundle?.intentText ? `接下來，他心裡先定下這一步：${normalizeSentenceBody(bundle.intentText)}` : "",
-      ].filter(Boolean).map((text) => ensureSentenceEnd(text));
-      return collectConciseSentences(fragments.join(" "), { maxSentences: 5, maxChars: 360 })
-        || "目前先以前端備援劇情銜接這一幕。";
-    }
-
-    function buildBundleFallbackBeats(bundle) {
-      const fallbackSceneText = sanitizeDisplayText(bundle?.sceneText || "", { removeActor: false })
-        || "目前先以前端備援場景描述接手這一幕。";
-      const fallbackMemoryText = sanitizeDisplayText(bundle?.memoryText || bundle?.card?.summary || bundle?.sceneText || "", { removeActor: true })
-        || "這一幕先從證據摘要回想眼前人物與局勢。";
-      const fallbackEmotionText = sanitizeDisplayText(bundle?.emotionText || bundle?.target?.thoughtTone || "", { removeActor: true })
-        || "情緒先以人物底色與互動角度推估。";
-      const fallbackDialogueText = sanitizeDisplayText(bundle?.dialogueText || bundle?.target?.dialogueTone || "", { removeActor: true })
-        || "他暫時沒有把話說滿，但心裡已把對方與局勢連在一起。";
-      const fallbackIntentText = sanitizeDisplayText(bundle?.intentText || bundle?.target?.actionBias || "", { removeActor: true })
-        || "他先按住節奏，準備看清局勢後再動。";
-      return {
-        sceneText: fallbackSceneText,
-        memoryText: fallbackMemoryText,
-        emotionText: fallbackEmotionText,
-        dialogueText: fallbackDialogueText,
-        intentText: fallbackIntentText,
-        storyText: sanitizeDisplayText(buildBundleFallbackStoryText(bundle), { removeActor: false }),
-      };
-    }
-
     async function playBundle(bundle) {
       state.rendering = true;
       state.revealToken += 1;
@@ -2939,64 +2902,58 @@ ${evidenceLine}
         bundle.directorPayload = directorPayload || null;
         refreshIllustrationPrompt();
         void requestSceneIllustration(bundle).catch(() => null);
-        const fallbackBeats = buildBundleFallbackBeats(bundle);
         const beats = directorPayload?.beats || {};
         const dataStatus = String(directorPayload?.dataStatus || "").trim();
-        const directorSceneText = sanitizeDisplayText(beats.sceneText || "", { removeActor: false });
-        const directorMemoryText = sanitizeDisplayText(beats.memoryText || "", { removeActor: true });
-        const directorEmotionText = sanitizeDisplayText(beats.emotionText || "", { removeActor: true });
-        const directorDialogueText = sanitizeDisplayText(beats.dialogueText || "", { removeActor: true });
-        const directorIntentText = sanitizeDisplayText(beats.intentText || "", { removeActor: true });
-        const directorStoryText = sanitizeDisplayText(directorPayload?.storyText || "", { removeActor: false });
-        const directorIsEmpty = Boolean(directorPayload?.isEmpty) || (
-          !directorSceneText
-          && !directorMemoryText
-          && !directorEmotionText
-          && !directorDialogueText
-          && !directorIntentText
-          && !directorStoryText
+        const sceneText = sanitizeDisplayText(beats.sceneText || "", { removeActor: false });
+        const memoryText = sanitizeDisplayText(beats.memoryText || "", { removeActor: true });
+        const emotionText = sanitizeDisplayText(beats.emotionText || "", { removeActor: true });
+        const dialogueText = sanitizeDisplayText(beats.dialogueText || "", { removeActor: true });
+        const intentText = sanitizeDisplayText(beats.intentText || "", { removeActor: true });
+        const storyText = sanitizeDisplayText(directorPayload?.storyText || "", { removeActor: false });
+        const isEmpty = Boolean(directorPayload?.isEmpty) || (
+          !sceneText
+          && !memoryText
+          && !emotionText
+          && !dialogueText
+          && !intentText
+          && !storyText
         );
-        const useBundleFallback = !directorPayload || directorIsEmpty;
-        const sceneText = useBundleFallback ? fallbackBeats.sceneText : directorSceneText;
-        const memoryText = useBundleFallback ? fallbackBeats.memoryText : directorMemoryText;
-        const emotionText = useBundleFallback ? fallbackBeats.emotionText : directorEmotionText;
-        const dialogueText = useBundleFallback ? fallbackBeats.dialogueText : directorDialogueText;
-        const intentText = useBundleFallback ? fallbackBeats.intentText : directorIntentText;
-        const storyText = useBundleFallback ? fallbackBeats.storyText : directorStoryText;
-        const storyMissing = !useBundleFallback && !storyText;
-        const sourceLabel = useBundleFallback
-          ? (directorPayload ? `scene-director/${dataStatus || "empty"}；已切回前端備援劇情` : "scene-director unavailable；已切回前端備援劇情")
-          : (dataStatus ? `scene-director/${dataStatus}` : "scene-director");
-        renderMetaChips(useBundleFallback ? bundle.meta : buildDirectorMetaChips(bundle, directorPayload));
-        elements.sceneNote.textContent = `${bundle.sceneNote}；${sourceLabel}${storyMissing ? "；小劇本暫未生成" : ""}`;
+        const storyMissing = !isEmpty && !storyText;
+        const unavailableText = buildUnavailableNarrativeText();
+        const shouldUseUnavailableText = !directorPayload || isEmpty;
+        const sourceLabel = dataStatus
+          ? `scene-director/${dataStatus}`
+          : (directorPayload ? "scene-director" : "scene-director unavailable");
+        renderMetaChips(shouldUseUnavailableText ? bundle.meta : buildDirectorMetaChips(bundle, directorPayload));
+        elements.sceneNote.textContent = `${bundle.sceneNote}；${sourceLabel}${isEmpty ? "；本角度/人物目前無資料" : ""}${storyMissing ? "；小劇本暫未生成" : ""}`;
 
         await wait(220);
         if (isStaleRun()) {
           return;
         }
-        elements.sceneText.textContent = sceneText;
-        await revealText(elements.memoryText, memoryText, 320);
+        elements.sceneText.textContent = shouldUseUnavailableText ? unavailableText.sceneText : sceneText;
+        await revealText(elements.memoryText, shouldUseUnavailableText ? unavailableText.memoryText : memoryText, 320);
         if (isStaleRun()) {
           return;
         }
-        await revealText(elements.emotionText, emotionText, 320);
+        await revealText(elements.emotionText, shouldUseUnavailableText ? unavailableText.emotionText : emotionText, 320);
         if (isStaleRun()) {
           return;
         }
-        await revealText(elements.dialogueText, dialogueText, 300);
+        await revealText(elements.dialogueText, shouldUseUnavailableText ? unavailableText.dialogueText : dialogueText, 300);
         if (isStaleRun()) {
           return;
         }
-        await revealText(elements.intentText, intentText, 320);
+        await revealText(elements.intentText, shouldUseUnavailableText ? unavailableText.intentText : intentText, 320);
         if (isStaleRun()) {
           return;
         }
-        await revealText(elements.storyText, storyText, 260);
+        await revealText(elements.storyText, shouldUseUnavailableText ? unavailableText.storyText : storyText, 260);
         if (isStaleRun()) {
           return;
         }
-        renderDirectorChorusLines(useBundleFallback ? [] : (Array.isArray(directorPayload?.chorusLines) ? directorPayload.chorusLines : []));
-        bundle.runtimeIntentText = intentText;
+        renderDirectorChorusLines(shouldUseUnavailableText ? [] : (Array.isArray(directorPayload?.chorusLines) ? directorPayload.chorusLines : []));
+        bundle.runtimeIntentText = shouldUseUnavailableText ? "" : intentText;
       } catch (error) {
         if (isStaleRun()) {
           return;
