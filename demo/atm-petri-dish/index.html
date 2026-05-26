@@ -208,6 +208,51 @@
       opacity: 0.7;
     }
 
+    /* ── Cell hover tooltip ─────────────────────────── */
+    .cell-tooltip {
+      position: fixed;
+      z-index: 240;
+      pointer-events: none;
+      min-width: 220px; max-width: 320px;
+      padding: 10px 12px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--r-sm);
+      box-shadow: var(--shadow);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      font-family: var(--serif);
+      color: var(--ink);
+      font-size: 12px;
+      transition: opacity 0.12s ease;
+    }
+    .cell-tooltip[hidden] { display: none; }
+    .cell-tooltip-title {
+      font-weight: 700; font-size: 13.5px;
+      color: var(--jade-2); margin-bottom: 2px;
+      letter-spacing: 0.02em;
+    }
+    .cell-tooltip-id {
+      font-family: var(--mono); font-size: 10.5px;
+      color: var(--muted); margin-bottom: 8px;
+      word-break: break-all;
+    }
+    .cell-tooltip-row {
+      display: flex; justify-content: space-between; gap: 12px;
+      padding: 2px 0;
+      border-top: 1px dashed rgba(28,33,28,0.08);
+    }
+    .cell-tooltip-row:first-of-type { border-top: 0; }
+    .cell-tooltip-row span { color: var(--muted); font-size: 11px; }
+    .cell-tooltip-row b {
+      font-weight: 600; color: var(--ink);
+      font-family: var(--mono); font-size: 11px;
+    }
+    .cell-tooltip-row b.tier-local     { color: var(--tier-local); }
+    .cell-tooltip-row b.tier-candidate { color: var(--tier-candidate); }
+    .cell-tooltip-row b.tier-governed  { color: var(--tier-governed); }
+    .cell-tooltip-row b.tier-shared    { color: var(--tier-shared); }
+
     /* ── Finding 面板 ───────────────────────────────── */
     .findings {
       grid-area: findings;
@@ -569,6 +614,7 @@
     <!-- ── Petri dish stage ───────────────────────── -->
     <div class="stage" id="stage">
       <canvas id="petri-canvas"></canvas>
+      <div class="cell-tooltip" id="cell-tooltip" hidden></div>
       <div class="stage-hint">滑鼠 hover 細胞 → 看 capsule 詳細資訊；點 finding → 選 behavior</div>
       <div class="tier-legend">
         <div class="tier-legend-row"><span class="tier-dot tier-dot-local"></span>local-capsule</div>
@@ -1121,42 +1167,64 @@
         }
         // Default jitter
         else {
+          // 1) Small random jitter
           c.vx += (Math.random() - 0.5) * 0.03;
           c.vy += (Math.random() - 0.5) * 0.03;
-          c.vx *= 0.94;
-          c.vy *= 0.94;
-          c.x += c.vx;
-          c.y += c.vy;
 
-          // Pull toward anchor center
+          // 2) Pull toward anchor center — linear spring (not distance-squared!)
+          //    舊版用 dx*0.0008*d，距離越遠拉力以距離平方爆衝 → 細胞累積動能變直線亂衝
           if (state.anchors[0]) {
             const dx = state.anchors[0].x - c.x;
             const dy = state.anchors[0].y - c.y;
-            const d = Math.sqrt(dx*dx + dy*dy);
-            if (d > state.anchors[0].baseR * 0.7) {
-              c.vx += dx * 0.0008 * d;
-              c.vy += dy * 0.0008 * d;
+            const d  = Math.sqrt(dx*dx + dy*dy);
+            const innerR = state.anchors[0].baseR * 0.7;
+            if (d > innerR) {
+              // 線性彈簧常數 + 平滑曲線（距離越遠係數略增，但 cap 在 0.004）
+              const k = Math.min(0.004, 0.0015 + (d - innerR) * 0.000004);
+              c.vx += dx * k;
+              c.vy += dy * k;
             }
           }
-          // Repulsion between cells
+
+          // 3) Soft repulsion between cells (capped per pair)
           for (const other of state.cells) {
             if (other === c || other.state === 'expired') continue;
             const dx = c.x - other.x;
             const dy = c.y - other.y;
-            const d = Math.sqrt(dx*dx + dy*dy);
+            const d  = Math.sqrt(dx*dx + dy*dy);
             const minD = c.r + other.r + 6;
             if (d < minD && d > 0.01) {
-              const f = (minD - d) / minD * 0.6;
+              // Cap repulsion contribution per neighbour so 5 重疊細胞不會合力把目標推飛
+              const f = Math.min(0.35, (minD - d) / minD * 0.35);
               c.vx += (dx / d) * f;
               c.vy += (dy / d) * f;
             }
           }
-          // Bound to stage
+
+          // 4) Damping AFTER all forces (so accumulated forces also get bled off)
+          c.vx *= 0.90;
+          c.vy *= 0.90;
+
+          // 5) Hard speed cap — anything beyond MAX_SPEED gets normalized
+          const MAX_SPEED = 2.2;
+          const sp = Math.sqrt(c.vx*c.vx + c.vy*c.vy);
+          if (sp > MAX_SPEED) {
+            const k = MAX_SPEED / sp;
+            c.vx *= k;
+            c.vy *= k;
+          }
+
+          // 6) Integrate position
+          c.x += c.vx;
+          c.y += c.vy;
+
+          // 7) Bounce with energy loss — Math.abs(vx) preserved full energy, 細胞可永動
           const pad = c.r + 6;
-          if (c.x < pad) { c.x = pad; c.vx = Math.abs(c.vx); }
-          if (c.y < pad) { c.y = pad; c.vy = Math.abs(c.vy); }
-          if (c.x > state.stage.width - pad) { c.x = state.stage.width - pad; c.vx = -Math.abs(c.vx); }
-          if (c.y > state.stage.height - pad) { c.y = state.stage.height - pad; c.vy = -Math.abs(c.vy); }
+          const BOUNCE_DAMP = 0.45;
+          if (c.x < pad)                          { c.x = pad;                            c.vx = Math.abs(c.vx) * BOUNCE_DAMP; }
+          if (c.y < pad)                          { c.y = pad;                            c.vy = Math.abs(c.vy) * BOUNCE_DAMP; }
+          if (c.x > state.stage.width  - pad)     { c.x = state.stage.width  - pad;       c.vx = -Math.abs(c.vx) * BOUNCE_DAMP; }
+          if (c.y > state.stage.height - pad)     { c.y = state.stage.height - pad;       c.vy = -Math.abs(c.vy) * BOUNCE_DAMP; }
         }
 
         // Sweep fade
@@ -1349,6 +1417,17 @@
       ctx.beginPath();
       ctx.arc(c.x, c.y, c.r * wob, 0, Math.PI * 2);
       ctx.stroke();
+
+      // Hover halo
+      if (state.hoveredCell === c.id) {
+        ctx.strokeStyle = 'rgba(31,109,92,0.55)';
+        ctx.lineWidth = 1.6;
+        ctx.setLineDash([2, 3]);
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.r * wob + 4, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
 
       // Template ring
       if (c.isTemplate) {
@@ -1826,6 +1905,101 @@
         startTutorial();
       }
     });
+
+    /* ═══════════════════════════════════════════════════
+       SECTION 16 — Cell hover tooltip
+    ═══════════════════════════════════════════════════ */
+
+    const tooltipEl = document.getElementById('cell-tooltip');
+    const TIER_LABEL = {
+      'local-capsule':           'local-capsule',
+      'local-capsule-candidate': 'candidate',
+      'governed-atom':           'governed-atom',
+      'shared-atom':             'shared-atom',
+    };
+    const TIER_CLASS = {
+      'local-capsule':           'tier-local',
+      'local-capsule-candidate': 'tier-candidate',
+      'governed-atom':           'tier-governed',
+      'shared-atom':             'tier-shared',
+    };
+
+    function findCellAtPoint(x, y) {
+      // 從後往前找（last-rendered = topmost），ghost 也允許 hover
+      for (let i = state.cells.length - 1; i >= 0; i -= 1) {
+        const c = state.cells[i];
+        if (!c || c.state === 'expired') continue;
+        if ((c.opacity ?? 1) <= 0.12) continue;
+        const dx = c.x - x;
+        const dy = c.y - y;
+        const hitR = c.r + 3;
+        if (dx * dx + dy * dy <= hitR * hitR) return c;
+      }
+      return null;
+    }
+
+    function positionTooltip(clientX, clientY) {
+      if (!tooltipEl || tooltipEl.hidden) return;
+      const margin = 14;
+      const rect = tooltipEl.getBoundingClientRect();
+      let x = clientX + margin;
+      let y = clientY + margin;
+      if (x + rect.width  > window.innerWidth  - 4) x = clientX - rect.width  - margin;
+      if (y + rect.height > window.innerHeight - 4) y = clientY - rect.height - margin;
+      if (x < 4) x = 4;
+      if (y < 4) y = 4;
+      tooltipEl.style.left = x + 'px';
+      tooltipEl.style.top  = y + 'px';
+    }
+
+    function showCellTooltip(c, clientX, clientY) {
+      if (!tooltipEl) return;
+      const tierLabel = TIER_LABEL[c.tier] || c.tier || '—';
+      const tierClass = TIER_CLASS[c.tier] || '';
+      const anchorObj = state.anchors.find((a) => a.id === c.anchorId);
+      const anchorLabel = anchorObj?.label || (c.anchorId ? c.anchorId.replace(/^H2U-ANCHOR-/, '') : '—');
+      const sfRaw = c.sf || '';
+      const sfShort = sfRaw ? (sfRaw.replace(/^sf:/, '').slice(0, 10) || sfRaw) : '—';
+      const stateLabel = c.state + (c.ghost ? ' · ghost' : '') + (c.isTemplate ? ' · template' : '');
+      tooltipEl.innerHTML = `
+        <div class="cell-tooltip-title">${escapeHtml(c.symbolName || c.id)}</div>
+        <div class="cell-tooltip-id">${escapeHtml(c.capsuleId || c.id)}</div>
+        <div class="cell-tooltip-row"><span>Tier</span><b class="${tierClass}">${escapeHtml(tierLabel)}</b></div>
+        <div class="cell-tooltip-row"><span>SF</span><b>${escapeHtml(sfShort)}</b></div>
+        <div class="cell-tooltip-row"><span>Lines</span><b>${c.lineCount ?? '—'}</b></div>
+        <div class="cell-tooltip-row"><span>Side-effect</span><b>${c.sideEffectRisk ? 'yes' : 'no'}</b></div>
+        <div class="cell-tooltip-row"><span>Anchor</span><b>${escapeHtml(anchorLabel)}</b></div>
+        <div class="cell-tooltip-row"><span>State</span><b>${escapeHtml(stateLabel)}</b></div>
+      `;
+      tooltipEl.hidden = false;
+      positionTooltip(clientX, clientY);
+    }
+
+    function hideCellTooltip() {
+      if (tooltipEl) tooltipEl.hidden = true;
+      state.hoveredCell = null;
+      canvas.style.cursor = '';
+    }
+
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const c = findCellAtPoint(x, y);
+      if (c) {
+        const changed = state.hoveredCell !== c.id;
+        state.hoveredCell = c.id;
+        canvas.style.cursor = 'pointer';
+        if (changed) {
+          showCellTooltip(c, e.clientX, e.clientY);
+        } else {
+          positionTooltip(e.clientX, e.clientY);
+        }
+      } else {
+        hideCellTooltip();
+      }
+    });
+    canvas.addEventListener('mouseleave', hideCellTooltip);
 
     boot();
   </script>
