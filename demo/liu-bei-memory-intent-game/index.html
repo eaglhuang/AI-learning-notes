@@ -1410,9 +1410,6 @@
     ];
 
     async function requestSceneDirector(bundle) {
-      if (!API_KEY) {
-        return null;
-      }
       if (Date.now() < (state.sceneDirectorCircuitOpenUntil || 0)) {
         return null;
       }
