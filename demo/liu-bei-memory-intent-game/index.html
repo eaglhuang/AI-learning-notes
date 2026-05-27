@@ -2870,28 +2870,45 @@ ${evidenceLine}
         }
         state.revealToken += 1;
         state.rendering = false;
-        elements.sceneNote.textContent = `${bundle.sceneNote}；本回合逾時保護已觸發，可直接切換角度或按下一幕。`;
+        elements.sceneNote.textContent = `${bundle.sceneNote}??????????????`;
       }, 12000);
       try {
         if (isStaleRun()) {
           return;
         }
-        elements.sceneTitle.textContent = bundle.sceneTitle;
-        elements.sceneNote.textContent = bundle.sceneNote;
-        elements.sourceBadge.textContent = state.data.sourceMode === "runtime-general-profiles"
-          ? `${bundle.card.sourceType} / 真資料`
-          : `${bundle.card.sourceType} / 服務待補`;
-        renderMetaChips(bundle.meta);
-
-        elements.sceneText.innerHTML = "";
-        elements.memoryText.innerHTML = loadingMarkup();
-        elements.emotionText.innerHTML = loadingMarkup();
-        elements.dialogueText.innerHTML = loadingMarkup();
-        elements.intentText.innerHTML = loadingMarkup();
-        elements.storyText.innerHTML = loadingMarkup();
-        renderDirectorChorusLines([]);
-        refreshIllustrationPrompt();
         const directorPromise = requestSceneDirector(bundle);
+
+        elements.sceneTitle.textContent = bundle.sceneTitle;
+        elements.sceneNote.textContent = `${bundle.sceneNote}?????????npc-brain scene-director ???????`;
+        elements.sourceBadge.textContent = `${bundle.card.sourceType} / ????`;
+        renderMetaChips(bundle.meta);
+        elements.sceneText.textContent = bundle.sceneText || "";
+
+        await revealText(elements.memoryText, bundle.memoryText || "", 180);
+        if (isStaleRun()) {
+          return;
+        }
+        await revealText(elements.emotionText, bundle.emotionText || "", 180);
+        if (isStaleRun()) {
+          return;
+        }
+        await revealText(elements.dialogueText, bundle.dialogueText || "", 160);
+        if (isStaleRun()) {
+          return;
+        }
+        await revealText(elements.intentText, bundle.intentText || "", 180);
+        if (isStaleRun()) {
+          return;
+        }
+        await revealText(elements.storyText, bundle.storyText || "", 140);
+        if (isStaleRun()) {
+          return;
+        }
+        renderDirectorChorusLines(Array.isArray(bundle.chorusLines) ? bundle.chorusLines : []);
+        bundle.runtimeIntentText = bundle.intentText || "";
+        state.rendering = false;
+        refreshIllustrationPrompt();
+
         const directorPayload = await directorPromise;
         if (isStaleRun()) {
           return;
@@ -2899,6 +2916,7 @@ ${evidenceLine}
         bundle.directorPayload = directorPayload || null;
         refreshIllustrationPrompt();
         void requestSceneIllustration(bundle).catch(() => null);
+
         const beats = directorPayload?.beats || {};
         const dataStatus = String(directorPayload?.dataStatus || "").trim();
         const sceneText = sanitizeDisplayText(beats.sceneText || "", { removeActor: false });
@@ -2916,47 +2934,46 @@ ${evidenceLine}
           && !storyText
         );
         const storyMissing = !isEmpty && !storyText;
-        const unavailableText = buildUnavailableNarrativeText();
-        const shouldUseUnavailableText = !directorPayload || isEmpty;
         const sourceLabel = dataStatus
           ? `scene-director/${dataStatus}`
           : (directorPayload ? "scene-director" : "scene-director unavailable");
-        renderMetaChips(shouldUseUnavailableText ? bundle.meta : buildDirectorMetaChips(bundle, directorPayload));
-        elements.sceneNote.textContent = `${bundle.sceneNote}；${sourceLabel}${isEmpty ? "；本角度/人物目前無資料" : ""}${storyMissing ? "；小劇本暫未生成" : ""}`;
 
-        await wait(220);
-        if (isStaleRun()) {
-          return;
+        if (directorPayload && !isEmpty) {
+          renderMetaChips(buildDirectorMetaChips(bundle, directorPayload));
+          elements.sceneNote.textContent = `${bundle.sceneNote}?${sourceLabel}${storyMissing ? "????????" : ""}`;
+          elements.sceneText.textContent = sceneText;
+          await revealText(elements.memoryText, memoryText, 320);
+          if (isStaleRun()) {
+            return;
+          }
+          await revealText(elements.emotionText, emotionText, 320);
+          if (isStaleRun()) {
+            return;
+          }
+          await revealText(elements.dialogueText, dialogueText, 300);
+          if (isStaleRun()) {
+            return;
+          }
+          await revealText(elements.intentText, intentText, 320);
+          if (isStaleRun()) {
+            return;
+          }
+          await revealText(elements.storyText, storyText, 260);
+          if (isStaleRun()) {
+            return;
+          }
+          renderDirectorChorusLines(Array.isArray(directorPayload?.chorusLines) ? directorPayload.chorusLines : []);
+          bundle.runtimeIntentText = intentText;
+        } else {
+          renderMetaChips(bundle.meta);
+          elements.sceneNote.textContent = `${bundle.sceneNote}?${sourceLabel}${isEmpty ? "????/???????" : ""}?????????`;
         }
-        elements.sceneText.textContent = shouldUseUnavailableText ? unavailableText.sceneText : sceneText;
-        await revealText(elements.memoryText, shouldUseUnavailableText ? unavailableText.memoryText : memoryText, 320);
-        if (isStaleRun()) {
-          return;
-        }
-        await revealText(elements.emotionText, shouldUseUnavailableText ? unavailableText.emotionText : emotionText, 320);
-        if (isStaleRun()) {
-          return;
-        }
-        await revealText(elements.dialogueText, shouldUseUnavailableText ? unavailableText.dialogueText : dialogueText, 300);
-        if (isStaleRun()) {
-          return;
-        }
-        await revealText(elements.intentText, shouldUseUnavailableText ? unavailableText.intentText : intentText, 320);
-        if (isStaleRun()) {
-          return;
-        }
-        await revealText(elements.storyText, shouldUseUnavailableText ? unavailableText.storyText : storyText, 260);
-        if (isStaleRun()) {
-          return;
-        }
-        renderDirectorChorusLines(shouldUseUnavailableText ? [] : (Array.isArray(directorPayload?.chorusLines) ? directorPayload.chorusLines : []));
-        bundle.runtimeIntentText = shouldUseUnavailableText ? "" : intentText;
       } catch (error) {
         if (isStaleRun()) {
           return;
         }
         console.error("playBundle failed:", error);
-        elements.sceneNote.textContent = `${bundle.sceneNote}；本回合中斷，已自動復原，可直接按下一則重試。`;
+        elements.sceneNote.textContent = `${bundle.sceneNote}??????????????????`;
       } finally {
         window.clearTimeout(renderingGuard);
         if (!isStaleRun()) {
@@ -2964,7 +2981,6 @@ ${evidenceLine}
         }
       }
     }
-
     async function advanceScene() {
       if (state.rendering) {
         return;
