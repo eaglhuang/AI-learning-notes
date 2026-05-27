@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>如何用 Codex 小助手幫忙分工處理複雜的任務：實用篇</title>
+  <meta name="description" content="一篇來自實際多 AI 協作經驗的實用筆記：如何用 Codex 小助手、Claude Code 與 GitHub Copilot 分工，讓複雜工程任務更容易被拆解、驗證與整合。">
+  <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/codex_subagents_complex_tasks.html">
+  <style>
+    :root {
+      --paper: #f6f1e7;
+      --paper-strong: #fbf8f2;
+      --ink: #19242f;
+      --ink-soft: #465464;
+      --line: rgba(25, 36, 47, 0.12);
+      --line-strong: rgba(25, 36, 47, 0.22);
+      --accent: #0d7a73;
+      --accent-strong: #085d58;
+      --accent-warm: #cb7d2e;
+      --blue: #3a6ea5;
+      --shadow: 0 24px 80px rgba(26, 40, 55, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --content-width: 1160px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Aptos", "IBM Plex Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(13, 122, 115, 0.16), transparent 28%),
+        radial-gradient(circle at 80% 12%, rgba(203, 125, 46, 0.13), transparent 26%),
+        linear-gradient(180deg, #f8f4eb 0%, #f2ecdf 48%, #ebe5d8 100%);
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+      background-size: 36px 36px;
+      -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      opacity: 0.35;
+    }
+
+    a { color: var(--accent-strong); }
+    .page {
+      width: min(calc(100% - 40px), var(--content-width));
+      margin: 0 auto;
+      padding: 40px 0 80px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .main-column { display: grid; gap: 24px; }
+    .hero, .panel, .toc {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.72));
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow: var(--shadow);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+
+    .hero {
+      border-radius: 32px;
+      padding: 36px;
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -120px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(13, 122, 115, 0.2), transparent 68%);
+      z-index: -1;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+
+    h1, h2, h3 {
+      font-family: "Iowan Old Style", "Noto Serif TC", "Source Han Serif TC", serif;
+      letter-spacing: 0.01em;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(2.1rem, 4vw, 3.8rem);
+      line-height: 1.08;
+      max-width: 12em;
+    }
+
+    h2 {
+      font-size: clamp(1.45rem, 2.35vw, 2.05rem);
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 1.12rem;
+      margin-bottom: 10px;
+    }
+
+    p, li { line-height: 1.86; }
+    .lede {
+      margin: 18px 0 0;
+      max-width: 780px;
+      color: var(--ink-soft);
+      font-size: 1.08rem;
+    }
+
+    .back-links, .lang-switch {
+      font-size: 0.92rem;
+      color: var(--ink-soft);
+    }
+
+    .back-links a, .lang-switch a { text-decoration: none; font-weight: 700; }
+    .hero-grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.62);
+    }
+
+    .stat-card strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--accent-strong);
+    }
+
+    .panel {
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+
+    .panel > * + * { margin-top: 14px; }
+    .quote {
+      margin: 0;
+      padding: 18px 20px;
+      border-left: 4px solid var(--accent);
+      border-radius: 14px;
+      background: rgba(13, 122, 115, 0.08);
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+
+    .warning {
+      border-left-color: var(--accent-warm);
+      background: rgba(203, 125, 46, 0.11);
+      color: #744617;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+      margin: 18px 0 4px;
+      background: rgba(255, 255, 255, 0.66);
+    }
+
+    th, td {
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+    }
+
+    th {
+      color: var(--accent-strong);
+      background: rgba(13, 122, 115, 0.08);
+      font-size: 0.92rem;
+    }
+
+    td { color: var(--ink-soft); }
+    code, pre {
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      background: rgba(25, 36, 47, 0.07);
+      border-radius: 10px;
+    }
+
+    code { padding: 2px 6px; }
+    pre {
+      padding: 16px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      color: #243043;
+      line-height: 1.7;
+    }
+
+    figure {
+      margin: 18px 0 0;
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.58);
+    }
+
+    figure svg { width: 100%; height: auto; display: block; }
+    figcaption {
+      margin-top: 12px;
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+    }
+
+    .toc {
+      position: sticky;
+      top: 24px;
+      align-self: start;
+      border-radius: 22px;
+      padding: 20px;
+    }
+
+    .toc h2 {
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+
+    .toc ol {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--ink-soft);
+      font-size: 0.92rem;
+    }
+
+    .toc li + li { margin-top: 8px; }
+    .toc a { text-decoration: none; }
+    .site-footer {
+      width: min(calc(100% - 40px), var(--content-width));
+      margin: 0 auto 36px;
+      color: var(--ink-soft);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 900px) {
+      .page { grid-template-columns: 1fr; padding-top: 24px; }
+      .toc { position: static; order: -1; }
+      .hero-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .page { width: min(calc(100% - 24px), var(--content-width)); }
+      .hero, .panel { padding: 22px; border-radius: 22px; }
+      h1 { font-size: 2rem; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body id="top">
+  <div class="page">
+    <main class="main-column">
+      <p class="back-links">
+        <a href="./">回首頁</a>
+        ｜
+        <a href="articles/">回文章列表</a>
+      </p>
+
+      <header class="hero">
+        <p class="eyebrow">AI 協作實戰</p>
+        <h1>如何用 Codex 小助手幫忙分工處理複雜的任務：實用篇</h1>
+        <p class="lede">這篇不是工具評測，而是一次實際多 AI 協作後整理出的做法：主 AI 負責整合，Codex 小助手負責只讀分析與檢查，Claude Code 接大型實作，GitHub Copilot 處理明確小任務。重點不是叫更多 AI 來幫忙，而是讓每個 AI 都知道自己該做什麼、不能碰什麼。</p>
+        <p class="lang-switch"><a href="codex_subagents_complex_tasks_en.html">Read English version</a></p>
+        <div class="hero-grid">
+          <div class="stat-card"><strong>主線角色</strong><span>整合、判斷、決策，不把所有支線都塞在同一個對話。</span></div>
+          <div class="stat-card"><strong>小助手角色</strong><span>只讀分析、風險掃描、驗收 checklist，先避免做錯事。</span></div>
+          <div class="stat-card"><strong>交付原則</strong><span>改動要有邊界，完成要有驗證，提交不能混 unrelated changes。</span></div>
+        </div>
+      </header>
+
+      <section class="panel" id="why">
+        <h2>為什麼需要分工？</h2>
+        <p class="quote">複雜任務最怕的不是 AI 不會寫 code，而是大家一起寫到互相踩線。</p>
+        <p>在同一個框架型專案裡，當主 AI、Codex 小助手、Claude Code、GitHub Copilot 同時參與時，真正困難的地方很快就會變成：誰可以改哪裡、誰負責驗證、目前這個任務能不能提交。</p>
+        <p>如果沒有清楚分工，AI 很容易把已經有人處理的任務又拿來做一次，或是為了過關直接繞過正常流程。這時候增加更多 AI 不一定會變快，反而可能讓工作樹更亂。</p>
+      </section>
+
+      <section class="panel" id="roles">
+        <h2>我們實際採用的角色分工</h2>
+        <p>最有效的做法，是把 Codex 小助手當成「分析員」和「檢查員」，而不是一開始就叫它直接改 code。大型實作交給 Claude Code，小範圍補充交給 Copilot，最後由主 AI 收斂。</p>
+        <table>
+          <thead>
+            <tr><th>角色</th><th>適合做什麼</th><th>不適合做什麼</th><th>交付物</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>主 AI</td><td>整合、排優先順序、決定誰接哪段</td><td>同時處理所有支線</td><td>派工策略、整合結果、最後判斷</td></tr>
+            <tr><td>Codex 小助手</td><td>只讀分析、風險掃描、驗證清單、審稿</td><td>範圍不明時直接改檔</td><td>分析報告、checklist、可貼給其他 AI 的指令</td></tr>
+            <tr><td>Claude Code</td><td>大型獨立實作、較完整的功能修改</td><td>和別人同時碰同一組核心檔</td><td>完整 patch、驗證結果、提交摘要</td></tr>
+            <tr><td>GitHub Copilot</td><td>明確邊界的小任務、文件補充、狀態同步</td><td>在任務狀態不清楚時硬提交</td><td>小範圍修改、補卡、同步結果</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel" id="diagram">
+        <h2>一張簡單分工圖</h2>
+        <figure>
+          <svg viewBox="0 0 1120 540" role="img" aria-label="主 AI、Codex 小助手、Claude Code 與 GitHub Copilot 的分工流程圖">
+            <defs>
+              <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#1a2837" flood-opacity="0.15"/>
+              </filter>
+            </defs>
+            <rect width="1120" height="540" rx="28" fill="#fffaf2"/>
+            <path d="M80 108 C260 36 390 72 548 126 C704 180 856 76 1040 126" fill="none" stroke="#d6c5a5" stroke-width="3" stroke-dasharray="12 12"/>
+            <g filter="url(#softShadow)">
+              <rect x="430" y="56" width="260" height="92" rx="24" fill="#0d7a73"/>
+              <text x="560" y="96" text-anchor="middle" fill="#fffaf2" font-size="24" font-weight="700">主 AI</text>
+              <text x="560" y="124" text-anchor="middle" fill="#dff7f2" font-size="16">整合、判斷、決策</text>
+            </g>
+            <g filter="url(#softShadow)">
+              <rect x="80" y="250" width="260" height="110" rx="24" fill="#ffffff" stroke="#cbd5df"/>
+              <text x="210" y="294" text-anchor="middle" fill="#19242f" font-size="22" font-weight="700">Codex 小助手</text>
+              <text x="210" y="326" text-anchor="middle" fill="#465464" font-size="16">只讀分析 / checklist</text>
+            </g>
+            <g filter="url(#softShadow)">
+              <rect x="430" y="250" width="260" height="110" rx="24" fill="#ffffff" stroke="#cbd5df"/>
+              <text x="560" y="294" text-anchor="middle" fill="#19242f" font-size="22" font-weight="700">Claude Code</text>
+              <text x="560" y="326" text-anchor="middle" fill="#465464" font-size="16">大型獨立實作</text>
+            </g>
+            <g filter="url(#softShadow)">
+              <rect x="780" y="250" width="260" height="110" rx="24" fill="#ffffff" stroke="#cbd5df"/>
+              <text x="910" y="294" text-anchor="middle" fill="#19242f" font-size="22" font-weight="700">GitHub Copilot</text>
+              <text x="910" y="326" text-anchor="middle" fill="#465464" font-size="16">明確小任務 / 補充</text>
+            </g>
+            <path d="M505 148 L250 250" stroke="#0d7a73" stroke-width="4" fill="none"/>
+            <path d="M560 148 L560 250" stroke="#0d7a73" stroke-width="4" fill="none"/>
+            <path d="M615 148 L870 250" stroke="#0d7a73" stroke-width="4" fill="none"/>
+            <rect x="300" y="420" width="520" height="56" rx="18" fill="#e8f5f2" stroke="#87bbb3"/>
+            <text x="560" y="455" text-anchor="middle" fill="#085d58" font-size="20" font-weight="700">最後回到主線整合與驗證</text>
+          </svg>
+          <figcaption>圖 1：多 AI 協作時，主 AI 不必扛所有事情。它應該保留整合視角，把分析、實作、小修補拆給不同角色。</figcaption>
+        </figure>
+      </section>
+
+      <section class="panel" id="workflow">
+        <h2>實際流程：先管邊界，再談速度</h2>
+        <p>後來我們固定用這條流程。它看起來不花俏，但很能避免多 AI 同時工作時變成混戰。</p>
+        <ol>
+          <li>先確認任務是實作、只讀分析、補文件、驗收，還是狀態同步。</li>
+          <li>明確寫出不能碰的檔案、不能重做的任務、不能提交的內容。</li>
+          <li>請 Codex 小助手先做只讀檢查：目前誰在做、工作樹乾不乾淨、任務邊界在哪。</li>
+          <li>大型實作交給 Claude Code；小範圍補充交給 GitHub Copilot。</li>
+          <li>完成後要求回報跑過哪些 validators、有哪些 evidence、commit 形狀是什麼。</li>
+          <li>再請小助手做只讀重驗，確認沒有混入不相關修改。</li>
+          <li>最後由主 AI 或人來決定是否整合下一步。</li>
+        </ol>
+        <pre><code>實用口訣：
+先分工，再開工。
+先看邊界，再改檔。
+先驗證，再提交。
+先回報證據，再說完成。</code></pre>
+      </section>
+
+      <section class="panel" id="controls">
+        <h2>任務卡和 allowed files 很重要</h2>
+        <p>多 AI 協作時，口頭說「你處理一下這個」通常不夠。比較穩的做法，是讓每個任務都有明確邊界。</p>
+        <table>
+          <thead>
+            <tr><th>控制點</th><th>作用</th><th>實戰做法</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>task card</td><td>定義目標和完成條件</td><td>寫清楚要做什麼、不要做什麼、怎麼驗收</td></tr>
+            <tr><td>allowed files</td><td>避免互踩</td><td>每個 AI 只碰被允許的檔案</td></tr>
+            <tr><td>validators</td><td>避免憑感覺說完成</td><td>要求回報實際跑過的命令和結果</td></tr>
+            <tr><td>commit discipline</td><td>保留責任邊界</td><td>不混 unrelated changes，不偷帶別人的修改</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel" id="subagents">
+        <h2>小助手最適合做什麼？</h2>
+        <p>小助手不一定要寫 code，它更適合做那些會拖慢主線、但又很重要的工作。</p>
+        <ul>
+          <li>整理派工前 checklist。</li>
+          <li>讀任務卡，列出 allowed files 和風險點。</li>
+          <li>檢查某個任務是否已經有人完成，避免重做。</li>
+          <li>幫忙產出可貼給 Claude Code 或 GitHub Copilot 的明確指令。</li>
+          <li>檢查完成回報裡有沒有缺 validators、evidence 或 commit 說明。</li>
+          <li>審稿、整理文件、把混亂的過程變成可分享的 SOP。</li>
+        </ul>
+        <p class="quote">好用的小助手指令通常會包含三句話：只讀、不改檔、不提交。這三句可以省下很多事後救火時間。</p>
+      </section>
+
+      <section class="panel" id="pitfalls">
+        <h2>我們踩過的坑</h2>
+        <h3>1. 看到任務名稱就誤接任務</h3>
+        <p>有時候我們只是提醒「不要碰某個任務」，AI 卻可能因為看見任務名稱，把它當成要處理的目標。後來我們會在指令裡明確寫：只讀、不要 claim、不要 close、不要改檔。</p>
+        <h3>2. 合法同步流程被一般提交規則擋住</h3>
+        <p>有些工作只是同步狀態，不是實作功能。如果提交工具只懂一般任務流程，就可能要求不該有的 claim 或 session。這種情況不該鼓勵 AI 繞過流程，而是要補一張正式 follow-up，讓工具支援這個合法情境。</p>
+        <h3>3. 核心檔案的關閉流程可能不同</h3>
+        <p>一般任務可以照固定順序走：claim、實作、驗證、加 evidence、close、commit。但如果碰到核心檔案，可能需要先做 delivery commit，再用該 commit 當作歷史交付依據，最後再提交 closure。這不是放寬規則，而是避免核心變更在未提交狀態下被錯誤關閉。</p>
+        <p class="quote warning">最危險的不是 AI 做錯，而是 AI 做錯後還「看起來像完成」。所以驗證和提交邊界比速度更重要。</p>
+      </section>
+
+      <section class="panel" id="template">
+        <h2>可直接套用的分派模板</h2>
+        <pre><code>請做只讀檢查，不要改檔、不要 stage、不要 commit。
+
+背景：
+- 目前主線正在處理：____
+- 這張任務已交給：____
+- 不要碰的範圍：____
+
+請你輸出：
+1. 這個任務的 allowed files。
+2. 開工前必跑命令。
+3. 主要風險點。
+4. 完成時要回報的 validators / evidence / commit 形狀。
+5. 一段可以貼給另一個 AI 的開工指令。</code></pre>
+      </section>
+
+      <section class="panel" id="takeaway">
+        <h2>最後總結</h2>
+        <p>用 Codex 小助手分工，不是把任務丟給更多模型就結束。真正有用的是：讓主 AI 保持整合視角，讓小助手做只讀分析和驗收，讓 Claude Code 接大型獨立實作，讓 Copilot 處理明確小範圍任務。</p>
+        <p>當每個 AI 都知道自己該做什麼、不該做什麼，複雜任務就不再是一團聊天記憶，而會變成一個可以檢查、可以交接、可以回溯的工程流程。</p>
+      </section>
+    </main>
+
+    <aside class="toc">
+      <h2>文章目錄</h2>
+      <ol>
+        <li><a href="#why">為什麼需要分工</a></li>
+        <li><a href="#roles">角色分工</a></li>
+        <li><a href="#diagram">分工圖</a></li>
+        <li><a href="#workflow">實際流程</a></li>
+        <li><a href="#controls">邊界控制</a></li>
+        <li><a href="#subagents">小助手用途</a></li>
+        <li><a href="#pitfalls">常見踩坑</a></li>
+        <li><a href="#template">分派模板</a></li>
+      </ol>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 AI Learning Notes. 本文整理自實際多 AI 協作經驗，已移除專案名稱、內部任務編號與私有路徑。</p>
+  </footer>
+</body>
+</html>

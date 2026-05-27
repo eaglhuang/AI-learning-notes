@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Use Codex Subagents to Split Up Complex AI Coding Work</title>
+  <meta name="description" content="A practical field note on using Codex subagents, Claude Code, and GitHub Copilot together on a complex framework-style engineering project without stepping on each other.">
+  <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/codex_subagents_complex_tasks_en.html">
+  <style>
+    :root {
+      --paper: #f6f1e7;
+      --paper-strong: #fbf8f2;
+      --ink: #19242f;
+      --ink-soft: #465464;
+      --line: rgba(25, 36, 47, 0.12);
+      --accent: #0d7a73;
+      --accent-strong: #085d58;
+      --accent-warm: #cb7d2e;
+      --shadow: 0 24px 80px rgba(26, 40, 55, 0.12);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --content-width: 1160px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Aptos", "IBM Plex Sans", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(13, 122, 115, 0.16), transparent 28%),
+        radial-gradient(circle at 80% 12%, rgba(203, 125, 46, 0.13), transparent 26%),
+        linear-gradient(180deg, #f8f4eb 0%, #f2ecdf 48%, #ebe5d8 100%);
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+      background-size: 36px 36px;
+      -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      opacity: 0.35;
+    }
+
+    a { color: var(--accent-strong); }
+    .page {
+      width: min(calc(100% - 40px), var(--content-width));
+      margin: 0 auto;
+      padding: 40px 0 80px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .main-column { display: grid; gap: 24px; }
+    .hero, .panel, .toc {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.72));
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow: var(--shadow);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+
+    .hero {
+      border-radius: 32px;
+      padding: 36px;
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -120px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(13, 122, 115, 0.2), transparent 68%);
+      z-index: -1;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+
+    h1, h2, h3 {
+      font-family: "Iowan Old Style", Georgia, serif;
+      letter-spacing: 0.01em;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(2.1rem, 4vw, 3.8rem);
+      line-height: 1.08;
+      max-width: 12em;
+    }
+
+    h2 {
+      font-size: clamp(1.45rem, 2.35vw, 2.05rem);
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 1.12rem;
+      margin-bottom: 10px;
+    }
+
+    p, li { line-height: 1.86; }
+    .lede {
+      margin: 18px 0 0;
+      max-width: 780px;
+      color: var(--ink-soft);
+      font-size: 1.08rem;
+    }
+
+    .back-links, .lang-switch {
+      font-size: 0.92rem;
+      color: var(--ink-soft);
+    }
+
+    .back-links a, .lang-switch a { text-decoration: none; font-weight: 700; }
+    .hero-grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.62);
+    }
+
+    .stat-card strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--accent-strong);
+    }
+
+    .panel {
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+
+    .panel > * + * { margin-top: 14px; }
+    .quote {
+      margin: 0;
+      padding: 18px 20px;
+      border-left: 4px solid var(--accent);
+      border-radius: 14px;
+      background: rgba(13, 122, 115, 0.08);
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+
+    .warning {
+      border-left-color: var(--accent-warm);
+      background: rgba(203, 125, 46, 0.11);
+      color: #744617;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+      margin: 18px 0 4px;
+      background: rgba(255, 255, 255, 0.66);
+    }
+
+    th, td {
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+    }
+
+    th {
+      color: var(--accent-strong);
+      background: rgba(13, 122, 115, 0.08);
+      font-size: 0.92rem;
+    }
+
+    td { color: var(--ink-soft); }
+    code, pre {
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      background: rgba(25, 36, 47, 0.07);
+      border-radius: 10px;
+    }
+
+    code { padding: 2px 6px; }
+    pre {
+      padding: 16px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      color: #243043;
+      line-height: 1.7;
+    }
+
+    figure {
+      margin: 18px 0 0;
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.58);
+    }
+
+    figure svg { width: 100%; height: auto; display: block; }
+    figcaption {
+      margin-top: 12px;
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+    }
+
+    .toc {
+      position: sticky;
+      top: 24px;
+      align-self: start;
+      border-radius: 22px;
+      padding: 20px;
+    }
+
+    .toc h2 {
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+
+    .toc ol {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--ink-soft);
+      font-size: 0.92rem;
+    }
+
+    .toc li + li { margin-top: 8px; }
+    .toc a { text-decoration: none; }
+    .site-footer {
+      width: min(calc(100% - 40px), var(--content-width));
+      margin: 0 auto 36px;
+      color: var(--ink-soft);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 900px) {
+      .page { grid-template-columns: 1fr; padding-top: 24px; }
+      .toc { position: static; order: -1; }
+      .hero-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .page { width: min(calc(100% - 24px), var(--content-width)); }
+      .hero, .panel { padding: 22px; border-radius: 22px; }
+      h1 { font-size: 2rem; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body id="top">
+  <div class="page">
+    <main class="main-column">
+      <p class="back-links">
+        <a href="./">Home</a>
+        |
+        <a href="articles/">Article archive</a>
+      </p>
+
+      <header class="hero">
+        <p class="eyebrow">AI Collaboration Field Note</p>
+        <h1>How to Use Codex Subagents to Split Up Complex AI Coding Work</h1>
+        <p class="lede">This is not a tool review. It is a practical note from running several AI agents on the same framework-style engineering project: the lead AI coordinates, Codex subagents inspect and review, Claude Code handles larger implementation work, and GitHub Copilot takes narrow follow-up tasks.</p>
+        <p class="lang-switch"><a href="codex_subagents_complex_tasks.html">閱讀繁體中文版</a></p>
+        <div class="hero-grid">
+          <div class="stat-card"><strong>Lead role</strong><span>Coordinate, decide priorities, and keep the work moving in order.</span></div>
+          <div class="stat-card"><strong>Subagent role</strong><span>Inspect read-only, scan risks, and produce checklists before anyone edits.</span></div>
+          <div class="stat-card"><strong>Delivery rule</strong><span>Clear boundaries, clear validation, and no unrelated changes in commits.</span></div>
+        </div>
+      </header>
+
+      <section class="panel" id="why">
+        <h2>Why split the work?</h2>
+        <p class="quote">The hard part is not whether an AI can write code. The hard part is preventing several AIs from stepping on each other.</p>
+        <p>Using multiple AI tools on the same codebase can be powerful, but it becomes messy quickly. Someone needs to know which task is already done, which files are safe to touch, which validation commands matter, and whether a completion report is trustworthy.</p>
+        <p>If the lead AI handles every branch of work alone, it becomes slow and overloaded. Adding more AI is not enough. The useful pattern is to assign the right kind of work to the right assistant.</p>
+      </section>
+
+      <section class="panel" id="roles">
+        <h2>The division of labor that worked</h2>
+        <p>The strongest pattern was to treat Codex subagents as analysts and reviewers, not as uncontrolled extra coders. Claude Code handled larger independent implementation tasks. GitHub Copilot handled small focused updates. The lead AI kept the map.</p>
+        <table>
+          <thead>
+            <tr><th>Role</th><th>Best used for</th><th>Avoid using it for</th><th>Expected output</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Lead AI</td><td>Coordination, prioritization, final judgment, integration</td><td>Doing every branch of work alone</td><td>Assignment plan, decisions, final review</td></tr>
+            <tr><td>Codex subagent</td><td>Read-only analysis, risk scanning, checklist creation, review</td><td>Editing before the scope is clear</td><td>Findings, checklists, handoff instructions</td></tr>
+            <tr><td>Claude Code</td><td>Larger standalone implementation tasks</td><td>Touching files already being modified by another agent</td><td>Complete patch, validation report, commit summary</td></tr>
+            <tr><td>GitHub Copilot</td><td>Small focused tasks, documentation updates, simple sync work</td><td>Ambiguous work with unclear ownership</td><td>Narrow change, concise completion report</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel" id="diagram">
+        <h2>A simple coordination map</h2>
+        <figure>
+          <svg viewBox="0 0 1120 540" role="img" aria-label="Coordination map for lead AI, Codex subagents, Claude Code, and GitHub Copilot">
+            <defs>
+              <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#1a2837" flood-opacity="0.15"/>
+              </filter>
+            </defs>
+            <rect width="1120" height="540" rx="28" fill="#fffaf2"/>
+            <path d="M80 108 C260 36 390 72 548 126 C704 180 856 76 1040 126" fill="none" stroke="#d6c5a5" stroke-width="3" stroke-dasharray="12 12"/>
+            <g filter="url(#softShadow)">
+              <rect x="430" y="56" width="260" height="92" rx="24" fill="#0d7a73"/>
+              <text x="560" y="96" text-anchor="middle" fill="#fffaf2" font-size="24" font-weight="700">Lead AI</text>
+              <text x="560" y="124" text-anchor="middle" fill="#dff7f2" font-size="16">Coordinate and decide</text>
+            </g>
+            <g filter="url(#softShadow)">
+              <rect x="80" y="250" width="260" height="110" rx="24" fill="#ffffff" stroke="#cbd5df"/>
+              <text x="210" y="294" text-anchor="middle" fill="#19242f" font-size="22" font-weight="700">Codex subagent</text>
+              <text x="210" y="326" text-anchor="middle" fill="#465464" font-size="16">Read-only analysis</text>
+            </g>
+            <g filter="url(#softShadow)">
+              <rect x="430" y="250" width="260" height="110" rx="24" fill="#ffffff" stroke="#cbd5df"/>
+              <text x="560" y="294" text-anchor="middle" fill="#19242f" font-size="22" font-weight="700">Claude Code</text>
+              <text x="560" y="326" text-anchor="middle" fill="#465464" font-size="16">Large implementation</text>
+            </g>
+            <g filter="url(#softShadow)">
+              <rect x="780" y="250" width="260" height="110" rx="24" fill="#ffffff" stroke="#cbd5df"/>
+              <text x="910" y="294" text-anchor="middle" fill="#19242f" font-size="22" font-weight="700">GitHub Copilot</text>
+              <text x="910" y="326" text-anchor="middle" fill="#465464" font-size="16">Focused small tasks</text>
+            </g>
+            <path d="M505 148 L250 250" stroke="#0d7a73" stroke-width="4" fill="none"/>
+            <path d="M560 148 L560 250" stroke="#0d7a73" stroke-width="4" fill="none"/>
+            <path d="M615 148 L870 250" stroke="#0d7a73" stroke-width="4" fill="none"/>
+            <rect x="300" y="420" width="520" height="56" rx="18" fill="#e8f5f2" stroke="#87bbb3"/>
+            <text x="560" y="455" text-anchor="middle" fill="#085d58" font-size="20" font-weight="700">Results return to integration and validation</text>
+          </svg>
+          <figcaption>Figure 1: The lead AI should not carry every box. It should keep the map, assign work, and review the results.</figcaption>
+        </figure>
+      </section>
+
+      <section class="panel" id="workflow">
+        <h2>The practical workflow</h2>
+        <p>A simple but effective workflow looked like this:</p>
+        <ol>
+          <li>Define whether the task is implementation, read-only analysis, documentation, validation, or status sync.</li>
+          <li>Set hard boundaries: list files that may be changed and files that must not be touched.</li>
+          <li>Ask a Codex subagent to inspect first and report risks without modifying anything.</li>
+          <li>Assign larger work to Claude Code with clear acceptance criteria.</li>
+          <li>Assign smaller work to GitHub Copilot when the scope is narrow and concrete.</li>
+          <li>Require validation: commands run, what passed, and what remains risky.</li>
+          <li>Re-check before merging or continuing, especially for unrelated changes.</li>
+        </ol>
+        <pre><code>Practical rule:
+Assign clearly.
+Inspect before editing.
+Protect file boundaries.
+Validate before claiming success.
+Review before moving on.</code></pre>
+      </section>
+
+      <section class="panel" id="controls">
+        <h2>Task cards and allowed files matter</h2>
+        <p>When several AI agents work in the same repository, a vague instruction like “handle this” is not enough. Each task needs an explicit boundary.</p>
+        <table>
+          <thead>
+            <tr><th>Control point</th><th>Why it matters</th><th>Practical use</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Task card</td><td>Defines the goal and done criteria</td><td>Write the goal, limits, and validation clearly</td></tr>
+            <tr><td>Allowed files</td><td>Prevents collisions</td><td>Each agent only touches its assigned files</td></tr>
+            <tr><td>Validators</td><td>Prevents “it looks done” claims</td><td>Ask for actual commands and results</td></tr>
+            <tr><td>Commit discipline</td><td>Keeps responsibility clear</td><td>Do not mix unrelated changes or someone else’s work</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel" id="subagents">
+        <h2>What Codex subagents are especially good at</h2>
+        <p>A subagent does not always need to write code to be valuable. Sometimes the best contribution is preventing the wrong code from being written.</p>
+        <ul>
+          <li>Reading task cards and acceptance criteria.</li>
+          <li>Checking whether a task was already completed.</li>
+          <li>Comparing planned work against current repository state.</li>
+          <li>Finding file overlap between agents.</li>
+          <li>Drafting instructions for Claude Code or GitHub Copilot.</li>
+          <li>Reviewing completion reports.</li>
+          <li>Turning messy workflow experience into clean documentation.</li>
+        </ul>
+        <p class="quote">A good subagent prompt often starts with three constraints: read-only, do not edit, do not commit.</p>
+      </section>
+
+      <section class="panel" id="pitfalls">
+        <h2>Common pitfalls</h2>
+        <h3>1. An AI sees a task name and starts implementing it</h3>
+        <p>Sometimes an AI may interpret a mentioned task as an instruction to start work, even if you only meant “check this” or “do not touch this.” Use explicit wording: read-only only, do not claim, do not close, do not edit, do not commit.</p>
+        <h3>2. Two agents modify the same file</h3>
+        <p>This is one of the fastest ways to lose time. Before assigning work, check whether another agent is already touching the same files. If yes, wait or split the task differently.</p>
+        <h3>3. The AI says “done” without evidence</h3>
+        <p>A completion report should include what changed, which files changed, which validators passed, which validators failed, and whether any failures were pre-existing.</p>
+        <h3>4. Workflow exceptions become one-off hacks</h3>
+        <p>Sometimes a legitimate workflow does not fit the current automation. The wrong response is to normalize bypassing the process. The better response is to create a follow-up improvement task so the automation officially supports that case next time.</p>
+        <p class="quote warning">The most dangerous failure is not an AI making a mistake. It is a mistake that looks like a successful delivery.</p>
+      </section>
+
+      <section class="panel" id="template">
+        <h2>A useful assignment template</h2>
+        <pre><code>Please do a read-only inspection.
+
+Do not edit files.
+Do not stage files.
+Do not commit.
+
+Context:
+- The current main task is: ______
+- Another agent is already working on: ______
+- Do not touch: ______
+
+Please report:
+1. The allowed files for this task.
+2. The required validation commands.
+3. Any conflict risk with current work.
+4. Whether this task is safe to start now.
+5. A short instruction I can paste to another AI agent.</code></pre>
+      </section>
+
+      <section class="panel" id="takeaway">
+        <h2>Final takeaway</h2>
+        <p>Using Codex subagents well is not about adding more AI for the sake of speed. It is about reducing confusion.</p>
+        <p>When each agent has a clear job, clear boundaries, and a clear reporting format, complex AI-assisted development becomes much easier to manage. The lead AI coordinates, Codex subagents inspect, Claude Code implements larger slices, and GitHub Copilot handles focused follow-ups.</p>
+      </section>
+    </main>
+
+    <aside class="toc">
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#why">Why split the work</a></li>
+        <li><a href="#roles">Role division</a></li>
+        <li><a href="#diagram">Coordination map</a></li>
+        <li><a href="#workflow">Practical workflow</a></li>
+        <li><a href="#controls">Boundary controls</a></li>
+        <li><a href="#subagents">Subagent strengths</a></li>
+        <li><a href="#pitfalls">Common pitfalls</a></li>
+        <li><a href="#template">Assignment template</a></li>
+      </ol>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 AI Learning Notes. This article is based on real multi-agent collaboration experience, with project names, internal task identifiers, and private paths removed.</p>
+  </footer>
+</body>
+</html>
