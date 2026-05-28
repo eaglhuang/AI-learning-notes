@@ -412,9 +412,10 @@
       padding-bottom: 20px;
       margin-bottom: 28px;
     }
-    .hero-illustration, .diagram, .callout, .blueprint, .two-col, .agent-card-grid {
-      width: min(calc(100% - 40px), 1040px);
-    }
+     .hero-illustration, .diagram, .callout, .blueprint, .two-col, .agent-card-grid {
+       width: min(calc(100% - 40px), 1040px);
+       margin-inline: auto;
+     }
     .hero-illustration {
       border-color: rgba(255, 255, 255, 0.74);
       border-radius: 28px;
@@ -475,6 +476,7 @@
     @media (max-width: 720px) {
       body > *, .hero-illustration, .diagram, .callout, .blueprint, .two-col, .agent-card-grid {
         width: min(calc(100% - 28px), var(--site-width));
+        margin-inline: auto;
       }
       .nav { border-radius: 18px; }
     }
