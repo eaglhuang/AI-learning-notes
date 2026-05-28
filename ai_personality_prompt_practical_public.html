@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>如何訓練你的 AI 個性跟你最為默契 - 實用篇</title>
+  <meta name="description" content="一篇關於如何從喜歡的 AI 對話、人物風格、歷史資料與聊天紀錄中提取性格提示詞，長期訓練更有默契 AI 夥伴的實用技術筆記。" />
+  <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/ai_personality_prompt_practical_public.html" />
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+      font-size: 17px;
+      line-height: 1.76;
+      color: #17212b;
+      max-width: 820px;
+      margin: 40px auto;
+      padding: 0 24px 80px;
+      background: #fff;
+    }
+    h1 {
+      font-size: 2em;
+      font-weight: 800;
+      margin-bottom: 8px;
+      line-height: 1.28;
+    }
+    h2 {
+      font-size: 1.45em;
+      font-weight: 700;
+      margin-top: 2.4em;
+      border-left: 5px solid #0a66c2;
+      padding-left: 14px;
+    }
+    h3 {
+      font-size: 1.15em;
+      font-weight: 700;
+      margin-top: 1.8em;
+      color: #263445;
+    }
+    p { margin: 0.9em 0; }
+    ul, ol {
+      padding-left: 1.6em;
+      margin: 0.8em 0;
+    }
+    li { margin: 0.35em 0; }
+    a { color: #0a66c2; }
+    strong { color: #0a0a0a; }
+    code {
+      font-family: "Cascadia Code", "Fira Code", "Consolas", monospace;
+      font-size: 0.87em;
+      background: #eef2f8;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    pre {
+      background: #0f172a;
+      color: #e5eefb;
+      border-radius: 8px;
+      padding: 16px 18px;
+      overflow-x: auto;
+      font-size: 0.88em;
+      line-height: 1.6;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+    }
+    blockquote {
+      border-left: 4px solid #0a66c2;
+      margin: 1.4em 0;
+      padding: 10px 18px;
+      background: #f0f6ff;
+      border-radius: 4px;
+      color: #2d3748;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 1.4em 0;
+      font-size: 0.93em;
+    }
+    th {
+      background: #0a66c2;
+      color: #fff;
+      padding: 9px 14px;
+      text-align: left;
+      font-weight: 600;
+    }
+    td {
+      border: 1px solid #dde3ea;
+      padding: 8px 14px;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: #f5f8ff; }
+    .subtitle {
+      color: #555;
+      font-size: 0.92em;
+      margin-bottom: 2em;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 1em;
+    }
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 0 0 28px;
+      font-size: 0.92em;
+    }
+    .nav a {
+      text-decoration: none;
+      border: 1px solid #d6e2ef;
+      border-radius: 999px;
+      padding: 5px 12px;
+      background: #f8fbff;
+    }
+    .diagram {
+      background: #f7f9fc;
+      border: 1px solid #ccd6e0;
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin: 1.4em 0;
+      font-size: 0.95em;
+    }
+    .diagram-title {
+      font-weight: 700;
+      color: #0a66c2;
+      margin-bottom: 12px;
+    }
+    .flow {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .flow-step {
+      border: 1px solid #d8e2ee;
+      background: #fff;
+      border-radius: 8px;
+      padding: 11px 14px;
+    }
+    .badge {
+      display: inline-block;
+      background: #0a66c2;
+      color: #fff;
+      border-radius: 999px;
+      padding: 2px 9px;
+      font-size: 0.78em;
+      font-weight: 700;
+      margin-right: 6px;
+    }
+    .badge.green { background: #127c3f; }
+    .badge.amber { background: #b45309; }
+    .badge.red { background: #dc2626; }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 1.4em 0;
+    }
+    .panel {
+      border: 1px solid #ccd6e0;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .panel-header {
+      background: #0a66c2;
+      color: #fff;
+      font-weight: 700;
+      padding: 8px 14px;
+      font-size: 0.92em;
+    }
+    .panel-header.green { background: #127c3f; }
+    .panel-header.amber { background: #b45309; }
+    .panel-body {
+      padding: 11px 14px;
+      background: #f7f9fc;
+    }
+    .callout {
+      border: 1px solid #f0d9a8;
+      background: #fff8e8;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 1.4em 0;
+    }
+    .quiet {
+      color: #5b6675;
+      font-size: 0.93em;
+    }
+    .hero-illustration {
+      position: relative;
+      overflow: hidden;
+      margin: 1.8em 0 2.2em;
+      padding: 26px;
+      border: 1px solid #d7e4f2;
+      border-radius: 14px;
+      background:
+        linear-gradient(135deg, rgba(10, 102, 194, 0.10), transparent 42%),
+        linear-gradient(220deg, rgba(18, 124, 63, 0.10), transparent 36%),
+        #f8fbff;
+    }
+    .hero-illustration::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      background-image:
+        linear-gradient(rgba(10, 102, 194, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(10, 102, 194, 0.08) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+      pointer-events: none;
+    }
+    .handoff-map {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .handoff-card {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid #d9e5f2;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 12px 34px rgba(20, 48, 82, 0.08);
+    }
+    .handoff-card h3 {
+      margin: 0 0 8px;
+      font-size: 1em;
+      color: #0a3f78;
+    }
+    .handoff-card p {
+      margin: 0;
+      font-size: 0.9em;
+      color: #4b5d72;
+    }
+    .handoff-card .mini-list {
+      display: grid;
+      gap: 6px;
+      margin-top: 12px;
+      font-size: 0.83em;
+    }
+    .mini-list span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 4px 9px;
+      background: #eef5ff;
+      color: #31577d;
+    }
+    .handoff-arrow {
+      align-self: center;
+      width: 72px;
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      color: #0a66c2;
+      font-weight: 800;
+      font-size: 0.82em;
+    }
+    .handoff-arrow .line {
+      width: 72px;
+      height: 2px;
+      background: linear-gradient(90deg, #0a66c2, #127c3f);
+      position: relative;
+    }
+    .handoff-arrow .line::after {
+      content: "";
+      position: absolute;
+      right: -1px;
+      top: -5px;
+      border-left: 10px solid #127c3f;
+      border-top: 6px solid transparent;
+      border-bottom: 6px solid transparent;
+    }
+    .mode-strip {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .mode-chip {
+      border: 1px solid #d9e5f2;
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.82);
+      font-size: 0.82em;
+      color: #506176;
+    }
+    .mode-chip strong {
+      display: block;
+      color: #0a3f78;
+      margin-bottom: 2px;
+    }
+    .blueprint {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 16px;
+      align-items: stretch;
+      margin: 1.4em 0;
+    }
+    .blueprint-visual {
+      border-radius: 12px;
+      border: 1px solid #d8e2ee;
+      background: #f7f9fc;
+      padding: 16px;
+      display: grid;
+      align-content: center;
+      gap: 10px;
+    }
+    .blueprint-node {
+      border-radius: 10px;
+      border: 1px solid #d5e1ee;
+      background: #fff;
+      padding: 10px 12px;
+      font-size: 0.88em;
+      box-shadow: 0 8px 22px rgba(20, 48, 82, 0.06);
+    }
+    .blueprint-node strong {
+      display: block;
+      color: #0a66c2;
+      margin-bottom: 2px;
+    }
+    .blueprint-plus {
+      text-align: center;
+      font-weight: 800;
+      color: #127c3f;
+      font-size: 1.15em;
+      line-height: 1;
+    }
+    .agent-card-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin: 1.4em 0;
+    }
+    .agent-card {
+      border: 1px solid #d8e2ee;
+      border-radius: 12px;
+      background: #f8fbff;
+      padding: 12px;
+      min-height: 130px;
+    }
+    .agent-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 10px;
+      background: #0a66c2;
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.8em;
+    }
+    .agent-card:nth-child(2) .agent-icon { background: #127c3f; }
+    .agent-card:nth-child(3) .agent-icon { background: #b45309; }
+    .agent-card:nth-child(4) .agent-icon { background: #334155; }
+    .agent-card:nth-child(5) .agent-icon { background: #7c3aed; }
+    .agent-card strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #142235;
+    }
+    .agent-card span {
+      display: block;
+      color: #586477;
+      font-size: 0.83em;
+      line-height: 1.55;
+    }
+    @media (max-width: 720px) {
+      body {
+        margin: 28px auto;
+        padding: 0 18px 64px;
+      }
+      h1 { font-size: 1.68em; }
+      .two-col { grid-template-columns: 1fr; }
+      .handoff-map,
+      .blueprint,
+      .mode-strip,
+      .agent-card-grid {
+        grid-template-columns: 1fr;
+      }
+      .handoff-arrow {
+        width: 100%;
+        transform: rotate(90deg);
+        padding: 10px 0;
+      }
+    }
+
+    /* Site visual alignment override: paper/jade editorial skin */
+    :root {
+      --site-paper: #f6f1e7;
+      --site-paper-strong: #fbf8f2;
+      --site-ink: #19242f;
+      --site-muted: #465464;
+      --site-line: rgba(25, 36, 47, 0.13);
+      --site-accent: #0d7a73;
+      --site-accent-strong: #085d58;
+      --site-warm: #cb7d2e;
+      --site-blue: #3a6ea5;
+      --site-shadow: 0 24px 80px rgba(26, 40, 55, 0.12);
+      --site-radius: 24px;
+      --site-width: 900px;
+    }
+    body {
+      max-width: none;
+      margin: 0;
+      padding: 0 0 84px;
+      color: var(--site-ink);
+      background:
+        radial-gradient(circle at top left, rgba(13, 122, 115, 0.16), transparent 28%),
+        radial-gradient(circle at 82% 12%, rgba(203, 125, 46, 0.13), transparent 26%),
+        linear-gradient(180deg, #f8f4eb 0%, #f2ecdf 48%, #ebe5d8 100%);
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+      background-size: 36px 36px;
+      -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      opacity: 0.35;
+    }
+    body > * {
+      position: relative;
+      z-index: 1;
+      width: min(calc(100% - 40px), var(--site-width));
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .nav {
+      margin-top: 34px;
+      margin-bottom: 24px;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(255, 255, 255, 0.74);
+      border-radius: 999px;
+      box-shadow: 0 10px 36px rgba(26, 40, 55, 0.08);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+    .nav a {
+      color: var(--site-accent-strong);
+      border-color: rgba(13, 122, 115, 0.18);
+      background: rgba(13, 122, 115, 0.07);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    h1 {
+      margin-top: 28px;
+      color: var(--site-ink);
+      letter-spacing: 0;
+      font-size: clamp(2.05rem, 5vw, 3.55rem);
+      line-height: 1.12;
+    }
+    .subtitle {
+      color: var(--site-muted);
+      border-bottom: 1px solid var(--site-line);
+      padding-bottom: 20px;
+      margin-bottom: 28px;
+    }
+    .hero-illustration, .diagram, .callout, .blueprint, .two-col, .agent-card-grid {
+      width: min(calc(100% - 40px), 1040px);
+    }
+    .hero-illustration {
+      border-color: rgba(255, 255, 255, 0.74);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(13, 122, 115, 0.18), transparent 30%),
+        radial-gradient(circle at 82% 12%, rgba(203, 125, 46, 0.15), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.68));
+      box-shadow: var(--site-shadow);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+    .handoff-card, .panel, .agent-card, .flow-step, .mode-chip {
+      border-color: var(--site-line);
+      background: rgba(255, 255, 255, 0.66);
+      box-shadow: 0 10px 30px rgba(26, 40, 55, 0.06);
+    }
+    h2 {
+      color: var(--site-ink);
+      border-left-color: var(--site-accent);
+    }
+    h3, .diagram-title, .handoff-card h3, .panel-header, .mode-chip strong {
+      color: var(--site-accent-strong);
+    }
+    a { color: var(--site-accent-strong); }
+    blockquote {
+      border-left-color: var(--site-accent);
+      background: rgba(13, 122, 115, 0.08);
+      color: var(--site-accent-strong);
+      border-radius: 16px;
+    }
+    .callout {
+      background: rgba(203, 125, 46, 0.12);
+      border-color: rgba(203, 125, 46, 0.28);
+      border-radius: 18px;
+    }
+    .callout strong, .panel-header.amber { color: #8a4f14; }
+    table {
+      background: rgba(255,255,255,0.66);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 12px 36px rgba(26, 40, 55, 0.06);
+    }
+    th { background: var(--site-accent-strong); }
+    td { border-color: rgba(25, 36, 47, 0.11); }
+    tr:nth-child(even) td { background: rgba(13, 122, 115, 0.045); }
+    pre {
+      border-radius: 18px;
+      box-shadow: 0 16px 48px rgba(15, 23, 42, 0.13);
+    }
+    .badge, .agent-icon { background: var(--site-accent); }
+    .line { background: linear-gradient(90deg, transparent, var(--site-accent), transparent); }
+    .line::after { border-color: var(--site-accent); }
+    hr {
+      border-top-color: var(--site-line);
+      margin-top: 2.4em;
+      margin-bottom: 2.2em;
+    }
+    @media (max-width: 720px) {
+      body > *, .hero-illustration, .diagram, .callout, .blueprint, .two-col, .agent-card-grid {
+        width: min(calc(100% - 28px), var(--site-width));
+      }
+      .nav { border-radius: 18px; }
+    }
+
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="./articles/">文章列表</a>
+    <a href="./">首頁</a>
+    <a href="./ai_personality_prompt_practical_public_en.html">English</a>
+    <a href="./agent_mode_prompt_engineering_public.html">上一篇</a>
+  </nav>
+
+  <h1>如何訓練你的 AI 個性跟你最為默契 - 實用篇</h1>
+  <div class="subtitle">Prompt Engineering / Personality Prompt / AI 默契訓練 · 讓 AI 先學會你的工作節奏，再慢慢長成你的默契夥伴。</div>
+
+  <section class="hero-illustration" aria-label="AI 個性提示詞來源示意圖">
+    <div class="handoff-map">
+      <div class="handoff-card"><h3>原始素材</h3><p>一段好對話、一位你欣賞的人、一段演講、一份聊天紀錄，都可能藏著最適合你的合作特質。</p><div class="mini-list"><span>對話火花</span><span>人物風格</span><span>真實互動</span></div></div>
+      <div class="handoff-arrow"><div class="line"></div>萃取</div>
+      <div class="handoff-card"><h3>性格提示詞</h3><p>把語氣、節奏、判斷方式與安撫方式整理成可重用的 AI 個性模式。</p><div class="mini-list"><span>工作型</span><span>學習型</span><span>財務型</span></div></div>
+    </div>
+    <div class="mode-strip">
+      <div class="mode-chip"><strong>工作</strong>決策與執行</div>
+      <div class="mode-chip"><strong>求學</strong>陪讀與拆解</div>
+      <div class="mode-chip"><strong>知識</strong>整理與追問</div>
+      <div class="mode-chip"><strong>財務</strong>冷靜與紀律</div>
+    </div>
+  </section>
+
+  <p>跟 AI 合作，不一定要從一段完美提示詞開始。更常見的情況，是你突然遇到一次很有感的對話：它的語氣剛好、節奏剛好、判斷方式也剛好，讓你覺得「這個 AI 很懂我」。</p>
+  <p>那一刻其實很珍貴。因為最適合你的提示詞，很少來自空白頁前的硬寫；更多時候，它是從一次成功合作裡被提取出來的。</p>
+
+  <hr />
+
+  <h2>一、最適合你的提示詞，通常藏在你喜歡的互動裡</h2>
+  <p>很多人寫個性提示詞時，會先想像一個理想 AI：溫柔一點、主動一點、專業一點、幽默一點。這樣可以開始，但很難精準。</p>
+  <p>更有效的方法，是先回頭找那些你真的喜歡的互動。它可能是一段 AI 對話、一個真實人物的訪談、一位朋友的聊天風格，或一本書裡某個讓你感到安心的敘事聲音。</p>
+
+  <div class="callout"><strong>核心原則：</strong>不要先發明人格，先蒐集你已經有感的合作片段，再請 AI 幫你提取其中的節奏、語氣、判斷方式與情緒支持方式。</div>
+
+  <hr />
+
+  <h2>二、四種最實用的性格提示詞來源</h2>
+  <table>
+    <thead><tr><th>來源</th><th>適合提取什麼</th><th>注意事項</th></tr></thead>
+    <tbody>
+      <tr><td>喜歡的 AI 合作會話</td><td>工作節奏、回報格式、決策膽量、安撫語氣</td><td>去除私密資訊，只保留可泛化的行為特質</td></tr>
+      <tr><td>真實世界人物與作品</td><td>表達風格、價值排序、思考節奏、講解方式</td><td>避免逐字模仿受保護內容，改提取抽象特質</td></tr>
+      <tr><td>歷史人物與典籍紀錄</td><td>長期可觀察的決策特質、修辭風格、處世態度</td><td>不同資料來源可能互相矛盾，要標註來源脈絡</td></tr>
+      <tr><td>聊天紀錄與好友風格</td><td>最自然的默契感、鼓勵方式、提醒方式、吐槽節奏</td><td>必須先取得同意或去識別化，避免保存敏感內容</td></tr>
+    </tbody>
+  </table>
+
+  <h3>A. 從你最喜歡的一段 AI 合作會話開始</h3>
+  <p>這是最簡單也最準的來源。找一段你覺得「它剛剛真的很會配合」的回合，請 AI 幫你回答：</p>
+  <pre><code>請分析這段對話中，AI 的合作風格有哪些特質：
+- 語氣
+- 回報節奏
+- 決策方式
+- 安撫方式
+- 主動程度
+- 什麼地方讓使用者感覺順暢
+
+請不要重述內容，只提取可重用的性格提示詞。</code></pre>
+
+  <h3>B. 從真實世界人物與作品提取風格</h3>
+  <p>電影角色、網路文章、書籍、YouTube、演講、錄音，都可以當作風格來源。重點放在提取你欣賞的溝通特質：清楚、幽默、耐心、果斷、會安撫、會追問、會把複雜事情講簡單；避免讓 AI 假裝成某個人。</p>
+
+  <h3>C. 歷史人物也可以成為風格素材</h3>
+  <p>歷史人物有更多紀錄、典籍、自傳、書信或後人整理。這類素材適合提取長期穩定的思考風格，例如紀律、辯證、戰略、節制、求知方式。</p>
+
+  <h3>D. 最有默契的朋友，也常是最好的風格來源</h3>
+  <p>如果你和某個朋友聊天總是特別順，裡面通常藏著你最能接受的提醒方式。它可能是直球提醒、溫柔鼓勵、幽默吐槽、先接住情緒再分析。這些都可以轉成 AI 的互動偏好。</p>
+
+  <hr />
+
+  <h2>三、把不同個性的 AI 分工</h2>
+  <p>同一個 AI 個性不必處理所有事。你可以替不同情境建立不同人格模式，讓它們各自負責不同的生活與工作面向。</p>
+
+  <div class="agent-card-grid" aria-label="AI 個性分工卡片">
+    <div class="agent-card"><div class="agent-icon">W</div><strong>工作型</strong><span>果斷、重視交付、會拆任務與管風險。</span></div>
+    <div class="agent-card"><div class="agent-icon">S</div><strong>求學型</strong><span>耐心、會追問盲點、適合陪讀與練習。</span></div>
+    <div class="agent-card"><div class="agent-icon">K</div><strong>知識型</strong><span>會整理脈絡、補背景、建立知識地圖。</span></div>
+    <div class="agent-card"><div class="agent-icon">F</div><strong>財務型</strong><span>冷靜、保守、重紀律，避免衝動決策。</span></div>
+    <div class="agent-card"><div class="agent-icon">L</div><strong>生活型</strong><span>溫和、提醒節奏，幫你維持日常習慣。</span></div>
+  </div>
+
+  <table>
+    <thead><tr><th>情境</th><th>建議個性</th><th>提示詞重點</th></tr></thead>
+    <tbody>
+      <tr><td>工作專案</td><td>主動、結構化、有邊界</td><td>先給建議，再列風險與下一步</td></tr>
+      <tr><td>求學考試</td><td>耐心、循序、會檢查理解</td><td>不要直接給答案，先引導思考</td></tr>
+      <tr><td>知識學習</td><td>好奇、會補脈絡、會比較觀點</td><td>建立地圖，再深入細節</td></tr>
+      <tr><td>財務管理</td><td>冷靜、保守、重視紀律</td><td>先看風險，再談機會</td></tr>
+    </tbody>
+  </table>
+
+  <hr />
+
+  <h2>四、把有感片段萃取成可重用提示詞</h2>
+  <p>一段好的合作火花不需要全部保存。真正值得留下的是那幾句讓你覺得「它懂我」的關鍵段落，以及背後的行為模式。</p>
+
+  <div class="diagram"><div class="diagram-title">合作火花累積流程</div><div class="flow">
+    <div class="flow-step"><span class="badge">1</span>標記一次有感互動：哪一段讓你覺得順？</div>
+    <div class="flow-step"><span class="badge">2</span>摘要人格線索：語氣、節奏、判斷、安撫方式。</div>
+    <div class="flow-step"><span class="badge">3</span>萃取關鍵段落：只保留可泛化句型，不留敏感內容。</div>
+    <div class="flow-step"><span class="badge">4</span>寫入人格筆記：加標籤、用途與不適用場景。</div>
+    <div class="flow-step"><span class="badge">5</span>下次召喚時測試：好用就保留，不好用就修剪。</div>
+  </div></div>
+
+  <pre><code>請把這段合作中「讓使用者感到默契」的部分提取成提示詞規則：
+1. 不保留私人內容。
+2. 不模仿具體人物的受保護表達。
+3. 只提取可泛化的互動特質。
+4. 請輸出：語氣、主動程度、決策方式、安撫方式、不適用場景。</code></pre>
+
+  <hr />
+
+  <h2>五、建立你自己的 AI 個性筆記庫</h2>
+  <p>如果每次遇到好的合作火花都只停留在當下，那它很快就會消失。更好的做法，是建立一個小小的人格筆記庫。</p>
+
+  <table>
+    <thead><tr><th>欄位</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td>模式名稱</td><td>例如工作隊長、陪讀教練、財務提醒員</td></tr>
+      <tr><td>來源摘要</td><td>這個人格從哪種素材提取而來</td></tr>
+      <tr><td>核心特質</td><td>語氣、節奏、主動程度、安撫方式</td></tr>
+      <tr><td>適用任務</td><td>哪些情境最有效</td></tr>
+      <tr><td>禁用情境</td><td>哪些事情不適合它處理</td></tr>
+      <tr><td>更新紀錄</td><td>每次調整後留下原因</td></tr>
+    </tbody>
+  </table>
+
+  <p>長期來看，這個筆記庫會變成你和 AI 的默契資料庫。它不需要很大，重點是每次都多一點可重用的經驗。</p>
+
+  <hr />
+
+  <h2>六、安全提醒：隱私與來源邊界</h2>
+  <p>性格提示詞很有力量，也很容易不小心越界。尤其當來源是聊天紀錄、錄音、工作內容、財務資訊或真人風格時，要先處理兩件事。</p>
+
+  <div class="two-col">
+    <div class="panel"><div class="panel-header amber">隱私</div><div class="panel-body"><ul><li>先去識別化</li><li>不要保存可回推個人的內容</li><li>敏感資訊只保留抽象規則</li></ul></div></div>
+    <div class="panel"><div class="panel-header amber">授權</div><div class="panel-body"><ul><li>避免逐字搬運受保護內容</li><li>真人風格只提取抽象特質</li><li>公開分享前再做一次清理</li></ul></div></div>
+  </div>
+
+  <hr />
+
+  <h2>七、長期默契怎麼養成</h2>
+  <p>AI 的個性提示詞不用一次寫完。每次合作後，只要多留一小段「這次哪裡很順」的摘要，長期就會越來越貼近你的節奏。</p>
+
+  <blockquote>
+    最好的個性提示詞，是從你真的喜歡的互動中長出來的。它源自慢慢累積的合作經驗，不靠空想出來的人設撐場。
+  </blockquote>
+
+  <p class="quiet">當你能保存不同個性的 AI 模式，工作、學習、知識整理、財務管理就不必都交給同一種聲音。你可以為不同生活面向，召喚最有默契的那一位。</p>
+</body>
+</html>
