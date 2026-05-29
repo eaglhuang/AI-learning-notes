@@ -7,6 +7,9 @@
   <meta name="description" content="A practical note on extracting personality prompts from favorite AI conversations, people, historical material, and chat records, then turning them into reusable AI collaboration modes." />
   <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/ai_personality_prompt_practical_public_en.html" />
   <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", sans-serif;
       font-size: 17px;
@@ -412,10 +415,10 @@
       padding-bottom: 20px;
       margin-bottom: 28px;
     }
-     .hero-illustration, .diagram, .callout, .blueprint, .two-col, .agent-card-grid {
-       width: min(calc(100% - 40px), 1040px);
-       margin-inline: auto;
-     }
+    .hero-illustration, .diagram, .callout, .blueprint, .two-col, .agent-card-grid {
+      width: min(calc(100% - 40px), var(--site-width));
+      margin-inline: auto;
+    }
     .hero-illustration {
       border-color: rgba(255, 255, 255, 0.74);
       border-radius: 28px;
@@ -477,6 +480,12 @@
       body > *, .hero-illustration, .diagram, .callout, .blueprint, .two-col, .agent-card-grid {
         width: min(calc(100% - 28px), var(--site-width));
         margin-inline: auto;
+      }
+      table {
+        table-layout: fixed;
+      }
+      th, td {
+        overflow-wrap: anywhere;
       }
       .nav { border-radius: 18px; }
     }
