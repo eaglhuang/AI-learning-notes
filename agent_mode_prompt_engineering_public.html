@@ -7,6 +7,9 @@
   <meta name="description" content="一篇關於如何用提示詞工程，把不同職責的 AI Agent 工作精神、決策邊界與溝通風格做成可召喚模式的技術筆記。" />
   <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/agent_mode_prompt_engineering_public.html" />
   <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
       font-size: 17px;
@@ -469,10 +472,10 @@
       padding-bottom: 20px;
       margin-bottom: 28px;
     }
-     .hero-illustration, .diagram, .callout, .blueprint, .two-col, .agent-card-grid {
-       width: min(calc(100% - 40px), 1040px);
-       margin-inline: auto;
-     }
+    .hero-illustration, .diagram, .callout, .blueprint, .two-col, .agent-card-grid {
+      width: min(calc(100% - 40px), var(--site-width));
+      margin-inline: auto;
+    }
     .hero-illustration {
       border-color: rgba(255, 255, 255, 0.74);
       border-radius: 28px;
