@@ -452,6 +452,8 @@
     }
   </style>
   <link rel="stylesheet" href="assets/css/dark-override.css">
+  <link rel="stylesheet" href="assets/css/article-base.css">
+  <script defer src="assets/js/article-base.js"></script>
 </head>
 <body id="top">
   <!-- Page transition overlay -->
@@ -982,133 +984,5 @@ Avoid:
     </aside>
   </div>
 
-  <script>
-    function showStatus(figure, message) {
-      const status = figure.querySelector('.copy-status');
-      if (!status) {
-        return;
-      }
-      status.textContent = message;
-      status.classList.add('is-visible');
-      window.clearTimeout(status._timer);
-      status._timer = window.setTimeout(() => {
-        status.classList.remove('is-visible');
-      }, 1800);
-    }
-
-    function serializeSvg(svg) {
-      const clone = svg.cloneNode(true);
-      clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-      clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
-      return new XMLSerializer().serializeToString(clone);
-    }
-
-    function figureDownloadName(figure, extension) {
-      const name = figure.getAttribute('data-figure-name') || 'figure';
-      return `${name}.${extension}`;
-    }
-
-    function triggerDownload(blob, fileName) {
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.download = fileName;
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      window.setTimeout(() => URL.revokeObjectURL(url), 0);
-    }
-
-    async function downloadSvg(button) {
-      const figure = button.closest('figure');
-      const svg = figure.querySelector('svg');
-      try {
-        const svgMarkup = serializeSvg(svg);
-        const blob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
-        triggerDownload(blob, figureDownloadName(figure, 'svg'));
-        showStatus(figure, 'Downloaded SVG');
-      } catch (error) {
-        showStatus(figure, 'SVG download failed');
-      }
-    }
-
-    function svgViewBoxSize(svg) {
-      const viewBox = svg.viewBox && svg.viewBox.baseVal;
-      if (viewBox && viewBox.width && viewBox.height) {
-        return { width: viewBox.width, height: viewBox.height };
-      }
-      return {
-        width: Number(svg.getAttribute('width')) || 1200,
-        height: Number(svg.getAttribute('height')) || 800,
-      };
-    }
-
-    async function downloadPng(button) {
-      const figure = button.closest('figure');
-      const svg = figure.querySelector('svg');
-      const svgMarkup = serializeSvg(svg);
-      const blob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const image = new Image();
-      const { width, height } = svgViewBoxSize(svg);
-
-      try {
-        const pngBlob = await new Promise((resolve, reject) => {
-          image.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = width * 2;
-            canvas.height = height * 2;
-            const context = canvas.getContext('2d');
-            context.fillStyle = '#fffaf2';
-            context.fillRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(image, 0, 0, canvas.width, canvas.height);
-            canvas.toBlob((result) => {
-              if (result) {
-                resolve(result);
-              } else {
-                reject(new Error('png blob failed'));
-              }
-            }, 'image/png');
-          };
-          image.onerror = () => reject(new Error('svg load failed'));
-          image.src = url;
-        });
-
-        triggerDownload(pngBlob, figureDownloadName(figure, 'png'));
-        showStatus(figure, 'Downloaded PNG');
-      } catch (error) {
-        showStatus(figure, 'PNG download failed');
-      } finally {
-        URL.revokeObjectURL(url);
-      }
-    }
-
-    document.querySelectorAll('[data-download-svg]').forEach((button) => {
-      button.addEventListener('click', () => downloadSvg(button));
-    });
-
-    document.querySelectorAll('[data-download-png]').forEach((button) => {
-      button.addEventListener('click', () => downloadPng(button));
-    });
-  </script>
-
-  <script>
-    (function(){
-      var overlay = document.getElementById('page-overlay');
-      if (!overlay) return;
-      document.addEventListener('click', function(e) {
-        var a = e.target.closest('a[href]');
-        if (!a || a.target === '_blank') return;
-        try {
-          var url = new URL(a.href, location.href);
-          if (url.origin !== location.origin) return;
-          if (url.hash && url.pathname === location.pathname) return;
-          e.preventDefault();
-          overlay.classList.add('active');
-          setTimeout(function(){ window.location.href = a.href; }, 560);
-        } catch(err) {}
-      });
-    })();
-  </script>
 </body>
 </html>

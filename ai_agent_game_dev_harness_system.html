@@ -248,6 +248,8 @@
     }
   </style>
   <link rel="stylesheet" href="assets/css/dark-override.css">
+  <link rel="stylesheet" href="assets/css/article-base.css">
+  <script defer src="assets/js/article-base.js"></script>
 </head>
 <body id="top">
   <!-- Page transition overlay -->
@@ -720,24 +722,5 @@
   <span>網站流量</span>
   <img src="https://hits.sh/eaglhuang.github.io/AI-learning-notes.svg?label=traffic&color=10252D&labelColor=0C6F68" alt="網站累積流量計數器" loading="lazy">
 </div>
-
-  <script>
-    (function(){
-      var overlay = document.getElementById('page-overlay');
-      if (!overlay) return;
-      document.addEventListener('click', function(e) {
-        var a = e.target.closest('a[href]');
-        if (!a || a.target === '_blank') return;
-        try {
-          var url = new URL(a.href, location.href);
-          if (url.origin !== location.origin) return;
-          if (url.hash && url.pathname === location.pathname) return;
-          e.preventDefault();
-          overlay.classList.add('active');
-          setTimeout(function(){ window.location.href = a.href; }, 560);
-        } catch(err) {}
-      });
-    })();
-  </script>
 </body>
 </html>

@@ -470,7 +470,7 @@
     }
   </style>
 </head>
-<body>
+<body id="top">
 
   <!-- ── Page transition overlay ─────────────────── -->
   <div id="page-overlay" aria-hidden="true">
@@ -752,7 +752,15 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <span class="footer-copy">© 2026 Eagl Huang</span>
-      <a class="footer-gh" href="https://github.com/eaglhuang/AI-learning-notes" target="_blank" rel="noopener">GitHub ↗</a>
+      <div class="site-counter" aria-label="網站流量計數器">
+        <span class="site-counter-label">網站流量</span>
+        <img src="https://hits.sh/eaglhuang.github.io/AI-learning-notes.svg?label=traffic&color=10252D&labelColor=0C6F68" alt="網站累積流量計數器" loading="lazy">
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <a class="footer-gh" href="#top">Top</a>
+        <span style="color:var(--muted);opacity:0.55;">｜</span>
+        <a class="footer-gh" href="https://github.com/eaglhuang/AI-learning-notes" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
     </div>
   </footer>
 
