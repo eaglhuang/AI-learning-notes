@@ -53,6 +53,71 @@
       min-height: 100vh;
       overflow: hidden;
       animation: pageEnter 0.45s ease both;
+      /* 上方 site-header + 下方 .app 兩段直排 */
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── 上方 AI-learning-notes 站台 header（與主站同款）─ */
+    .site-header {
+      flex: 0 0 auto;
+      background: rgba(246,240,223,0.94);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 1px 14px rgba(20,28,23,0.08);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+    }
+    .site-header .header-inner {
+      width: min(calc(100% - 48px), 1480px);
+      margin: 0 auto; padding: 12px 0;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 20px;
+    }
+    .site-header .brand {
+      display: flex; align-items: center; gap: 10px;
+      color: inherit; text-decoration: none;
+    }
+    .site-header .brand-mark {
+      width: 34px; height: 34px; border-radius: var(--r-sm);
+      border: 1px solid rgba(31,109,92,0.28);
+      background: rgba(31,109,92,0.07);
+      display: grid; place-items: center;
+      font-family: var(--mono); font-size: 0.58rem; color: var(--jade-2);
+    }
+    .site-header .brand-text { display: grid; gap: 1px; }
+    .site-header .brand-text strong {
+      font-size: 0.88rem; font-weight: 700; color: var(--ink);
+    }
+    .site-header .brand-text small {
+      font-family: var(--mono); font-size: 0.6rem; color: var(--muted);
+    }
+    .site-header .site-nav {
+      display: flex; align-items: center; gap: 2px;
+    }
+    .site-header .nav-link {
+      padding: 5px 11px; border-radius: 6px;
+      font-size: 0.82rem; color: var(--muted);
+      text-decoration: none;
+      transition: color var(--t), background var(--t);
+    }
+    .site-header .nav-link:hover {
+      color: var(--jade-2); background: rgba(31,109,92,0.07);
+    }
+    .site-header .nav-cta {
+      margin-left: 6px; padding: 5px 12px; border-radius: 6px;
+      font-family: var(--mono); font-size: 0.7rem;
+      border: 1px solid var(--line); color: var(--muted);
+      text-decoration: none;
+      transition: color var(--t), border-color var(--t);
+    }
+    .site-header .nav-cta:hover {
+      color: var(--jade); border-color: rgba(31,109,92,0.32);
+    }
+    @media (max-width: 480px) {
+      .site-header .header-inner { padding: 10px 0; }
+      .site-header .nav-link { padding: 5px 7px; font-size: 0.76rem; }
+      .site-header .nav-cta  { padding: 4px 9px; font-size: 0.66rem; }
+      .site-header .brand-text small { display: none; }
     }
 
     @keyframes pageEnter {
@@ -74,8 +139,10 @@
         "dock   findings";
       gap: 12px;
       padding: 14px 16px;
-      height: 100vh;
-      width: 100vw;
+      /* 父層 body 是 flex column；header 之後我們占滿剩餘高度 */
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
       max-width: 1480px;
       margin: 0 auto;
     }
@@ -648,6 +715,25 @@
   </style>
 </head>
 <body>
+
+  <!-- ── 站台 header（與 AI-learning-notes 主站同款）─── -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../../">
+        <div class="brand-mark">AI</div>
+        <div class="brand-text">
+          <strong>AI Learning Notes</strong>
+          <small>Eagl Huang</small>
+        </div>
+      </a>
+      <nav class="site-nav">
+        <a class="nav-link" href="../../#articles">文章</a>
+        <a class="nav-link" href="../../#focus">主題</a>
+        <a class="nav-link" href="../../#about">關於</a>
+        <a class="nav-cta" href="https://github.com/eaglhuang/AI-learning-notes" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
 
   <div class="app">
 
