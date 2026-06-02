@@ -264,6 +264,21 @@
     .cell-tooltip-row b.tier-governed  { color: var(--tier-governed); }
     .cell-tooltip-row b.tier-shared    { color: var(--tier-shared); }
 
+    /* 小螢幕：tooltip 縮小，確保整個盒能塞進 stage 邊框內 */
+    @media (max-width: 900px) {
+      .cell-tooltip {
+        min-width: 0;
+        max-width: min(240px, 78vw);
+        padding: 8px 10px;
+        font-size: 11px;
+      }
+      .cell-tooltip-title { font-size: 12.5px; }
+      .cell-tooltip-id    { font-size: 10px; margin-bottom: 6px; }
+      .cell-tooltip-row   { padding: 1px 0; gap: 8px; }
+      .cell-tooltip-row span,
+      .cell-tooltip-row b { font-size: 10px; }
+    }
+
     /* ── Finding 面板 ───────────────────────────────── */
     .findings {
       grid-area: findings;
@@ -1189,11 +1204,14 @@
         }
       }
     }
-    window.addEventListener('resize', () => { resizeCanvas(); });
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      if (typeof positionTooltip === 'function') positionTooltip();
+    });
     // iOS Safari orientationchange 不一定觸發 resize；補一個 delayed 重算
     window.addEventListener('orientationchange', () => {
-      setTimeout(resizeCanvas, 80);
-      setTimeout(resizeCanvas, 320);
+      setTimeout(() => { resizeCanvas(); positionTooltip(); }, 80);
+      setTimeout(() => { resizeCanvas(); positionTooltip(); }, 320);
     });
 
     function tick(dt) {
@@ -2014,21 +2032,52 @@
       return null;
     }
 
-    function positionTooltip(clientX, clientY) {
+    // Position tooltip 緊貼 stage 內邊框，避開正在 hover 的細胞那一側；
+    // 整個 tooltip 一定落在 stage 矩形內，不會跨出邊框。
+    function positionTooltip() {
       if (!tooltipEl || tooltipEl.hidden) return;
-      const margin = 14;
-      const rect = tooltipEl.getBoundingClientRect();
-      let x = clientX + margin;
-      let y = clientY + margin;
-      if (x + rect.width  > window.innerWidth  - 4) x = clientX - rect.width  - margin;
-      if (y + rect.height > window.innerHeight - 4) y = clientY - rect.height - margin;
-      if (x < 4) x = 4;
-      if (y < 4) y = 4;
+      const stage = document.getElementById('stage');
+      if (!stage) return;
+      const sRect = stage.getBoundingClientRect();
+      const tipRect = tooltipEl.getBoundingClientRect();
+      const inset = 10;                       // 與 stage 內邊框的安全距離
+      const c = state.cells.find((cc) => cc.id === state.hoveredCell);
+
+      // 1) 預設值：右下角
+      let x = sRect.right  - tipRect.width  - inset;
+      let y = sRect.bottom - tipRect.height - inset;
+
+      if (c) {
+        // 細胞在 stage 內的座標即為 c.x / c.y（canvas == stage）
+        // 細胞在左半 → tooltip 放右半；細胞在右半 → 放左半
+        const halfW = sRect.width  / 2;
+        const halfH = sRect.height / 2;
+        x = c.x < halfW
+          ? sRect.right - tipRect.width - inset
+          : sRect.left  + inset;
+        // 細胞在上半 → tooltip 放下半；下半 → 放上半
+        y = c.y < halfH
+          ? sRect.bottom - tipRect.height - inset
+          : sRect.top    + inset;
+      }
+
+      // 2) 最後 clamp 到 stage 內（防 tooltip 大於 stage 的極端情況）
+      const minX = sRect.left + inset;
+      const maxX = sRect.right  - tipRect.width  - inset;
+      const minY = sRect.top  + inset;
+      const maxY = sRect.bottom - tipRect.height - inset;
+      x = Math.max(minX, Math.min(maxX, x));
+      y = Math.max(minY, Math.min(maxY, y));
+
+      // 3) tooltip 寬度比 stage 還大 → 強制貼左/上邊（至少能看見前半）
+      if (tipRect.width  > sRect.width  - 2 * inset) x = sRect.left + inset;
+      if (tipRect.height > sRect.height - 2 * inset) y = sRect.top  + inset;
+
       tooltipEl.style.left = x + 'px';
       tooltipEl.style.top  = y + 'px';
     }
 
-    function showCellTooltip(c, clientX, clientY) {
+    function showCellTooltip(c) {
       if (!tooltipEl) return;
       const tierLabel = TIER_LABEL[c.tier] || c.tier || '—';
       const tierClass = TIER_CLASS[c.tier] || '';
@@ -2048,7 +2097,10 @@
         <div class="cell-tooltip-row"><span>State</span><b>${escapeHtml(stateLabel)}</b></div>
       `;
       tooltipEl.hidden = false;
-      positionTooltip(clientX, clientY);
+      // 兩次 positionTooltip：第一次先用未更新的 rect 算個粗略位置，第二次在
+      // innerHTML 真正 reflow 完後再校正（避免第一幀位置不準）
+      positionTooltip();
+      requestAnimationFrame(positionTooltip);
     }
 
     function hideCellTooltip() {
@@ -2066,11 +2118,9 @@
         const changed = state.hoveredCell !== c.id;
         state.hoveredCell = c.id;
         canvas.style.cursor = 'pointer';
-        if (changed) {
-          showCellTooltip(c, e.clientX, e.clientY);
-        } else {
-          positionTooltip(e.clientX, e.clientY);
-        }
+        // 只有換顆細胞時才重算 tooltip 位置（同顆細胞時讓 tooltip 鎖死在 stage 邊框，
+        // 避免滑鼠在同細胞上滑動造成 tooltip 抖動）
+        if (changed) showCellTooltip(c);
       } else {
         hideCellTooltip();
       }
@@ -2089,7 +2139,7 @@
       if (c) {
         // 永遠 show（同細胞重點也 OK），dismiss 由點空白/外部處理
         state.hoveredCell = c.id;
-        showCellTooltip(c, e.clientX, e.clientY);
+        showCellTooltip(c);
       } else {
         hideCellTooltip();
       }
