@@ -180,6 +180,12 @@
       overflow: hidden;
       -webkit-backdrop-filter: blur(2px);
       backdrop-filter: blur(2px);
+      /* 手機點空白會觸發選字/縮放，這裡全擋 */
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     .stage.crit::after {
       content: '';
@@ -195,6 +201,11 @@
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       display: block;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     .stage-hint {
       position: absolute; left: 50%; bottom: 14px;
@@ -2066,19 +2077,19 @@
     });
     canvas.addEventListener('mouseleave', hideCellTooltip);
 
-    // Touch / click — 手機沒有 hover，改用點細胞顯示、再點隱藏
+    // Touch / click — 手機沒有 hover，改用點細胞顯示、點空白收起。
+    // 注意：手機 tap 會先 fire 合成 mousemove（已 show）再 fire click，
+    // 所以這裡不能 toggle，否則同一輪 tap 會被 click 立刻 hide → 閃一下。
     canvas.addEventListener('click', (e) => {
+      e.preventDefault();
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
       const c = findCellAtPoint(x, y);
       if (c) {
-        if (state.hoveredCell === c.id && tooltipEl && !tooltipEl.hidden) {
-          hideCellTooltip();
-        } else {
-          state.hoveredCell = c.id;
-          showCellTooltip(c, e.clientX, e.clientY);
-        }
+        // 永遠 show（同細胞重點也 OK），dismiss 由點空白/外部處理
+        state.hoveredCell = c.id;
+        showCellTooltip(c, e.clientX, e.clientY);
       } else {
         hideCellTooltip();
       }
