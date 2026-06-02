@@ -562,19 +562,62 @@
     .tier-dot-governed { background: var(--tier-governed); }
     .tier-dot-shared { background: var(--tier-shared); }
 
-    /* ── 響應式 ─────────────────────────────────────── */
-    @media (max-width: 900px) {
+    /* ── Stage hint 動態字串（layout-aware）────────── */
+    .hint-pointer-tap, .hint-findings-below { display: none; }
+    @media (hover: none) {
+      .hint-pointer-cursor { display: none; }
+      .hint-pointer-tap    { display: inline; }
+    }
+
+    /* ── 響應式：三段式（桌機 / 手機橫 / 手機直）──── */
+
+    /* (A) 手機橫向：保留 2 欄，但 findings 變窄、字體 padding 縮 */
+    @media (max-width: 900px) and (orientation: landscape) {
+      .app {
+        grid-template-columns: 1fr 220px;
+        gap: 8px;
+        padding: 8px 10px;
+      }
+      .topbar { padding: 6px 10px; gap: 10px; }
+      .brand-text small { display: none; }
+      .health-bar-wrap { width: 140px; }
+      .stats { display: none; }
+      .step-badge { font-size: 0.62rem; padding: 3px 8px; }
+      .findings { padding: 10px; }
+      .findings-title { font-size: 0.76rem; }
+      .dock { padding: 6px 8px; }
+      .behavior-btn { min-width: 60px; padding: 6px 8px; }
+      .stage-hint { font-size: 0.58rem; padding: 3px 8px; bottom: 8px; }
+      .tier-legend { font-size: 0.6rem; }
+    }
+
+    /* (B) 手機直向：單欄堆疊，findings 在下方 */
+    @media (max-width: 900px) and (orientation: portrait) {
       .app {
         grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr auto auto;
+        grid-template-rows: auto minmax(260px, 1fr) auto clamp(180px, 30vh, 280px);
         grid-template-areas:
           "topbar"
           "stage"
           "dock"
           "findings";
+        gap: 8px;
+        padding: 8px 10px;
       }
-      .findings { max-height: 240px; }
+      .topbar { padding: 6px 10px; gap: 8px; flex-wrap: wrap; }
+      .brand-text small { display: none; }
+      .health-bar-wrap { width: min(160px, 30vw); }
       .stats { display: none; }
+      .step-badge { font-size: 0.62rem; padding: 3px 8px; }
+      .findings { padding: 10px; }
+      .findings-title { font-size: 0.78rem; }
+      .dock { padding: 6px 8px; overflow-x: auto; }
+      .behavior-btn { min-width: 60px; padding: 6px 8px; flex-shrink: 0; }
+      .stage-hint { font-size: 0.58rem; padding: 3px 8px; bottom: 8px; }
+      .tier-legend { font-size: 0.6rem; }
+      /* 直版才切換 findings hint 字眼 */
+      .hint-findings-side  { display: none; }
+      .hint-findings-below { display: inline; }
     }
   </style>
 </head>
@@ -615,7 +658,7 @@
     <div class="stage" id="stage">
       <canvas id="petri-canvas"></canvas>
       <div class="cell-tooltip" id="cell-tooltip" hidden></div>
-      <div class="stage-hint">滑鼠 hover 細胞 → 看 capsule 詳細資訊；點 finding → 選 behavior</div>
+      <div class="stage-hint"><span class="hint-pointer-cursor">滑鼠 hover</span><span class="hint-pointer-tap">輕點</span>細胞 → 看 capsule 詳細資訊；<span class="hint-findings-side">點右側 findings</span><span class="hint-findings-below">點下方 findings</span> → 選 behavior</div>
       <div class="tier-legend">
         <div class="tier-legend-row"><span class="tier-dot tier-dot-local"></span>local-capsule</div>
         <div class="tier-legend-row"><span class="tier-dot tier-dot-candidate"></span>local-candidate</div>
@@ -1104,6 +1147,8 @@
       const stage = document.getElementById('stage');
       const rect = stage.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
+      const prevW = state.stage.width;
+      const prevH = state.stage.height;
       canvas.width = Math.floor(rect.width * dpr);
       canvas.height = Math.floor(rect.height * dpr);
       canvas.style.width = rect.width + 'px';
@@ -1117,8 +1162,28 @@
         state.anchors[0].y = rect.height / 2;
         state.anchors[0].baseR = Math.min(rect.width, rect.height) * 0.42;
       }
+
+      // 旋轉螢幕 / resize 時：按比例縮放 cell 座標，並砍掉舊動能，
+      // 讓線性彈簧把細胞柔順地飄回新中心（不會殘留在舊邊界外）
+      if (prevW > 0 && prevH > 0 && rect.width > 0 && rect.height > 0 && state.cells.length) {
+        const sx = rect.width  / prevW;
+        const sy = rect.height / prevH;
+        for (const c of state.cells) {
+          const pad = c.r + 6;
+          c.x = Math.max(pad, Math.min(rect.width  - pad, c.x * sx));
+          c.y = Math.max(pad, Math.min(rect.height - pad, c.y * sy));
+          // 把舊動能砍到 30%，避免縮放後速度被誤放大
+          c.vx *= 0.3;
+          c.vy *= 0.3;
+        }
+      }
     }
     window.addEventListener('resize', () => { resizeCanvas(); });
+    // iOS Safari orientationchange 不一定觸發 resize；補一個 delayed 重算
+    window.addEventListener('orientationchange', () => {
+      setTimeout(resizeCanvas, 80);
+      setTimeout(resizeCanvas, 320);
+    });
 
     function tick(dt) {
       state.anim.time += dt;
@@ -2000,6 +2065,30 @@
       }
     });
     canvas.addEventListener('mouseleave', hideCellTooltip);
+
+    // Touch / click — 手機沒有 hover，改用點細胞顯示、再點隱藏
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const c = findCellAtPoint(x, y);
+      if (c) {
+        if (state.hoveredCell === c.id && tooltipEl && !tooltipEl.hidden) {
+          hideCellTooltip();
+        } else {
+          state.hoveredCell = c.id;
+          showCellTooltip(c, e.clientX, e.clientY);
+        }
+      } else {
+        hideCellTooltip();
+      }
+    });
+    // 點 tooltip 以外的地方也收起（手機常用 pattern）
+    document.addEventListener('click', (e) => {
+      if (e.target === canvas) return;
+      if (tooltipEl && tooltipEl.contains(e.target)) return;
+      hideCellTooltip();
+    });
 
     boot();
   </script>
