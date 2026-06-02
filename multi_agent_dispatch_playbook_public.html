@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多個 Agent 一起開發時，怎麼讓大模型帶隊把協作做穩</title>
+  <meta name="description" content="整理一套多 Agent 協作的實用流程：大模型怎麼帶隊、派工單怎麼寫、回報怎麼收、怎麼跟人類一起把不同 AI 工具接成同一條開發線。">
+  <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/multi_agent_dispatch_playbook_public.html">
+  <link rel="alternate" hreflang="en" href="https://eaglhuang.github.io/AI-learning-notes/multi_agent_dispatch_playbook_public_en.html">
+  <style>
+    :root {
+      --paper: #f6f1e7;
+      --paper-strong: #fbf8f2;
+      --ink: #19242f;
+      --ink-soft: #465464;
+      --line: rgba(25, 36, 47, 0.12);
+      --accent-strong: #085d58;
+      --shadow: 0 24px 80px rgba(26, 40, 55, 0.12);
+      --radius-xl: 28px;
+      --radius-md: 16px;
+      --content-width: 1160px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Aptos", "IBM Plex Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(13, 122, 115, 0.16), transparent 28%),
+        radial-gradient(circle at 80% 12%, rgba(203, 125, 46, 0.14), transparent 26%),
+        linear-gradient(180deg, #f8f4eb 0%, #f2ecdf 48%, #ebe5d8 100%);
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+      background-size: 36px 36px;
+      -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      opacity: 0.35;
+    }
+    a { color: var(--accent-strong); }
+    .page {
+      width: min(calc(100% - 40px), var(--content-width));
+      margin: 0 auto;
+      padding: 40px 0 80px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 28px;
+      position: relative;
+      z-index: 1;
+    }
+    .main-column { display: grid; gap: 24px; min-width: 0; }
+    .hero, .panel, .toc {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.72));
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+    .hero {
+      border-radius: 32px;
+      padding: 36px;
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -120px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(13, 122, 115, 0.22), transparent 68%);
+      z-index: -1;
+    }
+    .eyebrow {
+      margin: 0 0 12px;
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+    h1, h2, h3 {
+      font-family: "Iowan Old Style", "Noto Serif TC", "Source Han Serif TC", serif;
+      letter-spacing: 0.01em;
+      margin: 0;
+    }
+    h1 {
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      line-height: 1.06;
+      max-width: 11.5em;
+    }
+    h2 {
+      font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+      margin-bottom: 12px;
+    }
+    h3 { font-size: 1.15rem; margin-bottom: 10px; }
+    .lede {
+      margin: 18px 0 0;
+      max-width: 780px;
+      color: var(--ink-soft);
+      font-size: 1.08rem;
+      line-height: 1.84;
+    }
+    .lang-switch { margin-top: 16px; font-size: 0.95rem; color: var(--ink-soft); }
+    .lang-switch a { font-weight: 700; text-decoration: none; }
+    .hero-grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .stat-card {
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.74);
+      border: 1px solid var(--line);
+    }
+    .stat-card strong {
+      display: block;
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+      color: var(--accent-strong);
+    }
+    .stat-card span { color: var(--ink-soft); line-height: 1.65; display: block; }
+    .panel { border-radius: var(--radius-xl); padding: 28px; }
+    .panel p { margin: 0; color: var(--ink-soft); line-height: 1.82; }
+    .panel p + p, .panel .callout, .panel .split, .panel figure, .panel pre, .panel ul, .panel ol, .panel table { margin-top: 18px; }
+    .quote {
+      font-size: 1.02rem;
+      color: var(--ink);
+      border-left: 4px solid rgba(13, 122, 115, 0.4);
+      padding-left: 14px;
+    }
+    .callout {
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      border: 1px solid rgba(13, 122, 115, 0.14);
+      background: linear-gradient(135deg, rgba(13, 122, 115, 0.08), rgba(203, 125, 46, 0.08));
+      color: var(--ink);
+      line-height: 1.8;
+    }
+    .split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .mini-card {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 18px;
+    }
+    .mini-card p { margin-top: 8px; }
+    ul, ol { padding-left: 1.25rem; color: var(--ink-soft); line-height: 1.8; }
+    li + li { margin-top: 6px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid var(--line);
+    }
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+    }
+    th {
+      background: rgba(13, 122, 115, 0.09);
+      color: var(--accent-strong);
+      font-size: 0.92rem;
+    }
+    td { color: var(--ink-soft); }
+    pre {
+      border-radius: 20px;
+      padding: 16px 18px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      background: rgba(18, 29, 40, 0.96);
+      color: #edf5fb;
+      line-height: 1.72;
+      white-space: pre-wrap;
+    }
+    code { font-family: "JetBrains Mono", "Cascadia Code", monospace; font-size: 0.92em; }
+    .toc {
+      position: sticky;
+      top: 24px;
+      align-self: start;
+      border-radius: 22px;
+      padding: 20px;
+    }
+    .toc h2 { font-size: 1rem; margin-bottom: 12px; }
+    .toc ol { margin: 0; padding-left: 20px; color: var(--ink-soft); font-size: 0.92rem; }
+    .toc li + li { margin-top: 8px; }
+    .toc a { text-decoration: none; }
+    .back-links { margin: 0; color: var(--ink-soft); font-size: 0.9rem; }
+    .back-links a { text-decoration: none; font-weight: 700; }
+    .figure-card {
+      position: relative;
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.58);
+    }
+    .figure-actions {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      z-index: 2;
+    }
+    .figure-actions button {
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 0.82rem;
+      color: #f9f8f3;
+      background: rgba(25, 36, 47, 0.86);
+      cursor: pointer;
+      transition: transform 0.18s ease, background 0.18s ease;
+    }
+    .figure-actions button:hover {
+      transform: translateY(-1px);
+      background: rgba(13, 122, 115, 0.92);
+    }
+    .copy-status {
+      position: absolute;
+      left: 20px;
+      bottom: 18px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(25, 36, 47, 0.82);
+      color: #f7f5ef;
+      font-size: 0.78rem;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+    .copy-status.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    figure svg { width: 100%; height: auto; display: block; }
+    figcaption {
+      margin-top: 14px;
+      padding-right: 120px;
+      color: var(--ink-soft);
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+    .site-footer {
+      width: min(calc(100% - 40px), var(--content-width));
+      margin: 0 auto 36px;
+      color: var(--ink-soft);
+      font-size: 0.85rem;
+    }
+    @media (max-width: 900px) {
+      .page { grid-template-columns: 1fr; padding-top: 24px; }
+      .toc { position: static; order: -1; }
+      .hero-grid, .split { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .page { width: min(calc(100% - 24px), var(--content-width)); }
+      .hero, .panel { padding: 22px; border-radius: 22px; }
+      h1 { font-size: 2rem; }
+      .figure-actions { position: static; margin-bottom: 12px; }
+      figcaption { padding-right: 0; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+  <link rel="stylesheet" href="assets/css/article-base.css">
+  <script defer src="assets/js/article-base.js"></script>
+</head>
+<body id="top">
+  <div class="page">
+    <main class="main-column">
+      <p class="back-links">
+        <a href="./">首頁</a>
+        |
+        <a href="articles/">文章索引</a>
+      </p>
+
+      <header class="hero">
+        <p class="eyebrow">Agent Workflow</p>
+        <h1>多個 Agent 一起開發時，怎麼讓大模型帶隊把協作做穩</h1>
+        <p class="lede">模型越多，團隊越容易出現兩種錯覺：第一種是大家都很忙，看起來進度很快；第二種是每個人都交了回報，看起來事情做完了。真正有用的做法，是先把派工單、回報格式、檔案邊界、驗證命令和人類決策點固定下來。用 Codex、Claude Code、Copilot、Gemini，還是透過 MCP 接別的 Agent，都可以沿著同一條流程走。</p>
+        <p class="lang-switch"><a href="multi_agent_dispatch_playbook_public_en.html">Read in English</a></p>
+        <div class="hero-grid">
+          <div class="stat-card"><strong>帶隊模型</strong><span>負責排順序、定邊界、做裁決，不需要親自把每一段都寫完。</span></div>
+          <div class="stat-card"><strong>派工單格式</strong><span>共享欄位比共享品牌更重要，大家講同一種話，合作就會快很多。</span></div>
+          <div class="stat-card"><strong>回報對稱</strong><span>派工寫什麼，回報就對應什麼，資訊自然會變得中性又可核對。</span></div>
+        </div>
+      </header>
+
+      <section class="panel" id="why">
+        <h2>為什麼多 Agent 團隊常常卡住</h2>
+        <p class="quote">專案一旦失速，常見原因往往是每個模型都在用自己的格式講話。</p>
+        <p>多個 Agent 一起進同一個 codebase，很快就會碰到幾個熟悉的問題：有人只被要求做唯讀盤點，結果直接開始改檔；有人修的是小 bug，卻順手把一整包 generated artifacts 一起塞進同一顆 commit；有人回報說已完成，卻沒有附 validator、沒有說 pre-existing failure、也沒說工作樹裡還有哪些背景 dirty。</p>
+        <p>這些問題看起來分散，核心其實很一致：協作雙方沒有共用的派工單格式，也沒有共用的回報格式。帶隊模型如果每次都靠臨場口述，context 會越堆越厚，token 很快就被吃掉，最後連人類都很難追進度。</p>
+      </section>
+
+      <section class="panel" id="flow">
+        <h2>一條夠實用的帶隊主線</h2>
+        <figure class="figure-card" data-figure-name="lead-agent-collaboration-loop">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>下載 SVG</button>
+            <button type="button" data-download-png>下載 PNG</button>
+          </div>
+          <svg viewBox="0 0 1120 760" role="img" aria-label="多 Agent 協作主線流程圖">
+            <defs>
+              <filter id="softShadowA" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#1a2837" flood-opacity="0.14"/>
+              </filter>
+              <marker id="arrowA" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+                <path d="M 0 0 L 12 6 L 0 12 z" fill="#0d7a73"/>
+              </marker>
+            </defs>
+            <rect width="1120" height="760" rx="28" fill="#fffaf2"/>
+            <g filter="url(#softShadowA)">
+              <rect x="420" y="52" width="280" height="96" rx="24" fill="#16222d"/>
+              <text x="560" y="95" text-anchor="middle" fill="#fffaf2" font-size="28" font-weight="700">人類 + 帶隊模型</text>
+              <text x="560" y="125" text-anchor="middle" fill="#d8ebf6" font-size="17">排順序、定邊界、決定誰接球</text>
+            </g>
+            <g filter="url(#softShadowA)">
+              <rect x="80" y="238" width="280" height="116" rx="24" fill="#ffffff" stroke="#c8d3dc"/>
+              <text x="220" y="283" text-anchor="middle" fill="#19242f" font-size="24" font-weight="700">便宜小助手</text>
+              <text x="220" y="314" text-anchor="middle" fill="#465464" font-size="16">唯讀盤點、grep、風險掃描</text>
+              <text x="220" y="338" text-anchor="middle" fill="#0d7a73" font-size="15">先省 token，再決定要不要深挖</text>
+            </g>
+            <g filter="url(#softShadowA)">
+              <rect x="420" y="238" width="280" height="116" rx="24" fill="#ffffff" stroke="#c8d3dc"/>
+              <text x="560" y="283" text-anchor="middle" fill="#19242f" font-size="24" font-weight="700">執行 Agent</text>
+              <text x="560" y="314" text-anchor="middle" fill="#465464" font-size="16">Claude Code / Codex / Copilot</text>
+              <text x="560" y="338" text-anchor="middle" fill="#0d7a73" font-size="15">只做派工單允許的那一袋工作</text>
+            </g>
+            <g filter="url(#softShadowA)">
+              <rect x="760" y="238" width="280" height="116" rx="24" fill="#ffffff" stroke="#c8d3dc"/>
+              <text x="900" y="283" text-anchor="middle" fill="#19242f" font-size="24" font-weight="700">複審 Agent</text>
+              <text x="900" y="314" text-anchor="middle" fill="#465464" font-size="16">做 scope audit、review、驗證對帳</text>
+              <text x="900" y="338" text-anchor="middle" fill="#0d7a73" font-size="15">PASS / CONCERN / BLOCK</text>
+            </g>
+            <g filter="url(#softShadowA)">
+              <rect x="300" y="496" width="520" height="116" rx="24" fill="#eaf7f4" stroke="#90cbc1"/>
+              <text x="560" y="540" text-anchor="middle" fill="#085d58" font-size="24" font-weight="700">派工單 → 驗證 → 回報 → 人類裁決</text>
+              <text x="560" y="571" text-anchor="middle" fill="#3c5f6e" font-size="16">PR、merge、push、Draft / Ready 狀態，都留在最後一步再做</text>
+            </g>
+            <path d="M520 148 L300 238" stroke="#0d7a73" stroke-width="4" fill="none" marker-end="url(#arrowA)"/>
+            <path d="M560 148 L560 238" stroke="#0d7a73" stroke-width="4" fill="none" marker-end="url(#arrowA)"/>
+            <path d="M600 148 L820 238" stroke="#0d7a73" stroke-width="4" fill="none" marker-end="url(#arrowA)"/>
+            <path d="M220 354 L430 495" stroke="#cb7d2e" stroke-width="4" fill="none" marker-end="url(#arrowA)"/>
+            <path d="M560 354 L560 495" stroke="#cb7d2e" stroke-width="4" fill="none" marker-end="url(#arrowA)"/>
+            <path d="M900 354 L690 495" stroke="#cb7d2e" stroke-width="4" fill="none" marker-end="url(#arrowA)"/>
+          </svg>
+          <figcaption>圖 1：帶隊模型的工作重點是調度與整合。便宜小助手先做唯讀盤點，執行 Agent 接落地工作，複審 Agent 做最後風險判讀。</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+        <div class="split">
+          <div class="mini-card">
+            <h3>先用便宜小助手</h3>
+            <p>scope 還不清楚時，先派便宜模型做只讀 preflight 很划算。它可以幫忙盤 log、grep 檔案、找衝突、列 validator。等任務輪廓清楚，再交給比較高階的執行模型。</p>
+          </div>
+          <div class="mini-card">
+            <h3>帶隊模型不要親自下海做每一段</h3>
+            <p>高等模型適合做排序、裁決、拼圖、整合和對外溝通。把所有 patch 都自己寫完，通常會讓速度慢下來，context 也容易越背越重。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="dispatch">
+        <h2>派工單格式要固定，這是整條線的地基</h2>
+        <p>派工單最有價值的地方，是每個 Agent 一拿到就知道：自己能碰什麼、不能碰什麼、應該回報什麼。</p>
+        <pre><code>回報第一行必須是：代號：005；模型：&lt;實際使用模型&gt;
+
+任務：一句話說清楚這輪要做什麼。
+
+repo：
+路徑或工作樹位置
+
+背景白話：
+用 2-5 句講清楚：
+- 為什麼現在要做這件事
+- 它和前一輪工作的關係
+- 這輪最重要的裁決點是什麼
+
+請做：
+1. ...
+2. ...
+3. ...
+
+請回報：
+1. 結論：PASS / CONCERN / BLOCK
+2. ...
+3. ...
+4. ...
+
+禁止：
+- 不准 ...
+- 不准 ...
+- 不准 ...
+
+大白話補一句：
+用一句人話，說這一袋工作到底是在收什麼。</code></pre>
+        <table>
+          <thead>
+            <tr><th>欄位</th><th>作用</th><th>實務提醒</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>第一行代號</td><td>確認是誰接到球</td><td>外部可轉貼版本一定要用人類 roster 代號，例如 001、004、007。</td></tr>
+            <tr><td>背景白話</td><td>讓執行者快速進入脈絡</td><td>不要重貼整段歷史，只講這輪真正要處理的那個結。</td></tr>
+            <tr><td>請做</td><td>把工作切成可執行步驟</td><td>一張單盡量只做一件主事，分析、實作、複審拆開最穩。</td></tr>
+            <tr><td>請回報</td><td>限制回報格式，降低歧義</td><td>這裡越固定，Captain 越能快速接回主線。</td></tr>
+            <tr><td>禁止</td><td>防止順手超 scope</td><td>「不准 stage / commit / push」這類句子真的很好用，少了常常出事。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel" id="report">
+        <h2>回報格式要和派工單對稱，資訊才會中性</h2>
+        <p>多 Agent 團隊最怕的狀況，是有人交上來一篇像心得文的回報。真正適合接棒的回報，會和派工單形成鏡像：派工要他查什麼，他就逐項回什麼；派工要求 PASS / CONCERN / BLOCK，他就不要自己發明第四種情緒。</p>
+        <figure class="figure-card" data-figure-name="dispatch-report-mirror">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>下載 SVG</button>
+            <button type="button" data-download-png>下載 PNG</button>
+          </div>
+          <svg viewBox="0 0 1120 760" role="img" aria-label="派工單與回報文件的鏡像關係圖">
+            <defs>
+              <filter id="softShadowB" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#1a2837" flood-opacity="0.13"/>
+              </filter>
+            </defs>
+            <rect width="1120" height="760" rx="28" fill="#fffaf2"/>
+            <rect x="80" y="72" width="410" height="616" rx="26" fill="#ffffff" stroke="#c8d3dc" filter="url(#softShadowB)"/>
+            <rect x="630" y="72" width="410" height="616" rx="26" fill="#ffffff" stroke="#c8d3dc" filter="url(#softShadowB)"/>
+            <text x="285" y="118" text-anchor="middle" fill="#16222d" font-size="28" font-weight="700">派工單</text>
+            <text x="835" y="118" text-anchor="middle" fill="#16222d" font-size="28" font-weight="700">回報文件</text>
+            <g font-size="19" fill="#465464">
+              <text x="120" y="184">1. 第一行代號與模型</text>
+              <text x="120" y="246">2. 任務與 repo</text>
+              <text x="120" y="308">3. 背景白話</text>
+              <text x="120" y="370">4. 請做</text>
+              <text x="120" y="432">5. 請回報</text>
+              <text x="120" y="494">6. 禁止事項</text>
+              <text x="120" y="556">7. 大白話補一句</text>
+              <text x="670" y="184">1. 同樣的代號與模型</text>
+              <text x="670" y="246">2. 實際處理哪個 repo</text>
+              <text x="670" y="308">3. 你判斷到的重點</text>
+              <text x="670" y="370">4. 你實際做了哪些步驟</text>
+              <text x="670" y="432">5. PASS / CONCERN / BLOCK</text>
+              <text x="670" y="494">6. 有沒有碰禁區</text>
+              <text x="670" y="556">7. 給 Captain 的一句人話</text>
+            </g>
+            <g stroke="#0d7a73" stroke-width="4" fill="none">
+              <path d="M460 174 C520 174 600 174 660 174"/>
+              <path d="M460 236 C520 236 600 236 660 236"/>
+              <path d="M460 298 C520 298 600 298 660 298"/>
+              <path d="M460 360 C520 360 600 360 660 360"/>
+              <path d="M460 422 C520 422 600 422 660 422"/>
+              <path d="M460 484 C520 484 600 484 660 484"/>
+              <path d="M460 546 C520 546 600 546 660 546"/>
+            </g>
+          </svg>
+          <figcaption>圖 2：格式對稱之後，工具品牌差異會退到第二層。Captain 真正在讀的，是共享欄位與共享裁決詞。</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+        <div class="callout">這裡有一個很關鍵的小習慣：能力角色只留給隊長內部判斷，例如執行型、複審型、唯讀偵察型。外部派工單第一行只放人類看得懂的代號。這樣 roster 每天換人，格式還是穩的。</div>
+      </section>
+
+      <section class="panel" id="human">
+        <h2>人類怎麼跟這整套系統合作</h2>
+        <p>人類最適合做三件事：決定優先順序、決定誰有權碰主線、決定什麼時候可以 merge。這三件事如果沒抓在手上，再強的 Agent 組合也會開始漂。</p>
+        <div class="split">
+          <div class="mini-card">
+            <h3>先做 roster 綁定</h3>
+            <p>每天一開始先把 roster 綁好。例子像是 001 做文件與 checklist、004 做裁決、007 做最快執行。內部可以再映射能力角色，外部派工單只寫數字代號。</p>
+          </div>
+          <div class="mini-card">
+            <h3>先決定哪一袋要先出車</h3>
+            <p>source fix、evidence、generated artifacts、docs，這幾袋分開看最清楚。小包先走，大包留 Draft，團隊會輕鬆很多。</p>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr><th>人類節點</th><th>應該做什麼</th><th>常見失誤</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>派工前</td><td>確認 roster、優先順序、可碰檔案、禁止事項</td><td>只口頭交代，沒有留下可轉貼文字。</td></tr>
+            <tr><td>執行中</td><td>只在需要裁決時介入，平常讓格式自己收斂</td><td>什麼都親自追，結果把高階決策時間花在低階核對。</td></tr>
+            <tr><td>收尾時</td><td>看 PR、看 validator、看回報格式，最後才做 merge / push</td><td>看到「做完了」就直接放行。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel" id="prompts">
+        <h2>實用 prompt 和 skill 範例</h2>
+        <p>同一條線上通常會混用很多工具：Codex 管 worktree，Claude Code 接大 patch，Copilot 補小缺口，Gemini Flash 類的小模型先做偵察，MCP 負責把 issue tracker、repo、preview、design tool 串起來。真正重要的是這些工具都講同一種派工語言。</p>
+        <h3>唯讀偵察 prompt</h3>
+        <pre><code>回報第一行必須是：代號：002；模型：&lt;實際使用模型&gt;
+
+任務：先做唯讀盤點，判斷這一包 work 是否適合現在開始。
+
+repo：
+/workspace/example-repo
+
+背景白話：
+主線現在卡在一顆大 PR。這輪只想知道：
+- 哪些檔案正在被碰
+- 哪些 validator 會擋
+- 這張卡要不要拆袋
+
+請做：
+1. git status -sb
+2. git diff --name-only
+3. 盤點是否有 source fix / generated artifacts / docs 混袋
+4. 不改檔，不 commit
+
+請回報：
+1. 結論：PASS / CONCERN / BLOCK
+2. 建議分袋方式
+3. 建議下一張派工單該交給誰
+
+禁止：
+- 不准改檔
+- 不准 stage
+- 不准 commit
+- 不准 push</code></pre>
+        <h3>執行落地 prompt</h3>
+        <pre><code>回報第一行必須是：代號：007；模型：&lt;實際使用模型&gt;
+
+任務：只提交這三個 source 檔，不要混進 generated artifacts。
+
+repo：
+/workspace/example-repo
+
+背景白話：
+這輪是在收 source fix 那一袋。evidence 跟 runtime artifacts 先留在工作樹外側。
+
+請做：
+1. 跑最小 validator
+2. 只 stage 白名單檔案
+3. commit
+4. 回報 commit SHA 與 git status -sb
+
+請回報：
+1. 結論：PASS / CONCERN / BLOCK
+2. commit SHA
+3. validator 結果
+4. 是否有任何檔案被排除在外</code></pre>
+        <h3>常見 skill / MCP 組合</h3>
+        <ul>
+          <li><strong>派工規範 skill</strong>：固定欄位、固定回報格式、固定禁止事項。</li>
+          <li><strong>開卡 skill</strong>：建立 task card、補 shard、做 dry-run 開卡報告。</li>
+          <li><strong>encoding guard skill</strong>：每次改文件或 HTML 後先掃 touched files，省下一堆亂碼事故。</li>
+          <li><strong>browser QA skill</strong>：打開站內頁面、看版型、驗證中英切換。</li>
+          <li><strong>MCP repo / issue / design connector</strong>：讓 Agent 讀到同一份資料來源，降低「我以為」的空間。</li>
+        </ul>
+      </section>
+
+      <section class="panel" id="pitfalls">
+        <h2>幾個很常見，也真的很痛的坑</h2>
+        <div class="split">
+          <div class="mini-card">
+            <h3>只叫人看，結果他開始改</h3>
+            <p>派工單如果沒把「唯讀」和「不准 commit」寫死，很多 Agent 會把被提到的任務卡直接當成開始信號。</p>
+          </div>
+          <div class="mini-card">
+            <h3>小修和大包混在一起</h3>
+            <p>source fix、runtime artifacts、governance evidence 混成一袋時，review surface 會瞬間變大，回退也會很痛。</p>
+          </div>
+          <div class="mini-card">
+            <h3>直接從髒工作樹出車</h3>
+            <p>工作樹上已經有背景 dirty 時，直接 push 主線很容易把別人的東西順手送上去。乾淨分支和 Draft PR 真的能救命。</p>
+          </div>
+          <div class="mini-card">
+            <h3>每個人交不同格式的回報</h3>
+            <p>有人寫散文，有人只貼 SHA，有人只說 done。Captain 每次都要重新翻譯，速度很快就掉下來。</p>
+          </div>
+        </div>
+        <p>比較穩的解法很一致：先派便宜小助手做唯讀盤點，接著用固定欄位派工，最後讓複審 Agent 用 PASS / CONCERN / BLOCK 收尾。中間如果遇到大包，開 Draft PR 把 review surface 縮小，大家都會輕鬆很多。</p>
+      </section>
+
+      <section class="panel" id="checklist">
+        <h2>一份夠落地的起手式清單</h2>
+        <ol>
+          <li>先定一位帶隊模型，讓它負責調度和整合。</li>
+          <li>先做 roster 綁定，外部派工單只用人類代號。</li>
+          <li>先派便宜小模型做唯讀盤點，別讓高價模型一進場就背全場 context。</li>
+          <li>每張派工單只做一件主事，分析、實作、複審拆開。</li>
+          <li>派工單和回報文件用同一套欄位。</li>
+          <li>把 generated artifacts、source fix、evidence 分袋。</li>
+          <li>讓 skill 和 MCP 承接固定工序，讓人類專心做判斷。</li>
+          <li>需要上主線時，再做 PR、merge、push，不要提早偷跑。</li>
+        </ol>
+        <p class="quote">工具很多很正常。沒有共同格式，協作很快就會亂掉。</p>
+      </section>
+    </main>
+
+    <aside class="toc">
+      <h2>內容索引</h2>
+      <ol>
+        <li><a href="#why">為什麼會卡住</a></li>
+        <li><a href="#flow">帶隊主線</a></li>
+        <li><a href="#dispatch">派工單格式</a></li>
+        <li><a href="#report">回報格式</a></li>
+        <li><a href="#human">人類合作點</a></li>
+        <li><a href="#prompts">Prompt 與 skill</a></li>
+        <li><a href="#pitfalls">常見坑</a></li>
+        <li><a href="#checklist">起手式清單</a></li>
+      </ol>
+    </aside>
+  </div>
+</body>
+</html>

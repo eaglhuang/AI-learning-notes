@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How a Stronger Agent Can Lead Multi-Agent Development Without Turning the Repo into Chaos</title>
+  <meta name="description" content="A practical guide to multi-agent development: how a stronger model leads, how dispatch slips and reports stay neutral, and how humans can coordinate Codex, Claude Code, Copilot, Gemini, MCP, and skills on the same workflow.">
+  <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/multi_agent_dispatch_playbook_public_en.html">
+  <link rel="alternate" hreflang="zh-Hant" href="https://eaglhuang.github.io/AI-learning-notes/multi_agent_dispatch_playbook_public.html">
+  <style>
+    :root {
+      --paper: #f6f1e7;
+      --paper-strong: #fbf8f2;
+      --ink: #19242f;
+      --ink-soft: #465464;
+      --line: rgba(25, 36, 47, 0.12);
+      --accent-strong: #085d58;
+      --shadow: 0 24px 80px rgba(26, 40, 55, 0.12);
+      --radius-xl: 28px;
+      --radius-md: 16px;
+      --content-width: 1160px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Aptos", "IBM Plex Sans", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(13, 122, 115, 0.16), transparent 28%),
+        radial-gradient(circle at 80% 12%, rgba(203, 125, 46, 0.14), transparent 26%),
+        linear-gradient(180deg, #f8f4eb 0%, #f2ecdf 48%, #ebe5d8 100%);
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+      background-size: 36px 36px;
+      -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      opacity: 0.35;
+    }
+    a { color: var(--accent-strong); }
+    .page {
+      width: min(calc(100% - 40px), var(--content-width));
+      margin: 0 auto;
+      padding: 40px 0 80px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 28px;
+      position: relative;
+      z-index: 1;
+    }
+    .main-column { display: grid; gap: 24px; min-width: 0; }
+    .hero, .panel, .toc {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.72));
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+    .hero {
+      border-radius: 32px;
+      padding: 36px;
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -120px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(13, 122, 115, 0.22), transparent 68%);
+      z-index: -1;
+    }
+    .eyebrow {
+      margin: 0 0 12px;
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+    h1, h2, h3 {
+      font-family: "Iowan Old Style", Georgia, serif;
+      letter-spacing: 0.01em;
+      margin: 0;
+    }
+    h1 {
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      line-height: 1.06;
+      max-width: 12em;
+    }
+    h2 {
+      font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+      margin-bottom: 12px;
+    }
+    h3 { font-size: 1.15rem; margin-bottom: 10px; }
+    .lede {
+      margin: 18px 0 0;
+      max-width: 780px;
+      color: var(--ink-soft);
+      font-size: 1.08rem;
+      line-height: 1.84;
+    }
+    .lang-switch { margin-top: 16px; font-size: 0.95rem; color: var(--ink-soft); }
+    .lang-switch a { font-weight: 700; text-decoration: none; }
+    .hero-grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .stat-card {
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.74);
+      border: 1px solid var(--line);
+    }
+    .stat-card strong {
+      display: block;
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+      color: var(--accent-strong);
+    }
+    .stat-card span { color: var(--ink-soft); line-height: 1.65; display: block; }
+    .panel { border-radius: var(--radius-xl); padding: 28px; }
+    .panel p { margin: 0; color: var(--ink-soft); line-height: 1.82; }
+    .panel p + p, .panel .callout, .panel .split, .panel figure, .panel pre, .panel ul, .panel ol, .panel table { margin-top: 18px; }
+    .quote {
+      font-size: 1.02rem;
+      color: var(--ink);
+      border-left: 4px solid rgba(13, 122, 115, 0.4);
+      padding-left: 14px;
+    }
+    .callout {
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      border: 1px solid rgba(13, 122, 115, 0.14);
+      background: linear-gradient(135deg, rgba(13, 122, 115, 0.08), rgba(203, 125, 46, 0.08));
+      color: var(--ink);
+      line-height: 1.8;
+    }
+    .split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .mini-card {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 18px;
+    }
+    .mini-card p { margin-top: 8px; }
+    ul, ol { padding-left: 1.25rem; color: var(--ink-soft); line-height: 1.8; }
+    li + li { margin-top: 6px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid var(--line);
+    }
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+    }
+    th {
+      background: rgba(13, 122, 115, 0.09);
+      color: var(--accent-strong);
+      font-size: 0.92rem;
+    }
+    td { color: var(--ink-soft); }
+    pre {
+      border-radius: 20px;
+      padding: 16px 18px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      background: rgba(18, 29, 40, 0.96);
+      color: #edf5fb;
+      line-height: 1.72;
+      white-space: pre-wrap;
+    }
+    code { font-family: "JetBrains Mono", "Cascadia Code", monospace; font-size: 0.92em; }
+    .toc {
+      position: sticky;
+      top: 24px;
+      align-self: start;
+      border-radius: 22px;
+      padding: 20px;
+    }
+    .toc h2 { font-size: 1rem; margin-bottom: 12px; }
+    .toc ol { margin: 0; padding-left: 20px; color: var(--ink-soft); font-size: 0.92rem; }
+    .toc li + li { margin-top: 8px; }
+    .toc a { text-decoration: none; }
+    .back-links { margin: 0; color: var(--ink-soft); font-size: 0.9rem; }
+    .back-links a { text-decoration: none; font-weight: 700; }
+    .figure-card {
+      position: relative;
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.58);
+    }
+    .figure-actions {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      z-index: 2;
+    }
+    .figure-actions button {
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 0.82rem;
+      color: #f9f8f3;
+      background: rgba(25, 36, 47, 0.86);
+      cursor: pointer;
+      transition: transform 0.18s ease, background 0.18s ease;
+    }
+    .figure-actions button:hover {
+      transform: translateY(-1px);
+      background: rgba(13, 122, 115, 0.92);
+    }
+    .copy-status {
+      position: absolute;
+      left: 20px;
+      bottom: 18px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(25, 36, 47, 0.82);
+      color: #f7f5ef;
+      font-size: 0.78rem;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+    .copy-status.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    figure svg { width: 100%; height: auto; display: block; }
+    figcaption {
+      margin-top: 14px;
+      padding-right: 120px;
+      color: var(--ink-soft);
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+    .site-footer {
+      width: min(calc(100% - 40px), var(--content-width));
+      margin: 0 auto 36px;
+      color: var(--ink-soft);
+      font-size: 0.85rem;
+    }
+    @media (max-width: 900px) {
+      .page { grid-template-columns: 1fr; padding-top: 24px; }
+      .toc { position: static; order: -1; }
+      .hero-grid, .split { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .page { width: min(calc(100% - 24px), var(--content-width)); }
+      .hero, .panel { padding: 22px; border-radius: 22px; }
+      h1 { font-size: 2rem; }
+      .figure-actions { position: static; margin-bottom: 12px; }
+      figcaption { padding-right: 0; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+  <link rel="stylesheet" href="assets/css/article-base.css">
+  <script defer src="assets/js/article-base.js"></script>
+</head>
+<body id="top">
+  <div class="page">
+    <main class="main-column">
+      <p class="back-links">
+        <a href="./">Home</a>
+        |
+        <a href="articles/">Article archive</a>
+      </p>
+
+      <header class="hero">
+        <p class="eyebrow">Agent Workflow</p>
+        <h1>How a Stronger Agent Can Lead Multi-Agent Development Without Turning the Repo into Chaos</h1>
+        <p class="lede">When more models join the room, two illusions appear fast: everybody looks busy, and every report sounds like progress. The practical fix is much simpler than the tooling debate. We need stable dispatch slips, stable report formats, file boundaries, validator rules, and clear human checkpoints. Codex, Claude Code, Copilot, Gemini, MCP, and skills can all work on the same line when the language of coordination stays shared.</p>
+        <p class="lang-switch"><a href="multi_agent_dispatch_playbook_public.html">Read in Traditional Chinese</a></p>
+        <div class="hero-grid">
+          <div class="stat-card"><strong>Lead model</strong><span>Owns sequencing, boundaries, and final judgment. It does not need to write every patch itself.</span></div>
+          <div class="stat-card"><strong>Dispatch format</strong><span>A shared format matters more than a shared vendor. That is what makes collaboration neutral.</span></div>
+          <div class="stat-card"><strong>Report symmetry</strong><span>If reports mirror the dispatch fields, handoff quality goes up and confusion drops fast.</span></div>
+        </div>
+      </header>
+
+      <section class="panel" id="why">
+        <h2>Why multi-agent teams get stuck</h2>
+        <p class="quote">Most projects do not slow down because one model is weak. They slow down because every model is speaking in a different format.</p>
+        <p>As soon as multiple agents share one repository, familiar problems show up. Someone was asked to do read-only inspection and started editing anyway. Someone fixed a narrow bug and bundled a mountain of generated artifacts into the same commit. Someone reported success without listing validators, pre-existing failures, or the rest of the dirty working tree.</p>
+        <p>These are not separate accidents. They come from the same gap: no shared dispatch contract and no shared reporting contract. If the lead model keeps improvising the workflow in plain chat, the context gets heavier, the token bill climbs, and even the human reviewer loses the thread.</p>
+      </section>
+
+      <section class="panel" id="flow">
+        <h2>A practical leadership loop</h2>
+        <figure class="figure-card" data-figure-name="lead-agent-collaboration-loop-en">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
+          </div>
+          <svg viewBox="0 0 1120 760" role="img" aria-label="Main multi-agent collaboration loop">
+            <defs>
+              <filter id="softShadowAEn" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#1a2837" flood-opacity="0.14"/>
+              </filter>
+              <marker id="arrowAEn" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+                <path d="M 0 0 L 12 6 L 0 12 z" fill="#0d7a73"/>
+              </marker>
+            </defs>
+            <rect width="1120" height="760" rx="28" fill="#fffaf2"/>
+            <g filter="url(#softShadowAEn)">
+              <rect x="420" y="52" width="280" height="96" rx="24" fill="#16222d"/>
+              <text x="560" y="95" text-anchor="middle" fill="#fffaf2" font-size="28" font-weight="700">Human + Lead Agent</text>
+              <text x="560" y="125" text-anchor="middle" fill="#d8ebf6" font-size="17">Sequence, scope, and final routing</text>
+            </g>
+            <g filter="url(#softShadowAEn)">
+              <rect x="80" y="238" width="280" height="116" rx="24" fill="#ffffff" stroke="#c8d3dc"/>
+              <text x="220" y="283" text-anchor="middle" fill="#19242f" font-size="24" font-weight="700">Cheap sidecar</text>
+              <text x="220" y="314" text-anchor="middle" fill="#465464" font-size="16">Read-only scan, grep, risk check</text>
+              <text x="220" y="338" text-anchor="middle" fill="#0d7a73" font-size="15">Spend tokens late, not early</text>
+            </g>
+            <g filter="url(#softShadowAEn)">
+              <rect x="420" y="238" width="280" height="116" rx="24" fill="#ffffff" stroke="#c8d3dc"/>
+              <text x="560" y="283" text-anchor="middle" fill="#19242f" font-size="24" font-weight="700">Execution agent</text>
+              <text x="560" y="314" text-anchor="middle" fill="#465464" font-size="16">Claude Code / Codex / Copilot</text>
+              <text x="560" y="338" text-anchor="middle" fill="#0d7a73" font-size="15">Touch only the approved bag</text>
+            </g>
+            <g filter="url(#softShadowAEn)">
+              <rect x="760" y="238" width="280" height="116" rx="24" fill="#ffffff" stroke="#c8d3dc"/>
+              <text x="900" y="283" text-anchor="middle" fill="#19242f" font-size="24" font-weight="700">Review agent</text>
+              <text x="900" y="314" text-anchor="middle" fill="#465464" font-size="16">Scope audit, review, validator check</text>
+              <text x="900" y="338" text-anchor="middle" fill="#0d7a73" font-size="15">PASS / CONCERN / BLOCK</text>
+            </g>
+            <g filter="url(#softShadowAEn)">
+              <rect x="300" y="496" width="520" height="116" rx="24" fill="#eaf7f4" stroke="#90cbc1"/>
+              <text x="560" y="540" text-anchor="middle" fill="#085d58" font-size="24" font-weight="700">Dispatch slip → Validation → Report → Human decision</text>
+              <text x="560" y="571" text-anchor="middle" fill="#3c5f6e" font-size="16">PR, merge, push, Draft, and Ready all stay at the end of the lane</text>
+            </g>
+            <path d="M520 148 L300 238" stroke="#0d7a73" stroke-width="4" fill="none" marker-end="url(#arrowAEn)"/>
+            <path d="M560 148 L560 238" stroke="#0d7a73" stroke-width="4" fill="none" marker-end="url(#arrowAEn)"/>
+            <path d="M600 148 L820 238" stroke="#0d7a73" stroke-width="4" fill="none" marker-end="url(#arrowAEn)"/>
+            <path d="M220 354 L430 495" stroke="#cb7d2e" stroke-width="4" fill="none" marker-end="url(#arrowAEn)"/>
+            <path d="M560 354 L560 495" stroke="#cb7d2e" stroke-width="4" fill="none" marker-end="url(#arrowAEn)"/>
+            <path d="M900 354 L690 495" stroke="#cb7d2e" stroke-width="4" fill="none" marker-end="url(#arrowAEn)"/>
+          </svg>
+          <figcaption>Figure 1: The stronger model keeps the map. Cheap sidecars scan first, execution agents patch, review agents judge, and the human keeps the final steering wheel.</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+        <div class="split">
+          <div class="mini-card">
+            <h3>Use cheap sidecars first</h3>
+            <p>If the scope is still fuzzy, send a cheaper model to do the read-only preflight. Let it grep, list conflicts, and suggest validators before the stronger model spends serious context.</p>
+          </div>
+          <div class="mini-card">
+            <h3>The lead model does not need to code every branch</h3>
+            <p>A stronger model creates more value when it sequences work, resolves tradeoffs, and integrates results. Writing every patch itself is usually the slower option.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="dispatch">
+        <h2>The dispatch slip is the floor, not the wallpaper</h2>
+        <p>The real value of a dispatch slip is simple: any agent can read it and instantly know what it may touch, what it must not touch, and what the return format must look like.</p>
+        <pre><code>The first line of the report must be: Roster code: 005; Model: &lt;actual model used&gt;
+
+Task: State the purpose of this turn in one sentence.
+
+repo:
+Path or worktree location
+
+Context in plain language:
+Use 2-5 sentences to explain:
+- why this work matters now
+- how it relates to the previous step
+- what decision this turn is supposed to unlock
+
+Please do:
+1. ...
+2. ...
+3. ...
+
+Please report:
+1. Conclusion: PASS / CONCERN / BLOCK
+2. ...
+3. ...
+4. ...
+
+Do not:
+- ...
+- ...
+- ...
+
+One plain-language summary:
+Say what bag of work this really is.</code></pre>
+        <table>
+          <thead>
+            <tr><th>Field</th><th>Why it matters</th><th>Practical note</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>First-line roster code</td><td>Confirms who caught the ball</td><td>Human-facing dispatch slips should use visible roster IDs like 001, 004, or 007.</td></tr>
+            <tr><td>Plain-language context</td><td>Explains why the turn exists</td><td>Keep it short. Focus on the knot this turn is supposed to untie.</td></tr>
+            <tr><td>Please do</td><td>Turns the task into executable steps</td><td>One slip, one main job. Analysis, delivery, and review work best when split.</td></tr>
+            <tr><td>Please report</td><td>Locks the return shape</td><td>The more stable this section is, the faster the lead model can integrate the result.</td></tr>
+            <tr><td>Do not</td><td>Prevents accidental scope drift</td><td>Lines like “do not stage, commit, or push” save an absurd amount of cleanup.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel" id="report">
+        <h2>Reports should mirror dispatch slips</h2>
+        <p>The most expensive report is a report that reads like a diary entry. The best report mirrors the original dispatch fields. If the slip asked for file boundaries, validators, and a PASS or BLOCK judgment, the reply should not invent a different structure halfway through.</p>
+        <figure class="figure-card" data-figure-name="dispatch-report-mirror-en">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
+          </div>
+          <svg viewBox="0 0 1120 760" role="img" aria-label="Dispatch and report mirror map">
+            <defs>
+              <filter id="softShadowBEn" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#1a2837" flood-opacity="0.13"/>
+              </filter>
+            </defs>
+            <rect width="1120" height="760" rx="28" fill="#fffaf2"/>
+            <rect x="80" y="72" width="410" height="616" rx="26" fill="#ffffff" stroke="#c8d3dc" filter="url(#softShadowBEn)"/>
+            <rect x="630" y="72" width="410" height="616" rx="26" fill="#ffffff" stroke="#c8d3dc" filter="url(#softShadowBEn)"/>
+            <text x="285" y="118" text-anchor="middle" fill="#16222d" font-size="28" font-weight="700">Dispatch slip</text>
+            <text x="835" y="118" text-anchor="middle" fill="#16222d" font-size="28" font-weight="700">Return report</text>
+            <g font-size="19" fill="#465464">
+              <text x="120" y="184">1. Visible roster code and model</text>
+              <text x="120" y="246">2. Task and repo</text>
+              <text x="120" y="308">3. Plain-language context</text>
+              <text x="120" y="370">4. Please do</text>
+              <text x="120" y="432">5. Please report</text>
+              <text x="120" y="494">6. Do not</text>
+              <text x="120" y="556">7. Plain-language summary</text>
+              <text x="670" y="184">1. Same roster code and model</text>
+              <text x="670" y="246">2. Actual repo worked on</text>
+              <text x="670" y="308">3. Key findings</text>
+              <text x="670" y="370">4. Steps actually taken</text>
+              <text x="670" y="432">5. PASS / CONCERN / BLOCK</text>
+              <text x="670" y="494">6. Whether forbidden zones stayed untouched</text>
+              <text x="670" y="556">7. One sentence for the lead</text>
+            </g>
+            <g stroke="#0d7a73" stroke-width="4" fill="none">
+              <path d="M460 174 C520 174 600 174 660 174"/>
+              <path d="M460 236 C520 236 600 236 660 236"/>
+              <path d="M460 298 C520 298 600 298 660 298"/>
+              <path d="M460 360 C520 360 600 360 660 360"/>
+              <path d="M460 422 C520 422 600 422 660 422"/>
+              <path d="M460 484 C520 484 600 484 660 484"/>
+              <path d="M460 546 C520 546 600 546 660 546"/>
+            </g>
+          </svg>
+          <figcaption>Figure 2: When dispatch and report share the same skeleton, tool differences fade into the background. What remains is a neutral collaboration contract.</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+        <div class="callout">Capability roles such as “fast executor” or “scope auditor” work well inside the captain’s head. Human-facing dispatch slips should still use visible roster IDs. That keeps the workflow legible when the roster changes every day.</div>
+      </section>
+
+      <section class="panel" id="human">
+        <h2>How humans fit into the loop</h2>
+        <p>Humans create the most value at three points: deciding priority, deciding who may touch the main lane, and deciding when something is allowed to merge. Hold those three levers tightly and the whole system feels much calmer.</p>
+        <div class="split">
+          <div class="mini-card">
+            <h3>Bind the roster first</h3>
+            <p>Start the day by mapping visible IDs to current people or models. Example: 001 handles docs and checklists, 004 handles route judgment, 007 handles fast execution. Internally you may still map capability roles. The outward-facing slip should stay numeric.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Decide which bag leaves first</h3>
+            <p>Source fixes, evidence, generated artifacts, and docs each deserve their own bag. Smaller bags move first. Larger bags can sit in Draft review until the path clears.</p>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Human checkpoint</th><th>What to do</th><th>Common mistake</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Before dispatch</td><td>Confirm roster, priority, allowed files, and forbidden zones</td><td>Giving only a verbal instruction and leaving no transferable text behind</td></tr>
+            <tr><td>During execution</td><td>Step in only for decisions that truly need judgment</td><td>Spending senior time on low-level inspection work</td></tr>
+            <tr><td>At the end</td><td>Read the PR, validator results, and report shape before merge or push</td><td>Trusting “done” as a complete status by itself</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel" id="prompts">
+        <h2>Useful prompts and skill examples</h2>
+        <p>Real teams often mix several tools at once: Codex manages worktrees, Claude Code handles larger patches, Copilot fills focused gaps, smaller Gemini or Flash-class models scout first, and MCP connects repos, issues, preview tools, or design surfaces. The useful trick is making all of them speak the same dispatch language.</p>
+        <h3>Read-only scout prompt</h3>
+        <pre><code>The first line of the report must be: Roster code: 002; Model: &lt;actual model used&gt;
+
+Task: perform a read-only preflight and tell me whether this work is safe to start.
+
+repo:
+/workspace/example-repo
+
+Plain-language context:
+The main lane is blocked by a large PR. This turn only needs to answer:
+- which files are already being touched
+- which validators matter
+- whether this task should be split into separate bags
+
+Please do:
+1. git status -sb
+2. git diff --name-only
+3. classify source fix / generated artifacts / docs / evidence
+4. do not edit or commit
+
+Please report:
+1. Conclusion: PASS / CONCERN / BLOCK
+2. Recommended split
+3. Recommended next assignee</code></pre>
+        <h3>Execution prompt</h3>
+        <pre><code>The first line of the report must be: Roster code: 007; Model: &lt;actual model used&gt;
+
+Task: land only these three source files. Do not mix generated artifacts.
+
+repo:
+/workspace/example-repo
+
+Plain-language context:
+This turn is only for the source-fix bag. Evidence and runtime artifacts stay outside.
+
+Please do:
+1. run the minimum validators
+2. stage only the allowlisted files
+3. commit
+4. return commit SHA and git status -sb
+
+Please report:
+1. Conclusion: PASS / CONCERN / BLOCK
+2. Commit SHA
+3. Validator result
+4. Anything intentionally excluded</code></pre>
+        <h3>Useful skill and MCP combinations</h3>
+        <ul>
+          <li><strong>Dispatch-standard skill</strong>: fixed fields, fixed report rules, fixed forbidden list.</li>
+          <li><strong>Task-opening skill</strong>: task card creation, shard updates, dry-run opening report.</li>
+          <li><strong>Encoding guard skill</strong>: scan touched files before a doc or HTML change turns into a mojibake party.</li>
+          <li><strong>Browser QA skill</strong>: open the page, check the layout, verify language switching.</li>
+          <li><strong>MCP repo / issue / design connectors</strong>: shared data sources mean fewer “I thought this was already done” moments.</li>
+        </ul>
+      </section>
+
+      <section class="panel" id="pitfalls">
+        <h2>A few painful traps that show up a lot</h2>
+        <div class="split">
+          <div class="mini-card">
+            <h3>You asked for inspection and got a patch</h3>
+            <p>If the dispatch slip does not lock down read-only mode and explicitly ban commit actions, many agents will interpret any named task as a start signal.</p>
+          </div>
+          <div class="mini-card">
+            <h3>A small fix travels with a giant bag</h3>
+            <p>Source fix, runtime artifacts, and governance evidence should not ride in the same commit. The review surface becomes huge, and rollback becomes expensive.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Someone pushes from a dirty working tree</h3>
+            <p>When a working tree already contains background modifications, direct pushes can drag unrelated work along for the ride. Clean branches and Draft PRs save a lot of pain.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Everyone reports in a different shape</h3>
+            <p>One person writes a summary, another pastes a SHA, another only says “done.” The captain then burns time translating formats instead of moving the project.</p>
+          </div>
+        </div>
+        <p>The healthiest pattern stays consistent: send a cheap read-only scout first, dispatch through a fixed field set, and let a review agent close the turn with PASS, CONCERN, or BLOCK. Large bags can wait in Draft PRs. Smaller bags can keep the road clear.</p>
+      </section>
+
+      <section class="panel" id="checklist">
+        <h2>A solid starting checklist</h2>
+        <ol>
+          <li>Choose one lead model to coordinate the turn.</li>
+          <li>Bind the current roster first. Human-facing slips should keep visible numeric IDs.</li>
+          <li>Use a cheap model for read-only scouting before the stronger model spends heavy context.</li>
+          <li>Keep one dispatch slip focused on one main job.</li>
+          <li>Use the same fields for dispatch and report.</li>
+          <li>Split source fixes, evidence, generated artifacts, and docs into separate bags.</li>
+          <li>Push fixed procedures into skills and MCP-driven tools. Leave judgment to humans and stronger models.</li>
+          <li>Save PR, merge, and push actions for the end of the lane.</li>
+        </ol>
+        <p class="quote">A crowded tool stack is manageable. A crowded conversation format is where teams usually lose the thread.</p>
+      </section>
+    </main>
+
+    <aside class="toc">
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#why">Why teams get stuck</a></li>
+        <li><a href="#flow">Leadership loop</a></li>
+        <li><a href="#dispatch">Dispatch slip format</a></li>
+        <li><a href="#report">Report symmetry</a></li>
+        <li><a href="#human">Human checkpoints</a></li>
+        <li><a href="#prompts">Prompts and skills</a></li>
+        <li><a href="#pitfalls">Common traps</a></li>
+        <li><a href="#checklist">Starting checklist</a></li>
+      </ol>
+    </aside>
+  </div>
+</body>
+</html>
