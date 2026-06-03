@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Atomic Foundry: Giving Every Piece of Code an Identity, Evidence, and a Second Life When N AI Agents Build One Project</title>
+  <meta name="description" content="Turn a multi-agent codebase into an atomic foundry: every piece of code is a cell with a CID fingerprint, every mutation leaves a SHA256 evidence packet, nine resident police watch for structural decay, and fifteen roles collaborate across four layers. A plain-language walkthrough of an AI engineering governance layer.">
+  <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public_en.html">
+  <link rel="alternate" hreflang="zh-Hant" href="https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public.html">
+  <style>
+    :root {
+      --paper: #f6f1e7;
+      --paper-strong: #fbf8f2;
+      --ink: #19242f;
+      --ink-soft: #465464;
+      --line: rgba(25, 36, 47, 0.12);
+      --accent-strong: #085d58;
+      --accent-warm: #cb7d2e;
+      --shadow: 0 24px 80px rgba(26, 40, 55, 0.12);
+      --radius-xl: 28px;
+      --radius-md: 16px;
+      --content-width: 1160px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Aptos", "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(13, 122, 115, 0.16), transparent 28%),
+        radial-gradient(circle at 80% 12%, rgba(203, 125, 46, 0.14), transparent 26%),
+        linear-gradient(180deg, #f8f4eb 0%, #f2ecdf 48%, #ebe5d8 100%);
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+      background-size: 36px 36px;
+      -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.24), transparent 78%);
+      opacity: 0.35;
+    }
+    a { color: var(--accent-strong); }
+    .page {
+      width: min(calc(100% - 40px), var(--content-width));
+      margin: 0 auto;
+      padding: 40px 0 80px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 28px;
+      position: relative;
+      z-index: 1;
+    }
+    .main-column { display: grid; gap: 24px; min-width: 0; }
+    .hero, .panel, .toc {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.72));
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: var(--shadow);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+    .hero {
+      border-radius: 32px;
+      padding: 36px;
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      top: -120px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(13, 122, 115, 0.22), transparent 68%);
+      z-index: -1;
+    }
+    .eyebrow {
+      margin: 0 0 12px;
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+    h1, h2, h3 {
+      font-family: "Iowan Old Style", "Georgia", "Times New Roman", serif;
+      letter-spacing: 0.01em;
+      margin: 0;
+    }
+    h1 {
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
+      line-height: 1.1;
+      max-width: 14em;
+    }
+    h2 {
+      font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+      margin-bottom: 12px;
+    }
+    h3 { font-size: 1.15rem; margin-bottom: 10px; }
+    .lede {
+      margin: 18px 0 0;
+      max-width: 820px;
+      color: var(--ink-soft);
+      font-size: 1.08rem;
+      line-height: 1.84;
+    }
+    .lang-switch { margin-top: 16px; font-size: 0.95rem; color: var(--ink-soft); }
+    .lang-switch a { font-weight: 700; text-decoration: none; }
+    .hero-grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .stat-card {
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.74);
+      border: 1px solid var(--line);
+    }
+    .stat-card strong {
+      display: block;
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+      color: var(--accent-strong);
+    }
+    .stat-card span { color: var(--ink-soft); line-height: 1.65; display: block; }
+    .panel { border-radius: var(--radius-xl); padding: 28px; }
+    .panel p { margin: 0; color: var(--ink-soft); line-height: 1.82; }
+    .panel p + p, .panel .callout, .panel .split, .panel figure, .panel pre, .panel ul, .panel ol, .panel table { margin-top: 18px; }
+    .quote {
+      font-size: 1.02rem;
+      color: var(--ink);
+      border-left: 4px solid rgba(13, 122, 115, 0.4);
+      padding-left: 14px;
+    }
+    .callout {
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      border: 1px solid rgba(13, 122, 115, 0.14);
+      background: linear-gradient(135deg, rgba(13, 122, 115, 0.08), rgba(203, 125, 46, 0.08));
+      color: var(--ink);
+      line-height: 1.8;
+    }
+    .split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .split-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .mini-card {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 18px;
+    }
+    .mini-card h3 { color: var(--accent-strong); }
+    .mini-card p { margin-top: 8px; }
+    ul, ol { padding-left: 1.25rem; color: var(--ink-soft); line-height: 1.8; }
+    li + li { margin-top: 6px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid var(--line);
+    }
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+    }
+    th {
+      background: rgba(13, 122, 115, 0.09);
+      color: var(--accent-strong);
+      font-size: 0.92rem;
+    }
+    td { color: var(--ink-soft); }
+    pre {
+      border-radius: 20px;
+      padding: 16px 18px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      background: rgba(18, 29, 40, 0.96);
+      color: #edf5fb;
+      line-height: 1.72;
+      white-space: pre-wrap;
+    }
+    code { font-family: "JetBrains Mono", "Cascadia Code", monospace; font-size: 0.92em; }
+    .toc {
+      position: sticky;
+      top: 24px;
+      align-self: start;
+      border-radius: 22px;
+      padding: 20px;
+    }
+    .toc h2 { font-size: 1rem; margin-bottom: 12px; }
+    .toc ol { margin: 0; padding-left: 20px; color: var(--ink-soft); font-size: 0.92rem; }
+    .toc li + li { margin-top: 8px; }
+    .toc a { text-decoration: none; }
+    .back-links { margin: 0; color: var(--ink-soft); font-size: 0.9rem; }
+    .back-links a { text-decoration: none; font-weight: 700; }
+    .figure-card {
+      position: relative;
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.58);
+    }
+    figure svg { width: 100%; height: auto; display: block; }
+    figcaption {
+      margin-top: 14px;
+      color: var(--ink-soft);
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border-radius: 999px;
+      background: rgba(13, 122, 115, 0.12);
+      color: var(--accent-strong);
+      letter-spacing: 0.04em;
+    }
+    .badge.warm { background: rgba(203, 125, 46, 0.16); color: #8d4f15; }
+    .site-footer {
+      width: min(calc(100% - 40px), var(--content-width));
+      margin: 0 auto 36px;
+      color: var(--ink-soft);
+      font-size: 0.85rem;
+    }
+    @media (max-width: 900px) {
+      .page { grid-template-columns: 1fr; padding-top: 24px; }
+      .toc { position: static; order: -1; }
+      .hero-grid, .split, .split-3 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .page { width: min(calc(100% - 24px), var(--content-width)); }
+      .hero, .panel { padding: 22px; border-radius: 22px; }
+      h1 { font-size: 2rem; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body id="top">
+  <div class="page">
+    <main class="main-column">
+      <p class="back-links">
+        <a href="./">Home</a>
+        |
+        <a href="articles/">Articles</a>
+      </p>
+
+      <header class="hero">
+        <p class="eyebrow">AI Engineering Governance · 2026</p>
+        <h1>The Atomic Foundry: Giving Every Piece of Code an Identity, Evidence, and a Second Life When N AI Agents Build One Project</h1>
+        <p class="lede">Picture your whole repo as a foundry. Every time an AI agent finishes a piece of code, the foundry hands it an ID card, a SHA256 evidence packet, and a fingerprint that anyone can look up later. What gets cast is not an anonymous diff — it is a code cell with a name, a file, and the ability to be searched and reused by other projects across the world. This piece walks through why I ended up here, which multi-agent pain points it solves, and how a single engineer can start using it today.</p>
+        <p class="lang-switch"><a href="atm_atomic_foundry_public.html">中文版</a> · English</p>
+        <div class="hero-grid">
+          <div class="stat-card"><strong>15 roles</strong><span>From Captain down to six patrol police — four layers of collaboration, not one line where each hands off to the next.</span></div>
+          <div class="stat-card"><strong>SHA256 evidence</strong><span>Every mutation emits a hashed closure-packet you can still trace months later — the exact commands and outputs that ran.</span></div>
+          <div class="stat-card"><strong>CID-native</strong><span>Every piece of code is a content-addressable cell, ready to enter a cross-project search-and-share atom market.</span></div>
+        </div>
+        <div class="badge-row">
+          <span class="badge">TypeScript · Node 24</span>
+          <span class="badge">27 packages</span>
+          <span class="badge">9 police families</span>
+          <span class="badge">91 validators</span>
+          <span class="badge warm">Multi-Agent Native</span>
+        </div>
+      </header>
+
+      <section class="panel" id="pain">
+        <h2>1. The walls you hit when many AIs build one project at once</h2>
+        <p class="quote">Around day thirty you realize that babysitting three agents on your repo is more tiring than just writing it yourself.</p>
+
+        <figure class="figure-card">
+          <svg viewBox="0 0 1120 360" role="img" aria-label="Three AI agents each writing nearly identical retry helpers">
+            <defs>
+              <filter id="sf1" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="8" stdDeviation="11" flood-color="#1a2837" flood-opacity="0.13"/>
+              </filter>
+            </defs>
+            <rect width="1120" height="360" rx="24" fill="#fffaf2"/>
+            <g opacity="0.12" fill="#0d7a73">
+              <circle cx="250" cy="250" r="34"/><circle cx="560" cy="250" r="34"/><circle cx="870" cy="250" r="34"/>
+            </g>
+            <g transform="translate(170,86)" filter="url(#sf1)">
+              <ellipse cx="80" cy="180" rx="52" ry="10" fill="#19242f" opacity="0.07"/>
+              <rect x="44" y="96" width="72" height="64" rx="22" fill="#d7ece6"/>
+              <rect x="40" y="34" width="80" height="66" rx="26" fill="#0d7a73"/>
+              <line x1="80" y1="34" x2="80" y2="15" stroke="#19242f" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="80" cy="11" r="5" fill="#cb7d2e"/>
+              <circle cx="64" cy="66" r="6.5" fill="#fffaf2"/><circle cx="96" cy="66" r="6.5" fill="#fffaf2"/>
+              <circle cx="64" cy="67" r="3" fill="#19242f"/><circle cx="96" cy="67" r="3" fill="#19242f"/>
+              <path d="M66 82 Q80 92 94 82" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <g transform="translate(80,150)"><circle r="17" fill="#fff" stroke="#cb7d2e" stroke-width="4"/><circle r="5" fill="#cb7d2e"/><g fill="#cb7d2e"><rect x="-3" y="-23" width="6" height="7" rx="2"/><rect x="-3" y="16" width="6" height="7" rx="2"/><rect x="16" y="-3" width="7" height="6" rx="2"/><rect x="-23" y="-3" width="7" height="6" rx="2"/></g></g>
+            </g>
+            <g transform="translate(480,72)" filter="url(#sf1)">
+              <ellipse cx="80" cy="194" rx="52" ry="10" fill="#19242f" opacity="0.07"/>
+              <rect x="44" y="96" width="72" height="64" rx="22" fill="#f3ddc2"/>
+              <rect x="40" y="34" width="80" height="66" rx="26" fill="#cb7d2e"/>
+              <line x1="80" y1="34" x2="80" y2="15" stroke="#19242f" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="80" cy="11" r="5" fill="#0d7a73"/>
+              <circle cx="64" cy="66" r="6.5" fill="#fffaf2"/><circle cx="96" cy="66" r="6.5" fill="#fffaf2"/>
+              <circle cx="65" cy="65" r="3" fill="#19242f"/><circle cx="97" cy="65" r="3" fill="#19242f"/>
+              <path d="M68 84 Q80 80 92 84" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <text x="128" y="44" font-size="30" font-weight="700" fill="#cb7d2e">?!</text>
+              <g transform="translate(80,150)"><circle r="17" fill="#fff" stroke="#cb7d2e" stroke-width="4"/><circle r="5" fill="#cb7d2e"/><g fill="#cb7d2e"><rect x="-3" y="-23" width="6" height="7" rx="2"/><rect x="-3" y="16" width="6" height="7" rx="2"/><rect x="16" y="-3" width="7" height="6" rx="2"/><rect x="-23" y="-3" width="7" height="6" rx="2"/></g></g>
+            </g>
+            <g transform="translate(790,86)" filter="url(#sf1)">
+              <ellipse cx="80" cy="180" rx="52" ry="10" fill="#19242f" opacity="0.07"/>
+              <rect x="44" y="96" width="72" height="64" rx="22" fill="#d6e3e8"/>
+              <rect x="40" y="34" width="80" height="66" rx="26" fill="#527b8a"/>
+              <line x1="80" y1="34" x2="80" y2="15" stroke="#19242f" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="80" cy="11" r="5" fill="#cb7d2e"/>
+              <circle cx="64" cy="66" r="6.5" fill="#fffaf2"/><circle cx="96" cy="66" r="6.5" fill="#fffaf2"/>
+              <circle cx="64" cy="67" r="3" fill="#19242f"/><circle cx="96" cy="67" r="3" fill="#19242f"/>
+              <path d="M66 82 Q80 92 94 82" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <g transform="translate(80,150)"><circle r="17" fill="#fff" stroke="#cb7d2e" stroke-width="4"/><circle r="5" fill="#cb7d2e"/><g fill="#cb7d2e"><rect x="-3" y="-23" width="6" height="7" rx="2"/><rect x="-3" y="16" width="6" height="7" rx="2"/><rect x="16" y="-3" width="7" height="6" rx="2"/><rect x="-23" y="-3" width="7" height="6" rx="2"/></g></g>
+            </g>
+            <g font-size="14" fill="#465464" font-family="monospace">
+              <g transform="translate(120,40)"><rect width="150" height="34" rx="12" fill="#fff" stroke="#e0d4bf"/><text x="16" y="22">retry() v1</text></g>
+              <g transform="translate(640,26)"><rect width="170" height="34" rx="12" fill="#fff" stroke="#e0d4bf"/><text x="16" y="22">withRetry() v2</text></g>
+              <g transform="translate(950,40)"><rect width="150" height="34" rx="12" fill="#fff" stroke="#e0d4bf"/><text x="16" y="22">doRetry() v3</text></g>
+            </g>
+          </svg>
+          <figcaption>Fig. 1: Three agents can't see each other's context, so each writes a near-identical retry helper — different names, same meaning. That is the "reinvented wheel" wall, and nobody has the global view to notice it.</figcaption>
+        </figure>
+
+        <p>Coding with a single AI assistant feels great at first. It fills in files, writes tests, drafts your README — progress without typing. Then you open a few more: one agent on this task, another on that one, a third opening a PR in your editor. You expect 3× the speed; you hit three walls.</p>
+        <p><strong>The first wall is reinvented work.</strong> Agent A writes an HTTP retry helper. Three weeks later Agent B writes an almost identical one in another feature. Two weeks after that, Agent C writes a third. Nobody notices "this already exists semantically," because each agent only sees its own slice.</p>
+        <p><strong>The second wall is scope collisions.</strong> Three agents edit one repo with no mechanism telling them "someone is already touching this file" or "this write permission can go to only one of you this round." You find out at <code>git merge</code> — far too late.</p>
+        <p><strong>The third wall is slow structural decay.</strong> Every feature is correct, yet six months later files keep swelling, <code>tasks.ts</code> grows from 300 lines to 1,500, and nobody is watching for "this file should be split" or "twelve of these thirty atoms are semantic duplicates." Each part is fine; the whole is quietly rotting. This is structural entropy, and it never shows up in any single PR — it's a chronic condition that only time reveals.</p>
+        <p><strong>The fourth wall is the subtlest — no identity.</strong> However beautifully it's written, every snippet an AI produces is an anonymous string that lives only in that project's git history. If a helper in the project next door is semantically identical, the two never know about each other, and the next new project can't recognize either. Every piece of code is an orphan.</p>
+        <div class="callout">
+          This article is how I answer those four walls. The core is one metaphor: treat the whole repo as a <strong>foundry</strong>. What it casts is not a "diff" but a <strong>code cell with an ID card</strong> — it has a name, a fingerprint, a status, and evidence. It can be governed, audited, and reassembled later.
+        </div>
+      </section>
+
+      <section class="panel" id="metaphor">
+        <h2>2. The atomic foundry: turning code into cells with identity</h2>
+        <p>The word "atom" means something very specific here. It is not a task, not a commit, not a prompt. It is a <strong>code cell with a spec</strong>:</p>
+        <ul>
+          <li><strong>It has a name</strong>: every atom has a unique ID, e.g. <code>ATM-MAP-0042</code></li>
+          <li><strong>It has a semantic fingerprint</strong>: input signature + output signature + invariants are normalized and SHA256-hashed — that is the CID</li>
+          <li><strong>It has a version and a status</strong>: active / deprecated / expired / quarantined</li>
+          <li><strong>It has a caller graph</strong>: who calls it and what it calls are both recorded</li>
+          <li><strong>It has an evidence history</strong>: every change leaves a SHA256 record</li>
+          <li><strong>It grows</strong>: it can split, merge, evolve, or go dormant (sweep)</li>
+        </ul>
+        <p>In plain terms, here's what an atom looks like in the registry — not a floating snippet, but a record with fields, a fingerprint, and a history:</p>
+        <pre><code>{
+  "atomId": "ATM-MAP-0042",
+  "name": "idempotent-http-retry",
+  "status": "active",
+  "semanticFingerprint": "cid:a3f9c2e81b40",   // &larr; this is its ID card
+  "inputs":  ["url: string", "opts: RetryOpts"],
+  "outputs": ["Promise&lt;Response&gt;"],
+  "invariants": ["same idempotencyKey =&gt; at most one effect"],
+  "callers": ["ATM-MAP-0017", "ATM-MAP-0031"],   // who uses it
+  "bornBy": "behavior.atomize",
+  "evidenceRefs": ["TASK-AAO-0042.closure-packet.json"]
+}</code></pre>
+
+        <figure class="figure-card">
+          <svg viewBox="0 0 1120 300" role="img" aria-label="An atom-cell mascot wearing a CID ID badge">
+            <defs>
+              <filter id="sf2" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="8" stdDeviation="11" flood-color="#1a2837" flood-opacity="0.12"/>
+              </filter>
+              <radialGradient id="cellg" cx="40%" cy="35%" r="70%">
+                <stop offset="0%" stop-color="#a9e0d6"/><stop offset="100%" stop-color="#0d7a73"/>
+              </radialGradient>
+            </defs>
+            <rect width="1120" height="300" rx="24" fill="#fffaf2"/>
+            <g opacity="0.55" filter="url(#sf2)">
+              <circle cx="250" cy="150" r="44" fill="#d7ece6" stroke="#0d7a73" stroke-width="2"/>
+              <circle cx="236" cy="142" r="4" fill="#19242f"/><circle cx="262" cy="142" r="4" fill="#19242f"/>
+              <path d="M240 158 Q250 165 260 158" stroke="#19242f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            </g>
+            <g opacity="0.55" filter="url(#sf2)">
+              <circle cx="880" cy="160" r="40" fill="#f3ddc2" stroke="#cb7d2e" stroke-width="2"/>
+              <circle cx="868" cy="153" r="4" fill="#19242f"/><circle cx="892" cy="153" r="4" fill="#19242f"/>
+              <path d="M870 168 Q880 174 890 168" stroke="#19242f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            </g>
+            <g filter="url(#sf2)">
+              <ellipse cx="560" cy="252" rx="86" ry="14" fill="#19242f" opacity="0.07"/>
+              <circle cx="560" cy="138" r="86" fill="url(#cellg)"/>
+              <ellipse cx="560" cy="138" rx="108" ry="40" fill="none" stroke="#0d7a73" stroke-width="2" opacity="0.4" transform="rotate(-18 560 138)"/>
+              <circle cx="668" cy="120" r="6" fill="#cb7d2e"/>
+              <circle cx="538" cy="128" r="8" fill="#fffaf2"/><circle cx="582" cy="128" r="8" fill="#fffaf2"/>
+              <circle cx="539" cy="130" r="4" fill="#19242f"/><circle cx="583" cy="130" r="4" fill="#19242f"/>
+              <circle cx="524" cy="146" r="7" fill="#cb7d2e" opacity="0.30"/><circle cx="596" cy="146" r="7" fill="#cb7d2e" opacity="0.30"/>
+              <path d="M540 150 Q560 166 580 150" stroke="#19242f" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+            </g>
+            <line x1="560" y1="220" x2="560" y2="244" stroke="#465464" stroke-width="3"/>
+            <g transform="translate(486,244)" filter="url(#sf2)">
+              <rect width="148" height="44" rx="9" fill="#fff" stroke="#0d7a73" stroke-width="2"/>
+              <circle cx="22" cy="22" r="11" fill="#d7ece6" stroke="#0d7a73"/>
+              <text x="42" y="19" font-size="11" font-family="monospace" fill="#465464">ATM-MAP-0042</text>
+              <text x="42" y="34" font-size="12" font-family="monospace" font-weight="700" fill="#085d58">cid:a3f9c2e8</text>
+            </g>
+          </svg>
+          <figcaption>Fig. 2: Every atom is a little cell wearing an ID badge. The <code>cid:</code> on the badge is its semantic fingerprint — the card that lets it be queried, deduplicated, and rediscovered by future projects.</figcaption>
+        </figure>
+
+        <p>So the foundry metaphor is precise. A factory ships finished assemblies; a foundry ships <strong>castings, each stamped with a serial number</strong> — traceable on its own, with its own recipe, ready to flow into the next product. Code should work the same way.</p>
+        <p>Once your repo enters this mode, an AI agent's job becomes "cast a new atom" or "apply a governed transformation to an existing one." It cannot write a floating, identity-less snippet, because the foundry refuses anything without a serial number.</p>
+      </section>
+
+      <section class="panel" id="roles">
+        <h2>3. Fifteen roles across four layers</h2>
+        <p>A layered team runs the foundry: decisions on top, trades in the middle, evidence at the bottom, patrol police standing watch on the side. That is a very different shape from "send one worker end to end." Meet them in a team photo first:</p>
+
+        <figure class="figure-card">
+          <svg viewBox="0 0 1120 280" role="img" aria-label="The full foundry team lineup">
+            <defs>
+              <filter id="sf3" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="7" stdDeviation="9" flood-color="#1a2837" flood-opacity="0.13"/>
+              </filter>
+            </defs>
+            <rect width="1120" height="280" rx="24" fill="#fffaf2"/>
+            <g transform="translate(52,58)" filter="url(#sf3)">
+              <ellipse cx="80" cy="150" rx="46" ry="9" fill="#19242f" opacity="0.07"/>
+              <rect x="48" y="86" width="64" height="56" rx="20" fill="#16222d"/>
+              <rect x="44" y="34" width="72" height="58" rx="24" fill="#0d7a73"/>
+              <path d="M80 6 l5 11 12 1 -9 8 3 12 -11 -7 -11 7 3 -12 -9 -8 12 -1z" fill="#cb7d2e"/>
+              <circle cx="66" cy="60" r="6" fill="#fffaf2"/><circle cx="94" cy="60" r="6" fill="#fffaf2"/>
+              <circle cx="66" cy="61" r="2.8" fill="#19242f"/><circle cx="94" cy="61" r="2.8" fill="#19242f"/>
+              <path d="M68 74 Q80 84 92 74" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
+            </g>
+            <text x="132" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#085d58">Captain</text>
+            <text x="132" y="270" text-anchor="middle" font-size="11" fill="#465464">only one who closes / commits</text>
+
+            <g transform="translate(272,58)" filter="url(#sf3)">
+              <ellipse cx="80" cy="150" rx="46" ry="9" fill="#19242f" opacity="0.07"/>
+              <rect x="48" y="86" width="64" height="56" rx="20" fill="#d7ece6"/>
+              <rect x="44" y="34" width="72" height="58" rx="24" fill="#527b8a"/>
+              <line x1="80" y1="34" x2="80" y2="16" stroke="#19242f" stroke-width="3" stroke-linecap="round"/><circle cx="80" cy="12" r="4.5" fill="#cb7d2e"/>
+              <circle cx="66" cy="60" r="6" fill="#fffaf2"/><circle cx="94" cy="60" r="6" fill="#fffaf2"/>
+              <circle cx="66" cy="61" r="2.8" fill="#19242f"/><circle cx="94" cy="61" r="2.8" fill="#19242f"/>
+              <path d="M68 74 Q80 84 92 74" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <g transform="translate(96,108)"><rect width="34" height="26" rx="4" fill="#fff" stroke="#527b8a" stroke-width="2"/><path d="M5 8 h24 M5 14 h18 M5 20 h22" stroke="#527b8a" stroke-width="2"/></g>
+            </g>
+            <text x="352" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#085d58">Atomization Planner</text>
+            <text x="352" y="270" text-anchor="middle" font-size="11" fill="#465464">picks the primary atom</text>
+
+            <g transform="translate(492,58)" filter="url(#sf3)">
+              <ellipse cx="80" cy="150" rx="46" ry="9" fill="#19242f" opacity="0.07"/>
+              <rect x="48" y="86" width="64" height="56" rx="20" fill="#f3ddc2"/>
+              <rect x="44" y="34" width="72" height="58" rx="24" fill="#cb7d2e"/>
+              <line x1="80" y1="34" x2="80" y2="16" stroke="#19242f" stroke-width="3" stroke-linecap="round"/><circle cx="80" cy="12" r="4.5" fill="#0d7a73"/>
+              <circle cx="66" cy="60" r="6" fill="#fffaf2"/><circle cx="94" cy="60" r="6" fill="#fffaf2"/>
+              <circle cx="66" cy="61" r="2.8" fill="#19242f"/><circle cx="94" cy="61" r="2.8" fill="#19242f"/>
+              <path d="M68 74 Q80 84 92 74" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <g transform="translate(98,104) rotate(35)"><rect x="0" y="6" width="30" height="7" rx="3" fill="#465464"/><circle cx="2" cy="9" r="8" fill="none" stroke="#465464" stroke-width="5"/></g>
+            </g>
+            <text x="572" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#085d58">Code Builder</text>
+            <text x="572" y="270" text-anchor="middle" font-size="11" fill="#465464">sole file.write holder</text>
+
+            <g transform="translate(712,58)" filter="url(#sf3)">
+              <ellipse cx="80" cy="150" rx="46" ry="9" fill="#19242f" opacity="0.07"/>
+              <rect x="48" y="86" width="64" height="56" rx="20" fill="#d6e3e8"/>
+              <rect x="44" y="34" width="72" height="58" rx="24" fill="#085d58"/>
+              <line x1="80" y1="34" x2="80" y2="16" stroke="#19242f" stroke-width="3" stroke-linecap="round"/><circle cx="80" cy="12" r="4.5" fill="#cb7d2e"/>
+              <circle cx="66" cy="60" r="6" fill="#fffaf2"/><circle cx="94" cy="60" r="6" fill="#fffaf2"/>
+              <circle cx="66" cy="61" r="2.8" fill="#19242f"/><circle cx="94" cy="61" r="2.8" fill="#19242f"/>
+              <path d="M68 74 Q80 84 92 74" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <g transform="translate(96,104)"><rect width="28" height="34" rx="4" fill="#fff" stroke="#085d58" stroke-width="2"/><rect x="9" y="-4" width="10" height="8" rx="2" fill="#085d58"/><path d="M6 12 h16 M6 19 h16 M6 26 h11" stroke="#085d58" stroke-width="2"/></g>
+            </g>
+            <text x="792" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#085d58">Evidence Curator</text>
+            <text x="792" y="270" text-anchor="middle" font-size="11" fill="#465464">collects SHA256 evidence</text>
+
+            <g transform="translate(932,58)" filter="url(#sf3)">
+              <ellipse cx="80" cy="150" rx="46" ry="9" fill="#19242f" opacity="0.07"/>
+              <rect x="48" y="86" width="64" height="56" rx="20" fill="#eaf7f4"/>
+              <rect x="44" y="34" width="72" height="58" rx="24" fill="#2f6f63"/>
+              <path d="M44 38 Q80 18 116 38 l0 -6 Q80 14 44 32z" fill="#cb7d2e"/>
+              <circle cx="66" cy="62" r="6" fill="#fffaf2"/><circle cx="94" cy="62" r="6" fill="#fffaf2"/>
+              <circle cx="66" cy="63" r="2.8" fill="#19242f"/><circle cx="94" cy="63" r="2.8" fill="#19242f"/>
+              <path d="M68 76 Q80 86 92 76" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <g transform="translate(98,104)"><circle cx="10" cy="10" r="10" fill="none" stroke="#465464" stroke-width="4"/><line x1="18" y1="18" x2="28" y2="28" stroke="#465464" stroke-width="5" stroke-linecap="round"/></g>
+            </g>
+            <text x="1012" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#085d58">Atomic Police</text>
+            <text x="1012" y="270" text-anchor="middle" font-size="11" fill="#465464">resident patrol, looks but never touches</text>
+          </svg>
+          <figcaption>Fig. 3: The full cast. The Captain wears a star, the Planner holds a blueprint, the Builder a wrench, the Curator a clipboard, the Police a badge and magnifier. Each role's "prop" is really the permission it was granted.</figcaption>
+        </figure>
+
+        <p>Now put the cast back into their actual collaboration layers:</p>
+        <figure class="figure-card">
+          <svg viewBox="0 0 1120 720" role="img" aria-label="The atomic foundry four-layer collaboration diagram">
+            <defs>
+              <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#1a2837" flood-opacity="0.14"/>
+              </filter>
+              <marker id="arrowGrn" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+                <path d="M 0 0 L 12 6 L 0 12 z" fill="#0d7a73"/>
+              </marker>
+            </defs>
+            <rect width="1120" height="720" rx="28" fill="#fffaf2"/>
+
+            <g filter="url(#softShadow)">
+              <rect x="380" y="50" width="360" height="92" rx="22" fill="#16222d"/>
+              <text x="560" y="88" text-anchor="middle" fill="#fffaf2" font-size="22" font-weight="700">L1 · Decision</text>
+              <text x="560" y="116" text-anchor="middle" fill="#d8ebf6" font-size="15">Task Captain · Task Lieutenant</text>
+            </g>
+
+            <g filter="url(#softShadow)">
+              <rect x="60" y="200" width="220" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
+              <text x="170" y="232" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">Atomization Planner</text>
+              <text x="170" y="254" text-anchor="middle" fill="#465464" font-size="13">picks the primary atom</text>
+              <text x="170" y="272" text-anchor="middle" fill="#0d7a73" font-size="12">no source writes</text>
+            </g>
+            <g filter="url(#softShadow)">
+              <rect x="300" y="200" width="220" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
+              <text x="410" y="232" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">Scope Sentinel</text>
+              <text x="410" y="254" text-anchor="middle" fill="#465464" font-size="13">guards allowedFiles</text>
+              <text x="410" y="272" text-anchor="middle" fill="#0d7a73" font-size="12">before + after</text>
+            </g>
+            <g filter="url(#softShadow)">
+              <rect x="540" y="200" width="220" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
+              <text x="650" y="232" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">Code Builder</text>
+              <text x="650" y="254" text-anchor="middle" fill="#465464" font-size="13">TS / Py / C# swappable</text>
+              <text x="650" y="272" text-anchor="middle" fill="#0d7a73" font-size="12">sole file.write holder</text>
+            </g>
+            <g filter="url(#softShadow)">
+              <rect x="780" y="200" width="220" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
+              <text x="890" y="232" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">QA · Check Runner</text>
+              <text x="890" y="254" text-anchor="middle" fill="#465464" font-size="13">runs typecheck / lint</text>
+              <text x="890" y="272" text-anchor="middle" fill="#0d7a73" font-size="12">can't call fail a pass</text>
+            </g>
+
+            <g filter="url(#softShadow)">
+              <rect x="240" y="356" width="280" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
+              <text x="380" y="388" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">Evidence Curator</text>
+              <text x="380" y="410" text-anchor="middle" fill="#465464" font-size="13">collects commandRuns / SHA256</text>
+              <text x="380" y="428" text-anchor="middle" fill="#0d7a73" font-size="12">can't fake evidence</text>
+            </g>
+            <g filter="url(#softShadow)">
+              <rect x="540" y="356" width="280" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
+              <text x="680" y="388" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">Closure Steward</text>
+              <text x="680" y="410" text-anchor="middle" fill="#465464" font-size="13">audits the closure-packet</text>
+              <text x="680" y="428" text-anchor="middle" fill="#0d7a73" font-size="12">the final gate</text>
+            </g>
+
+            <g filter="url(#softShadow)">
+              <rect x="120" y="512" width="880" height="146" rx="22" fill="#eaf7f4" stroke="#90cbc1"/>
+              <text x="560" y="545" text-anchor="middle" fill="#085d58" font-size="20" font-weight="700">L4 · Atomic Police (9 families + 6 patrols)</text>
+              <text x="240" y="588" text-anchor="middle" fill="#3c5f6e" font-size="14">Dedup · Demand</text>
+              <text x="240" y="612" text-anchor="middle" fill="#3c5f6e" font-size="14">Quality · Decomposition</text>
+              <text x="560" y="588" text-anchor="middle" fill="#3c5f6e" font-size="14">Map Integration · Atomization</text>
+              <text x="560" y="612" text-anchor="middle" fill="#3c5f6e" font-size="14">Evolution · Polymorph</text>
+              <text x="880" y="588" text-anchor="middle" fill="#3c5f6e" font-size="14">Rollback Police</text>
+              <text x="880" y="612" text-anchor="middle" fill="#3c5f6e" font-size="14">Encoding · Ledger · Runner Sync</text>
+              <text x="560" y="640" text-anchor="middle" fill="#085d58" font-size="13" font-style="italic">daily · pre-claim · pre-close · pre-checkpoint</text>
+            </g>
+
+            <path d="M510 142 L260 200" stroke="#0d7a73" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
+            <path d="M540 142 L430 200" stroke="#0d7a73" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
+            <path d="M580 142 L670 200" stroke="#0d7a73" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
+            <path d="M610 142 L880 200" stroke="#0d7a73" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
+            <path d="M650 296 L420 356" stroke="#cb7d2e" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
+            <path d="M650 296 L680 356" stroke="#cb7d2e" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
+            <path d="M560 448 L560 512" stroke="#cb7d2e" stroke-width="3" fill="none" marker-end="url(#arrowGrn)" stroke-dasharray="6 6"/>
+          </svg>
+          <figcaption>Fig. 4: The four-layer foundry. The Captain decides at L1; L2 is the permission-partitioned trades; L3 turns implementation into auditable evidence; L4 is the resident patrol — not on any one task's line, but watching the whole repo's structural health.</figcaption>
+        </figure>
+
+        <h3 style="margin-top:24px">L1 Decision: the Captain is the sole lifecycle owner</h3>
+        <p>However many agents you run, <strong>only the Captain can close tasks, checkpoint, commit, or push</strong>. That rule is baked into the framework — with five agents running at once, no single decision point means chaos. For complex tasks, a Lieutenant helps split phases.</p>
+
+        <h3 style="margin-top:18px">L2 Trades: each role holds a "permission," not a "tool"</h3>
+        <p>The Atomization Planner does atomization planning first; the Scope Sentinel guards the allowedFiles boundary; the Code Builder is the only holder of <code>file.write</code> at that moment; QA / Check Runner runs validation. Their isolation does not come from folders or from politely asking the AI "please don't touch that" — it comes from a permission model, covered next.</p>
+
+        <h3 style="margin-top:18px">L3 Evidence: every change leaves an auditable trace</h3>
+        <p>The Evidence Curator collects the commands the Builder ran, the SHA256 of stdout/stderr, and validator results into an <code>atm.closurePacket.v1</code>. The Closure Steward audits that packet before close. <strong>This evidence is not a PR comment — it is a permanent file in <code>.atm/history/</code>, schema-versioned, ready for an external compliance audit.</strong></p>
+
+        <h3 style="margin-top:18px">L4 Patrol: the repo's own structural conscience</h3>
+        <p>Nine atomic police families plus six patrol moments (daily, pre-claim, pre-close, pre-checkpoint, pre-big-script, multi-agent collision) <strong>belong to the repo, not to any one task</strong>. Their job is to see structural decay — overlapping fingerprints, oversized files, overloaded caller graphs, expired TTLs — and emit a readable patrol report.</p>
+      </section>
+
+      <section class="panel" id="cid">
+        <h2>4. CID: an ID card for every atom</h2>
+        <p>This is the heart of the foundry metaphor. <strong>Every atom carries an ID card — a CID (content-addressable identifier).</strong> It is not a fingerprint of "what the code means" (that's something computer science can't actually deliver). It's a fingerprint of <strong>what the atom publicly declares it does</strong>.</p>
+        <div class="callout">
+          <strong>The honest boundary, up front</strong>: a CID is <strong>deterministic</strong> — no source parsing, no AST analysis, no LLM call, no embedding. What it hashes is the contract fields the atom declares for itself (input / output ports, language, evidence requirement, performance budget). The same declaration always yields the same card; any non-deterministic signal (vectors, model outputs, timestamps) is forbidden from this hash.
+        </div>
+        <p>A concrete example. Two agents write a retry helper. The <strong>implementations look completely different</strong>:</p>
+        <pre><code>// Version A: for-loop
+async function retry(url, opts) { /* ... */ }
+
+// Version B: while-loop, arrow fn
+const withRetry = async (u, o) =&gt; { /* ... */ };</code></pre>
+        <p>Different implementations, so their literal-source hash (CID.Strict) differs. <strong>But both atoms declared the same outward contract:</strong></p>
+        <pre><code>// Each atom's own atom spec — this is what CID actually hashes
+const spec = {
+  inputs: [
+    { name: "url",  kind: "string" },
+    { name: "opts", kind: "RetryOpts" }
+  ],
+  outputs: [
+    { name: "result", kind: "Promise&lt;Response&gt;" }
+  ],
+  language: { primary: "typescript" },
+  validation: { evidenceRequired: true },
+  performanceBudget: { hotPath: false, inputMutation: "forbidden", maxDurationMs: 5000 }
+};
+
+// CID.Interface = SHA256 over the normalized declared contract
+const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
+
+// Because both atoms declared the same contract:
+//   A &rarr; sf:sha256:a3f9c2e8…1b40
+//   B &rarr; sf:sha256:a3f9c2e8…1b40   &larr; same CID.Interface
+</code></pre>
+        <p>Notice what's <strong>not</strong> happening: no "effects extraction," no "invariants inferred," no "variable names stripped." The CID doesn't guess what the code does — it reads what the atom <strong>publicly promised</strong> as its interface and execution constraints. Matching declarations → matching hashes → same ID card. This is engineering-tractable, and it's what ATM already runs today.</p>
+
+        <p>Identity actually has five possible dimensions; only <strong>CID.Interface is shipped</strong> right now. The rest are roadmap:</p>
+        <table>
+          <thead><tr><th>Dimension</th><th>What it certifies</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><code>CID.Strict</code></td><td>SHA256 of normalized source; for git-level tamper checks</td><td>partial (capsule / hash-lock)</td></tr>
+            <tr><td><code>CID.Interface</code></td><td>The one above — declared contract fingerprint</td><td>✅ shipped (= today's semanticFingerprint)</td></tr>
+            <tr><td><code>CID.Effects</code></td><td>Effect tags (NET / FS / DB…); pure vs IO can't substitute</td><td>proposed, not built</td></tr>
+            <tr><td><code>CID.Semantic</code></td><td>Embedding vector; only as a ranking hint for dedup candidates</td><td>proposed, not built</td></tr>
+            <tr><td><code>CID.Behavior</code></td><td>Bound to a test-harness id: "indistinguishable under this harness"</td><td>proposed, not built</td></tr>
+          </tbody>
+        </table>
+        <p>The last three (Effects / Semantic / Behavior) will <strong>never</strong> be mixed into the identity hash — they're advisory, not identity. This firewall is the <strong>determinism axiom</strong>: identity has to be stable, recomputable, and unaffected by model-version drift.</p>
+
+        <figure class="figure-card">
+          <svg viewBox="0 0 1120 340" role="img" aria-label="Feeding the declared contract into a machine that stamps out a fingerprinted ID card">
+            <defs>
+              <filter id="sf4" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="7" stdDeviation="10" flood-color="#1a2837" flood-opacity="0.13"/>
+              </filter>
+              <marker id="arr4" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+                <path d="M0 0 L12 6 L0 12 z" fill="#cb7d2e"/>
+              </marker>
+            </defs>
+            <rect width="1120" height="340" rx="24" fill="#fffaf2"/>
+            <g transform="translate(60,96)" filter="url(#sf4)">
+              <ellipse cx="80" cy="158" rx="48" ry="9" fill="#19242f" opacity="0.07"/>
+              <rect x="48" y="92" width="64" height="56" rx="20" fill="#d7ece6"/>
+              <rect x="44" y="40" width="72" height="58" rx="24" fill="#0d7a73"/>
+              <line x1="80" y1="40" x2="80" y2="22" stroke="#19242f" stroke-width="3" stroke-linecap="round"/><circle cx="80" cy="18" r="4.5" fill="#cb7d2e"/>
+              <circle cx="66" cy="66" r="6" fill="#fffaf2"/><circle cx="94" cy="66" r="6" fill="#fffaf2"/>
+              <circle cx="66" cy="67" r="2.8" fill="#19242f"/><circle cx="94" cy="67" r="2.8" fill="#19242f"/>
+              <path d="M68 80 Q80 90 92 80" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <g transform="translate(104,96)"><rect width="40" height="50" rx="5" fill="#fff" stroke="#0d7a73" stroke-width="2"/><text x="8" y="20" font-size="16" font-family="monospace" fill="#0d7a73">{ }</text><path d="M8 30 h24 M8 38 h16" stroke="#cbd8d4" stroke-width="2"/></g>
+            </g>
+            <text x="140" y="300" text-anchor="middle" font-size="13" fill="#465464">atom's declared contract</text>
+            <path d="M236 200 L300 200" stroke="#cb7d2e" stroke-width="3.5" fill="none" marker-end="url(#arr4)"/>
+
+            <g filter="url(#sf4)">
+              <rect x="318" y="120" width="300" height="150" rx="20" fill="#16222d"/>
+              <text x="468" y="160" text-anchor="middle" fill="#a9e0d6" font-size="16" font-weight="700" font-family="monospace">normalize spec</text>
+              <text x="468" y="188" text-anchor="middle" fill="#d8ebf6" font-size="15">+</text>
+              <text x="468" y="214" text-anchor="middle" fill="#a9e0d6" font-size="17" font-weight="700" font-family="monospace">SHA256</text>
+              <g transform="translate(360,240)" fill="#cb7d2e"><circle r="9" fill="none" stroke="#cb7d2e" stroke-width="3"/><circle r="2.5"/></g>
+              <g transform="translate(576,240)" fill="#cb7d2e"><circle r="9" fill="none" stroke="#cb7d2e" stroke-width="3"/><circle r="2.5"/></g>
+              <text x="468" y="246" text-anchor="middle" fill="#7f93a3" font-size="12">ports + language + constraints</text>
+            </g>
+            <path d="M626 195 L690 195" stroke="#cb7d2e" stroke-width="3.5" fill="none" marker-end="url(#arr4)"/>
+
+            <g transform="translate(706,108)" filter="url(#sf4)">
+              <rect width="240" height="124" rx="14" fill="#fff" stroke="#0d7a73" stroke-width="2.5"/>
+              <rect width="240" height="32" rx="14" fill="#0d7a73"/>
+              <text x="16" y="21" fill="#fffaf2" font-size="13" font-weight="700" letter-spacing="1">ATOM ID CARD</text>
+              <g transform="translate(24,48)" stroke="#085d58" stroke-width="2" fill="none">
+                <path d="M30 6 a26 26 0 0 1 26 26"/><path d="M34 14 a18 18 0 0 1 14 18"/><path d="M14 10 a26 26 0 0 0 -8 22"/><path d="M22 6 a22 22 0 0 0 -14 14"/><circle cx="30" cy="34" r="6"/>
+              </g>
+              <text x="96" y="62" font-size="12" font-family="monospace" fill="#465464">ATM-MAP-0042</text>
+              <text x="96" y="82" font-size="15" font-family="monospace" font-weight="700" fill="#085d58">cid:a3f9c2e8</text>
+              <text x="96" y="102" font-size="11" font-family="monospace" fill="#cb7d2e">status: active</text>
+            </g>
+            <text x="826" y="258" text-anchor="middle" font-size="13" fill="#465464">same contract &rarr; same card</text>
+          </svg>
+          <figcaption>Fig. 5: Feed in the atom's declared contract (ports, language, execution constraints). The machine normalizes it, stamps on a SHA256 seal, and emits a CID.Interface. Different implementations are fine — as long as they declare the same outward contract, they receive the same ID card.</figcaption>
+        </figure>
+
+        <p>With that card in hand, here's what becomes possible — flagged honestly with what already runs and what's still on the roadmap:</p>
+        <div class="callout">
+          <ul style="margin-top:0">
+            <li><strong>In-project interface dedup</strong> (shipped): the Dedup Police compares CID.Interface prefixes and instantly catches "two atoms declared the exact same contract — should they merge?" This is an advisory finding; it never auto-acts.</li>
+            <li><strong>Cross-project interface lookup</strong> (query layer shipped; cross-org index pending): across ATM repos already on your machine, this lookup works today; a true cross-organization index does not yet exist.</li>
+            <li><strong>Cross-organization atom market</strong> (roadmap, gated by local maturity): see §10 for the honest boundary.</li>
+          </ul>
+        </div>
+        <p>CIDs also resolve an old question: "how much interface-level duplication does my codebase have?" That used to be fragile static analysis; now that every atom carries a deterministic fingerprint, it's an O(1) lookup. One caveat to be loud about — <strong>matching interface ≠ matching behavior</strong>. The latter belongs to runtime testing (which is where CID.Behavior and the zero-trust sandbox are headed on the roadmap). CID itself only covers the layer of "who declared what contract."</p>
+      </section>
+
+      <section class="panel" id="permission">
+        <h2>5. Permission is the gear: leases replace folder isolation</h2>
+        <p class="quote">Two agents cannot hold the same write key at the same time — this layer stops it before git ever runs.</p>
+        <p>The place multi-agent work crashes hardest is "who may write what." The traditional answer is folder permissions or tool allowlists, and both share a flaw: <strong>they are static and don't change with the task</strong>.</p>
+        <p>The foundry splits permission into named objects, each with a mode:</p>
+        <table>
+          <thead>
+            <tr><th>Permission</th><th>Mode</th><th>Default holder</th><th>Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>task.lifecycle</code></td><td>exclusive</td><td>Captain</td><td>close / checkpoint / advance</td></tr>
+            <tr><td><code>git.write</code></td><td>exclusive</td><td>Captain</td><td>stage / commit / tag / push</td></tr>
+            <tr><td><code>file.write</code></td><td>exclusive</td><td>Implementer</td><td>writes source; scope must be a subset of allowedFiles</td></tr>
+            <tr><td><code>file.read</code></td><td>shareable</td><td>many</td><td>read files and source</td></tr>
+            <tr><td><code>exec.validator</code></td><td>shareable</td><td>many</td><td>run non-mutating validation commands</td></tr>
+            <tr><td><code>database.write</code></td><td>exclusive</td><td>explicit grant</td><td>write external DB; not in the default recipe</td></tr>
+            <tr><td><code>ci.write</code></td><td>exclusive</td><td>explicit grant</td><td>trigger or modify CI</td></tr>
+            <tr><td><code>web.download</code></td><td>exclusive</td><td>explicit grant</td><td>download external data or packages</td></tr>
+          </tbody>
+        </table>
+        <p>An <strong>exclusive permission has only one holder at a time</strong>. When a second agent reaches for it, the framework returns <code>ATM_TEAM_PERMISSION_CONFLICT</code> before git is even involved. Live, it looks like this:</p>
+        <pre><code>$ node atm.mjs team lease --agent builder-01 \
+    --permission file.write --paths "packages/cli/src/commands/**"
+&check; lease granted — file.write &rarr; builder-01
+
+# A second agent reaches for the same write key:
+$ node atm.mjs team lease --agent builder-02 \
+    --permission file.write --paths "packages/cli/src/commands/**"
+&cross; ATM_TEAM_PERMISSION_CONFLICT
+  file.write is exclusive and already held by builder-01 (since 12:04:11)
+  &rarr; builder-02 must wait for release, or take a non-overlapping scope</code></pre>
+
+        <figure class="figure-card">
+          <svg viewBox="0 0 1120 260" role="img" aria-label="One write key can go to only one agent at a time">
+            <defs>
+              <filter id="sf5" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="7" stdDeviation="9" flood-color="#1a2837" flood-opacity="0.13"/>
+              </filter>
+            </defs>
+            <rect width="1120" height="260" rx="24" fill="#fffaf2"/>
+            <g transform="translate(150,60)" filter="url(#sf5)">
+              <ellipse cx="80" cy="150" rx="48" ry="9" fill="#19242f" opacity="0.07"/>
+              <rect x="48" y="86" width="64" height="56" rx="20" fill="#f3ddc2"/>
+              <rect x="44" y="34" width="72" height="58" rx="24" fill="#cb7d2e"/>
+              <line x1="80" y1="34" x2="80" y2="16" stroke="#19242f" stroke-width="3" stroke-linecap="round"/><circle cx="80" cy="12" r="4.5" fill="#0d7a73"/>
+              <circle cx="66" cy="60" r="6" fill="#fffaf2"/><circle cx="94" cy="60" r="6" fill="#fffaf2"/>
+              <circle cx="66" cy="61" r="2.8" fill="#19242f"/><circle cx="94" cy="61" r="2.8" fill="#19242f"/>
+              <path d="M66 74 Q80 86 94 74" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
+            </g>
+            <text x="230" y="240" text-anchor="middle" font-size="13" font-weight="700" fill="#085d58">builder-01</text>
+            <g transform="translate(300,150)">
+              <circle cx="0" cy="0" r="26" fill="#cb7d2e" opacity="0.18"/>
+              <g transform="rotate(35)"><circle cx="0" cy="0" r="11" fill="none" stroke="#cb7d2e" stroke-width="6"/><rect x="8" y="-3" width="34" height="6" rx="3" fill="#cb7d2e"/><rect x="34" y="-3" width="6" height="12" rx="2" fill="#cb7d2e"/><rect x="26" y="-3" width="6" height="10" rx="2" fill="#cb7d2e"/></g>
+              <text x="-12" y="44" font-size="13" font-family="monospace" font-weight="700" fill="#cb7d2e">file.write</text>
+            </g>
+            <line x1="430" y1="40" x2="430" y2="210" stroke="#e0d4bf" stroke-width="2" stroke-dasharray="6 7"/>
+            <text x="430" y="32" text-anchor="middle" font-size="12" font-family="monospace" fill="#465464">exclusive · one key only</text>
+            <g transform="translate(700,60)" filter="url(#sf5)" opacity="0.92">
+              <ellipse cx="80" cy="150" rx="48" ry="9" fill="#19242f" opacity="0.07"/>
+              <rect x="48" y="86" width="64" height="56" rx="20" fill="#d6e3e8"/>
+              <rect x="44" y="34" width="72" height="58" rx="24" fill="#527b8a"/>
+              <line x1="80" y1="34" x2="80" y2="16" stroke="#19242f" stroke-width="3" stroke-linecap="round"/><circle cx="80" cy="12" r="4.5" fill="#cb7d2e"/>
+              <circle cx="66" cy="62" r="6" fill="#fffaf2"/><circle cx="94" cy="62" r="6" fill="#fffaf2"/>
+              <circle cx="66" cy="63" r="2.8" fill="#19242f"/><circle cx="94" cy="63" r="2.8" fill="#19242f"/>
+              <path d="M68 80 Q80 74 92 80" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <text x="-6" y="64" font-size="22" font-weight="700" fill="#527b8a">…</text>
+            </g>
+            <text x="780" y="240" text-anchor="middle" font-size="13" font-weight="700" fill="#085d58">builder-02</text>
+            <g transform="translate(610,96)" filter="url(#sf5)">
+              <rect width="150" height="40" rx="20" fill="#fff" stroke="#cb7d2e" stroke-width="2"/>
+              <circle cx="22" cy="20" r="11" fill="#cb7d2e"/><path d="M17 15 l10 10 M27 15 l-10 10" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+              <text x="40" y="25" font-size="12" font-weight="700" fill="#cb7d2e">CONFLICT</text>
+            </g>
+          </svg>
+          <figcaption>Fig. 6: <code>file.write</code> is a single key. While builder-01 holds it, builder-02 can't even reach it — the conflict is stopped at the permission layer, long before a git merge.</figcaption>
+        </figure>
+
+        <p>Permissions can be handed over, but only through <code>team lease</code> and <code>team release</code> on the CLI — every handover records a timestamp, the agent ID, and the permission scope. That lease history travels with the closure-packet into permanent evidence.</p>
+      </section>
+
+      <section class="panel" id="memory">
+        <h2>6. ATMChart and the evidence chain: shared memory that isn't word of mouth</h2>
+        <p>The other place multi-AI work tips over is context drift — Agent A told me an assumption, Agent B never heard it, and so B writes code inconsistent with A. By the time you notice, three files are adrift.</p>
+        <p>The foundry pins shared memory down with two mechanisms:</p>
+        <div class="split">
+          <div class="mini-card">
+            <h3>ATMChart drift detection</h3>
+            <p>Five core governance schemas (guards, charter, integrations, agent-prompt, upgrade-proposal) are SHA256-locked into the frontmatter of <code>.atm/memory/atm-chart.md</code>. Any schema change &rarr; drift &rarr; <code>ATM_CHART_STALE</code> blocks it: an AI cannot act on a stale map. Every chart carries the framework version and supported range; an old version is rejected with <code>ATM_CHART_VERSION_UNSUPPORTED</code>.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Closure-packet evidence chain</h3>
+            <p>Each task writes an <code>atm.closurePacket.v1</code> on close: commitDelta, commandRuns (the SHA256 of each command's stdout/stderr), runnerVersion, teamRunId. Months later you can re-verify whether the recorded output still matches a fresh run. That hash chain is the biggest difference between ATM and a "PR comment."</p>
+          </div>
+        </div>
+        <p>Opened up, a closure-packet looks like this — it records not "I think I'm done," but "which commands I ran, their exit codes, and the SHA256 of their output":</p>
+        <pre><code>{
+  "schemaId": "atm.closurePacket.v1",
+  "taskId": "TASK-AAO-0042",
+  "commandRuns": [
+    { "command": "npm run typecheck",
+      "exitCode": 0,
+      "stdoutSha256": "sha256:dade4751…655da0" },
+    { "command": "node atm.mjs test --spec",
+      "exitCode": 0,
+      "stdoutSha256": "sha256:9f1c0a…b3e7" }
+  ],
+  "commitDelta": { "changedFiles": 3, "governedTreeSha": "9f1c2d…" },
+  "teamRunId": "team-abc123",
+  "runnerVersion": "0.1.0"
+}</code></pre>
+        <p>Note how <code>exitCode</code> and <code>stdoutSha256</code> are bound together. An agent cannot pass off an <code>exitCode: 1</code> validator as "passing" — a non-zero exit can only be recorded as a diagnostic, never as a pass. <strong>Evidence cannot lie.</strong></p>
+        <p>Together these two mechanisms guarantee one thing: <strong>no agent can claim "I thought the rule was X."</strong> The rule's version, hash, and supported range are written on the map in plain sight. A stale map gets blocked — there's no pretending you didn't see it.</p>
+      </section>
+
+      <section class="panel" id="police">
+        <h2>7. Nine resident police: the repo's own structural conscience</h2>
+        <p class="quote">While you sleep, the patrol keeps walking.</p>
+        <p>Everything so far has been about "making one mutation safe." But structural decay never appears in a single mutation — it accumulates over time. So the foundry keeps a resident police family:</p>
+        <div class="split-3">
+          <div class="mini-card">
+            <h3>Dedup Police</h3>
+            <p>Scans for CID prefix overlap. The moment two atoms have near-identical fingerprints, it emits an advisory finding routed to <code>behavior.dedup-merge</code>.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Demand Police</h3>
+            <p>Scans for caller-graph overload. When an atom's caller count crosses a threshold (default 6) &rarr; it recommends <code>behavior.split</code>.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Decomposition Police</h3>
+            <p>Uses source-inventory to count LOC; over the god-file threshold &rarr; it drafts an atomize plan. A daily cap stops it from flooding a human with 100 findings at once.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Quality Police</h3>
+            <p>Compares quality metrics before and after. Regression over threshold &rarr; blocker. A new atom below baseline &rarr; it fails the quality gate.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Evolution / Polymorph</h3>
+            <p>Watches whether an atom should upgrade to a next version, or be abstracted into a template + variants. Advisory only; the final call returns to the human.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Rollback Police</h3>
+            <p>Guards reversibility. Any mutation must have rollback proof before apply, or it's blocked. This line protects every map replacement / evolution / atomization / infect / expire / retirement flow.</p>
+          </div>
+        </div>
+
+        <figure class="figure-card">
+          <svg viewBox="0 0 1120 270" role="img" aria-label="A patrol police bot inspecting a row of cells and flagging a suspected duplicate">
+            <defs>
+              <filter id="sf7" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="7" stdDeviation="9" flood-color="#1a2837" flood-opacity="0.13"/>
+              </filter>
+            </defs>
+            <rect width="1120" height="270" rx="24" fill="#fffaf2"/>
+            <path d="M70 210 H1050" stroke="#e0d4bf" stroke-width="2" stroke-dasharray="3 9" stroke-linecap="round"/>
+            <g transform="translate(80,58)" filter="url(#sf7)">
+              <ellipse cx="80" cy="150" rx="48" ry="9" fill="#19242f" opacity="0.07"/>
+              <rect x="48" y="86" width="64" height="56" rx="20" fill="#eaf7f4"/>
+              <rect x="44" y="34" width="72" height="58" rx="24" fill="#2f6f63"/>
+              <path d="M44 38 Q80 18 116 38 l0 -6 Q80 14 44 32z" fill="#cb7d2e"/>
+              <circle cx="66" cy="62" r="6" fill="#fffaf2"/><circle cx="94" cy="62" r="6" fill="#fffaf2"/>
+              <circle cx="68" cy="62" r="2.8" fill="#19242f"/><circle cx="96" cy="62" r="2.8" fill="#19242f"/>
+              <path d="M68 76 Q80 84 92 76" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <g transform="translate(104,98)"><circle cx="12" cy="12" r="13" fill="#fff" fill-opacity="0.5" stroke="#465464" stroke-width="4"/><line x1="22" y1="22" x2="34" y2="34" stroke="#465464" stroke-width="6" stroke-linecap="round"/></g>
+            </g>
+            <g>
+              <g transform="translate(440,150)"><circle r="30" fill="#d7ece6" stroke="#0d7a73" stroke-width="2"/><circle cx="-9" cy="-4" r="3" fill="#19242f"/><circle cx="9" cy="-4" r="3" fill="#19242f"/><path d="M-8 8 Q0 14 8 8" stroke="#19242f" stroke-width="2" fill="none" stroke-linecap="round"/></g>
+              <g transform="translate(560,150)"><circle r="30" fill="#d6e3e8" stroke="#527b8a" stroke-width="2"/><circle cx="-9" cy="-4" r="3" fill="#19242f"/><circle cx="9" cy="-4" r="3" fill="#19242f"/><path d="M-8 8 Q0 14 8 8" stroke="#19242f" stroke-width="2" fill="none" stroke-linecap="round"/></g>
+              <g transform="translate(690,150)">
+                <circle r="32" fill="#f3ddc2" stroke="#cb7d2e" stroke-width="3"/>
+                <circle cx="-9" cy="-4" r="3" fill="#19242f"/><circle cx="9" cy="-4" r="3" fill="#19242f"/>
+                <path d="M-8 10 Q0 5 8 10" stroke="#19242f" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <g transform="translate(20,-52)" filter="url(#sf7)"><rect width="92" height="34" rx="12" fill="#fff" stroke="#cb7d2e" stroke-width="2"/><text x="14" y="22" font-size="13" font-weight="700" fill="#cb7d2e">dup? &#9873;</text></g>
+              </g>
+              <g transform="translate(810,150)"><circle r="30" fill="#d7ece6" stroke="#0d7a73" stroke-width="2"/><circle cx="-9" cy="-4" r="3" fill="#19242f"/><circle cx="9" cy="-4" r="3" fill="#19242f"/><path d="M-8 8 Q0 14 8 8" stroke="#19242f" stroke-width="2" fill="none" stroke-linecap="round"/></g>
+            </g>
+            <g transform="translate(920,120)"><rect width="150" height="60" rx="14" fill="#eaf7f4" stroke="#90cbc1"/><text x="75" y="26" text-anchor="middle" font-size="12" font-weight="700" fill="#085d58">emits a finding</text><text x="75" y="46" text-anchor="middle" font-size="11" fill="#3c5f6e">advisory · no touch</text></g>
+          </svg>
+          <figcaption>Fig. 7: The police bot walks the registry, spots a cell whose fingerprint is suspiciously close to another, plants a <code>dup?</code> flag, and emits a finding — then stops right there. It only reports; it never merges on its own.</figcaption>
+        </figure>
+
+        <p>These police share one iron rule: <strong><code>directApplyAllowed: false</code></strong>. They can find problems, suggest routes, and draft plans, but they <strong>never mutate directly</strong>. A finding, opened up, is quite plain — the line that matters is the last one:</p>
+        <pre><code>{
+  "policeFamily": "dedup",
+  "severity": "advisory",
+  "trigger": "semantic-fingerprint-overlap",
+  "scope": "ATM-MAP-0042,ATM-MAP-0088",
+  "message": "Two atoms have highly overlapping fingerprints; consider merging",
+  "routeHint": "behavior.dedup-merge",
+  "directApplyAllowed": false   // &larr; police only report; acting needs a human
+}</code></pre>
+        <p>Every apply must pass ReviewAdvisory machine-finding + HumanReviewDecision; the human promotion from advisory to blocker is a gate you cannot route around.</p>
+        <p>This is the foundry deliberately refusing "24/7 fully automatic evolution." When N agents are editing the repo at once, dropping in an autonomous refactoring robot is just manufacturing write-write conflict storms. <strong>The value of the police is to see, not to touch.</strong></p>
+      </section>
+
+      <section class="panel" id="setup">
+        <h2>8. Ninety minutes: from git clone to a first closed task</h2>
+        <p>For all of this complexity, the adoption barrier is low. The promise I set myself: <strong>from a clean environment to a first AI-completed task formally closed, in under ninety minutes</strong>. Minute by minute:</p>
+        <pre><code># 0-15 min: environment up
+npx create-atm my-app --agent claude-code
+cd my-app
+node atm.mjs doctor --json
+# watch 15+ health checks go green
+
+# 15-30 min: copy the minimal example + edit 4 fields
+cp -r node_modules/ai-atomic-framework/examples/team-agents-minimal/. .atm/team/
+# edit team-brief.md: task title, goal, allowedFiles, expectedReport
+
+# 30-60 min: the agent edits code
+node atm.mjs next --prompt "your first small change" --json
+# agent gets routing &rarr; claim &rarr; touch only allowedFiles &rarr; run typecheck
+
+# 60-80 min: verify and collect evidence
+node --strip-types scripts/validate-team-agents-templates.ts
+# write agent-report.md and team-summary.md
+
+# 80-90 min: close
+node atm.mjs tasks close --json
+# auto-emits closure-packet.json (with SHA256) + the first patrol-report.md</code></pre>
+        <p>What do you own at the ninety-minute mark?</p>
+        <ul>
+          <li>A commit carrying a teamRunId and a reference to its closure evidence</li>
+          <li>A <code>.atm/history/evidence/TASK-XXXX.closure-packet.json</code> with the stdout SHA256 of every command</li>
+          <li>A patrol-report.md recording the structural health at close time</li>
+          <li>A team-memory-shard.md filing this task's lesson into a searchable knowledge base</li>
+        </ul>
+        <p>Those four are the most direct difference between the foundry and ordinary vibe coding: <strong>you don't just get finished code — you get permanent evidence, a structural snapshot, and an accumulating lesson</strong>. Next time you open a task, these are loaded into the next agent's context automatically.</p>
+      </section>
+
+      <section class="panel" id="fail">
+        <h2>9. Where it tends to fail</h2>
+        <p>Honestly, the foundry is not green on the first try. These are the potholes I hit most:</p>
+        <div class="split">
+          <div class="mini-card">
+            <h3>Scope leak</h3>
+            <p>An agent holds <code>file.write</code> but touches files outside its lease paths. The framework raises <code>ATM_TEAM_WRITE_SCOPE_EXCEEDED</code>, but you have to set up the forbidden_files allowlist for it to bite. Plain text in a task card won't stop it — you need dual-agent dispatch plus physical path isolation.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Evidence faking</h3>
+            <p>An agent reports a failing validator as a pass. This is the most fatal wound to an evidence system. The countermeasure: the Evidence Curator must record exitCode and stdout SHA256; a non-zero exit can only be a diagnostic, never a pass.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Unreleased lease</h3>
+            <p>An agent takes <code>git.write</code>, crashes without releasing, and the next task is stuck. The countermeasure: leases carry TTL + heartbeat, and a scheduler can reclaim stale locks.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Stale ATMChart nobody re-renders</h3>
+            <p>A rule changes a schema but nobody re-renders &rarr; the next agent is blocked on entry. The countermeasure: wire <code>atm-chart render</code> into a pre-commit hook so the map always tracks the rules.</p>
+          </div>
+        </div>
+        <p>All four share a trait: <strong>they are not framework bugs, they are governance-discipline problems</strong>. The framework provides the interception; you have to wire it into your hooks, CI, and dispatch flow for it to actually hold.</p>
+      </section>
+
+      <section class="panel" id="market">
+        <h2>10. A CID-native atom market: the north star, not next month's release</h2>
+        <p>Everything so far has been about a <strong>single project</strong>. From here on, this is roadmap territory — and I want to draw the line clearly between what this road can actually deliver and what's still north star, so I don't sell empty promises.</p>
+        <p>The dominoes line up like this: CID.Interface is deterministic, which means the same outward declaration produces the same CID.Interface regardless of author or project. If ten thousand projects adopt the same governance protocol, each produces a list of CID-bearing atoms. One day in a new project you need <code>idempotent-http-retry-with-jitter</code>:</p>
+        <ol>
+          <li>Locally compute the requirement's CID.Interface prefix</li>
+          <li>Query the cross-organization CID index</li>
+          <li>Match N candidate atoms (different implementations, languages, quality / trust tiers)</li>
+          <li>Each carries its own closure-packet, evidence, clean police record, and declared capabilities (network / file / DB permissions)</li>
+          <li>A human reviews → approves → <code>atm infect</code> wires it into your project, building the caller graph against your local contracts</li>
+        </ol>
+        <p>What it would fill is a real gap that sits after <strong>npm + Docker Hub + Stack Overflow</strong> and isn't covered by any of them: npm gives you a package but not its internal structure, Stack Overflow gives you a snippet with no audit, Docker gives you an image at far too coarse a grain. <strong>Function-grain, governance-laden, machine-searchable code cells</strong> — yes, this slot deserves to exist.</p>
+
+        <div class="callout">
+          <strong>But these boundaries need to be stated up front, before anyone treats this as "shippable next month"</strong>:
+          <ul style="margin-top:10px">
+            <li><strong>The market is the last epoch, not next year</strong>: a cross-organization market depends on the local layer being mature first — Trust Tier institutionalized, the zero-trust sandbox shipped. The current ATM roadmap <em>gates</em> it as the final stage and conditions it on Tier 3 (sandbox + adversarial QA + mutation testing) being proven inside a single project. Until those prerequisites land, the market is castles in the air.</li>
+            <li><strong>It does not replace npm or Docker</strong>: it sits at a different layer. npm will keep shipping packages and Docker will keep shipping images. The CID market handles the "function-grain, governed, recomposable" granularity — it fills a gap, it doesn't supplant.</li>
+            <li><strong>In-place resolution doesn't abolish dependency management; it lifts it up to the contract layer</strong>: when you infect an atom, the framework first binds it to whatever local atoms already satisfy the same contract. Only when nothing local matches does it actually pull an implementation from the market (and at that point you still face transitive dependencies). Cleaner than <code>node_modules</code>, but not "dependency-free."</li>
+            <li><strong>Infect is always advisory + human-reviewed</strong>: nothing wires a stranger's atom into your code automatically. Like every other atom behavior, it's bound by the <code>directApplyAllowed:false</code> iron rule.</li>
+          </ul>
+        </div>
+
+        <p>So, honestly: the CID atom market is the <strong>north star</strong>, not a promised next version. What I'm actually building and can deliver on a sensible timeline is to make CID.Interface + the evidence chain + the patrol police work solidly inside a single project. The market is what naturally emerges when the same protocol gets stretched across organizations — it needs ground beneath it first.</p>
+        <p>Back to the picture I ultimately want to see: <strong>every piece of code an AI writes should be a named, auditable, findable cell — not an orphan living only in my repo</strong>. That doesn't have to wait for the market. It can start with the repo you're already in today, the moment every atom gets a deterministic CID.Interface.</p>
+      </section>
+
+      <section class="panel" id="closing">
+        <h2>11. Closing</h2>
+        <p>In 2025 everyone competed on "how smart is my AI agent." In 2026 I think the question should change: <strong>when N smart agents edit one repo at once, can that repo stay governable?</strong></p>
+        <p>My answer is the foundry. Turn every piece of code into a named cell, every change into a hashed evidence record, let nine resident police watch structural health, and split fifteen roles by responsibility. It sounds like a lot of rules, but the payoff is this: <strong>six months later, my repo is still readable, still auditable, still reusable</strong>.</p>
+        <p>If all you want is one small feature, this protocol is overkill. But if you're building something that runs for months, with multiple AIs working in parallel, that may one day face compliance, and whose good atoms you'd like to share with the world — what you need is a foundry like this.</p>
+        <div class="callout">
+          This is an intro. For the actual implementation, API, police-family mechanics, and permission-model details, see <a href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">github.com/eaglhuang/AI-Atomic-Framework</a>. The framework is MIT — the whole protocol can be forked, the governance bundle swapped for your own, or used in part (just the evidence chain, or just ATMChart).
+        </div>
+      </section>
+    </main>
+
+    <aside class="toc">
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#pain">The walls of N-AI dev</a></li>
+        <li><a href="#metaphor">The atomic foundry</a></li>
+        <li><a href="#roles">15 roles, 4 layers</a></li>
+        <li><a href="#cid">CID: the ID card</a></li>
+        <li><a href="#permission">Permission as gear</a></li>
+        <li><a href="#memory">ATMChart &amp; evidence</a></li>
+        <li><a href="#police">Nine resident police</a></li>
+        <li><a href="#setup">90-minute first task</a></li>
+        <li><a href="#fail">Where it fails</a></li>
+        <li><a href="#market">CID atom market</a></li>
+        <li><a href="#closing">Closing</a></li>
+      </ol>
+    </aside>
+  </div>
+  <footer class="site-footer">
+    <p>AI-Atomic-Framework · <a href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">github.com/eaglhuang/AI-Atomic-Framework</a> · 2026</p>
+  </footer>
+</body>
+</html>
