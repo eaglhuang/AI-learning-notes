@@ -2991,15 +2991,97 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       return `${state.data.illustrationPromptBase}\n場景主題：${bundle.sceneTitle}\n互動對象：${target.label}（${target.role}）\n畫面情緒：${mood}\n${detail}關鍵文字線索：${shortenText(card.summary, 80)}\n畫風要求：清爽、輕鬆、易讀的劇情角色插畫，乾淨線條、柔和色彩、自然表情、溫暖電影光感；不要水墨山水、卷軸感、厚重筆刷或過度史詩化構圖。\n構圖要求：半身到全身，人物與互動對象在營火或軍帳光源旁，像剛從回憶中回神、準備安排行動。畫面中不要出現任何文字、中文字、字幕或招牌字。`;
     }
 
+    function normalizeSceneSeeds(sceneSeeds) {
+      const queue = [sceneSeeds];
+      const seeds = [];
+      while (queue.length) {
+        const entry = queue.shift();
+        if (entry == null || entry === false) {
+          continue;
+        }
+        if (Array.isArray(entry)) {
+          queue.unshift(...entry);
+          continue;
+        }
+        if (typeof entry === "string") {
+          const normalized = entry.replace(/\s+/g, " ").trim();
+          if (normalized) {
+            seeds.push(normalized);
+          }
+          continue;
+        }
+        if (typeof entry === "object") {
+          const preferred = entry.text ?? entry.label ?? entry.name ?? entry.value ?? entry.seed ?? entry.seedText;
+          if (preferred != null) {
+            const normalized = String(preferred).replace(/\s+/g, " ").trim();
+            if (normalized) {
+              seeds.push(normalized);
+              continue;
+            }
+          }
+          queue.unshift(...Object.values(entry));
+          continue;
+        }
+        const normalized = String(entry).replace(/\s+/g, " ").trim();
+        if (normalized) {
+          seeds.push(normalized);
+        }
+      }
+      return seeds.filter((seed, index) => seeds.indexOf(seed) === index).slice(0, 6);
+    }
+
+    function formatSceneSeedsDebug(sceneSeeds) {
+      const normalized = normalizeSceneSeeds(sceneSeeds);
+      if (!normalized.length) {
+        return "";
+      }
+      return `sceneSeeds（debug）：\n${normalized.map((seed, index) => `${index + 1}. ${shortenText(seed, 72)}`).join("\n")}`;
+    }
+
+    function buildIllustrationPrompt(bundle) {
+      const target = bundle.target;
+      const card = bundle.card;
+      const director = bundle.directorPayload || {};
+      const beats = director.beats || {};
+      const facts = beats.sceneFacts || {};
+      const locations = Array.isArray(facts.locations) ? facts.locations.filter(Boolean) : [];
+      const objects = Array.isArray(facts.objects) ? facts.objects.filter(Boolean) : [];
+      const seedLines = [
+        beats.sceneText && `本幕事件：${shortenText(beats.sceneText, 100)}`,
+        beats.memoryText && `回憶焦點：${shortenText(beats.memoryText, 90)}`,
+        beats.emotionText && `情緒：${shortenText(beats.emotionText, 70)}`,
+        beats.intentText && `下一步：${shortenText(beats.intentText, 70)}`,
+        director.storyText && `小劇本：${shortenText(director.storyText, 160)}`,
+      ].filter(Boolean);
+      const sceneSeedsLine = formatSceneSeedsDebug(beats.sceneSeeds);
+      const moodFromDirector = beats.emotionText || (target.femaleFocus ? "情感、家室與去留牽掛" : angleDefinitions[card.angle].desc);
+      const locationLine = locations.length ? `場景位置：${locations.slice(0, 3).join("、")}` : (card.location ? `場景位置：${card.location}` : "");
+      const objectLine = objects.length ? `可見物件：${objects.slice(0, 4).join("、")}` : "";
+      const evidenceLine = seedLines.length ? seedLines.join("\n") : `關鍵文字線索：${shortenText(card.summary, 100)}`;
+      const promptLines = [
+        state.data?.illustrationPromptBase || EMPTY_NARRATIVE_DATA.illustrationPromptBase,
+        `場景主題：${bundle.sceneTitle}`,
+        `互動對象：${target.label}（${target.role}）`,
+        `畫面情緒：${moodFromDirector}`,
+        locationLine,
+        objectLine,
+        evidenceLine,
+        sceneSeedsLine,
+        "畫風要求：清爽、輕鬆、易讀的劇情角色插畫，乾淨線條、柔和色彩、自然表情、溫暖電影光感；不要水墨山水、卷軸感、厚重筆刷或過度史詩化構圖。",
+        "構圖要求：半身到全身，人物與互動對象在同一個可理解的場景中，像剛從回憶中回神、準備安排行動。畫面中不要出現任何文字、中文字、字幕或招牌字。",
+      ];
+      return promptLines.filter(Boolean).join("\n");
+    }
+
     function refreshIllustrationPrompt() {
       if (!state.currentBundle) {
         return;
       }
       const prompt = buildIllustrationPrompt(state.currentBundle);
-      const seedDebug = buildIllustrationSeedDebug(state.currentBundle?.directorPayload?.beats?.sceneSeeds || {});
+      const seedCount = normalizeSceneSeeds(state.currentBundle?.directorPayload?.beats?.sceneSeeds).length;
       elements.illustrationPrompt.textContent = prompt;
-      elements.illustrationHint.textContent = seedDebug
-        ? `目前互動對象：${state.currentBundle.target.label}；六種子已藏進 prompt，可直接拿來 debug 圖像構圖。`
+      elements.illustrationHint.textContent = seedCount
+        ? `目前互動對象：${state.currentBundle.target.label}；sceneSeeds（${seedCount} 筆）已附在 prompt 末段，方便 debug 對照。`
         : `目前互動對象：${state.currentBundle.target.label}；如果之後接圖像 API，這段 prompt 可以直接拿去生成插圖。`;
     }
 
