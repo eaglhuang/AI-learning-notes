@@ -2911,14 +2911,60 @@
       };
     }
 
+    function buildIllustrationSeedDebug(sceneSeeds) {
+      const seeds = sceneSeeds && typeof sceneSeeds === "object" ? sceneSeeds : {};
+      const people = Array.isArray(seeds.people)
+        ? seeds.people.map((item) => {
+            if (item && typeof item === "object") {
+              const label = String(item.label || "").trim();
+              const role = String(item.role || "").trim();
+              if (label && role) {
+                return `${label}（${role}）`;
+              }
+              return label || role;
+            }
+            return String(item || "").trim();
+          }).filter(Boolean)
+        : [];
+      const objectList = Array.isArray(seeds.objects)
+        ? seeds.objects.map((item) => String(item || "").trim()).filter(Boolean)
+        : [];
+      const eventText = String(seeds.event || "").trim();
+      const timeText = String(seeds.time || "").trim();
+      const placeText = String(seeds.place || "").trim();
+      const emotionText = String(seeds.emotion || "").trim();
+      const parts = [];
+      if (people.length) {
+        parts.push(`人=${people.slice(0, 3).join("、")}`);
+      }
+      if (eventText) {
+        parts.push(`事=${shortenText(eventText, 36)}`);
+      }
+      if (timeText) {
+        parts.push(`時=${shortenText(timeText, 18)}`);
+      }
+      if (placeText) {
+        parts.push(`地=${shortenText(placeText, 18)}`);
+      }
+      if (objectList.length) {
+        parts.push(`物=${objectList.slice(0, 4).join("、")}`);
+      }
+      if (emotionText) {
+        parts.push(`情=${shortenText(emotionText, 24)}`);
+      }
+      return parts.join("；");
+    }
+
     function buildIllustrationPrompt(bundle) {
       const target = bundle.target;
       const card = bundle.card;
       const director = bundle.directorPayload || {};
       const beats = director.beats || {};
       const facts = beats.sceneFacts || {};
+      const sceneSeeds = beats.sceneSeeds || {};
       const locations = Array.isArray(facts.locations) ? facts.locations.filter(Boolean) : [];
       const objects = Array.isArray(facts.objects) ? facts.objects.filter(Boolean) : [];
+      const seedDebug = buildIllustrationSeedDebug(sceneSeeds);
       const seedLines = [
         beats.sceneText && `本幕事件：${shortenText(beats.sceneText, 100)}`,
         beats.memoryText && `回憶焦點：${shortenText(beats.memoryText, 90)}`,
@@ -2937,6 +2983,7 @@
 ${locationLine}
 ${objectLine}
 ${evidenceLine}
+${seedDebug ? `六種子參考：${seedDebug}` : ""}
 畫風要求：清爽、輕鬆、易讀的劇情角色插畫，乾淨線條、柔和色彩、自然表情、溫暖電影光感；不要水墨山水、卷軸感、厚重筆刷或過度史詩化構圖。
 構圖要求：半身到全身，人物與互動對象在同一個可理解的場景中，像剛從回憶中回神、準備安排行動。畫面中不要出現任何文字、中文字、字幕或招牌字。`;
       const mood = target.femaleFocus ? "含蓄情感、家室牽掛、亂世去留" : angleDefinitions[card.angle].desc;
@@ -2949,8 +2996,11 @@ ${evidenceLine}
         return;
       }
       const prompt = buildIllustrationPrompt(state.currentBundle);
+      const seedDebug = buildIllustrationSeedDebug(state.currentBundle?.directorPayload?.beats?.sceneSeeds || {});
       elements.illustrationPrompt.textContent = prompt;
-      elements.illustrationHint.textContent = `目前互動對象：${state.currentBundle.target.label}；如果之後接圖像 API，這段 prompt 可以直接拿去生成插圖。`;
+      elements.illustrationHint.textContent = seedDebug
+        ? `目前互動對象：${state.currentBundle.target.label}；六種子已藏進 prompt，可直接拿來 debug 圖像構圖。`
+        : `目前互動對象：${state.currentBundle.target.label}；如果之後接圖像 API，這段 prompt 可以直接拿去生成插圖。`;
     }
 
     function addTimelineLog(bundle) {
