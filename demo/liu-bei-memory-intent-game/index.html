@@ -956,7 +956,7 @@
     const API_KEY = searchParams.get("apiKey") || window.localStorage.getItem("npcBrainApiKey") || "";
     const DEFAULT_AUTO_DELAY = 12000;
     const DEFAULT_DIALOGUE_TIMEOUT_MS = 12000;
-    const DEFAULT_SCENE_DIRECTOR_TIMEOUT_MS = 18000;
+    const DEFAULT_SCENE_DIRECTOR_TIMEOUT_MS = 36000;
     const DEFAULT_ILLUSTRATION_TIMEOUT_MS = 32000;
     const DEFAULT_PROFILE_TIMEOUT_MS = 10000;
     const DEFAULT_PROFILE_RETRY_DELAY_MS = 1800;
@@ -964,7 +964,7 @@
     const PUBLISHED_RUNTIME_PROFILE_BASE_URL = "https://raw.githubusercontent.com/eaglhuang/3klife-npc-brain/main/artifacts/data-pipeline/sanguo-rag/extracted/runtime-general-profiles";
     const DEFAULT_NARRATIVE_TIMEOUT_MS = 16000;
     const DEFAULT_STORY_FUSION_TIMEOUT_MS = 22000;
-    const LOADING_MESSAGE = "飛鴿傳信中 ....";
+    const LOADING_MESSAGE = "飛鴿傳書中...";
 
     const GENERAL_OPTIONS = [
       { id: "liu-bei", label: "劉備" },
@@ -1275,12 +1275,17 @@
 
     function createTimeoutController(timeoutMs) {
       const controller = new AbortController();
+      let didTimeout = false;
       const timeoutId = window.setTimeout(() => {
+        didTimeout = true;
         controller.abort();
       }, timeoutMs);
       return {
         controller,
         signal: controller.signal,
+        get timedOut() {
+          return didTimeout;
+        },
         clear() {
           window.clearTimeout(timeoutId);
         },
@@ -1580,9 +1585,113 @@
       "sourceRef",
     ];
 
+    function sceneDirectorOutcomeMessage(directorResult) {
+      const kind = String(directorResult?.kind || "").trim();
+      const status = Number(directorResult?.status || 0);
+      if (status === 401 || status === 403 || kind === "auth") {
+        return "暫無資料：導演稿讀取失敗（API 權限不足）";
+      }
+      if (kind === "timeout") {
+        return "暫無資料：導演稿讀取逾時，請稍後再試";
+      }
+      if (kind === "aborted") {
+        return "暫無資料：導演稿讀取已取消，請再試一次";
+      }
+      if (status >= 500 || kind === "server") {
+        return "暫無資料：中台暫時異常，請稍後再試";
+      }
+      if (kind === "empty") {
+        return "暫無資料：目前沒有可用導演稿";
+      }
+      if (kind === "circuit_open") {
+        return "暫無資料：導演服務暫時忙碌，請稍後再試";
+      }
+      if (kind === "network") {
+        return "暫無資料：導演稿讀取失敗，請稍後再試";
+      }
+      return "暫無資料：導演稿暫時無法取得";
+    }
+
+    function isFallbackSceneDirectorPayload(payload) {
+      if (!payload || typeof payload !== "object") {
+        return false;
+      }
+      if (payload.storyFallbackUsed) {
+        return true;
+      }
+      const storyProvider = String(payload.storyProvider || "").trim().toLowerCase();
+      if (storyProvider === "deterministic") {
+        return true;
+      }
+      const storyGenerationMode = String(payload.storyGenerationMode || "").trim().toLowerCase();
+      return storyGenerationMode.includes("fallback") || storyGenerationMode.includes("deprecated");
+    }
+
+    function renderSceneDirectorLoading(bundle) {
+      const loadingTitle = "飛鴿傳書中...";
+      const loadingDetail = "導演正在整理這一幕，請稍候。";
+      elements.sceneTitle.textContent = bundle?.sceneTitle || "導演整理中";
+      elements.sceneNote.textContent = loadingDetail;
+      elements.sourceBadge.textContent = "導演整理中";
+      renderMetaChips([
+        angleDefinitions[bundle?.card?.angle]?.label || "導演整理中",
+        bundle?.target?.label || "",
+        "等待正式導演稿",
+      ].filter(Boolean));
+      const loadingBlock = loadingMarkup(loadingTitle, loadingDetail);
+      elements.sceneText.innerHTML = loadingBlock;
+      elements.memoryText.innerHTML = loadingBlock;
+      elements.emotionText.innerHTML = loadingBlock;
+      elements.dialogueText.innerHTML = loadingBlock;
+      elements.intentText.innerHTML = loadingBlock;
+      elements.storyText.innerHTML = loadingBlock;
+      elements.illustrationPrompt.textContent = "正在請中台 NPC 大腦寫這一幕，暫不顯示原始 prompt。";
+      elements.illustrationHint.textContent = "導演稿尚未回來，先不要把暫代內容當正式稿。";
+      elements.illustrationImage.hidden = true;
+      elements.illustrationImage.removeAttribute("src");
+      setIllustrationVisualState("導演正在整理這一幕...", { showPlaceholder: true });
+      renderDirectorChorusLines([]);
+      if (elements.chorusHint) {
+        elements.chorusHint.textContent = "導演正在整理這一幕，路人台詞先暫不顯示。";
+      }
+    }
+
+    function renderSceneDirectorFailure(bundle, directorResult) {
+      const message = sceneDirectorOutcomeMessage(directorResult);
+      const loadingBlock = loadingMarkup("暫無資料", message.replace(/^暫無資料：/, ""));
+      elements.sceneTitle.textContent = "暫無資料";
+      elements.sceneNote.textContent = bundle?.sceneTitle ? `${message}（${bundle.sceneTitle}）` : message;
+      elements.sourceBadge.textContent = "暫無資料";
+      renderMetaChips([
+        angleDefinitions[bundle?.card?.angle]?.label || "",
+        bundle?.target?.label || "",
+        "暫無資料",
+      ].filter(Boolean));
+      elements.sceneText.innerHTML = loadingBlock;
+      elements.memoryText.innerHTML = loadingBlock;
+      elements.emotionText.innerHTML = loadingBlock;
+      elements.dialogueText.innerHTML = loadingBlock;
+      elements.intentText.innerHTML = loadingBlock;
+      elements.storyText.innerHTML = loadingBlock;
+      elements.illustrationPrompt.textContent = message;
+      elements.illustrationHint.textContent = "導演稿未成功回來，暫不顯示原始 prompt。";
+      elements.illustrationImage.hidden = true;
+      elements.illustrationImage.removeAttribute("src");
+      setIllustrationVisualState(message, { showPlaceholder: true });
+      renderDirectorChorusLines([]);
+      if (elements.chorusHint) {
+        elements.chorusHint.textContent = message;
+      }
+      bundle.runtimeIntentText = message;
+    }
+
     async function requestSceneDirector(bundle) {
       if (Date.now() < (state.sceneDirectorCircuitOpenUntil || 0)) {
-        return null;
+        return {
+          ok: false,
+          kind: "circuit_open",
+          status: 0,
+        };
       }
       const requestToken = state.narrativeRequestToken;
       abortIfAlive(state.sceneDirectorAbortController);
@@ -1594,7 +1703,7 @@
         angle: bundle.card?.angle || state.activeAngle,
         targetId: bundle.target?.targetId || state.activePerson,
         evidenceId: null,
-        renderMode: "data_first",
+        renderMode: "llm_script_v2",
         chorusTargetIds: targets.map((target) => target.targetId),
         locale: "zh-TW",
         llmModelPreset: "scene_director_fast",
@@ -1609,22 +1718,62 @@
           signal: timeout.signal,
         });
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
+          state.sceneDirectorCircuitOpenUntil = Date.now() + 5000;
+          return {
+            ok: false,
+            kind: response.status === 401 ? "auth" : response.status >= 500 ? "server" : "http",
+            status: response.status,
+            message: `HTTP ${response.status}`,
+          };
         }
         const payload = await response.json();
         if (requestToken !== state.narrativeRequestToken) {
           return null;
         }
         state.sceneDirectorCircuitOpenUntil = 0;
-        return payload;
+        const hasMeaningfulStory = Boolean(String(payload?.storyText || "").trim())
+          || Boolean(String(payload?.beats?.sceneText || "").trim())
+          || Boolean(String(payload?.beats?.memoryText || "").trim())
+          || Boolean(String(payload?.beats?.emotionText || "").trim())
+          || Boolean(String(payload?.beats?.dialogueText || "").trim())
+          || Boolean(String(payload?.beats?.intentText || "").trim());
+        if (Boolean(payload?.isEmpty) || !hasMeaningfulStory) {
+          return {
+            ok: false,
+            kind: "empty",
+            status: response.status,
+            payload,
+            message: "Scene director payload is empty",
+          };
+        }
+        return {
+          ok: true,
+          status: response.status,
+          payload,
+          renderMode: body.renderMode,
+        };
       } catch (error) {
         if (error?.name === "AbortError") {
-          state.sceneDirectorCircuitOpenUntil = Date.now() + 5000;
-          return null;
+          if (timeout.timedOut) {
+            state.sceneDirectorCircuitOpenUntil = Date.now() + 5000;
+          } else {
+            state.sceneDirectorCircuitOpenUntil = 0;
+          }
+          return {
+            ok: false,
+            kind: timeout.timedOut ? "timeout" : "aborted",
+            status: 0,
+            message: timeout.timedOut ? "Scene director timed out" : "Scene director aborted",
+          };
         }
         state.sceneDirectorCircuitOpenUntil = Date.now() + 5000;
         console.warn("scene-director fallback:", error);
-        return null;
+        return {
+          ok: false,
+          kind: "network",
+          status: 0,
+          message: String(error?.message || error || "Scene director request failed"),
+        };
       } finally {
         timeout.clear();
         if (state.sceneDirectorAbortController === timeout.controller) {
@@ -3077,6 +3226,16 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       if (!state.currentBundle) {
         return;
       }
+      if (!state.currentBundle.directorPayload) {
+        elements.illustrationPrompt.textContent = "正在整理這一幕，暫不顯示原始 prompt。";
+        elements.illustrationHint.textContent = "導演稿尚未回來，請稍後再試。";
+        return;
+      }
+      if (isFallbackSceneDirectorPayload(state.currentBundle.directorPayload)) {
+        elements.illustrationPrompt.textContent = "以下為暫代文字，非正式導演稿。";
+        elements.illustrationHint.textContent = "導演稿目前仍在備援路徑補稿，暫不顯示正式 prompt。";
+        return;
+      }
       const prompt = buildIllustrationPrompt(state.currentBundle);
       const seedCount = normalizeSceneSeeds(state.currentBundle?.directorPayload?.beats?.sceneSeeds).length;
       elements.illustrationPrompt.textContent = prompt;
@@ -3167,6 +3326,116 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       const runToken = state.narrativeRequestToken;
       abortAllNarrativeControllers();
       const isStaleRun = () => runToken !== state.narrativeRequestToken || state.currentBundle !== bundle;
+      try {
+        if (isStaleRun()) {
+          return;
+        }
+        renderSceneDirectorLoading(bundle);
+        const sceneDirectorResult = await requestSceneDirector(bundle);
+        if (isStaleRun()) {
+          return;
+        }
+        if (!sceneDirectorResult) {
+          return;
+        }
+        if (!sceneDirectorResult.ok) {
+          renderSceneDirectorFailure(bundle, sceneDirectorResult);
+          return sceneDirectorResult;
+        }
+        const sceneDirectorPayload = sceneDirectorResult.payload || null;
+        bundle.directorPayload = sceneDirectorPayload;
+        const sceneDirectorBeats = sceneDirectorPayload?.beats || {};
+        const sceneDirectorDataStatus = String(sceneDirectorPayload?.dataStatus || "").trim();
+        const sceneDirectorSceneText = sanitizeDisplayText(sceneDirectorBeats.sceneText || "", { removeActor: false });
+        const sceneDirectorMemoryText = sanitizeDisplayText(sceneDirectorBeats.memoryText || "", { removeActor: true });
+        const sceneDirectorEmotionText = sanitizeDisplayText(sceneDirectorBeats.emotionText || "", { removeActor: true });
+        const sceneDirectorDialogueText = sanitizeDisplayText(sceneDirectorBeats.dialogueText || "", { removeActor: true });
+        const sceneDirectorIntentText = sanitizeDisplayText(sceneDirectorBeats.intentText || "", { removeActor: true });
+        const sceneDirectorStoryText = sanitizeDisplayText(sceneDirectorPayload?.storyText || "", { removeActor: false });
+        const sceneDirectorIsEmpty = Boolean(sceneDirectorPayload?.isEmpty) || (
+          !sceneDirectorSceneText
+          && !sceneDirectorMemoryText
+          && !sceneDirectorEmotionText
+          && !sceneDirectorDialogueText
+          && !sceneDirectorIntentText
+          && !sceneDirectorStoryText
+        );
+        if (sceneDirectorIsEmpty) {
+          renderSceneDirectorFailure(bundle, {
+            kind: "empty",
+            status: sceneDirectorResult.status,
+            payload: sceneDirectorPayload,
+          });
+          return {
+            ok: false,
+            kind: "empty",
+            status: sceneDirectorResult.status,
+            payload: sceneDirectorPayload,
+          };
+        }
+        const sceneDirectorIsFallback = isFallbackSceneDirectorPayload(sceneDirectorPayload);
+        const sceneDirectorSourceLabel = sceneDirectorDataStatus
+          ? `scene-director/${sceneDirectorDataStatus}`
+          : "scene-director";
+        const sceneDirectorStatusLabel = sceneDirectorIsFallback ? "暫代文字" : "正式導演稿";
+        elements.sceneTitle.textContent = bundle.sceneTitle || "場景準備中";
+        elements.sceneNote.textContent = sceneDirectorIsFallback
+          ? `暫代文字：${bundle.sceneNote} / ${sceneDirectorSourceLabel}（非正式稿）`
+          : `正式導演稿：${bundle.sceneNote} / ${sceneDirectorSourceLabel}`;
+        elements.sourceBadge.textContent = sceneDirectorStatusLabel;
+        renderMetaChips(buildDirectorMetaChips(bundle, sceneDirectorPayload));
+        elements.sceneText.textContent = sceneDirectorSceneText;
+        await revealText(elements.memoryText, sceneDirectorMemoryText, 320);
+        if (isStaleRun()) {
+          return;
+        }
+        await revealText(elements.emotionText, sceneDirectorEmotionText, 320);
+        if (isStaleRun()) {
+          return;
+        }
+        await revealText(elements.dialogueText, sceneDirectorDialogueText, 300);
+        if (isStaleRun()) {
+          return;
+        }
+        await revealText(elements.intentText, sceneDirectorIntentText, 320);
+        if (isStaleRun()) {
+          return;
+        }
+        await revealText(elements.storyText, sceneDirectorStoryText, 260);
+        if (isStaleRun()) {
+          return;
+        }
+        renderDirectorChorusLines(Array.isArray(sceneDirectorPayload?.chorusLines) ? sceneDirectorPayload.chorusLines : []);
+        bundle.runtimeIntentText = sceneDirectorIntentText || (sceneDirectorIsFallback ? "以下為暫代文字，非正式導演稿" : sceneDirectorSceneText);
+        if (sceneDirectorIsFallback) {
+          elements.illustrationPrompt.textContent = "以下為暫代文字，非正式導演稿。";
+          elements.illustrationHint.textContent = "導演尚在補稿，先不要把這一版當正式稿。";
+        } else {
+          refreshIllustrationPrompt();
+          void requestSceneIllustration(bundle).catch(() => null);
+        }
+        return sceneDirectorResult;
+      } catch (error) {
+        if (isStaleRun()) {
+          return;
+        }
+        console.error("playBundle failed:", error);
+        renderSceneDirectorFailure(bundle, {
+          kind: error?.name === "AbortError" ? "timeout" : "network",
+          status: 0,
+          message: String(error?.message || error || "Scene director request failed"),
+        });
+        return {
+          ok: false,
+          kind: error?.name === "AbortError" ? "timeout" : "network",
+          status: 0,
+        };
+      } finally {
+        if (!isStaleRun()) {
+          state.rendering = false;
+        }
+      }
+      return;
       const renderingGuard = window.setTimeout(() => {
         if (!state.rendering || isStaleRun()) {
           return;
@@ -3292,14 +3561,18 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       const card = pickCardForCurrentState();
       const target = activeTarget();
       if (!card || !target) {
-        elements.sceneTitle.textContent = "本角度 / 對象目前無資料";
-        elements.sceneNote.textContent = "scene-director data_first：無可用資料。";
-        elements.sceneText.textContent = "";
-        elements.memoryText.textContent = "";
-        elements.emotionText.textContent = "";
-        elements.dialogueText.textContent = "";
-        elements.intentText.textContent = "";
-        elements.storyText.textContent = "";
+        const unavailableMessage = "暫無資料：目前沒有可用導演稿";
+        elements.sceneTitle.textContent = "暫無資料";
+        elements.sceneNote.textContent = unavailableMessage;
+        elements.sourceBadge.textContent = "暫無資料";
+        elements.sceneText.textContent = unavailableMessage;
+        elements.memoryText.textContent = unavailableMessage;
+        elements.emotionText.textContent = unavailableMessage;
+        elements.dialogueText.textContent = unavailableMessage;
+        elements.intentText.textContent = unavailableMessage;
+        elements.storyText.textContent = unavailableMessage;
+        elements.illustrationPrompt.textContent = unavailableMessage;
+        elements.illustrationHint.textContent = "目前沒有可用導演稿，請重新選擇角度或對象。";
         renderDirectorChorusLines([]);
         return;
       }
