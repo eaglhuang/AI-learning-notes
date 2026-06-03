@@ -379,6 +379,36 @@
       line-height: 1.45;
     }
 
+    .angle-button.loading,
+    .relationship-button.loading {
+      cursor: wait;
+      border-style: dashed;
+      background:
+        linear-gradient(180deg, rgba(31, 109, 92, 0.08), rgba(255, 255, 255, 0.78)),
+        rgba(255, 255, 255, 0.64);
+      box-shadow: inset 0 0 0 1px rgba(31, 109, 92, 0.08);
+    }
+
+    .angle-button.loading:hover,
+    .relationship-button.loading:hover {
+      transform: none;
+      border-color: rgba(25, 32, 27, 0.18);
+      background:
+        linear-gradient(180deg, rgba(31, 109, 92, 0.08), rgba(255, 255, 255, 0.78)),
+        rgba(255, 255, 255, 0.64);
+    }
+
+    .loading-skeleton {
+      display: block;
+      height: 8px;
+      margin-top: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(31, 109, 92, 0.12), rgba(182, 144, 66, 0.18), rgba(31, 109, 92, 0.12));
+      background-size: 200% 100%;
+      animation: loading-shimmer 1.35s linear infinite;
+    }
+
+
     .speed-wrap {
       margin-top: 14px;
       padding: 12px 12px 10px;
@@ -823,8 +853,9 @@
         <section class="panel control-panel">
           <h2 class="panel-title">觸發角度</h2>
           <p class="panel-note">先選人物現在被什麼觸動，再選互動對象；回憶、情緒與行動描述會跟著原文證據轉向。</p>
-          <p class="panel-note" id="angleCoverageNote">角度載入中…</p>
+          <p class="panel-note" id="angleCoverageNote">連線 NPC Brain 中…</p>
           <div class="angle-grid" id="angleGrid"></div>
+          <p class="panel-note" id="relationshipCoverageNote">互動對象載入中…</p>
 
           <h2 class="panel-title" style="margin-top:18px;">互動對象</h2>
           <p class="panel-note">這裡會優先顯示真資料裡的關係人物；女性互動對象會額外強化情感與去留的戲劇感。</p>
@@ -930,6 +961,7 @@
     const DEFAULT_PROFILE_TIMEOUT_MS = 65000;
     const DEFAULT_PROFILE_RETRY_DELAY_MS = 1800;
     const DEFAULT_PROFILE_MAX_ATTEMPTS = 2;
+    const PUBLISHED_RUNTIME_PROFILE_BASE_URL = "https://raw.githubusercontent.com/eaglhuang/3klife-npc-brain/main/artifacts/data-pipeline/sanguo-rag/extracted/runtime-general-profiles";
     const DEFAULT_NARRATIVE_TIMEOUT_MS = 16000;
     const DEFAULT_STORY_FUSION_TIMEOUT_MS = 22000;
     const LOADING_MESSAGE = "飛鴿傳信中 ....";
@@ -1018,6 +1050,7 @@
       traitList: document.getElementById("traitList"),
       meters: document.getElementById("meters"),
       angleCoverageNote: document.getElementById("angleCoverageNote"),
+      relationshipCoverageNote: document.getElementById("relationshipCoverageNote"),
       angleGrid: document.getElementById("angleGrid"),
       relationshipGrid: document.getElementById("relationshipGrid"),
       speedRange: document.getElementById("speedRange"),
@@ -1052,6 +1085,8 @@
     const state = {
       generalId: INITIAL_GENERAL_ID,
       profileRequestToken: 0,
+      bootPhase: "api_connect",
+      bootDisplayName: generalOptionById(INITIAL_GENERAL_ID)?.label || INITIAL_GENERAL_ID,
       turn: 1,
       activeAngle: "emotion",
       activePerson: "mi-shi",
@@ -1084,8 +1119,144 @@
       return new Promise((resolve) => window.setTimeout(resolve, ms));
     }
 
-    function loadingMarkup() {
-      return `<span class="loading-pulse">${LOADING_MESSAGE}</span>`;
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function bootCopyForPhase(phase, displayName = "") {
+      const name = displayName || generalOptionById(currentGeneralId())?.label || currentGeneralId();
+      const copyMap = {
+        api_connect: {
+          statusMode: "連線 NPC Brain 中",
+          statusHint: `正在請求 ${name} 的人物檔案。`,
+          angleNote: `正在連線 API，${name} 的角度與互動對象還在等待人物檔案。`,
+          relationshipNote: "互動對象區也在等待資料回來，現在先不會是空白。",
+          angleCards: [
+            { title: "連線 NPC Brain 中…", detail: "正在請求 narrative-profile。" },
+            { title: "人物檔案接收中…", detail: "角度與互動對象會在回來後一起整理。" },
+          ],
+          relationshipCards: [
+            { title: "互動對象待接收…", detail: "API 回來後會直接補上可互動人物。" },
+            { title: "先保留位置…", detail: "畫面還在等待人物關係資料。" },
+            { title: "不會一直空白", detail: "如果遠端較慢，會自動切到備援。" },
+          ],
+          sceneTitle: "人物檔案讀取中",
+          sceneNote: `正在連線 NPC Brain，先等 ${name} 的 narrative-profile。`,
+          sceneLoadingTitle: "連線 NPC Brain 中…",
+          sceneLoadingDetail: "正在請求人物檔案與互動資料。",
+        },
+        api_parse: {
+          statusMode: "正在接收人物檔案",
+          statusHint: `API 已回應，正在整理 ${name} 的角度與互動對象。`,
+          angleNote: `API 已回應，正在整理 ${name} 的角度與互動對象。`,
+          relationshipNote: "資料已回來，正在把互動對象整理成可點選的卡片。",
+          angleCards: [
+            { title: "正在接收人物檔案…", detail: "API 已回應，正在整理角度。" },
+            { title: "對齊互動對象中…", detail: "關係與角度會一起補齊。" },
+          ],
+          relationshipCards: [
+            { title: "正在整理互動對象…", detail: "人物關係會在這一步補進來。" },
+            { title: "角度與對象對齊中…", detail: "整理完成後就能直接互動。" },
+            { title: "資料稍後可用", detail: "現在正在做最後整併。" },
+          ],
+          sceneTitle: "人物檔案整理中",
+          sceneNote: `API 已回應，正在整理 ${name} 的角度與互動對象。`,
+          sceneLoadingTitle: "正在接收人物檔案…",
+          sceneLoadingDetail: "API 已回應，正在整理可互動資料。",
+        },
+        fallback_connect: {
+          statusMode: "遠端較慢，改查 published runtime profile",
+          statusHint: "API 逾時或失敗，正在切換備援資料。",
+          angleNote: `API 較慢，已切到 published runtime profile，${name} 的角度仍在補齊。`,
+          relationshipNote: "互動對象會從備援資料繼續整理，不會卡在空白。",
+          angleCards: [
+            { title: "遠端較慢，改查備援…", detail: "正在切換到 published runtime profile。" },
+            { title: "備援資料接手中…", detail: "角度與互動對象會由備援來源補上。" },
+          ],
+          relationshipCards: [
+            { title: "切換備援資料中…", detail: "互動對象會繼續從 published profile 整理。" },
+            { title: "備援來源接手中…", detail: "畫面不會一直停在等待狀態。" },
+            { title: "正在確認可互動人物", detail: "等備援資料回來就會顯示。" },
+          ],
+          sceneTitle: "切換備援資料中",
+          sceneNote: "API 沒有及時回來，正在改查 published runtime profile。",
+          sceneLoadingTitle: "遠端較慢，改查備援資料…",
+          sceneLoadingDetail: "正在接手整理角度與互動對象。",
+        },
+        fallback_parse: {
+          statusMode: "正在整理備援資料",
+          statusHint: "published runtime profile 已回來，正在整理角度與互動對象。",
+          angleNote: "published runtime profile 已回來，正在整理角度與互動對象。",
+          relationshipNote: "備援資料已到位，正在把互動對象轉成可點選卡片。",
+          angleCards: [
+            { title: "正在整理備援資料…", detail: "published runtime profile 已回來。" },
+            { title: "角度與對象對齊中…", detail: "備援來源正在補齊互動條目。" },
+          ],
+          relationshipCards: [
+            { title: "備援資料整理中…", detail: "互動對象很快就會顯示。" },
+            { title: "正在合併角度與對象…", detail: "published profile 正在完成 shaping。" },
+            { title: "備援資料快完成了", detail: "請再等一下下。" },
+          ],
+          sceneTitle: "備援資料整理中",
+          sceneNote: "published runtime profile 已回來，正在整理角度與互動對象。",
+          sceneLoadingTitle: "正在整理備援資料…",
+          sceneLoadingDetail: "角度與互動對象很快就會出來。",
+        },
+        failed: {
+          statusMode: "載入失敗",
+          statusHint: "API 與 fallback 都沒有成功，請稍後再試。",
+          angleNote: "目前載入失敗，角度與互動對象暫時無法顯示。",
+          relationshipNote: "目前載入失敗，請稍後重試。",
+          angleCards: [
+            { title: "載入失敗", detail: "API 與 fallback 都沒有成功。" },
+            { title: "稍後再試", detail: "目前無法建立角度與互動對象。" },
+          ],
+          relationshipCards: [
+            { title: "載入失敗", detail: "API 與 fallback 都沒有成功。" },
+            { title: "請稍後重試", detail: "目前無法建立互動對象。" },
+            { title: "需要再等一下", detail: "遠端或 published profile 暫時不可用。" },
+          ],
+          sceneTitle: "人物檔案載入失敗",
+          sceneNote: "API 與 fallback 都沒有成功，請稍後再試。",
+          sceneLoadingTitle: "載入失敗",
+          sceneLoadingDetail: "API 與 published runtime profile 都沒有成功。",
+        },
+      };
+      return copyMap[phase] || copyMap.api_connect;
+    }
+
+    function loadingMarkup(title = LOADING_MESSAGE, detail = "") {
+      const parts = [`<span class="loading-pulse">${escapeHtml(title)}</span>`];
+      if (detail) {
+        parts.push(`<span class="loading-subtext">${escapeHtml(detail)}</span>`);
+      }
+      return parts.join("");
+    }
+
+    function buildLoadingCardMarkup(kind, card) {
+      const toneClass = state.bootPhase === "failed" ? " failed" : "";
+      return `
+        <button class="${kind}-button loading${toneClass}" type="button" disabled aria-busy="true" aria-disabled="true">
+          <strong>${escapeHtml(card.title)}</strong>
+          <span>${escapeHtml(card.detail)}</span>
+          <span class="loading-skeleton" aria-hidden="true"></span>
+        </button>
+      `;
+    }
+
+    function renderLoadingCards(kind) {
+      const copy = bootCopyForPhase(state.bootPhase, state.bootDisplayName);
+      const cards = kind === "angle" ? copy.angleCards : copy.relationshipCards;
+      return (cards || []).map((card) => buildLoadingCardMarkup(kind, card)).join("");
+    }
+
+    function renderLoadingCardGrid(kind) {
+      return renderLoadingCards(kind);
     }
 
     function currentGeneralId() {
@@ -3266,6 +3437,509 @@ ${evidenceLine}
       await advanceScene();
     }
 
+
+    function buildPublishedRuntimeAngleFromStoryBeat(beat) {
+      const families = Array.isArray(beat?.angleFamilies) ? beat.angleFamilies.map((family) => String(family || "").trim()).filter(Boolean) : [];
+      const familyToAngle = {
+        activity_seed: "activity",
+        affect_story: "emotion",
+        battle: "battlefield",
+        battlefield: "battlefield",
+        bond_story: "bond",
+        decision_story: "decision",
+        female_interaction: "emotion",
+        identity_story: "identity",
+        item_equipment: "resource",
+        location_context: "location",
+        personality_story: "personality",
+        relationship: "relationship",
+        role_story: "role",
+        work_role: "role",
+      };
+      for (const family of families) {
+        if (familyToAngle[family]) {
+          return familyToAngle[family];
+        }
+      }
+      return guessAngleFromText([beat?.summary, beat?.sourceQuote, beat?.eventKey, beat?.location].join(" "));
+    }
+
+
+    function buildPublishedRuntimeRelationshipTarget(anchor) {
+      const relationshipType = String(anchor?.type || anchor?.originalTypes?.[0] || "").trim();
+      const typeLabel = String(anchor?.typeLabel || relationshipType || "人物線索").trim();
+      return {
+        targetId: String(anchor?.targetId || "").trim(),
+        label: String(anchor?.targetName || anchor?.label || anchor?.targetId || "關係對象").trim(),
+        role: typeLabel,
+        thoughtTone: "",
+        dialogueTone: "",
+        actionBias: "",
+        meterDelta: { bond: 1, prudence: 1 },
+        femaleFocus: false,
+        confidence: Number(anchor?.edgeConfidence || 0.68),
+        sourceType: String(anchor?.sourceLayer || "runtime-general-profiles"),
+        relationshipType: relationshipType || null,
+        evidenceRefs: Array.isArray(anchor?.evidenceRefs) ? anchor.evidenceRefs.filter(Boolean).map(String) : [],
+      };
+    }
+
+
+    function buildPublishedRuntimeEvidenceCard(displayName, beat, index) {
+      const relatedTargetIds = Array.isArray(beat?.relatedGeneralIds) ? uniqueList(beat.relatedGeneralIds.map(String), 8) : [];
+      const summary = String(beat?.summary || beat?.sourceQuote || "").trim();
+      const title = String(beat?.eventKey || beat?.location || beat?.chapterNo || `${displayName}故事片段`).trim();
+      return {
+        evidenceId: String(beat?.eventId || beat?.eventKey || `published-story-beat-${index}`),
+        contextKey: String(beat?.eventKey || "") || null,
+        angle: buildPublishedRuntimeAngleFromStoryBeat(beat),
+        title,
+        summary: summary || `來自 ${displayName} 的公開 runtime profile 故事片段。`,
+        quote: String(beat?.sourceQuote || ""),
+        location: String(beat?.location || ""),
+        chapterNo: Number.isInteger(beat?.chapterNo) ? beat.chapterNo : null,
+        sourceType: "runtime-story-beat",
+        sourceRefs: Array.isArray(beat?.sourceRefs) ? beat.sourceRefs.filter(Boolean).map(String) : [],
+        relatedTargetIds,
+        confidence: Number(beat?.confidence || 0.72),
+      };
+    }
+
+
+    function buildPublishedRuntimeNarrativePayload(personaPayload, keywordPayload, relationshipPayload) {
+      const persona = personaPayload && typeof personaPayload === "object" ? personaPayload : {};
+      const keywords = keywordPayload && typeof keywordPayload === "object" ? keywordPayload : {};
+      const anchors = Array.isArray(relationshipPayload?.anchors) ? relationshipPayload.anchors : [];
+      const displayName = String(persona.displayName || relationshipPayload?.displayName || persona.generalId || "人物").trim();
+      const relationshipTargets = anchors
+        .map((anchor) => buildPublishedRuntimeRelationshipTarget(anchor))
+        .filter((target) => target.targetId);
+      const relationshipCards = relationshipTargets.map((target, index) => ({
+        evidenceId: `published-relationship:${target.targetId || index}`,
+        contextKey: null,
+        angle: "relationship",
+        title: `${displayName}與${target.label || target.targetId}的關係`,
+        summary: `${displayName}與${target.label || target.targetId}的關係類型為${target.role || "人物線索"}。`,
+        quote: "",
+        location: "",
+        chapterNo: null,
+        sourceType: "runtime-relationship-angle",
+        sourceRefs: target.evidenceRefs || [],
+        relatedTargetIds: target.targetId ? [target.targetId] : [],
+        confidence: Number(target.confidence || 0.68),
+      }));
+      const storyBeatCards = Array.isArray(persona.storyBeats)
+        ? persona.storyBeats.map((beat, index) => buildPublishedRuntimeEvidenceCard(displayName, beat, index))
+        : [];
+      const keywordCards = buildKeywordAngleCards(keywords.categories || {}, persona.profile || {});
+      const activitySeedHints = Array.isArray(persona.profile?.activitySeedHints) ? persona.profile.activitySeedHints : [];
+      const activitySeeds = uniqueList(activitySeedHints.map((hint) => String(hint || "").trim()).filter(Boolean), 8).map((hint) => ({
+        keywordKey: `activity.${hint}`,
+        label: humanizeSymbolicText(hint),
+        rawTag: hint,
+      }));
+
+      return {
+        displayName,
+        sourceMode: "runtime-general-profiles",
+        canonicalWrites: Boolean(persona.runtimeReadiness?.canonicalWrites),
+        persona,
+        keywords: keywords.categories || {},
+        relationshipEdges: anchors,
+        evidenceCards: mergeEvidenceCards(mergeEvidenceCards(storyBeatCards, relationshipCards), keywordCards),
+        itemRelations: Array.isArray(persona.itemRelations) ? persona.itemRelations : [],
+        activitySeeds,
+        interactionTargets: relationshipTargets,
+        illustrationPromptBase: `以清爽、輕鬆、易讀的劇情角色插畫描繪${displayName}，乾淨線條、柔和色彩、自然表情、溫暖電影光感，不要水墨山水、卷軸感或厚重筆刷；保留角色氣質；畫面中不要出現任何文字、中文字、字幕或招牌字。`,
+      };
+    }
+
+
+    async function loadPublishedRuntimeNarrativeData(generalId = currentGeneralId(), requestToken = state.profileRequestToken) {
+      const baseUrl = PUBLISHED_RUNTIME_PROFILE_BASE_URL.replace(/\/$/, "");
+      const displayName = generalOptionById(generalId)?.label || generalId;
+      const [personaResponse, keywordsResponse, relationshipsResponse] = await Promise.all([
+        fetch(`${baseUrl}/${encodeURIComponent(generalId)}/${encodeURIComponent(generalId)}.persona.json`, { cache: "no-store" }),
+        fetch(`${baseUrl}/${encodeURIComponent(generalId)}/${encodeURIComponent(generalId)}.keywords.json`, { cache: "no-store" }),
+        fetch(`${baseUrl}/${encodeURIComponent(generalId)}/${encodeURIComponent(generalId)}.relationships.json`, { cache: "no-store" }),
+      ]);
+      if (!personaResponse.ok || !keywordsResponse.ok || !relationshipsResponse.ok) {
+        throw new Error(`Published runtime profile fetch failed for ${generalId}.`);
+      }
+      if (requestToken === state.profileRequestToken) {
+        setBootPhase("fallback_parse", { requestToken, generalId, displayName });
+        renderAngles();
+        renderRelationships();
+        resetStageTexts();
+      }
+      const [personaPayload, keywordPayload, relationshipPayload] = await Promise.all([
+        personaResponse.json(),
+        keywordsResponse.json(),
+        relationshipsResponse.json(),
+      ]);
+      const payload = buildPublishedRuntimeNarrativePayload(personaPayload, keywordPayload, relationshipPayload);
+      const hasUsableNarrativeData = Array.isArray(payload.evidenceCards) && payload.evidenceCards.length > 0
+        && Array.isArray(payload.interactionTargets) && payload.interactionTargets.length > 0;
+      if (!hasUsableNarrativeData) {
+        throw new Error(`Published runtime profile payload is empty for ${generalId}.`);
+      }
+      return normalizeNarrativePayload(payload);
+    }
+
+    function buildNarrativeFailureData(generalId, reason = "") {
+      const displayName = generalOptionById(generalId)?.label || generalId || "未知人物";
+      return {
+        ...EMPTY_NARRATIVE_DATA,
+        displayName,
+        grade: "failed",
+        dataMode: "載入失敗",
+        dataHint: reason || "API 與 fallback 都沒有成功，請稍後再試。",
+        sourceMode: "failed",
+        traits: [],
+        relationships: [],
+        evidenceCards: [],
+        activitySeeds: [],
+      };
+    }
+
+
+    function setBootPhase(phase, { requestToken = state.profileRequestToken, generalId = currentGeneralId(), displayName = "" } = {}) {
+      if (requestToken !== state.profileRequestToken) {
+        return false;
+      }
+      state.bootPhase = phase;
+      state.bootDisplayName = displayName || generalOptionById(generalId)?.label || currentGeneralId();
+      const copy = bootCopyForPhase(phase, state.bootDisplayName);
+      setStatus(copy.statusMode, copy.statusHint);
+      updateAngleCoverageNote();
+      return true;
+    }
+
+
+    function updateAngleCoverageNote() {
+      if (!elements.angleCoverageNote) {
+        return;
+      }
+      if (state.bootPhase !== "ready") {
+        const copy = bootCopyForPhase(state.bootPhase, state.bootDisplayName);
+        elements.angleCoverageNote.textContent = copy.angleNote;
+        if (elements.relationshipCoverageNote) {
+          elements.relationshipCoverageNote.textContent = copy.relationshipNote;
+        }
+        return;
+      }
+      const allAngles = getAnglesWithAnyData();
+      const availableAngles = getAvailableAnglesForTarget(state.activePerson);
+      const visiblePeople = getAvailableTargetsForAngle(state.activeAngle);
+      elements.angleCoverageNote.textContent = `可用角度 ${availableAngles.length}/${allAngles.length}；可用互動 ${visiblePeople.length} 位；資料卡 ${state.data.evidenceCards.length} 張。`;
+      if (elements.relationshipCoverageNote) {
+        elements.relationshipCoverageNote.textContent = `可用互動對象 ${visiblePeople.length} 位；目前角度 ${angleDefinitions[state.activeAngle]?.label || state.activeAngle || "未選擇"}。`;
+      }
+    }
+
+
+    function renderAngles() {
+      if (!elements.angleGrid) {
+        return;
+      }
+      if (state.bootPhase !== "ready") {
+        elements.angleGrid.innerHTML = renderLoadingCardGrid("angle");
+        updateAngleCoverageNote();
+        return;
+      }
+      const counts = countTargetsByAngle();
+      const visibleAngles = getAvailableAnglesForTarget(state.activePerson);
+      elements.angleGrid.innerHTML = visibleAngles.map((key) => `
+        <button class="angle-button ${state.activeAngle === key ? "active" : ""}" type="button" data-angle="${key}">
+          <strong>${angleDefinitions[key].label}（${counts[key] || 0} 筆）</strong>
+          <span>${angleDefinitions[key].desc}</span>
+        </button>
+      `).join("");
+      elements.angleGrid.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.activeAngle = button.dataset.angle;
+          ensureLinkedSelection({ prefer: "angle" });
+          renderAngles();
+          renderRelationships();
+          clearSceneOutputsForSelectionChange();
+        });
+      });
+      updateAngleCoverageNote();
+    }
+
+
+    function renderRelationships() {
+      if (!elements.relationshipGrid) {
+        return;
+      }
+      if (state.bootPhase !== "ready") {
+        elements.relationshipGrid.innerHTML = renderLoadingCardGrid("relationship");
+        updateAngleCoverageNote();
+        return;
+      }
+      const visibleTargets = getAvailableTargetsForAngle(state.activeAngle);
+      elements.relationshipGrid.innerHTML = visibleTargets.map((target) => `
+        <button class="relationship-button ${state.activePerson === target.targetId ? "active" : ""}" type="button" data-person="${target.targetId}">
+          <strong>${target.label}${target.femaleFocus ? "（女）" : ""}</strong>
+          <span>${target.role}</span>
+        </button>
+      `).join("");
+      elements.relationshipGrid.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.activePerson = button.dataset.person;
+          ensureLinkedSelection({ prefer: "target" });
+          renderAngles();
+          renderRelationships();
+          clearSceneOutputsForSelectionChange();
+        });
+      });
+      updateAngleCoverageNote();
+    }
+
+    async function loadPublishedRuntimeNarrativeData(generalId = currentGeneralId(), requestToken = state.profileRequestToken) {
+      const baseUrl = PUBLISHED_RUNTIME_PROFILE_BASE_URL.replace(/\/$/, "");
+      const displayName = generalOptionById(generalId)?.label || generalId;
+      const [personaResponse, keywordsResponse, relationshipsResponse] = await Promise.all([
+        fetch(`${baseUrl}/${encodeURIComponent(generalId)}/${encodeURIComponent(generalId)}.persona.json`, { cache: "no-store" }),
+        fetch(`${baseUrl}/${encodeURIComponent(generalId)}/${encodeURIComponent(generalId)}.keywords.json`, { cache: "no-store" }),
+        fetch(`${baseUrl}/${encodeURIComponent(generalId)}/${encodeURIComponent(generalId)}.relationships.json`, { cache: "no-store" }),
+      ]);
+      if (!personaResponse.ok || !keywordsResponse.ok || !relationshipsResponse.ok) {
+        throw new Error(`Published runtime profile fetch failed for ${generalId}.`);
+      }
+      if (requestToken === state.profileRequestToken) {
+        setBootPhase("fallback_parse", { requestToken, generalId, displayName });
+        renderAngles();
+        renderRelationships();
+        resetStageTexts();
+      }
+      const [personaPayload, keywordPayload, relationshipPayload] = await Promise.all([
+        personaResponse.json(),
+        keywordsResponse.json(),
+        relationshipsResponse.json(),
+      ]);
+      const payload = buildPublishedRuntimeNarrativePayload(personaPayload, keywordPayload, relationshipPayload);
+      const hasUsableNarrativeData = Array.isArray(payload.evidenceCards) && payload.evidenceCards.length > 0
+        && Array.isArray(payload.interactionTargets) && payload.interactionTargets.length > 0;
+      if (!hasUsableNarrativeData) {
+        throw new Error(`Published runtime profile payload is empty for ${generalId}.`);
+      }
+      return normalizeNarrativePayload(payload);
+    }
+
+
+    async function loadNarrativeData(generalId = currentGeneralId(), requestToken = state.profileRequestToken) {
+      const displayName = generalOptionById(generalId)?.label || generalId;
+      if (requestToken === state.profileRequestToken) {
+        setBootPhase("api_connect", { requestToken, generalId, displayName });
+        renderAngles();
+        renderRelationships();
+        resetStageTexts();
+      }
+      const timeout = createTimeoutController(DEFAULT_PROFILE_TIMEOUT_MS);
+      try {
+        const response = await fetch(`${API_BASE}/v1/npc/narrative-profile?generalId=${encodeURIComponent(generalId)}`, {
+          headers: createApiHeaders(),
+          signal: timeout.signal,
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        if (requestToken === state.profileRequestToken) {
+          setBootPhase("api_parse", { requestToken, generalId, displayName });
+          renderAngles();
+          renderRelationships();
+          resetStageTexts();
+        }
+        const payload = await response.json();
+        const hasUsableNarrativeData = Array.isArray(payload.evidenceCards) && payload.evidenceCards.length > 0
+          && Array.isArray(payload.interactionTargets) && payload.interactionTargets.length > 0;
+        if (!hasUsableNarrativeData) {
+          throw new Error("Narrative payload is empty.");
+        }
+        return normalizeNarrativePayload(payload);
+      } catch (error) {
+        console.warn("narrative-profile fallback:", error);
+        if (requestToken === state.profileRequestToken) {
+          setBootPhase("fallback_connect", { requestToken, generalId, displayName });
+          renderAngles();
+          renderRelationships();
+          resetStageTexts();
+        }
+        try {
+          return await loadPublishedRuntimeNarrativeData(generalId, requestToken);
+        } catch (publishedError) {
+          console.warn("published runtime-profile fallback failed:", publishedError);
+          if (requestToken === state.profileRequestToken) {
+            setBootPhase("failed", { requestToken, generalId, displayName });
+            renderAngles();
+            renderRelationships();
+            resetStageTexts();
+          }
+          return buildNarrativeFailureData(generalId, "API 與 fallback 都沒有成功，請稍後再試。");
+        }
+      } finally {
+        timeout.clear();
+      }
+    }
+
+    function applyData(data) {
+      const failed = data?.bootPhase === "failed" || data?.grade === "failed" || data?.sourceMode === "failed";
+      state.bootPhase = failed ? "failed" : "ready";
+      state.data = data;
+      state.linkedIndex = buildLinkedDataIndex(data);
+      const fallbackName = generalOptionById(currentGeneralId())?.label || currentGeneralId();
+      const displayName = data.displayName || fallbackName;
+      state.bootDisplayName = displayName;
+      elements.profileName.textContent = displayName;
+      elements.profileGrade.textContent = data.grade;
+      updateProfilePortrait(currentGeneralId(), displayName);
+      renderGeneralSwitcher();
+      const stageTitle = document.querySelector(".topbar h1");
+      if (stageTitle) {
+        stageTitle.textContent = `${displayName} 的記憶與互動`;
+      }
+      elements.traitList.innerHTML = (data.traits || []).map((trait) => `<li>${trait}</li>`).join("");
+      setStatus(data.dataMode, data.dataHint);
+      elements.sourceBadge.textContent = data.sourceMode === "runtime-general-profiles" ? "備援資料" : "API 生成";
+      if (elements.chorusHint) {
+        elements.chorusHint.textContent = `可用資料卡 ${data.evidenceCards.length} 張；可互動對象 ${data.relationships.length} 位。`;
+      }
+      if (!failed) {
+        ensureLinkedSelection({ prefer: "angle" });
+      }
+      updateAngleCoverageNote();
+    }
+
+    function resetStageTexts() {
+      state.revealToken += 1;
+      state.imageRequestToken += 1;
+      state.dialogueRequestToken += 1;
+      state.narrativeRequestToken += 1;
+      abortIfAlive(state.imageAbortController);
+      abortIfAlive(state.dialogueAbortController);
+      abortIfAlive(state.sceneDirectorAbortController);
+      abortAllNarrativeControllers();
+      state.imageAbortController = null;
+      state.dialogueAbortController = null;
+      state.sceneDirectorAbortController = null;
+      state.currentBundle = null;
+      const bootCopy = bootCopyForPhase(state.bootPhase, state.bootDisplayName);
+      const isBooting = state.bootPhase !== "ready";
+      elements.sceneTitle.textContent = isBooting ? bootCopy.sceneTitle : "場景準備中";
+      elements.sceneNote.textContent = isBooting ? bootCopy.sceneNote : "先從角度與互動對象選出這一回合的焦點。";
+      elements.sourceBadge.textContent = isBooting
+        ? (state.bootPhase === "failed" ? "載入失敗" : state.bootPhase.startsWith("fallback") ? "備援資料" : "API 連線中")
+        : (state.data?.sourceMode === "runtime-general-profiles" ? "備援資料" : "API 生成");
+      elements.sceneMeta.innerHTML = "";
+      if (isBooting) {
+        const loadingBlock = loadingMarkup(bootCopy.sceneLoadingTitle, bootCopy.sceneLoadingDetail);
+        elements.sceneText.innerHTML = loadingBlock;
+        elements.memoryText.innerHTML = loadingBlock;
+        elements.emotionText.innerHTML = loadingBlock;
+        elements.dialogueText.innerHTML = loadingBlock;
+        elements.intentText.innerHTML = loadingBlock;
+        elements.storyText.innerHTML = loadingBlock;
+      } else {
+        elements.sceneText.textContent = "等待場景素材...";
+        elements.memoryText.textContent = "";
+        elements.emotionText.textContent = "";
+        elements.dialogueText.textContent = "";
+        elements.intentText.textContent = "";
+        elements.storyText.textContent = "";
+      }
+      if (elements.chorusHint) {
+        elements.chorusHint.textContent = isBooting ? bootCopy.sceneLoadingDetail : "";
+      }
+      elements.illustrationPrompt.textContent = isBooting ? bootCopy.sceneLoadingDetail : "請從下方卡片挑出一條關係或角度，再重新生成插圖提示。";
+      elements.illustrationHint.textContent = isBooting ? bootCopy.sceneLoadingDetail : "Prompt 與插圖會在場景開始後接續更新。";
+      elements.illustrationImage.hidden = true;
+      elements.illustrationImage.removeAttribute("src");
+      setIllustrationVisualState(isBooting ? bootCopy.sceneLoadingTitle : "等待插圖流程...", { showPlaceholder: true });
+      if (elements.chorusGrid) {
+        elements.chorusGrid.innerHTML = "";
+      }
+      elements.timeline.innerHTML = "";
+    }
+
+    async function switchGeneral(generalId) {
+      const option = generalOptionById(generalId);
+      if (!option) {
+        return;
+      }
+      const requestToken = ++state.profileRequestToken;
+      clearAutoTimer();
+      state.auto = false;
+      state.rendering = false;
+      state.generalId = option.id;
+      state.turn = 1;
+      state.activeAngle = "";
+      state.activePerson = "";
+      state.currentBundle = null;
+      state.sceneDirectorCircuitOpenUntil = 0;
+      state.meters = {
+        benevolence: 74,
+        bond: 83,
+        resolve: 58,
+        prudence: 49,
+        longing: 62,
+      };
+      updateGeneralUrl(option.id);
+      renderGeneralSwitcher();
+      updateProfilePortrait(option.id, option.label);
+      elements.profileName.textContent = option.label;
+      elements.profileGrade.textContent = "loading";
+      elements.traitList.innerHTML = "";
+      state.data = { ...EMPTY_NARRATIVE_DATA, displayName: option.label };
+      state.linkedIndex = buildLinkedDataIndex(state.data);
+      renderMeters();
+      elements.autoButton.textContent = "自動前進";
+      const data = await loadNarrativeData(option.id, requestToken);
+      if (requestToken !== state.profileRequestToken) {
+        return;
+      }
+      applyData(data);
+      ensureLinkedSelection({ prefer: "angle" });
+      renderMeters();
+      renderAngles();
+      renderRelationships();
+      resetStageTexts();
+    }
+
+    async function init() {
+      try {
+        bindEvents();
+        updateSpeedLabel();
+        renderGeneralSwitcher();
+        updateProfilePortrait(currentGeneralId(), generalOptionById(currentGeneralId())?.label || currentGeneralId());
+        elements.profileName.textContent = generalOptionById(currentGeneralId())?.label || currentGeneralId();
+        elements.profileGrade.textContent = "loading";
+        renderMeters();
+        const requestToken = ++state.profileRequestToken;
+        const data = await loadNarrativeData(currentGeneralId(), requestToken);
+        if (requestToken !== state.profileRequestToken) {
+          return;
+        }
+        applyData(data);
+        ensureLinkedSelection({ prefer: "angle" });
+        renderMeters();
+        renderAngles();
+        renderRelationships();
+        resetStageTexts();
+        if (state.bootPhase === "ready") {
+          await advanceScene();
+        }
+      } catch (error) {
+        console.error(error);
+        applyData(buildNarrativeFailureData(currentGeneralId(), "初始化失敗，暫時等待服務資料回補。"));
+        renderAngles();
+        renderRelationships();
+        resetStageTexts();
+        setStatus("服務待補", "初始化失敗，暫時等待服務資料回補。");
+      }
+    }
+
+    
     init().catch((error) => {
       console.error(error);
       applyData({ ...EMPTY_NARRATIVE_DATA });
