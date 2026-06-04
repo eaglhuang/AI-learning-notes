@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The End of AI Cowboy Mode: A Safety Brake for the Multi-Agent Era</title>
-  <meta name="description" content="When N AI agents change the same repo at once, how the Atomic Foundry forges a stable governance bedrock with 5D CID — seven-stage governance lifecycle, closure-packet.v1 SHA256 evidence chain, seven INV-ATM red lines, eleven behavior families. A plain-language walkthrough of an AI engineering safety-brake layer.">
+  <title>The End of Naked AI Coding: Accelerating Multi-Agent Development with a Deterministic Safety Brake</title>
+  <meta name="description" content="When N AI agents change the same repo at once, how the Atomic Foundry forges a stable governance bedrock with 5D CID — seven-stage governance lifecycle, closure-packet.v1 SHA256 evidence chain, seven INV-ATM red lines, full behavior set, and atom maps that retire legacy modules with a five-stage replacement lifecycle. A plain-language walkthrough of an AI engineering safety-brake layer.">
   <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public_en.html">
   <link rel="alternate" hreflang="zh-Hant" href="https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public.html">
   <style>
@@ -265,23 +265,70 @@
       h1 { font-size: 2rem; }
       table { display: block; overflow-x: auto; white-space: nowrap; }
     }
+    .figure-actions {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      z-index: 2;
+    }
+    .figure-actions button {
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 0.82rem;
+      background: rgba(25, 36, 47, 0.86);
+      color: #fff;
+      cursor: pointer;
+      transition: transform 140ms ease, background 140ms ease;
+    }
+    .figure-actions button:hover {
+      transform: translateY(-1px);
+      background: rgba(13, 122, 115, 0.92);
+    }
+    .copy-status {
+      position: absolute;
+      left: 20px;
+      bottom: 18px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(25, 36, 47, 0.82);
+      color: #fff;
+      font-size: 0.76rem;
+      letter-spacing: 0.02em;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 160ms ease, transform 160ms ease;
+      pointer-events: none;
+    }
+    .copy-status.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
+  <link rel="stylesheet" href="assets/css/dark-override.css">
+  <link rel="stylesheet" href="assets/css/article-base.css">
+  <script defer src="assets/js/article-base.js"></script>
 </head>
 <body id="top">
   <div class="page">
     <main class="main-column">
       <p class="back-links">
         <a href="./">Home</a>
-        |
+        ｜
         <a href="articles/">Articles</a>
+        ｜
+        <a href="atm_atomic_foundry_public.html">中文版</a>
       </p>
 
       <header class="hero">
         <p class="eyebrow">AI Engineering Governance · 2026</p>
-        <h1>The End of AI Cowboy Mode: A Safety Brake for the Multi-Agent Era</h1>
-        <p class="sub-title">When N agents change the same repo at once, how to move them into an "Atomic Foundry" and forge a stable governance bedrock with 5D CID</p>
+        <h1>The End of Naked AI Coding: Accelerating Multi-Agent Development with a Deterministic Safety Brake</h1>
+        <p class="sub-title">When N Agents Concurrently Mutate a Single Repo: How to Leverage the Atomic Foundry and 5D CID to Forge a Rock-Solid System Governance Foundation.</p>
         <p class="lede">Picture the whole repo as a foundry. Every piece of code an AI writes gets stamped with a <strong>multi-dimensional ID card (5D CID)</strong>, a SHA256 evidence packet you can replay months later, and a <strong>seven-stage lifecycle</strong> running from ORIENT to CLOSURE. What's cast isn't an anonymous diff — it's a cell with a name, a contract, audit trails, and the ability to be reused. <strong>The brake isn't here to slow you down; it's so that running five agents in parallel doesn't smash the project to pieces.</strong></p>
-        <p class="lang-switch"><a href="atm_atomic_foundry_public.html">中文版</a> · English</p>
         <div class="hero-grid">
           <div class="stat-card"><strong>7-stage lifecycle</strong><span>ORIENT → NEXT → LOCK → EXECUTE → EVIDENCE → HANDOFF → CLOSURE. Each stage is doctor-detectable; you can't skip stages.</span></div>
           <div class="stat-card"><strong>5D CID fingerprint</strong><span>Strict / Interface / Effects / Semantic / Behavior. Only Interface ships today; the rest are roadmap, and non-deterministic signals never enter the identity hash.</span></div>
@@ -300,7 +347,11 @@
         <h2>1. The walls you hit when many AIs build one project at once</h2>
         <p class="quote">Around day thirty you realize that babysitting three agents on your repo is more tiring than just writing it yourself.</p>
 
-        <figure class="figure-card">
+        <figure class="figure-card" data-figure-name="atm-duplicate-wheels">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
+          </div>
           <svg viewBox="0 0 1120 360" role="img" aria-label="Three AI agents each writing nearly identical retry helpers">
             <defs>
               <filter id="sf1" x="-30%" y="-30%" width="160%" height="160%">
@@ -352,6 +403,7 @@
             </g>
           </svg>
           <figcaption>Fig. 1: Three agents can't see each other's context, so each writes a near-identical retry helper — different names, same meaning. That is the "reinvented wheel" wall, and nobody has the global view to notice it.</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
         </figure>
 
         <p>Coding with a single AI assistant feels great at first. It fills in files, writes tests, drafts your README — progress without typing. Then you open a few more: one agent on this task, another on that one, a third opening a PR in your editor. You expect 3× the speed; you hit three walls.</p>
@@ -389,7 +441,11 @@
   "evidenceRefs": ["TASK-AAO-0042.closure-packet.json"]
 }</code></pre>
 
-        <figure class="figure-card">
+        <figure class="figure-card" data-figure-name="atm-atom-id-card">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
+          </div>
           <svg viewBox="0 0 1120 300" role="img" aria-label="An atom-cell mascot wearing a CID ID badge">
             <defs>
               <filter id="sf2" x="-30%" y="-30%" width="160%" height="160%">
@@ -429,17 +485,105 @@
             </g>
           </svg>
           <figcaption>Fig. 2: Every atom is a little cell wearing an ID badge. The <code>cid:</code> on the badge is its semantic fingerprint — the card that lets it be queried, deduplicated, and rediscovered by future projects.</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
         </figure>
 
         <p>So the foundry metaphor is precise. A factory ships finished assemblies; a foundry ships <strong>castings, each stamped with a serial number</strong> — traceable on its own, with its own recipe, ready to flow into the next product. Code should work the same way.</p>
         <p>Once your repo enters this mode, an AI agent's job becomes "cast a new atom" or "apply a governed transformation to an existing one." It cannot write a floating, identity-less snippet, because the foundry refuses anything without a serial number.</p>
       </section>
 
+      <section class="panel" id="map">
+        <h2>3. Above atoms there's the map: a governance replacement surface for legacy modules</h2>
+        <p>You might be wondering: "OK, every piece of code becomes an ID-bearing cell — but what about that 1500-line legacy <code>checkout.py</code>? If I shred it into 30 atoms, am I done?" Not yet. <strong>Atoms own capability; composition semantics belong to the map.</strong></p>
+        <p class="quote">An atom is a cell; a map is an organ. Without a map, even a perfectly shredded legacy module has no single thing that can stand up and say "I'm the new checkout, retire the old one."</p>
+
+        <h3>3.1 Why atom maps exist</h3>
+        <p>The price of slicing finely (§2) is that the integrated entry point is gone. A checkout flow turned into 30 atoms still owes you these answers:</p>
+        <ul>
+          <li>Which atom is the new entry point? Which atoms play <em>entry-adapter</em>, <em>validator</em>, <em>side-effect-adapter</em>?</li>
+          <li>Where do <em>data-flow</em> / <em>control-flow</em> / <em>validation</em> edges run between atoms?</li>
+          <li>Does it actually behave like the old <code>checkout.py</code>? Which known divergences are acceptable?</li>
+          <li>If something goes wrong, is there a clean rollback path back to legacy?</li>
+        </ul>
+        <p>None of these can be answered by a single atom, so ATM adds a layer above atoms — the <strong>atomic map</strong>. Its schema is <code>atomic-map.schema.json</code>, and it lives parallel to atoms at <code>atomic_workbench/maps/&lt;mapId&gt;/map.spec.json</code>.</p>
+
+        <h3>3.2 The four replacement contracts</h3>
+        <p>A real map is not just a list of members plus edges. It promises four things — together they form the <strong>governance replacement surface</strong>:</p>
+        <div class="split">
+          <div class="mini-card">
+            <h3>Structural semantics</h3>
+            <p><code>members[].role</code> (entry-adapter / validator / side-effect-adapter…) and <code>edges[].edgeKind</code> (data-flow / control-flow / validation). No role + edgeKind, no promotion.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Replacement declaration</h3>
+            <p><code>replacement.legacyUris[]</code> explicitly enumerates what is being replaced, e.g. <code>legacy://app/checkout.py#L1-L1500</code>. Without this field the map stays in draft forever.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Verifiable equivalence</h3>
+            <p>A <code>map-equivalence-report</code> proves the map behaves like the legacy entry. Known divergences are allowed — but only if explicitly enumerated in <code>knownDivergences[]</code>.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Safe exit</h3>
+            <p>Reaching <code>legacy-retired</code> requires a <code>rollback-proof</code> or <code>retirement-proof</code>. No reverse path, no retirement.</p>
+          </div>
+        </div>
+
+        <h3>3.3 Five-stage replacement lifecycle: draft → shadow → canary → active → legacy-retired</h3>
+        <p>Replacing legacy is never a single switch flip. It is a gated five-stage pipeline; every transition is guarded by police + evidence:</p>
+
+        <figure class="figure-card" data-figure-name="atm-map-replacement-lifecycle">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
+          </div>
+          <svg viewBox="0 0 1280 280" role="img" aria-label="Atom map five-stage replacement lifecycle">
+            <defs>
+              <marker id="mrpArrowEn" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+                <path d="M0 0 L12 6 L0 12 z" fill="#0d7a73"/>
+              </marker>
+            </defs>
+            <rect width="1280" height="280" rx="24" fill="#fffaf2"/>
+            <g font-family="Iowan Old Style, Georgia, serif">
+              <g transform="translate(40,90)"><rect width="200" height="92" rx="18" fill="#527b8a"/><text x="100" y="42" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">draft</text><text x="100" y="66" text-anchor="middle" fill="#dbe7ed" font-size="11">map created</text><text x="100" y="82" text-anchor="middle" fill="#dbe7ed" font-size="11">no replacement claim yet</text></g>
+              <g transform="translate(258,90)"><rect width="200" height="92" rx="18" fill="#0d7a73"/><text x="100" y="42" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">shadow</text><text x="100" y="66" text-anchor="middle" fill="#d8ebf6" font-size="11">runs parallel to legacy</text><text x="100" y="82" text-anchor="middle" fill="#d8ebf6" font-size="11">compares, never decides</text></g>
+              <g transform="translate(476,90)"><rect width="200" height="92" rx="18" fill="#cb7d2e"/><text x="100" y="42" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">canary</text><text x="100" y="66" text-anchor="middle" fill="#fceacf" font-size="11">small slice goes live</text><text x="100" y="82" text-anchor="middle" fill="#fceacf" font-size="11">rollback path preserved</text></g>
+              <g transform="translate(694,90)"><rect width="200" height="92" rx="18" fill="#085d58"/><text x="100" y="42" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">active</text><text x="100" y="66" text-anchor="middle" fill="#a9e0d6" font-size="11">becomes the entry</text><text x="100" y="82" text-anchor="middle" fill="#a9e0d6" font-size="11">legacy demoted to backup</text></g>
+              <g transform="translate(912,90)"><rect width="220" height="92" rx="18" fill="#16222d"/><text x="110" y="42" text-anchor="middle" fill="#fffaf2" font-size="18" font-weight="700">legacy-retired</text><text x="110" y="66" text-anchor="middle" fill="#a9c2d3" font-size="11">old entry retired</text><text x="110" y="82" text-anchor="middle" fill="#a9c2d3" font-size="11">rollback-proof required</text></g>
+            </g>
+            <g stroke="#0d7a73" stroke-width="3" fill="none" marker-end="url(#mrpArrowEn)">
+              <path d="M240 136 L258 136"/><path d="M458 136 L476 136"/><path d="M676 136 L694 136"/><path d="M894 136 L912 136"/>
+            </g>
+            <text x="640" y="44" text-anchor="middle" font-size="13" font-weight="700" fill="#085d58" font-family="monospace">Every transition is gated by police + evidence; no stage can be skipped.</text>
+            <text x="640" y="232" text-anchor="middle" font-size="12" fill="#465464" font-family="monospace">shadow→canary: map-integration pass | canary→active: equivalence + propagation + human review | active→retired: rollback proof</text>
+          </svg>
+          <figcaption>Figure 3: The atom map's five-stage replacement lifecycle. Legacy is never cut over in one step — it is first shadowed for comparison, trialed in canary, promoted to active only once equivalence is proven, and finally retired only with a rollback proof in hand.</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+
+        <h3>3.4 Three data tiers: what's disposable, what's load-bearing</h3>
+        <p>The v2 plan (map-replacement-protocol v2-r2) splits everything into three tiers, each with its own tolerance rule:</p>
+        <table>
+          <thead><tr><th>Tier</th><th>Examples</th><th>Rule</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Source-of-truth</strong></td><td>atom source, <code>map.spec.json</code>, capsule manifest</td><td>Must be verifiable and rebuildable; never overwritten by cache</td></tr>
+            <tr><td><strong>Derived state</strong></td><td>registry, Mermaid diagrams, health reports</td><td>Deletable and rebuildable; must carry <code>generatedAt</code></td></tr>
+            <tr><td><strong>Local volatile</strong></td><td>daemon PID, guide cache</td><td>Off-git by default; safe to delete on corruption</td></tr>
+          </tbody>
+        </table>
+        <p>Combined with <strong>M26 Rescue Police</strong> and <strong>M27 Disaster Recovery CLI</strong> (two task cards in map-replacement-protocol), this guarantees a golden property: <strong>as long as source-of-truth survives, every registry and derived report can be rebuilt from scratch</strong>. Even if the map has retired legacy and derived data is corrupted, you still have a road back.</p>
+
+        <p>So atom maps are where ATM actually answers "legacy module."<sup><a href="#roadmap-notes">*</a></sup> Atoms (§2) tell you <em>what a piece of code is</em>; maps tell you <em>how a chunk of legacy gets replaced in an orderly, evidence-backed, rollback-safe way</em>. Without the map, you've only pinned cells to a wall. With the map, you have an organ you can actually transplant.</p>
+      </section>
+
       <section class="panel" id="roles">
-        <h2>3. The governance skeleton: seven stages + five atoms + eleven behaviors</h2>
+        <h2>4. The governance skeleton: seven stages + five atoms + the full behavior set</h2>
         <p>Before we talk about the "brake," we need to look at where the brake is mounted. The foundry's skeleton is not "one agent doing the job end-to-end." It is <strong>a single piece of work split into seven machine-detectable stages</strong>, with two stable outward contracts — <em>atoms</em> and <em>behaviors</em> — strapping every change down. The diagram below is what's actually shipped today (not roadmap):</p>
 
-        <figure class="figure-card">
+        <figure class="figure-card" data-figure-name="atm-7-stage-lifecycle">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
+          </div>
           <svg viewBox="0 0 1280 360" role="img" aria-label="ATM seven-stage governance lifecycle">
             <defs>
               <filter id="lifecycleShadow" x="-20%" y="-20%" width="140%" height="140%">
@@ -475,7 +619,8 @@
               <text x="600" y="66" text-anchor="middle" font-size="11" fill="#465464">11 behavior families (plugin-behavior-pack): split / atomize / merge / dedup-merge / compose / evolve / polymorphize / expire / sweep / infect</text>
             </g>
           </svg>
-          <figcaption>Fig. 3: ATM's seven-stage governance lifecycle. Each stage has its own CLI command, its own doctor check, and its own verification contract. The strip at the bottom is the "stable outward governance units": five active atoms (governed tier) handling identity / provisioning / neutrality / fingerprint, plus eleven behavior families — the legal verbs you can apply to atoms.</figcaption>
+          <figcaption>Fig. 4: ATM's seven-stage governance lifecycle. Each stage has its own CLI command, its own doctor check, and its own verification contract. The strip at the bottom is the "stable outward governance units": five active atoms (governed tier) handling identity / provisioning / neutrality / fingerprint, plus ten plugin behaviors (plus two capsule-tier helpers: anchorize, promote) — the legal verbs you can apply to atoms.</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
         </figure>
 
         <p><strong>What's an atom?</strong> Not a task, not a commit. It's the smallest governable unit with a unique <code>ATM-{BUCKET}-{NNNN}</code> id, a hash-locked spec, and evidence-required validation. Five active atoms in the registry right now (governed tier): seed (0001), neutrality scanner (0003), atom generator (0004), semantic fingerprint (0005), generator self-test fixture (FIXTURE-0001). <strong>You can't</strong> edit <code>atomic-registry.json</code> directly — every new atom has to go through ATM-CORE-0004 and pass the INV-ATM-003 schema gate (which is one of the seven charter red lines).</p>
@@ -508,17 +653,12 @@
           </div>
         </div>
 
-        <div class="callout">
-          <strong>About "15 roles across 4 layers"</strong>: that's not what's shipped. It's a design proposal in the Team Agents lane (planning) for future division of labor. What's actually shipped today is <strong>"seven stages + five atoms + eleven behaviors + seven INV-ATM red lines" — those four contracts</strong>, exposed by the onefile runner through <code>node atm.mjs &lt;command&gt;</code>. Get those clear first; then the next three sections (CID, lease, evidence chain) attach to the right anchors.
-        </div>
       </section>
 
       <section class="panel" id="cid">
-        <h2>4. 5D CID: a multi-dimensional ID card for every atom</h2>
+        <h2>5. 5D CID: a multi-dimensional ID card for every atom</h2>
         <p>This is the heart of the foundry metaphor. <strong>Every atom carries an ID card — a CID (content-addressable identifier).</strong> It is not a fingerprint of "what the code means" (that's something computer science can't actually deliver). It's a fingerprint of <strong>what the atom publicly declares it does</strong>.</p>
-        <div class="callout">
-          <strong>The honest boundary, up front</strong>: a CID is <strong>deterministic</strong> — no source parsing, no AST analysis, no LLM call, no embedding. What it hashes is the contract fields the atom declares for itself (input / output ports, language, evidence requirement, performance budget). The same declaration always yields the same card; any non-deterministic signal (vectors, model outputs, timestamps) is forbidden from this hash.
-        </div>
+        <p><strong>A CID is deterministic</strong> — no source parsing, no AST analysis, no LLM call, no embedding. What it hashes are the contract fields the atom declares for itself (input / output ports, language, performance budget). The same declaration always yields the same card; non-deterministic signals are forbidden from this hash.</p>
         <p>A concrete example. Two agents write a retry helper. The <strong>implementations look completely different</strong>:</p>
         <pre><code>// Version A: for-loop
 async function retry(url, opts) { /* ... */ }
@@ -562,7 +702,11 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
         </table>
         <p>The last three (Effects / Semantic / Behavior) will <strong>never</strong> be mixed into the identity hash — they're advisory, not identity. This firewall is the <strong>determinism axiom</strong>: identity has to be stable, recomputable, and unaffected by model-version drift.</p>
 
-        <figure class="figure-card">
+        <figure class="figure-card" data-figure-name="atm-cid-interface-machine">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
+          </div>
           <svg viewBox="0 0 1120 340" role="img" aria-label="Feeding the declared contract into a machine that stamps out a fingerprinted ID card">
             <defs>
               <filter id="sf4" x="-30%" y="-30%" width="160%" height="160%">
@@ -611,6 +755,7 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
             <text x="826" y="258" text-anchor="middle" font-size="13" fill="#465464">same contract &rarr; same card</text>
           </svg>
           <figcaption>Fig. 5: Feed in the atom's declared contract (ports, language, execution constraints). The machine normalizes it, stamps on a SHA256 seal, and emits a CID.Interface. Different implementations are fine — as long as they declare the same outward contract, they receive the same ID card.</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
         </figure>
 
         <p>With that card in hand, here's what becomes possible — flagged honestly with what already runs and what's still on the roadmap:</p>
@@ -623,17 +768,10 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
         </div>
         <p>CIDs also resolve an old question: "how much interface-level duplication does my codebase have?" That used to be fragile static analysis; now that every atom carries a deterministic fingerprint, it's an O(1) lookup. One caveat to be loud about — <strong>matching interface ≠ matching behavior</strong>. The latter belongs to runtime testing (which is where CID.Behavior and the zero-trust sandbox are headed on the roadmap). CID itself only covers the layer of "who declared what contract."</p>
 
-        <div class="callout">
-          <strong>Two roadmap rules around CID.Behavior and Tier 3</strong>:
-          <ul style="margin-top:10px">
-            <li><strong>Mutation testing / adversarial QA must never sit on the synchronous close path.</strong> These tests are slow and compute-heavy; stuffing them inside <code>atm tasks close</code> would jam the whole governance chain. The right shape: synchronous close marks CID.Behavior as <code>pending</code> or <code>candidate</code>; an async Police / Behavior Police pipeline runs in the background, and only after it passes does the Tier 3 badge get attached. Before any of this runs in production, you must write down explicit budget / cap / sampling / sharding / timeout policies — otherwise the test pipeline itself becomes the compute disaster.</li>
-            <li><strong>Tier 3 "tamper-resistant" requires external attestation.</strong> Local sandbox evidence only reaches Tier 2 (anti-confusion, not anti-tamper). To climb to Tier 3 / marketplace-grade, the closure must carry an external <code>AttestationProvider</code> signature with verifiable provenance — with GitHub Actions (attestation API + OIDC) as the first reference adapter, but the core stays abstract and isn't hard-bound to any single CI platform. Local agents, local Deno sandboxes, local daemons: <strong>none of them are trust roots</strong>. The signature source is.</li>
-          </ul>
-        </div>
       </section>
 
       <section class="panel" id="permission">
-        <h2>5. Permission is the gear: leases replace folder isolation</h2>
+        <h2>6. Permission is the gear: leases replace folder isolation</h2>
         <p class="quote">Two agents cannot hold the same write key at the same time — this layer stops it before git ever runs.</p>
         <p>The place multi-agent work crashes hardest is "who may write what." The traditional answer is folder permissions or tool allowlists, and both share a flaw: <strong>they are static and don't change with the task</strong>.</p>
         <p>The foundry splits permission into named objects, each with a mode:</p>
@@ -664,7 +802,11 @@ $ node atm.mjs team lease --agent builder-02 \
   file.write is exclusive and already held by builder-01 (since 12:04:11)
   &rarr; builder-02 must wait for release, or take a non-overlapping scope</code></pre>
 
-        <figure class="figure-card">
+        <figure class="figure-card" data-figure-name="atm-exclusive-lease-key">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
+          </div>
           <svg viewBox="0 0 1120 260" role="img" aria-label="One write key can go to only one agent at a time">
             <defs>
               <filter id="sf5" x="-30%" y="-30%" width="160%" height="160%">
@@ -707,17 +849,15 @@ $ node atm.mjs team lease --agent builder-02 \
             </g>
           </svg>
           <figcaption>Fig. 6: <code>file.write</code> is a single key. While builder-01 holds it, builder-02 can't even reach it — the conflict is stopped at the permission layer, long before a git merge.</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
         </figure>
 
         <p>Permissions can be handed over, but only through <code>team lease</code> and <code>team release</code> on the CLI — every handover records a timestamp, the agent ID, and the permission scope. That lease history travels with the closure-packet into permanent evidence.</p>
 
-        <div class="callout">
-          <strong>Honest boundary — shipped vs roadmap</strong>: the permission table and the <code>team lease</code> CLI above are design proposals from the Team Agents lane (planning). <strong>What's actually shipped</strong> is the minimum useful set: <code>ScopeLockRecord</code> (schema <code>atm.governanceScopeLock</code>) with <code>leaseId + heartbeatAt + ttlSeconds</code> + <code>taskDirectionLock.allowedFiles</code> + the INV-ATM-002 "lock-before-edit" doctor check. <code>leaseEpoch</code> (fencing token) / wait-for-graph deadlock detection / symbol-scope leases are E2 roadmap, not built yet. But even with only what's shipped, the brake — "unlocked edit detected → next <code>atm next</code> returns blocked → agent gets steered into acquire" — already works.
-        </div>
       </section>
 
       <section class="panel" id="memory">
-        <h2>6. Shared memory: charter is the supreme authority, ATMChart is the runtime brake, closure-packet is the evidence chain</h2>
+        <h2>7. Shared memory: charter is the supreme authority, ATMChart is the runtime brake, closure-packet is the evidence chain</h2>
         <p>The other place multi-AI work tips over is context drift — Agent A told me an assumption, Agent B never heard it, and so B writes code inconsistent with A. By the time you notice, three files are adrift. The foundry doesn't fight this with "prompt reminders." It writes the governance rules into three layers of machine-readable contract:</p>
         <ul>
           <li><strong>Supreme authority = the atomic charter (<code>.atm/charter/atomic-charter.md</code>) + 7 INV-ATM</strong>. The charter is the framework's final arbiter, currently at v2.0.0; INV-ATM-001~007 are immovable red lines, enforced by three mechanisms (gate / doctor / waiver-required). Breaking an invariant cannot be routed around — it must go through the charter waiver flow (<code>behavior.evolve</code> + <code>charterWaiver</code> + <code>HumanReviewDecision</code>).</li>
@@ -756,7 +896,7 @@ $ node atm.mjs team lease --agent builder-02 \
       </section>
 
       <section class="panel" id="police">
-        <h2>7. 7 INV-ATM red lines + 9 resident police: contract brake & structural conscience</h2>
+        <h2>8. 7 INV-ATM red lines + resident police families: contract brake & structural conscience</h2>
         <p class="quote">While you sleep, the patrol keeps walking; the invariants never clock out.</p>
 
         <p>The foundry's "brake" comes in two layers. <strong>The contract-layer brake is the seven INV-ATM red lines</strong> on the charter (public, stable, written into the framework). <strong>The detection-layer brake is the nine resident police families</strong> (advisory, run automatically, report to humans for the verdict). They split labor like this:</p>
@@ -773,8 +913,8 @@ $ node atm.mjs team lease --agent builder-02 \
           </tbody>
         </table>
 
-        <p>The seven INV-ATM are a public contract; breaking one requires a charter waiver. The nine police families are advisory detection — they're not in the charter, but they walk through the registry and source daily, catching <strong>chronic structural decay</strong>. Safety of one mutation belongs to INV-ATM; health of the repo after hundreds of mutations belongs to the police families.</p>
-        <p>The nine police families:</p>
+        <p>The seven INV-ATM are a public contract; breaking one requires a charter waiver. The police families are advisory detection — they're not in the charter, but they walk through the registry and source daily, catching <strong>chronic structural decay</strong>. Safety of one mutation belongs to INV-ATM; the health of the repo after hundreds of mutations belongs to the police families.</p>
+        <p>A few of the most common police families (the full roster has more than a dozen):</p>
         <div class="split-3">
           <div class="mini-card">
             <h3>Dedup Police</h3>
@@ -802,7 +942,11 @@ $ node atm.mjs team lease --agent builder-02 \
           </div>
         </div>
 
-        <figure class="figure-card">
+        <figure class="figure-card" data-figure-name="atm-patrol-police-finding">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
+          </div>
           <svg viewBox="0 0 1120 270" role="img" aria-label="A patrol police bot inspecting a row of cells and flagging a suspected duplicate">
             <defs>
               <filter id="sf7" x="-30%" y="-30%" width="160%" height="160%">
@@ -835,6 +979,7 @@ $ node atm.mjs team lease --agent builder-02 \
             <g transform="translate(920,120)"><rect width="150" height="60" rx="14" fill="#eaf7f4" stroke="#90cbc1"/><text x="75" y="26" text-anchor="middle" font-size="12" font-weight="700" fill="#085d58">emits a finding</text><text x="75" y="46" text-anchor="middle" font-size="11" fill="#3c5f6e">advisory · no touch</text></g>
           </svg>
           <figcaption>Fig. 7: The police bot walks the registry, spots a cell whose fingerprint is suspiciously close to another, plants a <code>dup?</code> flag, and emits a finding — then stops right there. It only reports; it never merges on its own.</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
         </figure>
 
         <p>These police share one iron rule: <strong><code>directApplyAllowed: false</code></strong>. They can find problems, suggest routes, and draft plans, but they <strong>never mutate directly</strong>. A finding, opened up, is quite plain — the line that matters is the last one:</p>
@@ -852,7 +997,7 @@ $ node atm.mjs team lease --agent builder-02 \
       </section>
 
       <section class="panel" id="setup">
-        <h2>8. From git clone to first task close: the minimum adoption path</h2>
+        <h2>9. From git clone to first task close: the minimum adoption path</h2>
         <p>For all of this complexity, the adoption barrier is low. ATM's official distribution unit is a <strong>single-file runner <code>atm.mjs</code></strong> (about 3.1 MB of strip-types bundle, zero transitive deps); deployment is an explicit framework → adopter <em>sync</em>, not <code>npm install</code>. The minimum path from zero to your first closure-packet:</p>
         <pre><code># 0-15 min: get the runner + ORIENT
 # Framework side (onefile is already built):
@@ -887,21 +1032,18 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
 # containing commandRuns[].stdoutSha256 + targetCommit + governedTreeSha
 # Any future audit replays the same commands → byte-for-byte comparison</code></pre>
 
-        <div class="callout">
-          <strong>Boundary notes</strong>: (1) <code>npx create-atm</code> / <code>examples/team-agents-minimal/</code> are the convenience layer planned in the Team Agents lane; what's shipped today is the <code>internal-release sync</code> shown above. (2) If your repo <em>is</em> the framework, <code>doctor</code> detects the framework signature and turns on extra rules (INV-ATM-006: framework tasks must stay target-local; the closure-packet must carry framework gate provenance). Adopter mode is bound only by the universal invariants.
-        </div>
         <p>What do you own at the ninety-minute mark?</p>
         <ul>
           <li>A commit carrying a teamRunId and a reference to its closure evidence</li>
           <li>A <code>.atm/history/evidence/TASK-XXXX.closure-packet.json</code> with the stdout SHA256 of every command</li>
-          <li>A patrol-report.md recording the structural health at close time</li>
-          <li>A team-memory-shard.md filing this task's lesson into a searchable knowledge base</li>
+          <li>A patrol-report.md recording the structural health at close time<sup><a href="#roadmap-notes">*</a></sup></li>
+          <li>A team-memory-shard.md filing this task's lesson, to be re-read by a human or the Captain when opening the next task<sup><a href="#roadmap-notes">*</a></sup></li>
         </ul>
-        <p>Those four are the most direct difference between the foundry and ordinary vibe coding: <strong>you don't just get finished code — you get permanent evidence, a structural snapshot, and an accumulating lesson</strong>. Next time you open a task, these are loaded into the next agent's context automatically.</p>
+        <p>The first two are the most direct difference between the foundry and ordinary vibe coding: <strong>you don't just get finished code — you get permanent evidence and a structural snapshot</strong>. The memory shard and patrol report are templates filed into git; they are not auto-injected into the next agent's context.</p>
       </section>
 
       <section class="panel" id="fail">
-        <h2>9. Where it tends to fail (and the doctor checks that catch it)</h2>
+        <h2>10. Where it tends to fail (and the doctor checks that catch it)</h2>
         <p>Honestly, the foundry isn't green on the first try. The six scenarios below are the ones I hit most often, and they're also the ones ATM doctor checks name directly. Each maps to a specific check; failure returns a <code>firstFailedCheck</code> with a <code>suggestion</code> — no guesswork needed:</p>
         <div class="split-3">
           <div class="mini-card">
@@ -933,7 +1075,7 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
       </section>
 
       <section class="panel" id="market">
-        <h2>10. A CID-native atom market: the north star, not next month's release</h2>
+        <h2>11. A CID-native atom market: the north star, not next month's release</h2>
         <p>Everything so far has been about a <strong>single project</strong>. From here on, this is roadmap territory — and I want to draw the line clearly between what this road can actually deliver and what's still north star, so I don't sell empty promises.</p>
         <p>The dominoes line up like this: CID.Interface is deterministic, which means the same outward declaration produces the same CID.Interface regardless of author or project. If ten thousand projects adopt the same governance protocol, each produces a list of CID-bearing atoms. One day in a new project you need <code>idempotent-http-retry-with-jitter</code>:</p>
         <ol>
@@ -945,28 +1087,38 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
         </ol>
         <p>What it would fill is a real gap that sits after <strong>npm + Docker Hub + Stack Overflow</strong> and isn't covered by any of them: npm gives you a package but not its internal structure, Stack Overflow gives you a snippet with no audit, Docker gives you an image at far too coarse a grain. <strong>Function-grain, governance-laden, machine-searchable code cells</strong> — yes, this slot deserves to exist.</p>
 
-        <div class="callout">
-          <strong>But these boundaries need to be stated up front, before anyone treats this as "shippable next month"</strong>:
-          <ul style="margin-top:10px">
-            <li><strong>The market is the last epoch, not next year</strong>: a cross-organization market depends on the local layer being mature first — Trust Tier institutionalized, the zero-trust sandbox shipped. The current ATM roadmap <em>gates</em> it as the final stage and conditions it on Tier 3 (sandbox + adversarial QA + mutation testing) being proven inside a single project. Until those prerequisites land, the market is castles in the air.</li>
-            <li><strong>It does not replace npm or Docker</strong>: it sits at a different layer. npm will keep shipping packages and Docker will keep shipping images. The CID market handles the "function-grain, governed, recomposable" granularity — it fills a gap, it doesn't supplant.</li>
-            <li><strong>In-place resolution doesn't abolish dependency management; it lifts it up to the contract layer</strong>: when you infect an atom, the framework first binds it to whatever local atoms already satisfy the same contract. Only when nothing local matches does it actually pull an implementation from the market (and at that point you still face transitive dependencies). Cleaner than <code>node_modules</code>, but not "dependency-free."</li>
-            <li><strong>Infect is always advisory + human-reviewed</strong>: nothing wires a stranger's atom into your code automatically. Like every other atom behavior, it's bound by the <code>directApplyAllowed:false</code> iron rule.</li>
-          </ul>
-        </div>
+        <p><strong>A few important boundaries.</strong> A cross-organization market is the last epoch, conditioned on Trust Tier and a zero-trust sandbox landing first. It does <strong>not replace npm or Docker</strong> — it fills the "function-grain, governed, recomposable" gap that those don't cover. <code>infect</code> is always advisory + human-reviewed; nothing auto-wires a stranger's atom into your code.<sup><a href="#roadmap-notes">*</a></sup></p>
 
         <p>So, honestly: the CID atom market is the <strong>north star</strong>, not a promised next version. What I'm actually building and can deliver on a sensible timeline is to make CID.Interface + the evidence chain + the patrol police work solidly inside a single project. The market is what naturally emerges when the same protocol gets stretched across organizations — it needs ground beneath it first.</p>
         <p>Back to the picture I ultimately want to see: <strong>every piece of code an AI writes should be a named, auditable, findable cell — not an orphan living only in my repo</strong>. That doesn't have to wait for the market. It can start with the repo you're already in today, the moment every atom gets a deterministic CID.Interface.</p>
       </section>
 
       <section class="panel" id="closing">
-        <h2>11. Closing</h2>
+        <h2>12. Closing</h2>
         <p>In 2025 everyone competed on "how smart is my AI agent." In 2026 I think the question should change: <strong>when N smart agents edit one repo at once, can that repo stay governable?</strong></p>
-        <p>My answer is the foundry + the multi-dimensional ID card + the seven-stage brake. Turn every piece of code into a named cell, every change into a hashed evidence record, write the seven INV-ATM as charter red lines, let nine resident police watch structural health, and pin ORIENT→CLOSURE down as a lifecycle you can't skip. It sounds like a lot of rules, but the payoff is this: <strong>six months later my repo is still readable, still auditable, still reusable — and I can run five agents in parallel without smashing it</strong>.</p>
+        <p>My answer is the foundry + the multi-dimensional ID card + the seven-stage brake. Turn every piece of code into a named cell, every change into a hashed evidence record, write the seven INV-ATM as charter red lines, let the resident police families watch structural health, and pin ORIENT→CLOSURE down as a lifecycle you can't skip. It sounds like a lot of rules, but the payoff is this: <strong>six months later my repo is still readable, still auditable, still reusable — and I can run five agents in parallel without smashing it</strong>.</p>
         <p>If all you want is one small feature, this protocol is overkill. But if you're building something that runs for months, with multiple AIs working in parallel, that may one day face compliance, and whose good atoms you'd like to share with the world — what you need is a foundry like this, with brakes.</p>
         <div class="callout">
           This is an intro. For the actual implementation, API, police-family mechanics, and permission-model details, see <a href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">github.com/eaglhuang/AI-Atomic-Framework</a>. The framework is MIT — the whole protocol can be forked, the governance bundle swapped for your own, or used in part (just the evidence chain, or just ATMChart).
         </div>
+      </section>
+
+      <section class="panel" id="roadmap-notes">
+        <h2>* Notes: roadmap &amp; current implementation status</h2>
+        <p>To keep this article readable, "shipped" and "planned" sit on the same map. Here's the line, drawn cleanly — skim it and come back when you need it.</p>
+        <ul>
+          <li><strong>Shipped (works once you clone)</strong>: the seven-stage lifecycle + the <code>node atm.mjs</code> onefile runner; CID.Interface (=today's semanticFingerprint); ScopeLock + INV-ATM-002 "lock-before-edit"; <code>closure-packet.v1</code> (with commandRuns SHA256); ATMChart drift detection; the seven INV-ATM red lines; advisory detection for Atomization / Dedup / Demand / Quality / Lifecycle / Rollback / Boundary / Map-Integration police; <code>atomic-map.schema.json</code> v0.1.0 + basic map integration tests.</li>
+          <li><strong>Planned (roadmap, marked with <sup>*</sup> in the body)</strong>:
+            <ul>
+              <li><strong>The other four CID dimensions</strong> (Strict / Effects / Semantic / Behavior): only Interface is shipped; the rest are proposals. Non-deterministic signals are forever banned from the identity hash.</li>
+              <li><strong>Team Agents lane</strong>: the <code>team lease</code> CLI, the permission table (task.lifecycle / git.write / file.write …), 15-role 4-layer collaboration, <code>team-memory-shard.md</code>, and <code>patrol-report.md</code> are all proposals in this lane. Today's lease only uses <code>ScopeLockRecord</code> + INV-ATM-002 — the minimum path. Memory shards and patrol reports are templates; <strong>they are NOT auto-loaded into the next agent's context</strong>. They are git markdown files, to be cited by a human or the Captain when the next task opens.</li>
+              <li><strong>Map Replacement Protocol v2-r2</strong>: §3's <code>replacement.legacyUris[]</code>, the five-stage lifecycle (draft → shadow → canary → active → legacy-retired), <code>map-equivalence-report</code>, the <code>create-map</code> / <code>test --equivalence-fixtures</code> / <code>test --propagate</code> CLI, M26 Rescue Police, and M27 Disaster Recovery CLI belong to TASK-MRP-0011~0027 (17 task cards). MRP-0018 / 0021 are done; MRP-0026 is in progress; MRP-0022 (Daemon) / MRP-0024 (Guide Cache) are opt-in, off by default, with a kill switch.</li>
+              <li><strong>CID atom market (§11)</strong>: a cross-organization market is the <strong>north star</strong>. It needs the local layer to mature first, Trust Tier institutionalized, and a zero-trust sandbox shipped. It does not replace npm / Docker — it fills the "function-grain, governed, recomposable" middle layer. <code>infect</code> is always advisory + human-reviewed.</li>
+              <li><strong>Tier 3 evidence</strong>: local sandbox evidence only reaches Tier 2. To climb to Tier 3 / marketplace-grade, a closure must carry an external <code>AttestationProvider</code> signature with verifiable provenance (GitHub Actions is the first reference adapter). Mutation testing and adversarial QA never sit on the synchronous close path — they live in async police.</li>
+            </ul>
+          </li>
+        </ul>
+        <p>Formal specs, charter text, and warrant examples are at <a href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">github.com/eaglhuang/AI-Atomic-Framework</a>.</p>
       </section>
     </main>
 
@@ -975,15 +1127,17 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
       <ol>
         <li><a href="#pain">Four walls of N-AI dev</a></li>
         <li><a href="#metaphor">The atomic foundry</a></li>
+        <li><a href="#map">Atom map: replacing legacy</a></li>
         <li><a href="#roles">7 stages + 5 atoms + 11 behaviors</a></li>
         <li><a href="#cid">5D CID — multi-dim ID card</a></li>
         <li><a href="#permission">Permission as gear</a></li>
         <li><a href="#memory">charter / ATMChart / closure-packet</a></li>
-        <li><a href="#police">7 INV-ATM + 9 police</a></li>
+        <li><a href="#police">7 INV-ATM + police families</a></li>
         <li><a href="#setup">First-task close path</a></li>
         <li><a href="#fail">Six doctor checks</a></li>
         <li><a href="#market">CID atom market</a></li>
         <li><a href="#closing">Closing</a></li>
+        <li><a href="#roadmap-notes">* Notes: roadmap</a></li>
       </ol>
     </aside>
   </div>
