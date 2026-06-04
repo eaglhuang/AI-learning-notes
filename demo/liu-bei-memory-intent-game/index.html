@@ -1610,8 +1610,8 @@
       elements.storyText.innerHTML = loadingBlock;
       elements.illustrationPrompt.textContent = "正在等待正式導演稿，暫不顯示原始 prompt。";
       elements.illustrationHint.textContent = "導演稿完成後，才會產生插圖 prompt。";
-      elements.illustrationPreview.classList.add("is-loading");
-      elements.illustrationPreview.classList.remove("has-image", "is-empty", "is-error");
+      elements.illustrationImage.hidden = true;
+      elements.illustrationImage.removeAttribute("src");
       setIllustrationVisualState("等待導演稿...", { showPlaceholder: true });
       elements.chorusGrid.innerHTML = "";
       if (elements.chorusHint) {
@@ -1639,8 +1639,8 @@
       elements.storyText.innerHTML = loadingBlock;
       elements.illustrationPrompt.textContent = "暫無可用導演稿。";
       elements.illustrationHint.textContent = "沒有正式導演稿時不產生插圖 prompt。";
-      elements.illustrationPreview.classList.remove("is-loading", "has-image");
-      elements.illustrationPreview.classList.add("is-empty");
+      elements.illustrationImage.hidden = true;
+      elements.illustrationImage.removeAttribute("src");
       setIllustrationVisualState(message, { showPlaceholder: true });
       elements.chorusGrid.innerHTML = "";
       if (elements.chorusHint) {
