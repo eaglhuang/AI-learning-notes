@@ -959,6 +959,7 @@
     const DEFAULT_SCENE_DIRECTOR_TIMEOUT_MS = 36000;
     const DEFAULT_ILLUSTRATION_TIMEOUT_MS = 32000;
     const DEFAULT_PROFILE_TIMEOUT_MS = 10000;
+    const PROFILE_RECOVERY_TIMEOUT_MS = 18000;
     const DEFAULT_PROFILE_RETRY_DELAY_MS = 1800;
     const DEFAULT_PROFILE_MAX_ATTEMPTS = 2;
     const PUBLISHED_RUNTIME_PROFILE_BASE_URL = "https://raw.githubusercontent.com/eaglhuang/3klife-npc-brain/main/artifacts/data-pipeline/sanguo-rag/extracted/runtime-general-profiles";
@@ -1170,12 +1171,12 @@
           sceneLoadingDetail: "API 已回應，正在整理可互動資料。",
         },
         fallback_connect: {
-          statusMode: "遠端較慢，改查 published runtime profile",
+          statusMode: "遠端較慢，改查備援資料",
           statusHint: "API 逾時或失敗，正在切換備援資料。",
-          angleNote: `API 較慢，已切到 published runtime profile，${name} 的角度仍在補齊。`,
+          angleNote: `API 較慢，已切到備援資料，${name} 的角度仍在補齊。`,
           relationshipNote: "互動對象會從備援資料繼續整理，不會卡在空白。",
           angleCards: [
-            { title: "遠端較慢，改查備援…", detail: "正在切換到 published runtime profile。" },
+            { title: "遠端較慢，改查備援…", detail: "正在切換到備援資料。" },
             { title: "備援資料接手中…", detail: "角度與互動對象會由備援來源補上。" },
           ],
           relationshipCards: [
@@ -1184,17 +1185,17 @@
             { title: "正在確認可互動人物", detail: "等備援資料回來就會顯示。" },
           ],
           sceneTitle: "切換備援資料中",
-          sceneNote: "API 沒有及時回來，正在改查 published runtime profile。",
+          sceneNote: "API 沒有及時回來，正在改查備援資料。",
           sceneLoadingTitle: "遠端較慢，改查備援資料…",
           sceneLoadingDetail: "正在接手整理角度與互動對象。",
         },
         fallback_parse: {
           statusMode: "正在整理備援資料",
-          statusHint: "published runtime profile 已回來，正在整理角度與互動對象。",
-          angleNote: "published runtime profile 已回來，正在整理角度與互動對象。",
+          statusHint: "備援資料已回來，正在整理角度與互動對象。",
+          angleNote: "備援資料已回來，正在整理角度與互動對象。",
           relationshipNote: "備援資料已到位，正在把互動對象轉成可點選卡片。",
           angleCards: [
-            { title: "正在整理備援資料…", detail: "published runtime profile 已回來。" },
+            { title: "正在整理備援資料…", detail: "備援資料已回來。" },
             { title: "角度與對象對齊中…", detail: "備援來源正在補齊互動條目。" },
           ],
           relationshipCards: [
@@ -1203,28 +1204,28 @@
             { title: "備援資料快完成了", detail: "請再等一下下。" },
           ],
           sceneTitle: "備援資料整理中",
-          sceneNote: "published runtime profile 已回來，正在整理角度與互動對象。",
+          sceneNote: "備援資料已回來，正在整理角度與互動對象。",
           sceneLoadingTitle: "正在整理備援資料…",
           sceneLoadingDetail: "角度與互動對象很快就會出來。",
         },
         failed: {
           statusMode: "載入失敗",
-          statusHint: "API 與 fallback 都沒有成功，請稍後再試。",
+          statusHint: "人物檔案暫時讀取失敗，請稍後再試。",
           angleNote: "目前載入失敗，角度與互動對象暫時無法顯示。",
           relationshipNote: "目前載入失敗，請稍後重試。",
           angleCards: [
-            { title: "載入失敗", detail: "API 與 fallback 都沒有成功。" },
+            { title: "載入失敗", detail: "人物檔案暫時讀取失敗。" },
             { title: "稍後再試", detail: "目前無法建立角度與互動對象。" },
           ],
           relationshipCards: [
-            { title: "載入失敗", detail: "API 與 fallback 都沒有成功。" },
+            { title: "載入失敗", detail: "人物檔案暫時讀取失敗。" },
             { title: "請稍後重試", detail: "目前無法建立互動對象。" },
             { title: "需要再等一下", detail: "遠端或 published profile 暫時不可用。" },
           ],
           sceneTitle: "人物檔案載入失敗",
-          sceneNote: "API 與 fallback 都沒有成功，請稍後再試。",
+          sceneNote: "人物檔案暫時讀取失敗，請稍後再試。",
           sceneLoadingTitle: "載入失敗",
-          sceneLoadingDetail: "API 與 published runtime profile 都沒有成功。",
+          sceneLoadingDetail: "API 與備援資料都沒有成功。",
         },
       };
       return copyMap[phase] || copyMap.api_connect;
@@ -3819,7 +3820,7 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
         displayName,
         grade: "failed",
         dataMode: "載入失敗",
-        dataHint: reason || "API 與 fallback 都沒有成功，請稍後再試。",
+        dataHint: reason || "人物檔案暫時讀取失敗，請稍後再試。",
         sourceMode: "failed",
         traits: [],
         relationships: [],
@@ -3953,6 +3954,22 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       return normalizeNarrativePayload(payload);
     }
 
+    async function fetchNarrativeProfileFromApi(generalId, timeoutMs = DEFAULT_PROFILE_TIMEOUT_MS) {
+      const timeout = createTimeoutController(timeoutMs);
+      try {
+        const response = await fetch(`${API_BASE}/v1/npc/narrative-profile?generalId=${encodeURIComponent(generalId)}`, {
+          headers: createApiHeaders(),
+          signal: timeout.signal,
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        return await response.json();
+      } finally {
+        timeout.clear();
+      }
+    }
+
 
     async function loadNarrativeData(generalId = currentGeneralId(), requestToken = state.profileRequestToken) {
       const displayName = generalOptionById(generalId)?.label || generalId;
@@ -3962,22 +3979,14 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
         renderRelationships();
         resetStageTexts();
       }
-      const timeout = createTimeoutController(DEFAULT_PROFILE_TIMEOUT_MS);
       try {
-        const response = await fetch(`${API_BASE}/v1/npc/narrative-profile?generalId=${encodeURIComponent(generalId)}`, {
-          headers: createApiHeaders(),
-          signal: timeout.signal,
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
+        const payload = await fetchNarrativeProfileFromApi(generalId, DEFAULT_PROFILE_TIMEOUT_MS);
         if (requestToken === state.profileRequestToken) {
           setBootPhase("api_parse", { requestToken, generalId, displayName });
           renderAngles();
           renderRelationships();
           resetStageTexts();
         }
-        const payload = await response.json();
         const hasUsableNarrativeData = Array.isArray(payload.evidenceCards) && payload.evidenceCards.length > 0
           && Array.isArray(payload.interactionTargets) && payload.interactionTargets.length > 0;
         if (!hasUsableNarrativeData) {
@@ -3996,16 +4005,38 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
           return await loadPublishedRuntimeNarrativeData(generalId, requestToken);
         } catch (publishedError) {
           console.warn("published runtime-profile fallback failed:", publishedError);
-          if (requestToken === state.profileRequestToken) {
-            setBootPhase("failed", { requestToken, generalId, displayName });
-            renderAngles();
-            renderRelationships();
-            resetStageTexts();
+          try {
+            if (requestToken === state.profileRequestToken) {
+              setBootPhase("api_connect", { requestToken, generalId, displayName });
+              renderAngles();
+              renderRelationships();
+              resetStageTexts();
+              setStatus("服務暖機中", "備援資料暫不可用，正在重試 NPC Brain 人物檔案。");
+            }
+            const recoveryPayload = await fetchNarrativeProfileFromApi(generalId, PROFILE_RECOVERY_TIMEOUT_MS);
+            if (requestToken === state.profileRequestToken) {
+              setBootPhase("api_parse", { requestToken, generalId, displayName });
+              renderAngles();
+              renderRelationships();
+              resetStageTexts();
+            }
+            const hasUsableRecoveryData = Array.isArray(recoveryPayload.evidenceCards) && recoveryPayload.evidenceCards.length > 0
+              && Array.isArray(recoveryPayload.interactionTargets) && recoveryPayload.interactionTargets.length > 0;
+            if (!hasUsableRecoveryData) {
+              throw new Error("Narrative recovery payload is empty.");
+            }
+            return normalizeNarrativePayload(recoveryPayload);
+          } catch (recoveryError) {
+            console.warn("narrative-profile recovery retry failed:", recoveryError);
+            if (requestToken === state.profileRequestToken) {
+              setBootPhase("failed", { requestToken, generalId, displayName });
+              renderAngles();
+              renderRelationships();
+              resetStageTexts();
+            }
+            return buildNarrativeFailureData(generalId, "人物檔案暫時讀取失敗，請稍後再試。");
           }
-          return buildNarrativeFailureData(generalId, "API 與 fallback 都沒有成功，請稍後再試。");
         }
-      } finally {
-        timeout.clear();
       }
     }
 
