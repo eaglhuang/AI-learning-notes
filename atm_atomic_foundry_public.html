@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>原子鑄造廠：當 N 個 AI Agent 同時開發一個專案時，怎麼讓每段程式碼都有身分、有證據、可被重用</title>
-  <meta name="description" content="把多 AI 共同開發的專案變成原子鑄造廠：每段程式碼是有 CID 指紋的細胞、每次 mutation 都留 SHA256 證據、9 個常駐警察看著結構衰敗、15 個角色分 4 層協作。一篇講清楚 AI 原子框架的治理思路。">
+  <title>AI 裸奔時代的終結：幫你的多 AI 加速開發同時加裝安全煞車</title>
+  <meta name="description" content="當 N 個 Agent 同時變更同一個 Repo，如何進駐「原子鑄造廠」，以 5D CID 鍛造穩固的系統治理基石——7 階治理生命週期、closure-packet.v1 SHA256 證據鏈、charter 7 條紅線（INV-ATM-001~007）、11 個行為類別構成的多 AI 工程煞車系統。">
   <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public.html">
   <link rel="alternate" hreflang="en" href="https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public_en.html">
   <style>
@@ -19,7 +19,7 @@
       --shadow: 0 24px 80px rgba(26, 40, 55, 0.12);
       --radius-xl: 28px;
       --radius-md: 16px;
-      --content-width: 1160px;
+      --content-width: 1320px;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -106,9 +106,19 @@
       margin-bottom: 12px;
     }
     h3 { font-size: 1.15rem; margin-bottom: 10px; }
+    .sub-title {
+      margin: 12px 0 0;
+      max-width: 900px;
+      color: var(--accent-strong);
+      font-size: 1.18rem;
+      line-height: 1.45;
+      font-weight: 500;
+      font-family: "Iowan Old Style", "Noto Serif TC", "Source Han Serif TC", serif;
+      letter-spacing: 0.005em;
+    }
     .lede {
       margin: 18px 0 0;
-      max-width: 780px;
+      max-width: 880px;
       color: var(--ink-soft);
       font-size: 1.08rem;
       line-height: 1.84;
@@ -268,20 +278,21 @@
 
       <header class="hero">
         <p class="eyebrow">AI Engineering Governance · 2026</p>
-        <h1>原子鑄造廠：當 N 個 AI Agent 同時開發一個專案時，怎麼讓每段程式碼都有身分、有證據、可被重用</h1>
-        <p class="lede">把整個 repo 想像成一座鑄造廠。每一次 AI Agent 寫完一段程式，鑄造廠都會給它一張身分證、一份 SHA256 證據包、一筆可被未來查到的指紋。鑄出來的不是匿名的 diff，是有名字、有檔案、可被全世界其他專案搜尋與重用的程式細胞。這篇講清楚我為什麼會走到這條路、它解決了多 AI 同 repo 開發的哪些痛點、跟一個工程師可以怎麼立刻開始用。</p>
+        <h1>AI 裸奔時代的終結：幫你的多 AI 加速開發同時加裝安全煞車</h1>
+        <p class="sub-title">當 N 個 Agent 同時變更同一個 Repo，如何進駐「原子鑄造廠」，以 5D CID 鍛造穩固的系統治理基石</p>
+        <p class="lede">把整個 repo 想像成一座鑄造廠。每段被 AI 寫出來的程式都會領到一張<strong>多維身分證（5D CID）</strong>、一份可被半年後重放的 SHA256 證據包、一條從 ORIENT 走到 CLOSURE 的<strong>七階生命週期</strong>。鑄出來的不是匿名 diff，是有名字、有合約、可被審計與重用的細胞。<strong>煞車不是讓你慢下來，而是讓你同時開五個 Agent 也不會把專案撞爛。</strong></p>
         <p class="lang-switch">中文版 · <a href="atm_atomic_foundry_public_en.html">Read in English</a></p>
         <div class="hero-grid">
-          <div class="stat-card"><strong>15 角色</strong><span>從 Captain 到 6 種巡邏警察，分 4 層協作，不是一條線一個人接一個。</span></div>
-          <div class="stat-card"><strong>SHA256 證據鏈</strong><span>每一次 mutation 都產出帶 hash 的 closure-packet，半年後仍可追溯到當時跑的指令與輸出。</span></div>
-          <div class="stat-card"><strong>CID-Native</strong><span>每段程式碼是 content-addressable 的細胞，未來可進入跨專案搜尋與分享的原子市場。</span></div>
+          <div class="stat-card"><strong>7 階治理生命週期</strong><span>ORIENT → NEXT → LOCK → EXECUTE → EVIDENCE → HANDOFF → CLOSURE。每階可被 doctor 偵測，不能跳階。</span></div>
+          <div class="stat-card"><strong>5D CID 指紋</strong><span>Strict / Interface / Effects / Semantic / Behavior 五維度。目前 Interface 已實作，其餘為 roadmap，非確定性訊號永不混進 identity hash。</span></div>
+          <div class="stat-card"><strong>closure-packet.v1 證據鏈</strong><span>每次 close 都寫入帶 commandRuns SHA256 + targetCommit + governedTreeSha 的可重放封包。schema 已上線。</span></div>
         </div>
         <div class="badge-row">
-          <span class="badge">TypeScript · Node 24</span>
-          <span class="badge">27 packages</span>
-          <span class="badge">9 警察家族</span>
-          <span class="badge">91 validators</span>
-          <span class="badge warm">Multi-Agent Native</span>
+          <span class="badge">TypeScript · Node ≥20</span>
+          <span class="badge">5 active atoms</span>
+          <span class="badge">7 條 INV-ATM 紅線</span>
+          <span class="badge">11 個行為類別</span>
+          <span class="badge warm">Charter v2.0.0</span>
         </div>
       </header>
 
@@ -437,191 +448,86 @@
       </section>
 
       <section class="panel" id="roles">
-        <h2>3. 15 個角色，分 4 層協作</h2>
-        <p>鑄造廠裡跑的是一支分層團隊。決策層在上、工種層在中、證據層在下，巡邏警察常駐在側邊。這跟「派一個人從頭做到尾」是完全不同的形狀。先用一張全員照認識他們：</p>
+        <h2>3. 治理骨架：七階生命週期 + 五個原子 + 十一個行為</h2>
+        <p>講「煞車」之前要先講「煞車裝在哪」。鑄造廠的骨架不是「派一個 Agent 從頭做到尾」，而是<strong>把一次完整工作拆成七個可被機器偵測的階段</strong>，並在每階段用「原子（atom）」與「行為（behavior）」這兩個對外穩定的合約來綁住變動。下面這張圖是現況實作（不是 roadmap）：</p>
 
         <figure class="figure-card">
-          <svg viewBox="0 0 1120 280" role="img" aria-label="鑄造廠團隊全員角色">
+          <svg viewBox="0 0 1280 360" role="img" aria-label="ATM 七階治理生命週期">
             <defs>
-              <filter id="sf3" x="-30%" y="-30%" width="160%" height="160%">
-                <feDropShadow dx="0" dy="7" stdDeviation="9" flood-color="#1a2837" flood-opacity="0.13"/>
+              <filter id="lifecycleShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="6" stdDeviation="9" flood-color="#1a2837" flood-opacity="0.13"/>
               </filter>
-            </defs>
-            <rect width="1120" height="280" rx="24" fill="#fffaf2"/>
-            <!-- 共用的小機器人，每位帶不同道具與名牌 -->
-            <!-- Captain -->
-            <g transform="translate(52,58)" filter="url(#sf3)">
-              <ellipse cx="80" cy="150" rx="46" ry="9" fill="#19242f" opacity="0.07"/>
-              <rect x="48" y="86" width="64" height="56" rx="20" fill="#16222d"/>
-              <rect x="44" y="34" width="72" height="58" rx="24" fill="#0d7a73"/>
-              <!-- 隊長星星 -->
-              <path d="M80 6 l5 11 12 1 -9 8 3 12 -11 -7 -11 7 3 -12 -9 -8 12 -1z" fill="#cb7d2e"/>
-              <circle cx="66" cy="60" r="6" fill="#fffaf2"/><circle cx="94" cy="60" r="6" fill="#fffaf2"/>
-              <circle cx="66" cy="61" r="2.8" fill="#19242f"/><circle cx="94" cy="61" r="2.8" fill="#19242f"/>
-              <path d="M68 74 Q80 84 92 74" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
-            </g>
-            <text x="132" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#085d58">Captain</text>
-            <text x="132" y="270" text-anchor="middle" font-size="11" fill="#465464">唯一能 close / commit</text>
-
-            <!-- Planner -->
-            <g transform="translate(272,58)" filter="url(#sf3)">
-              <ellipse cx="80" cy="150" rx="46" ry="9" fill="#19242f" opacity="0.07"/>
-              <rect x="48" y="86" width="64" height="56" rx="20" fill="#d7ece6"/>
-              <rect x="44" y="34" width="72" height="58" rx="24" fill="#527b8a"/>
-              <line x1="80" y1="34" x2="80" y2="16" stroke="#19242f" stroke-width="3" stroke-linecap="round"/><circle cx="80" cy="12" r="4.5" fill="#cb7d2e"/>
-              <circle cx="66" cy="60" r="6" fill="#fffaf2"/><circle cx="94" cy="60" r="6" fill="#fffaf2"/>
-              <circle cx="66" cy="61" r="2.8" fill="#19242f"/><circle cx="94" cy="61" r="2.8" fill="#19242f"/>
-              <path d="M68 74 Q80 84 92 74" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
-              <!-- 藍圖 -->
-              <g transform="translate(96,108)"><rect width="34" height="26" rx="4" fill="#fff" stroke="#527b8a" stroke-width="2"/><path d="M5 8 h24 M5 14 h18 M5 20 h22" stroke="#527b8a" stroke-width="2"/></g>
-            </g>
-            <text x="352" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#085d58">Atomization Planner</text>
-            <text x="352" y="270" text-anchor="middle" font-size="11" fill="#465464">決定 primary atom</text>
-
-            <!-- Builder -->
-            <g transform="translate(492,58)" filter="url(#sf3)">
-              <ellipse cx="80" cy="150" rx="46" ry="9" fill="#19242f" opacity="0.07"/>
-              <rect x="48" y="86" width="64" height="56" rx="20" fill="#f3ddc2"/>
-              <rect x="44" y="34" width="72" height="58" rx="24" fill="#cb7d2e"/>
-              <line x1="80" y1="34" x2="80" y2="16" stroke="#19242f" stroke-width="3" stroke-linecap="round"/><circle cx="80" cy="12" r="4.5" fill="#0d7a73"/>
-              <circle cx="66" cy="60" r="6" fill="#fffaf2"/><circle cx="94" cy="60" r="6" fill="#fffaf2"/>
-              <circle cx="66" cy="61" r="2.8" fill="#19242f"/><circle cx="94" cy="61" r="2.8" fill="#19242f"/>
-              <path d="M68 74 Q80 84 92 74" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
-              <!-- 扳手 -->
-              <g transform="translate(98,104) rotate(35)"><rect x="0" y="6" width="30" height="7" rx="3" fill="#465464"/><circle cx="2" cy="9" r="8" fill="none" stroke="#465464" stroke-width="5"/></g>
-            </g>
-            <text x="572" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#085d58">Code Builder</text>
-            <text x="572" y="270" text-anchor="middle" font-size="11" fill="#465464">唯一 file.write 持有者</text>
-
-            <!-- Curator -->
-            <g transform="translate(712,58)" filter="url(#sf3)">
-              <ellipse cx="80" cy="150" rx="46" ry="9" fill="#19242f" opacity="0.07"/>
-              <rect x="48" y="86" width="64" height="56" rx="20" fill="#d6e3e8"/>
-              <rect x="44" y="34" width="72" height="58" rx="24" fill="#085d58"/>
-              <line x1="80" y1="34" x2="80" y2="16" stroke="#19242f" stroke-width="3" stroke-linecap="round"/><circle cx="80" cy="12" r="4.5" fill="#cb7d2e"/>
-              <circle cx="66" cy="60" r="6" fill="#fffaf2"/><circle cx="94" cy="60" r="6" fill="#fffaf2"/>
-              <circle cx="66" cy="61" r="2.8" fill="#19242f"/><circle cx="94" cy="61" r="2.8" fill="#19242f"/>
-              <path d="M68 74 Q80 84 92 74" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
-              <!-- 夾板 -->
-              <g transform="translate(96,104)"><rect width="28" height="34" rx="4" fill="#fff" stroke="#085d58" stroke-width="2"/><rect x="9" y="-4" width="10" height="8" rx="2" fill="#085d58"/><path d="M6 12 h16 M6 19 h16 M6 26 h11" stroke="#085d58" stroke-width="2"/></g>
-            </g>
-            <text x="792" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#085d58">Evidence Curator</text>
-            <text x="792" y="270" text-anchor="middle" font-size="11" fill="#465464">收 SHA256 證據</text>
-
-            <!-- Police -->
-            <g transform="translate(932,58)" filter="url(#sf3)">
-              <ellipse cx="80" cy="150" rx="46" ry="9" fill="#19242f" opacity="0.07"/>
-              <rect x="48" y="86" width="64" height="56" rx="20" fill="#eaf7f4"/>
-              <rect x="44" y="34" width="72" height="58" rx="24" fill="#2f6f63"/>
-              <!-- 警徽帽 -->
-              <path d="M44 38 Q80 18 116 38 l0 -6 Q80 14 44 32z" fill="#cb7d2e"/>
-              <circle cx="66" cy="62" r="6" fill="#fffaf2"/><circle cx="94" cy="62" r="6" fill="#fffaf2"/>
-              <circle cx="66" cy="63" r="2.8" fill="#19242f"/><circle cx="94" cy="63" r="2.8" fill="#19242f"/>
-              <path d="M68 76 Q80 86 92 76" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
-              <!-- 放大鏡 -->
-              <g transform="translate(98,104)"><circle cx="10" cy="10" r="10" fill="none" stroke="#465464" stroke-width="4"/><line x1="18" y1="18" x2="28" y2="28" stroke="#465464" stroke-width="5" stroke-linecap="round"/></g>
-            </g>
-            <text x="1012" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#085d58">Atomic Police</text>
-            <text x="1012" y="270" text-anchor="middle" font-size="11" fill="#465464">常駐巡邏，只看不動手</text>
-          </svg>
-          <figcaption>圖 3：鑄造廠全員。隊長戴星星、規劃師拿藍圖、Builder 拿扳手、證據員拿夾板、警察戴警徽拿放大鏡。每個角色的「道具」其實就是它被授予的權限。</figcaption>
-        </figure>
-
-        <p>認識完人之後，把他們放回實際的協作層級，就是這張圖：</p>
-        <figure class="figure-card">
-          <svg viewBox="0 0 1120 720" role="img" aria-label="原子鑄造廠 4 層角色協作圖">
-            <defs>
-              <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#1a2837" flood-opacity="0.14"/>
-              </filter>
-              <marker id="arrowGrn" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
-                <path d="M 0 0 L 12 6 L 0 12 z" fill="#0d7a73"/>
+              <marker id="lcArrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+                <path d="M0 0 L12 6 L0 12 z" fill="#0d7a73"/>
               </marker>
             </defs>
-            <rect width="1120" height="720" rx="28" fill="#fffaf2"/>
+            <rect width="1280" height="360" rx="24" fill="#fffaf2"/>
 
-            <g filter="url(#softShadow)">
-              <rect x="380" y="50" width="360" height="92" rx="22" fill="#16222d"/>
-              <text x="560" y="88" text-anchor="middle" fill="#fffaf2" font-size="22" font-weight="700">L1 · 決策層</text>
-              <text x="560" y="116" text-anchor="middle" fill="#d8ebf6" font-size="15">Task Captain · Task Lieutenant</text>
-            </g>
-
-            <g filter="url(#softShadow)">
-              <rect x="60" y="200" width="220" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
-              <text x="170" y="232" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">Atomization Planner</text>
-              <text x="170" y="254" text-anchor="middle" fill="#465464" font-size="13">決定 primary atom</text>
-              <text x="170" y="272" text-anchor="middle" fill="#0d7a73" font-size="12">不寫 source</text>
-            </g>
-            <g filter="url(#softShadow)">
-              <rect x="300" y="200" width="220" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
-              <text x="410" y="232" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">Scope Sentinel</text>
-              <text x="410" y="254" text-anchor="middle" fill="#465464" font-size="13">守 allowedFiles</text>
-              <text x="410" y="272" text-anchor="middle" fill="#0d7a73" font-size="12">事前 + 事後</text>
-            </g>
-            <g filter="url(#softShadow)">
-              <rect x="540" y="200" width="220" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
-              <text x="650" y="232" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">Code Builder</text>
-              <text x="650" y="254" text-anchor="middle" fill="#465464" font-size="13">TS / Py / C# 可替換</text>
-              <text x="650" y="272" text-anchor="middle" fill="#0d7a73" font-size="12">唯一 file.write 持有者</text>
-            </g>
-            <g filter="url(#softShadow)">
-              <rect x="780" y="200" width="220" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
-              <text x="890" y="232" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">QA · Check Runner</text>
-              <text x="890" y="254" text-anchor="middle" fill="#465464" font-size="13">跑 typecheck / lint</text>
-              <text x="890" y="272" text-anchor="middle" fill="#0d7a73" font-size="12">不能把 fail 說成 pass</text>
+            <g font-family="Iowan Old Style, Noto Serif TC, serif" filter="url(#lifecycleShadow)">
+              <g transform="translate(40,138)"><rect width="160" height="84" rx="18" fill="#0d7a73"/><text x="80" y="38" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">ORIENT</text><text x="80" y="60" text-anchor="middle" fill="#d8ebf6" font-size="11">框架簽名偵測</text><text x="80" y="74" text-anchor="middle" fill="#d8ebf6" font-size="11">framework / adopter</text></g>
+              <g transform="translate(218,138)"><rect width="160" height="84" rx="18" fill="#0d7a73"/><text x="80" y="38" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">NEXT</text><text x="80" y="60" text-anchor="middle" fill="#d8ebf6" font-size="11">路由器決策</text><text x="80" y="74" text-anchor="middle" fill="#d8ebf6" font-size="11">下一步 CLI 命令</text></g>
+              <g transform="translate(396,138)"><rect width="160" height="84" rx="18" fill="#cb7d2e"/><text x="80" y="38" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">LOCK</text><text x="80" y="60" text-anchor="middle" fill="#fceacf" font-size="11">編輯前必鎖</text><text x="80" y="74" text-anchor="middle" fill="#fceacf" font-size="11">INV-ATM-002</text></g>
+              <g transform="translate(574,138)"><rect width="160" height="84" rx="18" fill="#16222d"/><text x="80" y="38" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">EXECUTE</text><text x="80" y="60" text-anchor="middle" fill="#a9c2d3" font-size="11">實際工作</text><text x="80" y="74" text-anchor="middle" fill="#a9c2d3" font-size="11">事後驗證鎖內</text></g>
+              <g transform="translate(752,138)"><rect width="160" height="84" rx="18" fill="#0d7a73"/><text x="80" y="38" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">EVIDENCE</text><text x="80" y="60" text-anchor="middle" fill="#d8ebf6" font-size="11">證據沉澱</text><text x="80" y="74" text-anchor="middle" fill="#d8ebf6" font-size="11">SHA256 + gate</text></g>
+              <g transform="translate(930,138)"><rect width="160" height="84" rx="18" fill="#527b8a"/><text x="80" y="38" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">HANDOFF</text><text x="80" y="60" text-anchor="middle" fill="#dbe7ed" font-size="11">交接摘要</text><text x="80" y="74" text-anchor="middle" fill="#dbe7ed" font-size="11">跨 session 延續</text></g>
+              <g transform="translate(1108,138)"><rect width="160" height="84" rx="18" fill="#085d58"/><text x="80" y="38" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">CLOSURE</text><text x="80" y="60" text-anchor="middle" fill="#a9e0d6" font-size="11">closure-packet.v1</text><text x="80" y="74" text-anchor="middle" fill="#a9e0d6" font-size="11">git HEAD pin</text></g>
             </g>
 
-            <g filter="url(#softShadow)">
-              <rect x="240" y="356" width="280" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
-              <text x="380" y="388" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">Evidence Curator</text>
-              <text x="380" y="410" text-anchor="middle" fill="#465464" font-size="13">整理 commandRuns / SHA256 hash</text>
-              <text x="380" y="428" text-anchor="middle" fill="#0d7a73" font-size="12">不能捏造 evidence</text>
-            </g>
-            <g filter="url(#softShadow)">
-              <rect x="540" y="356" width="280" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
-              <text x="680" y="388" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">Closure Steward</text>
-              <text x="680" y="410" text-anchor="middle" fill="#465464" font-size="13">結案前審 closure-packet</text>
-              <text x="680" y="428" text-anchor="middle" fill="#0d7a73" font-size="12">最後一道門</text>
+            <g stroke="#0d7a73" stroke-width="3" fill="none" marker-end="url(#lcArrow)">
+              <path d="M200 180 L218 180"/><path d="M378 180 L396 180"/><path d="M556 180 L574 180"/><path d="M734 180 L752 180"/><path d="M912 180 L930 180"/><path d="M1090 180 L1108 180"/>
             </g>
 
-            <g filter="url(#softShadow)">
-              <rect x="120" y="512" width="880" height="146" rx="22" fill="#eaf7f4" stroke="#90cbc1"/>
-              <text x="560" y="545" text-anchor="middle" fill="#085d58" font-size="20" font-weight="700">L4 · 巡邏警察家族（Atomic Police · 9 + 6 patrol）</text>
-              <text x="240" y="588" text-anchor="middle" fill="#3c5f6e" font-size="14">Dedup · Demand</text>
-              <text x="240" y="612" text-anchor="middle" fill="#3c5f6e" font-size="14">Quality · Decomposition</text>
-              <text x="560" y="588" text-anchor="middle" fill="#3c5f6e" font-size="14">Map Integration · Atomization</text>
-              <text x="560" y="612" text-anchor="middle" fill="#3c5f6e" font-size="14">Evolution · Polymorph</text>
-              <text x="880" y="588" text-anchor="middle" fill="#3c5f6e" font-size="14">Rollback Police</text>
-              <text x="880" y="612" text-anchor="middle" fill="#3c5f6e" font-size="14">Encoding · Ledger · Runner Sync</text>
-              <text x="560" y="640" text-anchor="middle" fill="#085d58" font-size="13" font-style="italic">每日中午 · claim 前 · close 前 · checkpoint 前</text>
-            </g>
+            <text x="640" y="56" text-anchor="middle" font-size="13" font-weight="700" fill="#085d58" font-family="monospace">每階都可被 doctor 偵測「完成 / 未完成」；agent 不能跳階</text>
+            <text x="640" y="74" text-anchor="middle" font-size="12" fill="#465464" font-family="monospace">node atm.mjs orient → next → lock acquire → ... → evidence verify --gate close → tasks close</text>
 
-            <path d="M510 142 L260 200" stroke="#0d7a73" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
-            <path d="M540 142 L430 200" stroke="#0d7a73" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
-            <path d="M580 142 L670 200" stroke="#0d7a73" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
-            <path d="M610 142 L880 200" stroke="#0d7a73" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
-            <path d="M650 296 L420 356" stroke="#cb7d2e" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
-            <path d="M650 296 L680 356" stroke="#cb7d2e" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
-            <path d="M560 448 L560 512" stroke="#cb7d2e" stroke-width="3" fill="none" marker-end="url(#arrowGrn)" stroke-dasharray="6 6"/>
+            <g transform="translate(40,266)">
+              <rect width="1200" height="74" rx="14" fill="#eaf7f4" stroke="#90cbc1"/>
+              <text x="600" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="#085d58" font-family="monospace">5 個 active 原子（atoms）作為治理單位</text>
+              <text x="600" y="50" text-anchor="middle" font-size="12" fill="#3c5f6e">ATM-CORE-0001 種子身分・ATM-CORE-0003 中性掃描・ATM-CORE-0004 原子生成器・ATM-CORE-0005 語意指紋・ATM-FIXTURE-0001 自證 fixture</text>
+              <text x="600" y="66" text-anchor="middle" font-size="11" fill="#465464">11 個行為類別（plugin-behavior-pack）：split / atomize / merge / dedup-merge / compose / evolve / polymorphize / expire / sweep / infect</text>
+            </g>
           </svg>
-          <figcaption>圖 1：鑄造廠 4 層架構。Captain 在 L1 做決策；L2 是被權限切分的工種；L3 把實作轉化成可審計的證據；L4 是常駐的巡邏警察，不在某一張卡的線上，而是隨時看著整個 repo 的結構健康度。</figcaption>
+          <figcaption>圖 3：ATM 七階治理生命週期。每階都有對應的 CLI 命令、對應的失敗守則（doctor check）、對應的驗證契約。下方橫條是「對外穩定的治理單位」：5 個 active 原子（governed tier）負責身分基礎與生成 / 中性 / 指紋計算；11 個行為類別則是對原子做的合法動詞。</figcaption>
         </figure>
 
-        <h3 style="margin-top:24px">L1 決策層：Captain 是唯一 lifecycle 主控</h3>
-        <p>不論你同時開幾個 AI Agent，<strong>只有 Captain 可以 close 任務、做 checkpoint、commit、push</strong>。這條鐵律寫進框架本身——當 5 個 Agent 同時跑時，沒有單一決策點就會混亂。任務複雜時加 Lieutenant 副隊長協助拆 phase。</p>
+        <p><strong>什麼是 atom（原子）？</strong>它不是 task 也不是 commit，而是有唯一 <code>ATM-{BUCKET}-{NNNN}</code> 編號、有 hash-locked spec、有 evidence-required 驗證指令的最小治理單位。目前註冊表中有 5 個 active 原子（governed tier）：種子（0001）、中性掃描器（0003）、原子生成器（0004）、語意指紋（0005）、生成器自證 fixture（FIXTURE-0001）。<strong>不能</strong>直接編輯 <code>atomic-registry.json</code>——所有新原子必須走 ATM-CORE-0004，且須過 INV-ATM-003 的 schema gate（這就是 charter 的紅線之一）。</p>
 
-        <h3 style="margin-top:18px">L2 工種層：每個角色拿的是「權限」不是「工具」</h3>
-        <p>Atomization Planner 進來先做原子化規劃；Scope Sentinel 守 allowedFiles 邊界；Code Builder 是當下唯一持有 <code>file.write</code> 的人；QA / Check Runner 跑驗證。它們之間的隔離不靠資料夾、不靠告訴 AI「請不要碰那邊」——是靠權限模型，下一段細講。</p>
+        <p><strong>什麼是 behavior（行為）？</strong>對原子做的合法動詞，全部集中於 <code>plugin-behavior-pack</code>，按家族分類：</p>
+        <div class="split-3">
+          <div class="mini-card">
+            <h3>Split 家族</h3>
+            <p><code>split</code> 把既有原子拆成更清楚的範圍；<code>atomize</code> 從廣域 / legacy 抽出一個全新的可治理原子。</p>
+          </div>
+          <div class="mini-card">
+            <h3>Merge 家族</h3>
+            <p><code>merge</code> 兩原子合一；<code>dedup-merge</code> 為去重而合；<code>compose</code> 把多個治理單位組合成更高層成品。</p>
+          </div>
+          <div class="mini-card">
+            <h3>Evolution 家族</h3>
+            <p><code>evolve</code> 同一原子版本前進；<code>polymorphize</code> 身分不變但走變體 / 替代形式。</p>
+          </div>
+          <div class="mini-card">
+            <h3>Lifecycle 家族</h3>
+            <p><code>expire</code> 正式退役；<code>sweep</code> 清理過時殘留。此家族目前仍在 dry-run / proposal 狀態，不直接 host apply。</p>
+          </div>
+          <div class="mini-card">
+            <h3>Propagation 家族</h3>
+            <p><code>infect</code> 把治理變更外推到下游依賴，必過 neutrality scan + human review。這是「原子市場」（§10）的傳遞機制。</p>
+          </div>
+          <div class="mini-card">
+            <h3>七階對映角色矩陣</h3>
+            <p>原子在哪些階段「主導 / 協同 / 偵測 / 不介入」是有矩陣可查的。例如語意指紋（0005）分布最廣（NEXT / EXECUTE / EVIDENCE / HANDOFF / CLOSURE 都有角色）。</p>
+          </div>
+        </div>
 
-        <h3 style="margin-top:18px">L3 證據層：每一筆改動要留下可審計的痕跡</h3>
-        <p>Evidence Curator 把 Builder 跑過的指令、stdout/stderr 的 SHA256、validator 結果整理成 <code>closure-packet.v1</code>。Closure Steward 在結案前審這份包裹。<strong>這份證據不是 PR 註解，是進入 <code>.atm/history/</code> 的永久檔案，schemaId 版本化、可直接送外部合規審計。</strong></p>
-
-        <h3 style="margin-top:18px">L4 巡邏層：repo 自己的結構良心</h3>
-        <p>9 個原子警察家族 + 6 種巡邏時機（每日中午、claim 前、close 前、checkpoint 前、大腳本前、多代理衝突）<strong>不歸某張卡管，它們屬於 repo 本身</strong>。它們的工作是看見結構衰敗——語意指紋重疊、神檔過大、caller graph 過載、TTL 已到——然後產出可讀的 patrol-report。</p>
+        <div class="callout">
+          <strong>關於「15 角色 4 層協作」</strong>：這不是現況，是 Team Agents lane（規劃中）對未來分工的設計提案。現況實作的是<strong>「七階 + 五原子 + 十一行為 + 七條 INV-ATM」這四套合約</strong>，由 onefile runner 透過 <code>node atm.mjs &lt;command&gt;</code> 對外提供。把它們看清楚以後，後面三節（CID、lease、證據鏈）才有正確的依附對象。
+        </div>
       </section>
 
+
       <section class="panel" id="cid">
-        <h2>4. CID：每個原子的身分證</h2>
+        <h2>4. 5D CID：給每個原子的多維身分證</h2>
         <p>這是整個鑄造廠隱喻的核心。<strong>每個 atom 都有一張身分證——CID（content-addressable identifier）</strong>。它不是「程式語意」的指紋（那是計算機科學上做不到的事），而是這個原子<strong>對外宣告的合約指紋</strong>。</p>
         <div class="callout">
           <strong>誠實的邊界先講清楚</strong>：CID 是<strong>確定性</strong>的——不讀原始碼、不解析 AST、不呼叫 LLM、不算 embedding。它 hash 的是 atom 自己宣告出來的合約欄位（input/output ports、語言、是否要 evidence、效能預算）。同一份宣告永遠得到同一張證；任何非確定性訊號（向量、模型、時間戳）都不准進這把雜湊鎖。
@@ -734,6 +640,14 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
           </ul>
         </div>
         <p>CID 順便解決了一個老問題：「我這個 codebase 有多少地方對外介面其實一模一樣？」這以前要靠靜態分析勉強猜，現在因為每個 atom 都帶確定性指紋，變成一個 O(1) 查表問題。但要強調——<strong>介面一致 ≠ 行為等價</strong>。後者要靠執行期測試（這就是 roadmap 上 CID.Behavior 與零信任沙盒在做的事），CID 本身只負責「誰宣稱了什麼合約」這一層。</p>
+
+        <div class="callout">
+          <strong>關於 CID.Behavior 與 Tier 3 的兩條紀律（roadmap 鐵律）</strong>
+          <ul style="margin-top:10px">
+            <li><strong>突變測試 / 對抗 QA 永不掛同步 close 路徑</strong>：這類測試慢、耗算力，硬塞進 <code>atm tasks close</code> 的同步阻擋路徑會把整條治理鏈卡死。正確做法是同步 close 時把 CID.Behavior 標為 <code>pending</code> 或 <code>candidate</code>，由 async Police / Behavior Police 在背景跑，過了才把 Tier 3 badge 掛上去。執行前必須先寫好 budget / cap / sampling / sharding / timeout 的算力保護政策，避免測試本身變成算力災難。</li>
+            <li><strong>Tier 3「防竄改」必須有外部 attestation</strong>：本機 sandbox 證據只能達 Tier 2（防混亂、不防竄改）。要升到 Tier 3 / marketplace-grade，closure 必須帶外部 <code>AttestationProvider</code> 的簽章與可驗證 provenance——以 GitHub Actions 作為第一個 reference adapter（attestation API + OIDC），但核心維持抽象，不與單一 CI 平台硬綁定。本機 agent / 本機 Deno sandbox / 本機 daemon <strong>都不是信任根</strong>，簽章來源才是。</li>
+          </ul>
+        </div>
       </section>
 
       <section class="panel" id="permission">
@@ -820,12 +734,20 @@ $ node atm.mjs team lease --agent builder-02 \
         </figure>
 
         <p>權限可以轉交，但必須走 <code>team lease</code> 與 <code>team release</code> CLI，每一次轉交都留時間戳、agentId、權限範圍。這份 lease 履歷會跟著 closure-packet 一起進入永久證據。</p>
+
+        <div class="callout">
+          <strong>現況 vs roadmap 的誠實邊界</strong>：上面這張權限表與 <code>team lease</code> CLI 是 Team Agents lane（規劃中）對未來分工的設計提案。<strong>現況已實作</strong>的最小可用集合是：<code>ScopeLockRecord</code>（schema <code>atm.governanceScopeLock</code>）的 <code>leaseId + heartbeatAt + ttlSeconds</code> + <code>taskDirectionLock.allowedFiles</code> + INV-ATM-002「lock-before-edit」doctor 守則。<code>leaseEpoch</code>（fencing token）/ wait-for graph 死鎖偵測 / symbol-scope lease 屬於 E2 roadmap，尚未實作。但即使只有現況的 lease + INV-ATM-002，「未鎖編輯被偵測 → 下次 <code>atm next</code> 回 blocked → 引導 acquire」這條煞車已經可運作。</div>
       </section>
 
       <section class="panel" id="memory">
-        <h2>6. ATMChart 與證據鏈：共享記憶不靠口耳相傳</h2>
-        <p>多 AI 協作最容易翻車的另一個點是「上下文漂移」——Agent A 跟我講過一個假設，Agent B 進場時不知道，於是寫出來的程式碼跟 A 不一致。等發現時，三個檔案都飄在四處。</p>
-        <p>鑄造廠用兩個機制把共享記憶釘住：</p>
+        <h2>6. 共享記憶：charter 是最高權威、ATMChart 是執行期煞車、closure-packet 是證據鏈</h2>
+        <p>多 AI 協作最容易翻車的另一個點是「上下文漂移」——Agent A 跟我講過一個假設，Agent B 進場時不知道，於是寫出來的程式碼跟 A 不一致。等發現時，三個檔案都飄在四處。鑄造廠的對策不是「靠 prompt 提醒」，而是把治理規則寫成三層被機器讀的合約：</p>
+        <ul>
+          <li><strong>最高權威 = atomic charter（<code>.atm/charter/atomic-charter.md</code>）+ 7 條 INV-ATM</strong>。Charter 是 framework 的最終裁判，當前版本 v2.0.0；INV-ATM-001~007 是不可逾越的紅線（由 gate / doctor / waiver-required 三種機制執行）。違反 invariant 不能繞過，必須走 charter waiver 流程（<code>behavior.evolve</code> + <code>charterWaiver</code> + <code>HumanReviewDecision</code>）。</li>
+          <li><strong>執行期煞車 = ATMChart（<code>.atm/memory/atm-chart.md</code>）的 SHA256 drift detection</strong>。它不是最高權威，但它是「拿著過期地圖會被當場攔下」的那把鎖。</li>
+          <li><strong>證據鏈 = closure-packet.v1</strong>。每次 close 寫入永久 ledger，可被半年後 audit 逐條重放。</li>
+        </ul>
+        <p>下面把後兩個機制（ATMChart、closure-packet）攤開講；7 條 INV-ATM 留到 §7 跟警察家族一起講。</p>
         <div class="split">
           <div class="mini-card">
             <h3>ATMChart 漂移偵測</h3>
@@ -857,9 +779,25 @@ $ node atm.mjs team lease --agent builder-02 \
       </section>
 
       <section class="panel" id="police">
-        <h2>7. 9 個常駐警察：repo 自己的結構良心</h2>
-        <p class="quote">你睡覺的時候，警察還在巡。</p>
-        <p>到目前為止講的都是「一次 mutation 怎麼安全」。但結構衰敗從來不會在一次 mutation 裡跳出來，它是時間累積的。所以鑄造廠裡有一支常駐的警察家族：</p>
+        <h2>7. 7 條 INV-ATM 紅線 + 9 個常駐警察：合約煞車與結構良心</h2>
+        <p class="quote">你睡覺的時候，警察還在巡；invariants 一直釘在那裡，從來沒下班。</p>
+
+        <p>鑄造廠的「煞車」其實分兩層。<strong>合約層的煞車是 charter 上的 7 條 INV-ATM</strong>（公開、穩定、寫進 framework），<strong>偵測層的煞車是 9 個常駐警察家族</strong>（advisory、機器自動跑、報給人類定奪）。它們的分工是：</p>
+        <table>
+          <thead><tr><th>合約紅線（INV-ATM-00X）</th><th>對應煞車類型</th><th>白話意義</th></tr></thead>
+          <tbody>
+            <tr><td><strong>INV-ATM-001</strong> No second registry</td><td>gate（直接拒絕）</td><td>整個 repo 只能有一個 atomic-registry 真相來源。</td></tr>
+            <tr><td><strong>INV-ATM-002</strong> Lock before edit</td><td>doctor（引導修復）</td><td>編輯前必須持有 <code>ScopeLock</code>。</td></tr>
+            <tr><td><strong>INV-ATM-003</strong> Schema-validated promotion only</td><td>gate</td><td>所有原子升級必須過 schema 驗證，直接改 registry 禁止。</td></tr>
+            <tr><td><strong>INV-ATM-004</strong> No competing highest authority</td><td>doctor</td><td>沒有任何 host rule 可以聲稱地位等於或高於 charter。</td></tr>
+            <tr><td><strong>INV-ATM-005</strong> Host rule amendments require waiver flow</td><td>waiver-required</td><td>違反 invariant 的合法路徑：<code>behavior.evolve</code> + <code>charterWaiver</code> + <code>HumanReviewDecision</code>。</td></tr>
+            <tr><td><strong>INV-ATM-006</strong> Framework work tracking stays target-local</td><td>doctor</td><td>framework 任務 ledger 必須留在 framework repo 自己的 <code>.atm/history/tasks/</code>。</td></tr>
+            <tr><td><strong>INV-ATM-007</strong> Public framework docs remain English-only</td><td>doctor</td><td>framework 公開文件英文化、中性化；ATM-CORE-0003 中性掃描器負責執行。</td></tr>
+          </tbody>
+        </table>
+
+        <p>7 條 INV-ATM 是公開合約，違反需走 charter waiver；9 個警察家族則是 advisory 偵測——它們不在 charter 上，但天天在 registry 與 source 裡巡邏，把<strong>慢性結構衰敗</strong>抓出來。一次 mutation 安全是 INV-ATM 的事；幾百次 mutation 累積後 repo 還健不健康，是警察家族的事。</p>
+        <p>9 個警察家族：</p>
         <div class="split-3">
           <div class="mini-card">
             <h3>Dedup Police</h3>
@@ -943,29 +881,43 @@ $ node atm.mjs team lease --agent builder-02 \
       </section>
 
       <section class="panel" id="setup">
-        <h2>8. 90 分鐘：從 git clone 到第一張卡 close</h2>
-        <p>所有這些聽起來很複雜的東西，採用門檻其實不高。我給自己定的承諾是：<strong>從乾淨環境到第一張 AI 改完的卡正式 close，90 分鐘內</strong>。下面是分鐘級拆解。</p>
-        <pre><code># 0-15 min：環境就位
-npx create-atm my-app --agent claude-code
-cd my-app
-node atm.mjs doctor --json
-# 看 15+ 健康檢查全綠
+        <h2>8. 從 git clone 到第一張卡 close：採用 ATM 的最小路徑</h2>
+        <p>所有這些聽起來很複雜的東西，採用門檻其實不高。ATM 的官方分發單位是<strong>單檔 runner <code>atm.mjs</code></strong>（約 3.1 MB 的 strip-types bundle，無 transitive dep）；部署是「framework 端 push 給 adopter」的顯式 sync，不是 <code>npm install</code>。下面是從 0 到第一張 closure-packet 的最小路徑：</p>
+        <pre><code># 0-15 min：取得 runner + ORIENT
+# Framework 端（onefile 已 build 好）：
+#   npm run build  →  release/atm-onefile/atm.mjs（約 3.1 MB）
+# Adopter 端：把 onefile sync 進來
+node release/atm-onefile/atm.mjs internal-release sync \
+    --repo /path/to/my-app --json
+cd /path/to/my-app
+node atm.mjs orient --cwd . --json
+node atm.mjs doctor  --cwd . --json
+# 看每條 doctor 守則（lock-before-edit、charter-integrity、neutrality-scanner-active…）全綠
 
-# 15-30 min：複製最小範例 + 改 4 個欄位
-cp -r node_modules/ai-atomic-framework/examples/team-agents-minimal/. .atm/team/
-# 改 team-brief.md：task 標題、goal、allowedFiles、expectedReport
-
-# 30-60 min：Agent 改碼
+# 15-30 min：問 NEXT、鎖 LOCK
 node atm.mjs next --prompt "your first small change" --json
-# Agent 拿到 routing → claim → 只能碰 allowedFiles → 跑 typecheck
+# 拿到 nextAction → 依 command 字串執行（例如 lock acquire）
+node atm.mjs lock acquire --workItem &lt;workItemId&gt; \
+    --files src/foo.ts --reason "first small change" --json
 
-# 60-80 min：驗收與證據整理
-node --strip-types scripts/validate-team-agents-templates.ts
-# 寫 agent-report.md 與 team-summary.md
+# 30-60 min：EXECUTE → EVIDENCE
+# 在 lock 範圍內改檔、跑你的測試
+npm test
+node atm.mjs evidence add --task &lt;workItemId&gt; --actor codex-main \
+    --kind test --summary "unit tests passed" --artifacts reports/test.json --json
 
-# 80-90 min：結案
-node atm.mjs tasks close --json
-# 自動產出 closure-packet.json（含 SHA256）+ 第一份 patrol-report.md</code></pre>
+# 60-80 min：HANDOFF + 證據 verify
+node atm.mjs evidence verify --task &lt;workItemId&gt; --gate close --json
+node atm.mjs handoff summarize --task &lt;workItemId&gt; --json
+
+# 80-90 min：CLOSURE
+node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status done --json
+# 寫入 .atm/history/evidence/&lt;taskId&gt;/closure-packet.json
+# 內含 commandRuns[].stdoutSha256 + targetCommit + governedTreeSha
+# 後續任何 audit 重跑同樣命令 → byte-for-byte 比對</code></pre>
+
+        <div class="callout">
+          <strong>邊界提醒</strong>：（1）<code>npx create-atm</code> / <code>examples/team-agents-minimal/</code> 是 Team Agents lane 規劃中的便利層，現況部署走的是上面的 <code>internal-release sync</code>。（2）若你的 repo 是 framework 本身，<code>doctor</code> 會偵測到 framework 簽名並啟用額外規則（INV-ATM-006 framework 任務必須 target-local、closure-packet 必須帶 framework gate provenance）；adopter mode 則只受通用 invariants 約束。</div>
         <p>90 分鐘結束你會擁有什麼？</p>
         <ul>
           <li>一個 commit，帶 teamRunId 與 closure 證據引用</li>
@@ -977,27 +929,35 @@ node atm.mjs tasks close --json
       </section>
 
       <section class="panel" id="fail">
-        <h2>9. 容易失敗的地方</h2>
-        <p>誠實講，鑄造廠不是一鍵綠的。下面這幾個地方是我自己最常踩的坑：</p>
-        <div class="split">
+        <h2>9. 容易失敗的地方（與對應的 doctor 守則）</h2>
+        <p>誠實講，鑄造廠不是一鍵綠的。下面六個是我最常踩到、也是 ATM doctor 守則直接點名的場景。每一個都對應一條具體的 doctor 檢查，失敗時會回傳 <code>firstFailedCheck</code> 加 <code>suggestion</code>，agent 不需要猜：</p>
+        <div class="split-3">
           <div class="mini-card">
-            <h3>Scope leak</h3>
-            <p>Agent 拿到 <code>file.write</code> 卻摸超出 lease paths 的檔案。框架會 raise <code>ATM_TEAM_WRITE_SCOPE_EXCEEDED</code>，但你要設好 forbidden_files 白名單才會被擋住。光寫在 task card 的明文裡擋不住，要靠雙代理派工 + 物理路徑隔離。</p>
+            <h3>lock-before-edit（INV-ATM-002）</h3>
+            <p>未持鎖就編輯。下一次 <code>atm next</code> 回 blocked，suggestion 直接給 <code>atm lock acquire --files &lt;list&gt;</code>。最常見也最容易修。</p>
           </div>
           <div class="mini-card">
-            <h3>Evidence faking</h3>
-            <p>Agent 把 fail 的 validator 說成 pass。這是 evidence 系統最致命的傷。對策是 Evidence Curator 必須記錄 exitCode 與 stdout SHA256，非 0 不可改寫成 pass，只能記成 diagnostic evidence。</p>
+            <h3>evidence-freshness</h3>
+            <p>任務 reopen 後想用舊證據 close。閘門擋下，要求收集 <code>reopenedAt</code> 之後的新證據。這條是 commit <code>85b92ce</code> 加入的硬化，杜絕「悄悄重開再用舊證據 close」的繞道。</p>
           </div>
           <div class="mini-card">
-            <h3>Lease 不釋放</h3>
-            <p>Agent 拿了 <code>git.write</code> 後 crash 沒釋放，下一張卡卡住。對策是 lease 帶 TTL + heartbeat，stale lock 可由 scheduler 回收。</p>
+            <h3>git-head-evidence</h3>
+            <p>closure packet 的 <code>targetCommit</code> 對不上當前 git HEAD。Doctor 拒絕，要求 rebase 或重新 close。讓「封包描述的狀態 vs 實際 repo 狀態」不能漂移。</p>
           </div>
           <div class="mini-card">
-            <h3>ATMChart 過期沒人重新 render</h3>
-            <p>規則改了 schema 但沒重 render → 下一個 Agent 進場就被擋。對策是把 <code>atm-chart render</code> 接進 pre-commit hook，讓地圖永遠跟著規則同步。</p>
+            <h3>registry-sole-source（INV-ATM-001）</h3>
+            <p>repo 裡跑出第二個 <code>atomic-registry.json</code>（通常是某 plugin「為了方便」自建）。直接 gate 拒絕，要求合併回根註冊表並走 ATM-CORE-0004。</p>
+          </div>
+          <div class="mini-card">
+            <h3>neutrality-scanner-active（INV-ATM-007）</h3>
+            <p>Framework 公開文件出現 adopter 私有名詞或非英文段落。ATM-CORE-0003 中性掃描器報 violation；改不掉就走 charter waiver。</p>
+          </div>
+          <div class="mini-card">
+            <h3>charter-integrity</h3>
+            <p>charter.md 與 charter-invariants.json 不同步（charterVersion / lastAmendedAt 對不上）。Doctor 要求對齊兩端。這是「最高權威」自身的健康檢查。</p>
           </div>
         </div>
-        <p>這四個坑都有一個共同特徵：<strong>它們不是 framework bug，是治理紀律問題</strong>。框架提供攔截機制，但你要把它接進你的 hook、CI、與派工流程，才能真正擋住。</p>
+        <p>這六個坑都有一個共同特徵：<strong>它們不是 framework bug，是治理紀律問題</strong>。框架提供攔截機制 + 結構化失敗回報 + 可直接執行的修復指令，但你要把 <code>atm doctor</code> 接進你的 pre-commit hook / CI 步驟，這套煞車才會真正在你睡著時也運作。</p>
       </section>
 
       <section class="panel" id="market">
@@ -1030,8 +990,8 @@ node atm.mjs tasks close --json
       <section class="panel" id="closing">
         <h2>11. 結語</h2>
         <p>2025 年大家在比「我的 AI Agent 有多聰明」。2026 年我覺得該換個題目：<strong>當 N 個聰明的 Agent 同時改一個 repo 時，這個 repo 還能不能保持可治理</strong>。</p>
-        <p>我給自己的答案是鑄造廠。把每段程式碼變成有名字的細胞、把每次改動變成有 hash 的證據、讓 9 個常駐警察看著結構健康度、把 15 個角色按職責切開來分工。這套東西聽起來規矩很多，但它的回報是：<strong>半年後我的 repo 還能讀懂、還能被審計、還能被重用</strong>。</p>
-        <p>如果你只想做一個小 feature，這套協議是 overkill。但如果你要做一個跑半年、多個 AI 並行介入、未來可能要送合規、甚至想把寫過的好 atom 分享給世界的專案——你需要的就是這樣一座鑄造廠。</p>
+        <p>我給自己的答案是鑄造廠 + 五維身分證 + 七階煞車。把每段程式碼變成有名字的細胞、把每次改動變成有 hash 的證據、把 7 條 INV-ATM 寫成 charter 紅線、讓 9 個常駐警察看著結構健康度、把 ORIENT→CLOSURE 釘成不能跳階的生命週期。這套東西聽起來規矩很多，但它的回報是：<strong>半年後我的 repo 還能讀懂、還能被審計、還能被重用——而且我同時開 5 個 Agent 也不會把它撞爛</strong>。</p>
+        <p>如果你只想做一個小 feature，這套協議是 overkill。但如果你要做一個跑半年、多個 AI 並行介入、未來可能要送合規、甚至想把寫過的好 atom 分享給世界的專案——你需要的就是這樣一座有煞車的鑄造廠。</p>
         <div class="callout">
           這篇是入門介紹。如果你想看具體實作、API、police family 機制、權限模型細節，可以看 <a href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">github.com/eaglhuang/AI-Atomic-Framework</a>。框架本身是 MIT，整套治理協議可以直接 fork、可以替換成自己的 governance bundle、也可以只用其中一部分（例如只接證據鏈、只接 ATMChart）。
         </div>
@@ -1041,15 +1001,15 @@ node atm.mjs tasks close --json
     <aside class="toc">
       <h2>目次</h2>
       <ol>
-        <li><a href="#pain">N AI 開發會撞的牆</a></li>
+        <li><a href="#pain">N AI 開發撞的四面牆</a></li>
         <li><a href="#metaphor">原子鑄造廠</a></li>
-        <li><a href="#roles">15 角色 4 層</a></li>
-        <li><a href="#cid">CID：身分證</a></li>
+        <li><a href="#roles">7 階 + 5 原子 + 11 行為</a></li>
+        <li><a href="#cid">5D CID 多維身分證</a></li>
         <li><a href="#permission">權限就是裝備</a></li>
-        <li><a href="#memory">ATMChart 與證據鏈</a></li>
-        <li><a href="#police">9 個常駐警察</a></li>
-        <li><a href="#setup">90 分鐘第一張卡</a></li>
-        <li><a href="#fail">容易失敗的地方</a></li>
+        <li><a href="#memory">charter / ATMChart / closure-packet</a></li>
+        <li><a href="#police">7 條 INV-ATM + 9 警察</a></li>
+        <li><a href="#setup">第一張卡 close 路徑</a></li>
+        <li><a href="#fail">六個 doctor 守則</a></li>
         <li><a href="#market">CID 原子市場</a></li>
         <li><a href="#closing">結語</a></li>
       </ol>

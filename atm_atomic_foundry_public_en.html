@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Atomic Foundry: Giving Every Piece of Code an Identity, Evidence, and a Second Life When N AI Agents Build One Project</title>
-  <meta name="description" content="Turn a multi-agent codebase into an atomic foundry: every piece of code is a cell with a CID fingerprint, every mutation leaves a SHA256 evidence packet, nine resident police watch for structural decay, and fifteen roles collaborate across four layers. A plain-language walkthrough of an AI engineering governance layer.">
+  <title>The End of AI Cowboy Mode: A Safety Brake for the Multi-Agent Era</title>
+  <meta name="description" content="When N AI agents change the same repo at once, how the Atomic Foundry forges a stable governance bedrock with 5D CID — seven-stage governance lifecycle, closure-packet.v1 SHA256 evidence chain, seven INV-ATM red lines, eleven behavior families. A plain-language walkthrough of an AI engineering safety-brake layer.">
   <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public_en.html">
   <link rel="alternate" hreflang="zh-Hant" href="https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public.html">
   <style>
@@ -19,7 +19,7 @@
       --shadow: 0 24px 80px rgba(26, 40, 55, 0.12);
       --radius-xl: 28px;
       --radius-md: 16px;
-      --content-width: 1160px;
+      --content-width: 1320px;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -106,9 +106,19 @@
       margin-bottom: 12px;
     }
     h3 { font-size: 1.15rem; margin-bottom: 10px; }
+    .sub-title {
+      margin: 12px 0 0;
+      max-width: 900px;
+      color: var(--accent-strong);
+      font-size: 1.18rem;
+      line-height: 1.45;
+      font-weight: 500;
+      font-family: "Iowan Old Style", "Georgia", serif;
+      letter-spacing: 0.005em;
+    }
     .lede {
       margin: 18px 0 0;
-      max-width: 820px;
+      max-width: 900px;
       color: var(--ink-soft);
       font-size: 1.08rem;
       line-height: 1.84;
@@ -268,20 +278,21 @@
 
       <header class="hero">
         <p class="eyebrow">AI Engineering Governance · 2026</p>
-        <h1>The Atomic Foundry: Giving Every Piece of Code an Identity, Evidence, and a Second Life When N AI Agents Build One Project</h1>
-        <p class="lede">Picture your whole repo as a foundry. Every time an AI agent finishes a piece of code, the foundry hands it an ID card, a SHA256 evidence packet, and a fingerprint that anyone can look up later. What gets cast is not an anonymous diff — it is a code cell with a name, a file, and the ability to be searched and reused by other projects across the world. This piece walks through why I ended up here, which multi-agent pain points it solves, and how a single engineer can start using it today.</p>
+        <h1>The End of AI Cowboy Mode: A Safety Brake for the Multi-Agent Era</h1>
+        <p class="sub-title">When N agents change the same repo at once, how to move them into an "Atomic Foundry" and forge a stable governance bedrock with 5D CID</p>
+        <p class="lede">Picture the whole repo as a foundry. Every piece of code an AI writes gets stamped with a <strong>multi-dimensional ID card (5D CID)</strong>, a SHA256 evidence packet you can replay months later, and a <strong>seven-stage lifecycle</strong> running from ORIENT to CLOSURE. What's cast isn't an anonymous diff — it's a cell with a name, a contract, audit trails, and the ability to be reused. <strong>The brake isn't here to slow you down; it's so that running five agents in parallel doesn't smash the project to pieces.</strong></p>
         <p class="lang-switch"><a href="atm_atomic_foundry_public.html">中文版</a> · English</p>
         <div class="hero-grid">
-          <div class="stat-card"><strong>15 roles</strong><span>From Captain down to six patrol police — four layers of collaboration, not one line where each hands off to the next.</span></div>
-          <div class="stat-card"><strong>SHA256 evidence</strong><span>Every mutation emits a hashed closure-packet you can still trace months later — the exact commands and outputs that ran.</span></div>
-          <div class="stat-card"><strong>CID-native</strong><span>Every piece of code is a content-addressable cell, ready to enter a cross-project search-and-share atom market.</span></div>
+          <div class="stat-card"><strong>7-stage lifecycle</strong><span>ORIENT → NEXT → LOCK → EXECUTE → EVIDENCE → HANDOFF → CLOSURE. Each stage is doctor-detectable; you can't skip stages.</span></div>
+          <div class="stat-card"><strong>5D CID fingerprint</strong><span>Strict / Interface / Effects / Semantic / Behavior. Only Interface ships today; the rest are roadmap, and non-deterministic signals never enter the identity hash.</span></div>
+          <div class="stat-card"><strong>closure-packet.v1 evidence chain</strong><span>Every close writes a replay-grade packet with commandRuns SHA256, targetCommit, and governedTreeSha. The schema is live.</span></div>
         </div>
         <div class="badge-row">
-          <span class="badge">TypeScript · Node 24</span>
-          <span class="badge">27 packages</span>
-          <span class="badge">9 police families</span>
-          <span class="badge">91 validators</span>
-          <span class="badge warm">Multi-Agent Native</span>
+          <span class="badge">TypeScript · Node ≥20</span>
+          <span class="badge">5 active atoms</span>
+          <span class="badge">7 INV-ATM red lines</span>
+          <span class="badge">11 behavior families</span>
+          <span class="badge warm">Charter v2.0.0</span>
         </div>
       </header>
 
@@ -425,179 +436,85 @@
       </section>
 
       <section class="panel" id="roles">
-        <h2>3. Fifteen roles across four layers</h2>
-        <p>A layered team runs the foundry: decisions on top, trades in the middle, evidence at the bottom, patrol police standing watch on the side. That is a very different shape from "send one worker end to end." Meet them in a team photo first:</p>
+        <h2>3. The governance skeleton: seven stages + five atoms + eleven behaviors</h2>
+        <p>Before we talk about the "brake," we need to look at where the brake is mounted. The foundry's skeleton is not "one agent doing the job end-to-end." It is <strong>a single piece of work split into seven machine-detectable stages</strong>, with two stable outward contracts — <em>atoms</em> and <em>behaviors</em> — strapping every change down. The diagram below is what's actually shipped today (not roadmap):</p>
 
         <figure class="figure-card">
-          <svg viewBox="0 0 1120 280" role="img" aria-label="The full foundry team lineup">
+          <svg viewBox="0 0 1280 360" role="img" aria-label="ATM seven-stage governance lifecycle">
             <defs>
-              <filter id="sf3" x="-30%" y="-30%" width="160%" height="160%">
-                <feDropShadow dx="0" dy="7" stdDeviation="9" flood-color="#1a2837" flood-opacity="0.13"/>
+              <filter id="lifecycleShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="6" stdDeviation="9" flood-color="#1a2837" flood-opacity="0.13"/>
               </filter>
-            </defs>
-            <rect width="1120" height="280" rx="24" fill="#fffaf2"/>
-            <g transform="translate(52,58)" filter="url(#sf3)">
-              <ellipse cx="80" cy="150" rx="46" ry="9" fill="#19242f" opacity="0.07"/>
-              <rect x="48" y="86" width="64" height="56" rx="20" fill="#16222d"/>
-              <rect x="44" y="34" width="72" height="58" rx="24" fill="#0d7a73"/>
-              <path d="M80 6 l5 11 12 1 -9 8 3 12 -11 -7 -11 7 3 -12 -9 -8 12 -1z" fill="#cb7d2e"/>
-              <circle cx="66" cy="60" r="6" fill="#fffaf2"/><circle cx="94" cy="60" r="6" fill="#fffaf2"/>
-              <circle cx="66" cy="61" r="2.8" fill="#19242f"/><circle cx="94" cy="61" r="2.8" fill="#19242f"/>
-              <path d="M68 74 Q80 84 92 74" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
-            </g>
-            <text x="132" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#085d58">Captain</text>
-            <text x="132" y="270" text-anchor="middle" font-size="11" fill="#465464">only one who closes / commits</text>
-
-            <g transform="translate(272,58)" filter="url(#sf3)">
-              <ellipse cx="80" cy="150" rx="46" ry="9" fill="#19242f" opacity="0.07"/>
-              <rect x="48" y="86" width="64" height="56" rx="20" fill="#d7ece6"/>
-              <rect x="44" y="34" width="72" height="58" rx="24" fill="#527b8a"/>
-              <line x1="80" y1="34" x2="80" y2="16" stroke="#19242f" stroke-width="3" stroke-linecap="round"/><circle cx="80" cy="12" r="4.5" fill="#cb7d2e"/>
-              <circle cx="66" cy="60" r="6" fill="#fffaf2"/><circle cx="94" cy="60" r="6" fill="#fffaf2"/>
-              <circle cx="66" cy="61" r="2.8" fill="#19242f"/><circle cx="94" cy="61" r="2.8" fill="#19242f"/>
-              <path d="M68 74 Q80 84 92 74" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
-              <g transform="translate(96,108)"><rect width="34" height="26" rx="4" fill="#fff" stroke="#527b8a" stroke-width="2"/><path d="M5 8 h24 M5 14 h18 M5 20 h22" stroke="#527b8a" stroke-width="2"/></g>
-            </g>
-            <text x="352" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#085d58">Atomization Planner</text>
-            <text x="352" y="270" text-anchor="middle" font-size="11" fill="#465464">picks the primary atom</text>
-
-            <g transform="translate(492,58)" filter="url(#sf3)">
-              <ellipse cx="80" cy="150" rx="46" ry="9" fill="#19242f" opacity="0.07"/>
-              <rect x="48" y="86" width="64" height="56" rx="20" fill="#f3ddc2"/>
-              <rect x="44" y="34" width="72" height="58" rx="24" fill="#cb7d2e"/>
-              <line x1="80" y1="34" x2="80" y2="16" stroke="#19242f" stroke-width="3" stroke-linecap="round"/><circle cx="80" cy="12" r="4.5" fill="#0d7a73"/>
-              <circle cx="66" cy="60" r="6" fill="#fffaf2"/><circle cx="94" cy="60" r="6" fill="#fffaf2"/>
-              <circle cx="66" cy="61" r="2.8" fill="#19242f"/><circle cx="94" cy="61" r="2.8" fill="#19242f"/>
-              <path d="M68 74 Q80 84 92 74" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
-              <g transform="translate(98,104) rotate(35)"><rect x="0" y="6" width="30" height="7" rx="3" fill="#465464"/><circle cx="2" cy="9" r="8" fill="none" stroke="#465464" stroke-width="5"/></g>
-            </g>
-            <text x="572" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#085d58">Code Builder</text>
-            <text x="572" y="270" text-anchor="middle" font-size="11" fill="#465464">sole file.write holder</text>
-
-            <g transform="translate(712,58)" filter="url(#sf3)">
-              <ellipse cx="80" cy="150" rx="46" ry="9" fill="#19242f" opacity="0.07"/>
-              <rect x="48" y="86" width="64" height="56" rx="20" fill="#d6e3e8"/>
-              <rect x="44" y="34" width="72" height="58" rx="24" fill="#085d58"/>
-              <line x1="80" y1="34" x2="80" y2="16" stroke="#19242f" stroke-width="3" stroke-linecap="round"/><circle cx="80" cy="12" r="4.5" fill="#cb7d2e"/>
-              <circle cx="66" cy="60" r="6" fill="#fffaf2"/><circle cx="94" cy="60" r="6" fill="#fffaf2"/>
-              <circle cx="66" cy="61" r="2.8" fill="#19242f"/><circle cx="94" cy="61" r="2.8" fill="#19242f"/>
-              <path d="M68 74 Q80 84 92 74" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
-              <g transform="translate(96,104)"><rect width="28" height="34" rx="4" fill="#fff" stroke="#085d58" stroke-width="2"/><rect x="9" y="-4" width="10" height="8" rx="2" fill="#085d58"/><path d="M6 12 h16 M6 19 h16 M6 26 h11" stroke="#085d58" stroke-width="2"/></g>
-            </g>
-            <text x="792" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#085d58">Evidence Curator</text>
-            <text x="792" y="270" text-anchor="middle" font-size="11" fill="#465464">collects SHA256 evidence</text>
-
-            <g transform="translate(932,58)" filter="url(#sf3)">
-              <ellipse cx="80" cy="150" rx="46" ry="9" fill="#19242f" opacity="0.07"/>
-              <rect x="48" y="86" width="64" height="56" rx="20" fill="#eaf7f4"/>
-              <rect x="44" y="34" width="72" height="58" rx="24" fill="#2f6f63"/>
-              <path d="M44 38 Q80 18 116 38 l0 -6 Q80 14 44 32z" fill="#cb7d2e"/>
-              <circle cx="66" cy="62" r="6" fill="#fffaf2"/><circle cx="94" cy="62" r="6" fill="#fffaf2"/>
-              <circle cx="66" cy="63" r="2.8" fill="#19242f"/><circle cx="94" cy="63" r="2.8" fill="#19242f"/>
-              <path d="M68 76 Q80 86 92 76" stroke="#fffaf2" stroke-width="3" fill="none" stroke-linecap="round"/>
-              <g transform="translate(98,104)"><circle cx="10" cy="10" r="10" fill="none" stroke="#465464" stroke-width="4"/><line x1="18" y1="18" x2="28" y2="28" stroke="#465464" stroke-width="5" stroke-linecap="round"/></g>
-            </g>
-            <text x="1012" y="252" text-anchor="middle" font-size="14" font-weight="700" fill="#085d58">Atomic Police</text>
-            <text x="1012" y="270" text-anchor="middle" font-size="11" fill="#465464">resident patrol, looks but never touches</text>
-          </svg>
-          <figcaption>Fig. 3: The full cast. The Captain wears a star, the Planner holds a blueprint, the Builder a wrench, the Curator a clipboard, the Police a badge and magnifier. Each role's "prop" is really the permission it was granted.</figcaption>
-        </figure>
-
-        <p>Now put the cast back into their actual collaboration layers:</p>
-        <figure class="figure-card">
-          <svg viewBox="0 0 1120 720" role="img" aria-label="The atomic foundry four-layer collaboration diagram">
-            <defs>
-              <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#1a2837" flood-opacity="0.14"/>
-              </filter>
-              <marker id="arrowGrn" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
-                <path d="M 0 0 L 12 6 L 0 12 z" fill="#0d7a73"/>
+              <marker id="lcArrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+                <path d="M0 0 L12 6 L0 12 z" fill="#0d7a73"/>
               </marker>
             </defs>
-            <rect width="1120" height="720" rx="28" fill="#fffaf2"/>
+            <rect width="1280" height="360" rx="24" fill="#fffaf2"/>
 
-            <g filter="url(#softShadow)">
-              <rect x="380" y="50" width="360" height="92" rx="22" fill="#16222d"/>
-              <text x="560" y="88" text-anchor="middle" fill="#fffaf2" font-size="22" font-weight="700">L1 · Decision</text>
-              <text x="560" y="116" text-anchor="middle" fill="#d8ebf6" font-size="15">Task Captain · Task Lieutenant</text>
-            </g>
-
-            <g filter="url(#softShadow)">
-              <rect x="60" y="200" width="220" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
-              <text x="170" y="232" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">Atomization Planner</text>
-              <text x="170" y="254" text-anchor="middle" fill="#465464" font-size="13">picks the primary atom</text>
-              <text x="170" y="272" text-anchor="middle" fill="#0d7a73" font-size="12">no source writes</text>
-            </g>
-            <g filter="url(#softShadow)">
-              <rect x="300" y="200" width="220" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
-              <text x="410" y="232" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">Scope Sentinel</text>
-              <text x="410" y="254" text-anchor="middle" fill="#465464" font-size="13">guards allowedFiles</text>
-              <text x="410" y="272" text-anchor="middle" fill="#0d7a73" font-size="12">before + after</text>
-            </g>
-            <g filter="url(#softShadow)">
-              <rect x="540" y="200" width="220" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
-              <text x="650" y="232" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">Code Builder</text>
-              <text x="650" y="254" text-anchor="middle" fill="#465464" font-size="13">TS / Py / C# swappable</text>
-              <text x="650" y="272" text-anchor="middle" fill="#0d7a73" font-size="12">sole file.write holder</text>
-            </g>
-            <g filter="url(#softShadow)">
-              <rect x="780" y="200" width="220" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
-              <text x="890" y="232" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">QA · Check Runner</text>
-              <text x="890" y="254" text-anchor="middle" fill="#465464" font-size="13">runs typecheck / lint</text>
-              <text x="890" y="272" text-anchor="middle" fill="#0d7a73" font-size="12">can't call fail a pass</text>
+            <g font-family="Iowan Old Style, Georgia, serif" filter="url(#lifecycleShadow)">
+              <g transform="translate(40,138)"><rect width="160" height="84" rx="18" fill="#0d7a73"/><text x="80" y="38" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">ORIENT</text><text x="80" y="60" text-anchor="middle" fill="#d8ebf6" font-size="11">framework signal</text><text x="80" y="74" text-anchor="middle" fill="#d8ebf6" font-size="11">detection</text></g>
+              <g transform="translate(218,138)"><rect width="160" height="84" rx="18" fill="#0d7a73"/><text x="80" y="38" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">NEXT</text><text x="80" y="60" text-anchor="middle" fill="#d8ebf6" font-size="11">router decision</text><text x="80" y="74" text-anchor="middle" fill="#d8ebf6" font-size="11">next CLI command</text></g>
+              <g transform="translate(396,138)"><rect width="160" height="84" rx="18" fill="#cb7d2e"/><text x="80" y="38" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">LOCK</text><text x="80" y="60" text-anchor="middle" fill="#fceacf" font-size="11">lock before edit</text><text x="80" y="74" text-anchor="middle" fill="#fceacf" font-size="11">INV-ATM-002</text></g>
+              <g transform="translate(574,138)"><rect width="160" height="84" rx="18" fill="#16222d"/><text x="80" y="38" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">EXECUTE</text><text x="80" y="60" text-anchor="middle" fill="#a9c2d3" font-size="11">do the work</text><text x="80" y="74" text-anchor="middle" fill="#a9c2d3" font-size="11">verify lock scope after</text></g>
+              <g transform="translate(752,138)"><rect width="160" height="84" rx="18" fill="#0d7a73"/><text x="80" y="38" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">EVIDENCE</text><text x="80" y="60" text-anchor="middle" fill="#d8ebf6" font-size="11">sediment evidence</text><text x="80" y="74" text-anchor="middle" fill="#d8ebf6" font-size="11">SHA256 + gate</text></g>
+              <g transform="translate(930,138)"><rect width="160" height="84" rx="18" fill="#527b8a"/><text x="80" y="38" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">HANDOFF</text><text x="80" y="60" text-anchor="middle" fill="#dbe7ed" font-size="11">context summary</text><text x="80" y="74" text-anchor="middle" fill="#dbe7ed" font-size="11">cross-session</text></g>
+              <g transform="translate(1108,138)"><rect width="160" height="84" rx="18" fill="#085d58"/><text x="80" y="38" text-anchor="middle" fill="#fffaf2" font-size="20" font-weight="700">CLOSURE</text><text x="80" y="60" text-anchor="middle" fill="#a9e0d6" font-size="11">closure-packet.v1</text><text x="80" y="74" text-anchor="middle" fill="#a9e0d6" font-size="11">pinned to git HEAD</text></g>
             </g>
 
-            <g filter="url(#softShadow)">
-              <rect x="240" y="356" width="280" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
-              <text x="380" y="388" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">Evidence Curator</text>
-              <text x="380" y="410" text-anchor="middle" fill="#465464" font-size="13">collects commandRuns / SHA256</text>
-              <text x="380" y="428" text-anchor="middle" fill="#0d7a73" font-size="12">can't fake evidence</text>
-            </g>
-            <g filter="url(#softShadow)">
-              <rect x="540" y="356" width="280" height="92" rx="20" fill="#ffffff" stroke="#c8d3dc"/>
-              <text x="680" y="388" text-anchor="middle" fill="#19242f" font-size="18" font-weight="700">Closure Steward</text>
-              <text x="680" y="410" text-anchor="middle" fill="#465464" font-size="13">audits the closure-packet</text>
-              <text x="680" y="428" text-anchor="middle" fill="#0d7a73" font-size="12">the final gate</text>
+            <g stroke="#0d7a73" stroke-width="3" fill="none" marker-end="url(#lcArrow)">
+              <path d="M200 180 L218 180"/><path d="M378 180 L396 180"/><path d="M556 180 L574 180"/><path d="M734 180 L752 180"/><path d="M912 180 L930 180"/><path d="M1090 180 L1108 180"/>
             </g>
 
-            <g filter="url(#softShadow)">
-              <rect x="120" y="512" width="880" height="146" rx="22" fill="#eaf7f4" stroke="#90cbc1"/>
-              <text x="560" y="545" text-anchor="middle" fill="#085d58" font-size="20" font-weight="700">L4 · Atomic Police (9 families + 6 patrols)</text>
-              <text x="240" y="588" text-anchor="middle" fill="#3c5f6e" font-size="14">Dedup · Demand</text>
-              <text x="240" y="612" text-anchor="middle" fill="#3c5f6e" font-size="14">Quality · Decomposition</text>
-              <text x="560" y="588" text-anchor="middle" fill="#3c5f6e" font-size="14">Map Integration · Atomization</text>
-              <text x="560" y="612" text-anchor="middle" fill="#3c5f6e" font-size="14">Evolution · Polymorph</text>
-              <text x="880" y="588" text-anchor="middle" fill="#3c5f6e" font-size="14">Rollback Police</text>
-              <text x="880" y="612" text-anchor="middle" fill="#3c5f6e" font-size="14">Encoding · Ledger · Runner Sync</text>
-              <text x="560" y="640" text-anchor="middle" fill="#085d58" font-size="13" font-style="italic">daily · pre-claim · pre-close · pre-checkpoint</text>
-            </g>
+            <text x="640" y="56" text-anchor="middle" font-size="13" font-weight="700" fill="#085d58" font-family="monospace">Every stage is doctor-detectable as done / not done; agents can't skip stages</text>
+            <text x="640" y="74" text-anchor="middle" font-size="12" fill="#465464" font-family="monospace">node atm.mjs orient → next → lock acquire → ... → evidence verify --gate close → tasks close</text>
 
-            <path d="M510 142 L260 200" stroke="#0d7a73" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
-            <path d="M540 142 L430 200" stroke="#0d7a73" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
-            <path d="M580 142 L670 200" stroke="#0d7a73" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
-            <path d="M610 142 L880 200" stroke="#0d7a73" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
-            <path d="M650 296 L420 356" stroke="#cb7d2e" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
-            <path d="M650 296 L680 356" stroke="#cb7d2e" stroke-width="3" fill="none" marker-end="url(#arrowGrn)"/>
-            <path d="M560 448 L560 512" stroke="#cb7d2e" stroke-width="3" fill="none" marker-end="url(#arrowGrn)" stroke-dasharray="6 6"/>
+            <g transform="translate(40,266)">
+              <rect width="1200" height="74" rx="14" fill="#eaf7f4" stroke="#90cbc1"/>
+              <text x="600" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="#085d58" font-family="monospace">5 active atoms as the governance units</text>
+              <text x="600" y="50" text-anchor="middle" font-size="11" fill="#3c5f6e">ATM-CORE-0001 seed identity · ATM-CORE-0003 neutrality scanner · ATM-CORE-0004 atom generator · ATM-CORE-0005 semantic fingerprint · ATM-FIXTURE-0001 self-test fixture</text>
+              <text x="600" y="66" text-anchor="middle" font-size="11" fill="#465464">11 behavior families (plugin-behavior-pack): split / atomize / merge / dedup-merge / compose / evolve / polymorphize / expire / sweep / infect</text>
+            </g>
           </svg>
-          <figcaption>Fig. 4: The four-layer foundry. The Captain decides at L1; L2 is the permission-partitioned trades; L3 turns implementation into auditable evidence; L4 is the resident patrol — not on any one task's line, but watching the whole repo's structural health.</figcaption>
+          <figcaption>Fig. 3: ATM's seven-stage governance lifecycle. Each stage has its own CLI command, its own doctor check, and its own verification contract. The strip at the bottom is the "stable outward governance units": five active atoms (governed tier) handling identity / provisioning / neutrality / fingerprint, plus eleven behavior families — the legal verbs you can apply to atoms.</figcaption>
         </figure>
 
-        <h3 style="margin-top:24px">L1 Decision: the Captain is the sole lifecycle owner</h3>
-        <p>However many agents you run, <strong>only the Captain can close tasks, checkpoint, commit, or push</strong>. That rule is baked into the framework — with five agents running at once, no single decision point means chaos. For complex tasks, a Lieutenant helps split phases.</p>
+        <p><strong>What's an atom?</strong> Not a task, not a commit. It's the smallest governable unit with a unique <code>ATM-{BUCKET}-{NNNN}</code> id, a hash-locked spec, and evidence-required validation. Five active atoms in the registry right now (governed tier): seed (0001), neutrality scanner (0003), atom generator (0004), semantic fingerprint (0005), generator self-test fixture (FIXTURE-0001). <strong>You can't</strong> edit <code>atomic-registry.json</code> directly — every new atom has to go through ATM-CORE-0004 and pass the INV-ATM-003 schema gate (which is one of the seven charter red lines).</p>
 
-        <h3 style="margin-top:18px">L2 Trades: each role holds a "permission," not a "tool"</h3>
-        <p>The Atomization Planner does atomization planning first; the Scope Sentinel guards the allowedFiles boundary; the Code Builder is the only holder of <code>file.write</code> at that moment; QA / Check Runner runs validation. Their isolation does not come from folders or from politely asking the AI "please don't touch that" — it comes from a permission model, covered next.</p>
+        <p><strong>What's a behavior?</strong> The legal verbs you can apply to atoms, all consolidated in <code>plugin-behavior-pack</code>, grouped by family:</p>
+        <div class="split-3">
+          <div class="mini-card">
+            <h3>Split family</h3>
+            <p><code>split</code> divides an existing atom into clearer boundaries; <code>atomize</code> extracts a brand-new governed unit from broader / legacy material.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Merge family</h3>
+            <p><code>merge</code> combines two atoms; <code>dedup-merge</code> collapses duplicates; <code>compose</code> assembles multiple units into a higher-level result.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Evolution family</h3>
+            <p><code>evolve</code> advances an atom version in place; <code>polymorphize</code> preserves identity but switches to a variant.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Lifecycle family</h3>
+            <p><code>expire</code> formally retires; <code>sweep</code> cleans up residue. Both currently dry-run / proposal only, no direct host apply.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Propagation family</h3>
+            <p><code>infect</code> propagates a governed change into downstream dependents under neutrality scan + human review. This is the transport mechanism for the "atom market" idea in §10.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Lifecycle role matrix</h3>
+            <p>There's an atom × lifecycle role matrix (lead / assist / detect / not involved). E.g. semantic fingerprint (0005) is the most widely distributed atom — it plays a role in NEXT / EXECUTE / EVIDENCE / HANDOFF / CLOSURE.</p>
+          </div>
+        </div>
 
-        <h3 style="margin-top:18px">L3 Evidence: every change leaves an auditable trace</h3>
-        <p>The Evidence Curator collects the commands the Builder ran, the SHA256 of stdout/stderr, and validator results into an <code>atm.closurePacket.v1</code>. The Closure Steward audits that packet before close. <strong>This evidence is not a PR comment — it is a permanent file in <code>.atm/history/</code>, schema-versioned, ready for an external compliance audit.</strong></p>
-
-        <h3 style="margin-top:18px">L4 Patrol: the repo's own structural conscience</h3>
-        <p>Nine atomic police families plus six patrol moments (daily, pre-claim, pre-close, pre-checkpoint, pre-big-script, multi-agent collision) <strong>belong to the repo, not to any one task</strong>. Their job is to see structural decay — overlapping fingerprints, oversized files, overloaded caller graphs, expired TTLs — and emit a readable patrol report.</p>
+        <div class="callout">
+          <strong>About "15 roles across 4 layers"</strong>: that's not what's shipped. It's a design proposal in the Team Agents lane (planning) for future division of labor. What's actually shipped today is <strong>"seven stages + five atoms + eleven behaviors + seven INV-ATM red lines" — those four contracts</strong>, exposed by the onefile runner through <code>node atm.mjs &lt;command&gt;</code>. Get those clear first; then the next three sections (CID, lease, evidence chain) attach to the right anchors.
+        </div>
       </section>
 
       <section class="panel" id="cid">
-        <h2>4. CID: an ID card for every atom</h2>
+        <h2>4. 5D CID: a multi-dimensional ID card for every atom</h2>
         <p>This is the heart of the foundry metaphor. <strong>Every atom carries an ID card — a CID (content-addressable identifier).</strong> It is not a fingerprint of "what the code means" (that's something computer science can't actually deliver). It's a fingerprint of <strong>what the atom publicly declares it does</strong>.</p>
         <div class="callout">
           <strong>The honest boundary, up front</strong>: a CID is <strong>deterministic</strong> — no source parsing, no AST analysis, no LLM call, no embedding. What it hashes is the contract fields the atom declares for itself (input / output ports, language, evidence requirement, performance budget). The same declaration always yields the same card; any non-deterministic signal (vectors, model outputs, timestamps) is forbidden from this hash.
@@ -705,6 +622,14 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
           </ul>
         </div>
         <p>CIDs also resolve an old question: "how much interface-level duplication does my codebase have?" That used to be fragile static analysis; now that every atom carries a deterministic fingerprint, it's an O(1) lookup. One caveat to be loud about — <strong>matching interface ≠ matching behavior</strong>. The latter belongs to runtime testing (which is where CID.Behavior and the zero-trust sandbox are headed on the roadmap). CID itself only covers the layer of "who declared what contract."</p>
+
+        <div class="callout">
+          <strong>Two roadmap rules around CID.Behavior and Tier 3</strong>:
+          <ul style="margin-top:10px">
+            <li><strong>Mutation testing / adversarial QA must never sit on the synchronous close path.</strong> These tests are slow and compute-heavy; stuffing them inside <code>atm tasks close</code> would jam the whole governance chain. The right shape: synchronous close marks CID.Behavior as <code>pending</code> or <code>candidate</code>; an async Police / Behavior Police pipeline runs in the background, and only after it passes does the Tier 3 badge get attached. Before any of this runs in production, you must write down explicit budget / cap / sampling / sharding / timeout policies — otherwise the test pipeline itself becomes the compute disaster.</li>
+            <li><strong>Tier 3 "tamper-resistant" requires external attestation.</strong> Local sandbox evidence only reaches Tier 2 (anti-confusion, not anti-tamper). To climb to Tier 3 / marketplace-grade, the closure must carry an external <code>AttestationProvider</code> signature with verifiable provenance — with GitHub Actions (attestation API + OIDC) as the first reference adapter, but the core stays abstract and isn't hard-bound to any single CI platform. Local agents, local Deno sandboxes, local daemons: <strong>none of them are trust roots</strong>. The signature source is.</li>
+          </ul>
+        </div>
       </section>
 
       <section class="panel" id="permission">
@@ -785,12 +710,21 @@ $ node atm.mjs team lease --agent builder-02 \
         </figure>
 
         <p>Permissions can be handed over, but only through <code>team lease</code> and <code>team release</code> on the CLI — every handover records a timestamp, the agent ID, and the permission scope. That lease history travels with the closure-packet into permanent evidence.</p>
+
+        <div class="callout">
+          <strong>Honest boundary — shipped vs roadmap</strong>: the permission table and the <code>team lease</code> CLI above are design proposals from the Team Agents lane (planning). <strong>What's actually shipped</strong> is the minimum useful set: <code>ScopeLockRecord</code> (schema <code>atm.governanceScopeLock</code>) with <code>leaseId + heartbeatAt + ttlSeconds</code> + <code>taskDirectionLock.allowedFiles</code> + the INV-ATM-002 "lock-before-edit" doctor check. <code>leaseEpoch</code> (fencing token) / wait-for-graph deadlock detection / symbol-scope leases are E2 roadmap, not built yet. But even with only what's shipped, the brake — "unlocked edit detected → next <code>atm next</code> returns blocked → agent gets steered into acquire" — already works.
+        </div>
       </section>
 
       <section class="panel" id="memory">
-        <h2>6. ATMChart and the evidence chain: shared memory that isn't word of mouth</h2>
-        <p>The other place multi-AI work tips over is context drift — Agent A told me an assumption, Agent B never heard it, and so B writes code inconsistent with A. By the time you notice, three files are adrift.</p>
-        <p>The foundry pins shared memory down with two mechanisms:</p>
+        <h2>6. Shared memory: charter is the supreme authority, ATMChart is the runtime brake, closure-packet is the evidence chain</h2>
+        <p>The other place multi-AI work tips over is context drift — Agent A told me an assumption, Agent B never heard it, and so B writes code inconsistent with A. By the time you notice, three files are adrift. The foundry doesn't fight this with "prompt reminders." It writes the governance rules into three layers of machine-readable contract:</p>
+        <ul>
+          <li><strong>Supreme authority = the atomic charter (<code>.atm/charter/atomic-charter.md</code>) + 7 INV-ATM</strong>. The charter is the framework's final arbiter, currently at v2.0.0; INV-ATM-001~007 are immovable red lines, enforced by three mechanisms (gate / doctor / waiver-required). Breaking an invariant cannot be routed around — it must go through the charter waiver flow (<code>behavior.evolve</code> + <code>charterWaiver</code> + <code>HumanReviewDecision</code>).</li>
+          <li><strong>Runtime brake = the ATMChart (<code>.atm/memory/atm-chart.md</code>) SHA256 drift detection</strong>. Not supreme authority, but the lock that catches anyone trying to act on a stale map.</li>
+          <li><strong>Evidence chain = closure-packet.v1</strong>. Each close writes to a permanent ledger that you can re-walk command-by-command months later for audit.</li>
+        </ul>
+        <p>The next two mechanisms (ATMChart, closure-packet) are spread out below; the seven INV-ATM red lines join the police family discussion in §7.</p>
         <div class="split">
           <div class="mini-card">
             <h3>ATMChart drift detection</h3>
@@ -822,9 +756,25 @@ $ node atm.mjs team lease --agent builder-02 \
       </section>
 
       <section class="panel" id="police">
-        <h2>7. Nine resident police: the repo's own structural conscience</h2>
-        <p class="quote">While you sleep, the patrol keeps walking.</p>
-        <p>Everything so far has been about "making one mutation safe." But structural decay never appears in a single mutation — it accumulates over time. So the foundry keeps a resident police family:</p>
+        <h2>7. 7 INV-ATM red lines + 9 resident police: contract brake & structural conscience</h2>
+        <p class="quote">While you sleep, the patrol keeps walking; the invariants never clock out.</p>
+
+        <p>The foundry's "brake" comes in two layers. <strong>The contract-layer brake is the seven INV-ATM red lines</strong> on the charter (public, stable, written into the framework). <strong>The detection-layer brake is the nine resident police families</strong> (advisory, run automatically, report to humans for the verdict). They split labor like this:</p>
+        <table>
+          <thead><tr><th>Red line (INV-ATM-00X)</th><th>Brake type</th><th>Plain meaning</th></tr></thead>
+          <tbody>
+            <tr><td><strong>INV-ATM-001</strong> No second registry</td><td>gate (hard reject)</td><td>The whole repo gets exactly one atomic-registry source of truth.</td></tr>
+            <tr><td><strong>INV-ATM-002</strong> Lock before edit</td><td>doctor (steer to fix)</td><td>You must hold a <code>ScopeLock</code> before editing.</td></tr>
+            <tr><td><strong>INV-ATM-003</strong> Schema-validated promotion only</td><td>gate</td><td>All atom upgrades must pass schema validation; touching the registry directly is forbidden.</td></tr>
+            <tr><td><strong>INV-ATM-004</strong> No competing highest authority</td><td>doctor</td><td>No host rule can claim a status equal to or higher than the charter.</td></tr>
+            <tr><td><strong>INV-ATM-005</strong> Host rule amendments require waiver flow</td><td>waiver-required</td><td>The legal path around any invariant: <code>behavior.evolve</code> + <code>charterWaiver</code> + <code>HumanReviewDecision</code>.</td></tr>
+            <tr><td><strong>INV-ATM-006</strong> Framework work tracking stays target-local</td><td>doctor</td><td>Framework task ledgers must live in the framework repo's own <code>.atm/history/tasks/</code>.</td></tr>
+            <tr><td><strong>INV-ATM-007</strong> Public framework docs remain English-only</td><td>doctor</td><td>Framework public docs must be English and adopter-neutral; ATM-CORE-0003 enforces it.</td></tr>
+          </tbody>
+        </table>
+
+        <p>The seven INV-ATM are a public contract; breaking one requires a charter waiver. The nine police families are advisory detection — they're not in the charter, but they walk through the registry and source daily, catching <strong>chronic structural decay</strong>. Safety of one mutation belongs to INV-ATM; health of the repo after hundreds of mutations belongs to the police families.</p>
+        <p>The nine police families:</p>
         <div class="split-3">
           <div class="mini-card">
             <h3>Dedup Police</h3>
@@ -902,29 +852,44 @@ $ node atm.mjs team lease --agent builder-02 \
       </section>
 
       <section class="panel" id="setup">
-        <h2>8. Ninety minutes: from git clone to a first closed task</h2>
-        <p>For all of this complexity, the adoption barrier is low. The promise I set myself: <strong>from a clean environment to a first AI-completed task formally closed, in under ninety minutes</strong>. Minute by minute:</p>
-        <pre><code># 0-15 min: environment up
-npx create-atm my-app --agent claude-code
-cd my-app
-node atm.mjs doctor --json
-# watch 15+ health checks go green
+        <h2>8. From git clone to first task close: the minimum adoption path</h2>
+        <p>For all of this complexity, the adoption barrier is low. ATM's official distribution unit is a <strong>single-file runner <code>atm.mjs</code></strong> (about 3.1 MB of strip-types bundle, zero transitive deps); deployment is an explicit framework → adopter <em>sync</em>, not <code>npm install</code>. The minimum path from zero to your first closure-packet:</p>
+        <pre><code># 0-15 min: get the runner + ORIENT
+# Framework side (onefile is already built):
+#   npm run build  →  release/atm-onefile/atm.mjs (~3.1 MB)
+# Adopter side: sync the onefile in
+node release/atm-onefile/atm.mjs internal-release sync \
+    --repo /path/to/my-app --json
+cd /path/to/my-app
+node atm.mjs orient --cwd . --json
+node atm.mjs doctor  --cwd . --json
+# watch each doctor check (lock-before-edit, charter-integrity, neutrality-scanner-active...) go green
 
-# 15-30 min: copy the minimal example + edit 4 fields
-cp -r node_modules/ai-atomic-framework/examples/team-agents-minimal/. .atm/team/
-# edit team-brief.md: task title, goal, allowedFiles, expectedReport
-
-# 30-60 min: the agent edits code
+# 15-30 min: NEXT, then LOCK
 node atm.mjs next --prompt "your first small change" --json
-# agent gets routing &rarr; claim &rarr; touch only allowedFiles &rarr; run typecheck
+# get the nextAction → execute its command string (e.g. lock acquire)
+node atm.mjs lock acquire --workItem &lt;workItemId&gt; \
+    --files src/foo.ts --reason "first small change" --json
 
-# 60-80 min: verify and collect evidence
-node --strip-types scripts/validate-team-agents-templates.ts
-# write agent-report.md and team-summary.md
+# 30-60 min: EXECUTE → EVIDENCE
+# edit within the lock scope, run your tests
+npm test
+node atm.mjs evidence add --task &lt;workItemId&gt; --actor codex-main \
+    --kind test --summary "unit tests passed" --artifacts reports/test.json --json
 
-# 80-90 min: close
-node atm.mjs tasks close --json
-# auto-emits closure-packet.json (with SHA256) + the first patrol-report.md</code></pre>
+# 60-80 min: HANDOFF + verify
+node atm.mjs evidence verify --task &lt;workItemId&gt; --gate close --json
+node atm.mjs handoff summarize --task &lt;workItemId&gt; --json
+
+# 80-90 min: CLOSURE
+node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status done --json
+# writes .atm/history/evidence/&lt;taskId&gt;/closure-packet.json
+# containing commandRuns[].stdoutSha256 + targetCommit + governedTreeSha
+# Any future audit replays the same commands → byte-for-byte comparison</code></pre>
+
+        <div class="callout">
+          <strong>Boundary notes</strong>: (1) <code>npx create-atm</code> / <code>examples/team-agents-minimal/</code> are the convenience layer planned in the Team Agents lane; what's shipped today is the <code>internal-release sync</code> shown above. (2) If your repo <em>is</em> the framework, <code>doctor</code> detects the framework signature and turns on extra rules (INV-ATM-006: framework tasks must stay target-local; the closure-packet must carry framework gate provenance). Adopter mode is bound only by the universal invariants.
+        </div>
         <p>What do you own at the ninety-minute mark?</p>
         <ul>
           <li>A commit carrying a teamRunId and a reference to its closure evidence</li>
@@ -936,27 +901,35 @@ node atm.mjs tasks close --json
       </section>
 
       <section class="panel" id="fail">
-        <h2>9. Where it tends to fail</h2>
-        <p>Honestly, the foundry is not green on the first try. These are the potholes I hit most:</p>
-        <div class="split">
+        <h2>9. Where it tends to fail (and the doctor checks that catch it)</h2>
+        <p>Honestly, the foundry isn't green on the first try. The six scenarios below are the ones I hit most often, and they're also the ones ATM doctor checks name directly. Each maps to a specific check; failure returns a <code>firstFailedCheck</code> with a <code>suggestion</code> — no guesswork needed:</p>
+        <div class="split-3">
           <div class="mini-card">
-            <h3>Scope leak</h3>
-            <p>An agent holds <code>file.write</code> but touches files outside its lease paths. The framework raises <code>ATM_TEAM_WRITE_SCOPE_EXCEEDED</code>, but you have to set up the forbidden_files allowlist for it to bite. Plain text in a task card won't stop it — you need dual-agent dispatch plus physical path isolation.</p>
+            <h3>lock-before-edit (INV-ATM-002)</h3>
+            <p>Editing without holding a lock. The next <code>atm next</code> returns blocked with a suggestion to run <code>atm lock acquire --files &lt;list&gt;</code>. Most common, and easiest to fix.</p>
           </div>
           <div class="mini-card">
-            <h3>Evidence faking</h3>
-            <p>An agent reports a failing validator as a pass. This is the most fatal wound to an evidence system. The countermeasure: the Evidence Curator must record exitCode and stdout SHA256; a non-zero exit can only be a diagnostic, never a pass.</p>
+            <h3>evidence-freshness</h3>
+            <p>Trying to close with old evidence after a task was reopened. The gate blocks and demands evidence dated after <code>reopenedAt</code>. Introduced by commit <code>85b92ce</code> to stop "quietly reopen, reuse old evidence, close again."</p>
           </div>
           <div class="mini-card">
-            <h3>Unreleased lease</h3>
-            <p>An agent takes <code>git.write</code>, crashes without releasing, and the next task is stuck. The countermeasure: leases carry TTL + heartbeat, and a scheduler can reclaim stale locks.</p>
+            <h3>git-head-evidence</h3>
+            <p>Closure packet's <code>targetCommit</code> doesn't match the current git HEAD. Doctor rejects and asks for rebase or reclose. Keeps "what the packet describes" and "what the repo actually is" from drifting.</p>
           </div>
           <div class="mini-card">
-            <h3>Stale ATMChart nobody re-renders</h3>
-            <p>A rule changes a schema but nobody re-renders &rarr; the next agent is blocked on entry. The countermeasure: wire <code>atm-chart render</code> into a pre-commit hook so the map always tracks the rules.</p>
+            <h3>registry-sole-source (INV-ATM-001)</h3>
+            <p>A second <code>atomic-registry.json</code> shows up (usually some plugin "for convenience"). Hard gate rejection — fold it back into the root registry via ATM-CORE-0004.</p>
+          </div>
+          <div class="mini-card">
+            <h3>neutrality-scanner-active (INV-ATM-007)</h3>
+            <p>Framework public docs contain adopter-private terms or non-English content. ATM-CORE-0003 reports a violation; if you can't fix it, file a charter waiver.</p>
+          </div>
+          <div class="mini-card">
+            <h3>charter-integrity</h3>
+            <p>charter.md and charter-invariants.json are out of sync (charterVersion / lastAmendedAt mismatch). Doctor asks you to align both. This is the health check on the supreme authority itself.</p>
           </div>
         </div>
-        <p>All four share a trait: <strong>they are not framework bugs, they are governance-discipline problems</strong>. The framework provides the interception; you have to wire it into your hooks, CI, and dispatch flow for it to actually hold.</p>
+        <p>All six share one trait: <strong>they're not framework bugs, they're governance-discipline problems</strong>. The framework provides the interception + structured failure report + ready-to-run fix command, but you have to wire <code>atm doctor</code> into your pre-commit hook / CI step for the brake to keep working while you sleep.</p>
       </section>
 
       <section class="panel" id="market">
@@ -989,8 +962,8 @@ node atm.mjs tasks close --json
       <section class="panel" id="closing">
         <h2>11. Closing</h2>
         <p>In 2025 everyone competed on "how smart is my AI agent." In 2026 I think the question should change: <strong>when N smart agents edit one repo at once, can that repo stay governable?</strong></p>
-        <p>My answer is the foundry. Turn every piece of code into a named cell, every change into a hashed evidence record, let nine resident police watch structural health, and split fifteen roles by responsibility. It sounds like a lot of rules, but the payoff is this: <strong>six months later, my repo is still readable, still auditable, still reusable</strong>.</p>
-        <p>If all you want is one small feature, this protocol is overkill. But if you're building something that runs for months, with multiple AIs working in parallel, that may one day face compliance, and whose good atoms you'd like to share with the world — what you need is a foundry like this.</p>
+        <p>My answer is the foundry + the multi-dimensional ID card + the seven-stage brake. Turn every piece of code into a named cell, every change into a hashed evidence record, write the seven INV-ATM as charter red lines, let nine resident police watch structural health, and pin ORIENT→CLOSURE down as a lifecycle you can't skip. It sounds like a lot of rules, but the payoff is this: <strong>six months later my repo is still readable, still auditable, still reusable — and I can run five agents in parallel without smashing it</strong>.</p>
+        <p>If all you want is one small feature, this protocol is overkill. But if you're building something that runs for months, with multiple AIs working in parallel, that may one day face compliance, and whose good atoms you'd like to share with the world — what you need is a foundry like this, with brakes.</p>
         <div class="callout">
           This is an intro. For the actual implementation, API, police-family mechanics, and permission-model details, see <a href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">github.com/eaglhuang/AI-Atomic-Framework</a>. The framework is MIT — the whole protocol can be forked, the governance bundle swapped for your own, or used in part (just the evidence chain, or just ATMChart).
         </div>
@@ -1000,15 +973,15 @@ node atm.mjs tasks close --json
     <aside class="toc">
       <h2>Contents</h2>
       <ol>
-        <li><a href="#pain">The walls of N-AI dev</a></li>
+        <li><a href="#pain">Four walls of N-AI dev</a></li>
         <li><a href="#metaphor">The atomic foundry</a></li>
-        <li><a href="#roles">15 roles, 4 layers</a></li>
-        <li><a href="#cid">CID: the ID card</a></li>
+        <li><a href="#roles">7 stages + 5 atoms + 11 behaviors</a></li>
+        <li><a href="#cid">5D CID — multi-dim ID card</a></li>
         <li><a href="#permission">Permission as gear</a></li>
-        <li><a href="#memory">ATMChart &amp; evidence</a></li>
-        <li><a href="#police">Nine resident police</a></li>
-        <li><a href="#setup">90-minute first task</a></li>
-        <li><a href="#fail">Where it fails</a></li>
+        <li><a href="#memory">charter / ATMChart / closure-packet</a></li>
+        <li><a href="#police">7 INV-ATM + 9 police</a></li>
+        <li><a href="#setup">First-task close path</a></li>
+        <li><a href="#fail">Six doctor checks</a></li>
         <li><a href="#market">CID atom market</a></li>
         <li><a href="#closing">Closing</a></li>
       </ol>
