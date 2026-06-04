@@ -833,7 +833,7 @@
       <aside>
         <section class="panel profile">
           <div class="portrait-wrap">
-            <img class="portrait" id="profilePortrait" src="../../assets/resources/sprites/generals/liu_bei_portrait.png" alt="人物肖像" onerror="this.hidden=true;">
+            <img class="portrait" id="profilePortrait" src="./portraits/liu_bei_portrait.png" alt="人物肖像" onerror="this.hidden=true;">
             <div class="portrait-fallback" id="profilePortraitFallback" aria-hidden="true">劉</div>
           </div>
           <div class="profile-body">
@@ -956,7 +956,8 @@
     const API_KEY = searchParams.get("apiKey") || window.localStorage.getItem("npcBrainApiKey") || "";
     const DEFAULT_AUTO_DELAY = 12000;
     const DEFAULT_DIALOGUE_TIMEOUT_MS = 12000;
-    const DEFAULT_SCENE_DIRECTOR_TIMEOUT_MS = 36000;
+    const DEFAULT_SCENE_DIRECTOR_TIMEOUT_MS = 18000;
+    const DEFAULT_SCENE_CHORUS_TIMEOUT_MS = 18000;
     const DEFAULT_ILLUSTRATION_TIMEOUT_MS = 32000;
     const DEFAULT_PROFILE_TIMEOUT_MS = 10000;
     const PROFILE_RECOVERY_TIMEOUT_MS = 18000;
@@ -1650,7 +1651,7 @@
       bundle.runtimeIntentText = "";
     }
 
-    async function requestSceneDirector(bundle) {
+    async function requestSceneDirector(bundle, options = {}) {
       if (Date.now() < (state.sceneDirectorCircuitOpenUntil || 0)) {
         return {
           ok: false,
@@ -1658,9 +1659,11 @@
           status: 0,
         };
       }
+      const includeChorus = options.includeChorus !== false;
+      const storyTextOverride = String(options.storyTextOverride || "").trim();
       const requestToken = state.narrativeRequestToken;
       abortIfAlive(state.sceneDirectorAbortController);
-      const timeout = createTimeoutController(DEFAULT_SCENE_DIRECTOR_TIMEOUT_MS);
+      const timeout = createTimeoutController(options.timeoutMs || DEFAULT_SCENE_DIRECTOR_TIMEOUT_MS);
       state.sceneDirectorAbortController = timeout.controller;
       const targets = selectChorusTargets(bundle, 4);
       const body = {
@@ -1669,10 +1672,12 @@
         targetId: bundle.target?.targetId || state.activePerson,
         evidenceId: null,
         renderMode: "llm_script_v3",
-        chorusTargetIds: targets.map((target) => target.targetId),
+        chorusTargetIds: includeChorus ? targets.map((target) => target.targetId) : [],
+        includeChorus,
+        storyTextOverride: storyTextOverride || null,
         locale: "zh-TW",
         llmModelPreset: "scene_director_fast",
-        maxStoryChars: 420,
+        maxStoryChars: 320,
         maxChorusChars: 120,
       };
       try {
@@ -2291,7 +2296,7 @@
         .replace(/[^a-z0-9-]/gi, "")
         .replace(/-/g, "_");
       return slug && AVAILABLE_PORTRAIT_IDS.has(slug)
-        ? `../../assets/resources/sprites/generals/${slug}_portrait.png`
+        ? `./portraits/${slug}_portrait.png`
         : "";
     }
 
@@ -3316,6 +3321,31 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       elements.chorusGrid.innerHTML = cards.join("");
     }
 
+    async function requestDirectorChorusAfterStory(bundle, sceneDirectorPayload, isStaleRun) {
+      const storyText = String(sceneDirectorPayload?.storyText || "").trim();
+      if (!storyText || isStaleRun()) {
+        return null;
+      }
+      if (elements.chorusHint) {
+        elements.chorusHint.textContent = "路人台詞生成中，不影響正式導演稿。";
+      }
+      const result = await requestSceneDirector(bundle, {
+        includeChorus: true,
+        storyTextOverride: storyText,
+        timeoutMs: DEFAULT_SCENE_CHORUS_TIMEOUT_MS,
+      });
+      if (isStaleRun() || !result) {
+        return result;
+      }
+      const lines = Array.isArray(result.payload?.chorusLines) ? result.payload.chorusLines : [];
+      renderDirectorChorusLines(lines);
+      const okCount = lines.filter((line) => String(line?.status || "").trim() === "ok" && String(line?.text || "").trim()).length;
+      if (elements.chorusHint) {
+        elements.chorusHint.textContent = okCount ? "" : "暫無資料：路人台詞尚未回傳。";
+      }
+      return result;
+    }
+
     async function playBundle(bundle) {
       state.rendering = true;
       state.revealToken += 1;
@@ -3326,12 +3356,22 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       state.renderingRunToken = runToken;
       abortAllNarrativeControllers();
       const isStaleRun = () => runToken !== state.narrativeRequestToken || state.currentBundle !== bundle;
+      const loadingStartedAt = Date.now();
+      let loadingTimer = null;
+      const updateLoadingTimer = () => {
+        if (!isStaleRun()) {
+          const elapsedSeconds = Math.max(0, Math.floor((Date.now() - loadingStartedAt) / 1000));
+          elements.sourceBadge.textContent = `生成中 ${elapsedSeconds} 秒`;
+        }
+      };
       try {
         if (isStaleRun()) {
           return;
         }
         renderSceneDirectorLoading(bundle);
-        const sceneDirectorResult = await requestSceneDirector(bundle);
+        updateLoadingTimer();
+        loadingTimer = window.setInterval(updateLoadingTimer, 1000);
+        const sceneDirectorResult = await requestSceneDirector(bundle, { includeChorus: false });
         if (isStaleRun()) {
           return;
         }
@@ -3369,27 +3409,23 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
         elements.sourceBadge.textContent = "正式導演稿";
         renderMetaChips(buildDirectorMetaChips(bundle, sceneDirectorPayload));
         elements.sceneText.textContent = sceneDirectorSceneText;
-        await revealText(elements.memoryText, sceneDirectorMemoryText, 320);
+        elements.memoryText.textContent = sceneDirectorMemoryText;
+        elements.emotionText.textContent = sceneDirectorEmotionText;
+        elements.dialogueText.textContent = sceneDirectorDialogueText;
+        elements.intentText.textContent = sceneDirectorIntentText;
+        elements.storyText.textContent = sceneDirectorStoryText;
         if (isStaleRun()) {
           return;
         }
-        await revealText(elements.emotionText, sceneDirectorEmotionText, 320);
-        if (isStaleRun()) {
-          return;
-        }
-        await revealText(elements.dialogueText, sceneDirectorDialogueText, 300);
-        if (isStaleRun()) {
-          return;
-        }
-        await revealText(elements.intentText, sceneDirectorIntentText, 320);
-        if (isStaleRun()) {
-          return;
-        }
-        await revealText(elements.storyText, sceneDirectorStoryText, 260);
-        if (isStaleRun()) {
-          return;
-        }
-        renderDirectorChorusLines(Array.isArray(sceneDirectorPayload?.chorusLines) ? sceneDirectorPayload.chorusLines : []);
+        renderDirectorChorusLines([]);
+        void requestDirectorChorusAfterStory(bundle, sceneDirectorPayload, isStaleRun).catch((error) => {
+          if (!isStaleRun()) {
+            console.warn("scene chorus background request failed:", error);
+            if (elements.chorusHint) {
+              elements.chorusHint.textContent = "暫無資料：路人台詞尚未回傳。";
+            }
+          }
+        });
         bundle.runtimeIntentText = sceneDirectorIntentText || sceneDirectorSceneText || sceneDirectorStoryText;
         refreshIllustrationPrompt();
         void requestSceneIllustration(bundle).catch(() => null);
@@ -3407,6 +3443,9 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
         renderSceneDirectorFailure(bundle, result);
         return result;
       } finally {
+        if (loadingTimer) {
+          window.clearInterval(loadingTimer);
+        }
         if (state.renderingRunToken === runToken) {
           state.rendering = false;
           state.renderingRunToken = 0;
