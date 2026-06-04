@@ -123,6 +123,26 @@
       font-size: 1.08rem;
       line-height: 1.84;
     }
+    .byline {
+      margin: 14px 0 0;
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      letter-spacing: 0.01em;
+    }
+    .byline strong {
+      color: var(--ink);
+      font-weight: 700;
+    }
+    .byline .byline-dot {
+      margin: 0 8px;
+      color: var(--line-strong, rgba(25, 36, 47, 0.22));
+    }
+    .byline a {
+      color: var(--accent-strong);
+      text-decoration: none;
+    }
+    .byline a:hover { text-decoration: underline; }
     .lang-switch { margin-top: 16px; font-size: 0.95rem; color: var(--ink-soft); }
     .lang-switch a { font-weight: 700; text-decoration: none; }
     .hero-grid {
@@ -384,6 +404,7 @@
         <p class="eyebrow">AI Engineering Governance · 2026</p>
         <h1>AI 裸奔時代的終結：幫你的多 AI 加速開發同時加裝安全煞車</h1>
         <p class="sub-title">當 N 個 Agent 同時變更同一個 Repo，如何進駐「原子鑄造廠」，以 5D CID 鍛造穩固的系統治理基石</p>
+        <p class="byline">作者 <strong><a href="https://github.com/eaglhuang" target="_blank" rel="author noopener">Eagl Huang</a></strong><span class="byline-dot">·</span>2026 年 6 月 4 日<span class="byline-dot">·</span>約 22 分鐘閱讀</p>
         <p class="lede">把整個 repo 想像成一座鑄造廠。每段被 AI 寫出來的程式都會領到一張<strong>多維身分證（5D CID）</strong>、一份可被半年後重放的 SHA256 證據包、一條從 ORIENT 走到 CLOSURE 的<strong>七階生命週期</strong>。鑄出來的不是匿名 diff，是有名字、有合約、可被審計與重用的細胞。<strong>煞車不是讓你慢下來，而是讓你同時開五個 Agent 也不會把專案撞爛。</strong></p>
 <div class="hero-grid">
           <div class="stat-card"><strong>7 階治理生命週期</strong><span>ORIENT → NEXT → LOCK → EXECUTE → EVIDENCE → HANDOFF → CLOSURE。每階可被 doctor 偵測，不能跳階。</span></div>
