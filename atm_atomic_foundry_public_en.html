@@ -311,7 +311,63 @@
   </style>
   <link rel="stylesheet" href="assets/css/dark-override.css">
   <link rel="stylesheet" href="assets/css/article-base.css">
+  <style>
+    /* Restore wide desktop width (overrides article-base.css default of 960px) */
+    :root, html, body { --content-width: 1320px !important; }
+    .page { width: min(calc(100% - 40px), 1320px); }
+    /* Landscape tablets / small desktop */
+    @media (max-width: 1080px) {
+      .page { grid-template-columns: 1fr; width: min(calc(100% - 36px), 1320px); }
+      .toc { position: static; order: -1; }
+    }
+    /* Phone portrait */
+    @media (max-width: 640px) {
+      .page { width: calc(100% - 24px); padding: 24px 0 60px; }
+      .hero, .panel { padding: 22px; border-radius: 22px; }
+      h1 { font-size: 1.9rem; line-height: 1.18; }
+      .hero-grid, .split, .split-3 { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+      pre { font-size: 0.82rem; }
+    }
+  </style>
   <script defer src="assets/js/article-base.js"></script>
+
+  <!-- Open Graph + Twitter Card -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="The End of Naked AI Coding: Accelerating Multi-Agent Development with a Deterministic Safety Brake">
+  <meta property="og:description" content="When N agents concurrently mutate a single repo: how to leverage the Atomic Foundry and 5D CID to forge a rock-solid system governance foundation — seven-stage lifecycle, SHA256 evidence chain, INV-ATM red lines, and atom maps that retire legacy modules with a five-stage replacement lifecycle.">
+  <meta property="og:url" content="https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public_en.html">
+  <meta property="og:site_name" content="AI Learning Notes">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="zh_TW">
+  <meta property="article:author" content="Eagl Huang">
+  <meta property="article:published_time" content="2026-06-04">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The End of Naked AI Coding: A Deterministic Safety Brake for Multi-Agent Dev">
+  <meta name="twitter:description" content="When N agents mutate a single repo: a seven-stage governance lifecycle, 5D CID, atom maps that retire legacy with a gated five-stage replacement.">
+
+  <!-- JSON-LD structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "The End of Naked AI Coding: Accelerating Multi-Agent Development with a Deterministic Safety Brake",
+    "alternativeHeadline": "When N Agents Concurrently Mutate a Single Repo: How to Leverage the Atomic Foundry and 5D CID to Forge a Rock-Solid System Governance Foundation",
+    "author": { "@type": "Person", "name": "Eagl Huang", "url": "https://github.com/eaglhuang" },
+    "datePublished": "2026-06-04",
+    "dateModified": "2026-06-04",
+    "url": "https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public_en.html",
+    "inLanguage": "en",
+    "publisher": { "@type": "Organization", "name": "AI Learning Notes", "url": "https://eaglhuang.github.io/AI-learning-notes/" },
+    "mainEntityOfPage": "https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public_en.html",
+    "keywords": "AI Agent, Multi-Agent Development, Atomic Foundry, 5D CID, AI Governance, Atom Map, Legacy Refactor, Software Engineering, Concurrency, AI Safety Brake",
+    "about": [
+      { "@type": "Thing", "name": "AI Atomic Framework" },
+      { "@type": "Thing", "name": "Multi-Agent Development" },
+      { "@type": "Thing", "name": "Software Governance" }
+    ]
+  }
+  </script>
 </head>
 <body id="top">
   <div class="page">

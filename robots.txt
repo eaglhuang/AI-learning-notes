@@ -1,4 +1,86 @@
+# AI Learning Notes — robots.txt
+# Public technical articles. Indexing and AI training/retrieval explicitly welcomed.
+
 User-agent: *
+Allow: /
+
+# --- Search engine crawlers ---
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+# --- AI / LLM crawlers (training + retrieval-augmented search) ---
+# OpenAI
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+# Anthropic
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+# Google AI (Gemini / SGE / Vertex AI training)
+User-agent: Google-Extended
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+# Common Crawl (used by many LLMs as training data)
+User-agent: CCBot
+Allow: /
+
+# Apple Intelligence
+User-agent: Applebot-Extended
+Allow: /
+
+# Meta AI
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+# ByteDance
+User-agent: Bytespider
+Allow: /
+
+# Cohere
+User-agent: cohere-ai
+Allow: /
+
+# You.com
+User-agent: YouBot
+Allow: /
+
+# Diffbot (knowledge graph)
+User-agent: Diffbot
 Allow: /
 
 Sitemap: https://eaglhuang.github.io/AI-learning-notes/sitemap.xml

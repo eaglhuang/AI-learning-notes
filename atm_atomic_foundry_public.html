@@ -311,7 +311,63 @@
   </style>
   <link rel="stylesheet" href="assets/css/dark-override.css">
   <link rel="stylesheet" href="assets/css/article-base.css">
+  <style>
+    /* Restore wide desktop width (overrides article-base.css default of 960px) */
+    :root, html, body { --content-width: 1320px !important; }
+    .page { width: min(calc(100% - 40px), 1320px); }
+    /* Landscape tablets / small desktop */
+    @media (max-width: 1080px) {
+      .page { grid-template-columns: 1fr; width: min(calc(100% - 36px), 1320px); }
+      .toc { position: static; order: -1; }
+    }
+    /* Phone portrait */
+    @media (max-width: 640px) {
+      .page { width: calc(100% - 24px); padding: 24px 0 60px; }
+      .hero, .panel { padding: 22px; border-radius: 22px; }
+      h1 { font-size: 1.9rem; line-height: 1.18; }
+      .hero-grid, .split, .split-3 { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+      pre { font-size: 0.82rem; }
+    }
+  </style>
   <script defer src="assets/js/article-base.js"></script>
+
+  <!-- Open Graph + Twitter Card -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="AI 裸奔時代的終結：幫你的多 AI 加速開發同時加裝安全煞車">
+  <meta property="og:description" content="當 N 個 Agent 同時變更同一個 Repo，如何進駐「原子鑄造廠」，以 5D CID 鍛造穩固的系統治理基石——七階治理生命週期、closure-packet.v1 SHA256 證據鏈、charter 七條紅線，與用五階替代生命週期退役 legacy 大模組的 atom map。">
+  <meta property="og:url" content="https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public.html">
+  <meta property="og:site_name" content="AI Learning Notes">
+  <meta property="og:locale" content="zh_TW">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="article:author" content="Eagl Huang">
+  <meta property="article:published_time" content="2026-06-04">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AI 裸奔時代的終結：幫你的多 AI 加速開發同時加裝安全煞車">
+  <meta name="twitter:description" content="N 個 Agent 同時改一個 Repo 不會把專案撞爛——七階治理生命週期 + 5D CID + atom map 五階替代 lifecycle 的 AI 工程煞車。">
+
+  <!-- JSON-LD structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "AI 裸奔時代的終結：幫你的多 AI 加速開發同時加裝安全煞車",
+    "alternativeHeadline": "當 N 個 Agent 同時變更同一個 Repo，如何進駐「原子鑄造廠」，以 5D CID 鍛造穩固的系統治理基石",
+    "author": { "@type": "Person", "name": "Eagl Huang", "url": "https://github.com/eaglhuang" },
+    "datePublished": "2026-06-04",
+    "dateModified": "2026-06-04",
+    "url": "https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public.html",
+    "inLanguage": "zh-Hant",
+    "publisher": { "@type": "Organization", "name": "AI Learning Notes", "url": "https://eaglhuang.github.io/AI-learning-notes/" },
+    "mainEntityOfPage": "https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public.html",
+    "keywords": "AI Agent, Multi-Agent, Atomic Foundry, 5D CID, AI Governance, Atom Map, Legacy Refactor, Software Engineering, AI 工程治理",
+    "about": [
+      { "@type": "Thing", "name": "AI Atomic Framework" },
+      { "@type": "Thing", "name": "Multi-Agent Development" },
+      { "@type": "Thing", "name": "Software Governance" }
+    ]
+  }
+  </script>
 </head>
 <body id="top">
   <div class="page">
