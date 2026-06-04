@@ -2614,6 +2614,39 @@
       return cards;
     }
 
+    function relationshipDisplayKey(targetId, relationshipType) {
+      return `${String(targetId || "").trim()}@@${String(relationshipType || "").trim()}`;
+    }
+
+    function displayableRelationshipEdgeKeySet(edges) {
+      const keys = new Set();
+      for (const edge of Array.isArray(edges) ? edges : []) {
+        if (!isPublishedRuntimeRelationshipDisplayable(edge)) {
+          continue;
+        }
+        const targetId = String(edge?.targetId || "").trim();
+        const relationshipType = String(edge?.type || edge?.originalTypes?.[0] || "").trim();
+        if (targetId && relationshipType) {
+          keys.add(relationshipDisplayKey(targetId, relationshipType));
+        }
+      }
+      return keys;
+    }
+
+    function isNarrativeInteractionTargetDisplayable(rawTarget, displayableEdgeKeys) {
+      const sourceType = String(rawTarget?.sourceType || "").trim();
+      if (sourceType === "relationship-edge") {
+        return displayableEdgeKeys.has(relationshipDisplayKey(rawTarget?.targetId, rawTarget?.relationshipType));
+      }
+      if (rawTarget?.sceneEligible === false) {
+        return false;
+      }
+      if (String(rawTarget?.sourceDataStatus || "").trim() === "insufficient_source_data") {
+        return false;
+      }
+      return true;
+    }
+
     function normalizeNarrativePayload(payload) {
       const persona = payload.persona || {};
       const profile = persona.profile || {};
@@ -2623,7 +2656,10 @@
         ...(persona.personalityTraits || []),
         ...(profile.personalityTags || []),
       ].map((trait) => humanizeSymbolicText(trait)), 8);
-      const relationships = (payload.interactionTargets || []).map(decorateRelationshipTarget);
+      const displayableEdgeKeys = displayableRelationshipEdgeKeySet(payload.relationshipEdges || []);
+      const relationships = (payload.interactionTargets || [])
+        .filter((target) => isNarrativeInteractionTargetDisplayable(target, displayableEdgeKeys))
+        .map(decorateRelationshipTarget);
       const rawCards = (payload.evidenceCards || []).map(normalizeEvidenceCard);
       const cards = rawCards;
       const activitySeeds = (payload.activitySeeds || []).map((seed) => ({
