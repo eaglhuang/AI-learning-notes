@@ -3692,6 +3692,47 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
     }
 
 
+    function isPublishedRuntimeRelationshipDisplayable(anchor) {
+      const relationshipType = String(anchor?.type || anchor?.originalTypes?.[0] || "").trim();
+      const softOrVolatileTypes = new Set([
+        "battlefield_contact",
+        "political_contact",
+        "resource_support",
+        "enemy_rival",
+        "battlefield_opponent",
+        "betrayal_surrender",
+      ]);
+      if (!relationshipType || softOrVolatileTypes.has(relationshipType)) {
+        return false;
+      }
+      const displayableTypes = new Set([
+        "adoptive_parent_child",
+        "alliance_oath",
+        "battle_ally",
+        "loyal_oath",
+        "mentor",
+        "mentor_student",
+        "parent_child",
+        "patron_client",
+        "protects_family",
+        "ruler_subject",
+        "sibling",
+        "spouse",
+        "sworn_sibling",
+      ]);
+      if (!displayableTypes.has(relationshipType)) {
+        return false;
+      }
+      const sourceLayer = String(anchor?.sourceLayer || "").trim();
+      if (sourceLayer === "stable-bootstrap-seed") {
+        return true;
+      }
+      const claimGrade = String(anchor?.claimGrade || "").trim();
+      const hasPairSignal = Boolean(anchor?.pairRelationSignal || anchor?.directPairSignal);
+      return /^A-(history|history-cross-source|romance)$/i.test(claimGrade) && hasPairSignal;
+    }
+
+
     function buildPublishedRuntimeRelationshipTarget(anchor) {
       const relationshipType = String(anchor?.type || anchor?.originalTypes?.[0] || "").trim();
       const typeLabel = String(anchor?.typeLabel || relationshipType || "人物線索").trim();
@@ -3737,8 +3778,9 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       const persona = personaPayload && typeof personaPayload === "object" ? personaPayload : {};
       const keywords = keywordPayload && typeof keywordPayload === "object" ? keywordPayload : {};
       const anchors = Array.isArray(relationshipPayload?.anchors) ? relationshipPayload.anchors : [];
+      const displayableAnchors = anchors.filter((anchor) => isPublishedRuntimeRelationshipDisplayable(anchor));
       const displayName = String(persona.displayName || relationshipPayload?.displayName || persona.generalId || "人物").trim();
-      const relationshipTargets = anchors
+      const relationshipTargets = displayableAnchors
         .map((anchor) => buildPublishedRuntimeRelationshipTarget(anchor))
         .filter((target) => target.targetId);
       const relationshipCards = relationshipTargets.map((target, index) => ({
@@ -3772,7 +3814,7 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
         canonicalWrites: Boolean(persona.runtimeReadiness?.canonicalWrites),
         persona,
         keywords: keywords.categories || {},
-        relationshipEdges: anchors,
+        relationshipEdges: displayableAnchors,
         evidenceCards: mergeEvidenceCards(mergeEvidenceCards(storyBeatCards, relationshipCards), keywordCards),
         itemRelations: Array.isArray(persona.itemRelations) ? persona.itemRelations : [],
         activitySeeds,
