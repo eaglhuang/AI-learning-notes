@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>AI Learning Notes</title>
+    <link>https://eaglhuang.github.io/AI-learning-notes/</link>
+    <atom:link href="https://eaglhuang.github.io/AI-learning-notes/feed.xml" rel="self" type="application/rss+xml" />
+    <description>Engineering notes on multi-AI collaboration, agent governance, prompt engineering, and shipping production AI systems — by Eagl Huang.</description>
+    <language>en</language>
+    <copyright>Copyright (c) Eagl Huang</copyright>
+    <managingEditor>noreply@eaglhuang.github.io (Eagl Huang)</managingEditor>
+    <webMaster>noreply@eaglhuang.github.io (Eagl Huang)</webMaster>
+    <lastBuildDate>Thu, 04 Jun 2026 08:00:00 +0800</lastBuildDate>
+    <pubDate>Thu, 04 Jun 2026 08:00:00 +0800</pubDate>
+    <ttl>1440</ttl>
+    <image>
+      <url>https://eaglhuang.github.io/AI-learning-notes/assets/og/atm_atomic_foundry_en.svg</url>
+      <title>AI Learning Notes</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/</link>
+    </image>
+
+    <item>
+      <title>The End of Naked AI Coding: Accelerating Multi-Agent Development with a Deterministic Safety Brake</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public_en.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public_en.html</guid>
+      <pubDate>Thu, 04 Jun 2026 08:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>en</dc:language>
+      <description><![CDATA[When N AI agents change the same repo at once, how the Atomic Foundry forges a stable governance bedrock with 5D CID — seven-stage governance lifecycle, closure-packet.v1 SHA256 evidence chain, seven INV-ATM red lines, full behavior set, and atom maps that retire legacy modules with a five-stage replacement lifecycle.]]></description>
+      <category>AI Engineering</category>
+      <category>Multi-Agent</category>
+      <category>Governance</category>
+    </item>
+
+    <item>
+      <title>AI 裸奔時代的終結：幫你的多 AI 加速開發同時加裝安全煞車</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public.html</guid>
+      <pubDate>Thu, 04 Jun 2026 08:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>zh-Hant</dc:language>
+      <description><![CDATA[當 N 個 Agent 同時變更同一個 Repo，如何進駐「原子鑄造廠」，以 5D CID 鍛造穩固的系統治理基石——七階治理生命週期、closure-packet.v1 SHA256 證據鏈、charter 七條紅線，與用五階替代生命週期退役 legacy 大模組的 atom map。]]></description>
+      <category>AI 工程治理</category>
+      <category>多 Agent</category>
+    </item>
+
+    <item>
+      <title>Building Games with AI Agents: How I Built a Harness System for My Own Project</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/ai_agent_game_dev_harness_system_en.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/ai_agent_game_dev_harness_system_en.html</guid>
+      <pubDate>Fri, 15 May 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>en</dc:language>
+      <description><![CDATA[A practical write-up from my 3KLife project on how I built a Harness Engineering system around AI Agents, shifting quality control from model guessing to computational validation.]]></description>
+      <category>Game Dev</category>
+      <category>AI Agents</category>
+    </item>
+
+    <item>
+      <title>當我用 AI Agent 開發遊戲：我如何為自己的專案打造「韁繩系統」</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/ai_agent_game_dev_harness_system.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/ai_agent_game_dev_harness_system.html</guid>
+      <pubDate>Fri, 15 May 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>zh-Hant</dc:language>
+      <description><![CDATA[從 3KLife 的實作經驗出發，整理我如何為 AI Agent 開發流程建立 Harness Engineering 韁繩系統，降低無聲錯誤並補齊計算型驗證。]]></description>
+      <category>遊戲開發</category>
+    </item>
+
+    <item>
+      <title>How I Use Harness Engineering to Make 3KProject More Stable</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/harness_engineering_article_public_en.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/harness_engineering_article_public_en.html</guid>
+      <pubDate>Wed, 22 Apr 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>en</dc:language>
+      <description><![CDATA[A practical note on how I apply Harness Engineering in 3KProject, using guides, sensors, and computational gates to make Coding Agent delivery more reliable.]]></description>
+      <category>Harness Engineering</category>
+    </item>
+
+    <item>
+      <title>我如何使用 Harness Engineering 讓 3KProject 變得更穩定</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/harness_engineering_article_public.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/harness_engineering_article_public.html</guid>
+      <pubDate>Wed, 22 Apr 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>zh-Hant</dc:language>
+      <description><![CDATA[整理我在 3KProject 裡實作 Harness Engineering 的做法，說明如何以 Guides、Sensors 與計算型閘門讓 Coding Agent 穩定交付。]]></description>
+      <category>韁繩工程</category>
+    </item>
+
+    <item>
+      <title>How a Stronger Agent Can Lead Multi-Agent Development Without Turning the Repo into Chaos</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/multi_agent_dispatch_playbook_public_en.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/multi_agent_dispatch_playbook_public_en.html</guid>
+      <pubDate>Mon, 30 Mar 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>en</dc:language>
+      <description><![CDATA[A practical guide to multi-agent development: how a stronger model leads, how dispatch slips and reports stay neutral, and how humans can coordinate Codex, Claude Code, Copilot, Gemini, MCP, and skills on the same workflow.]]></description>
+      <category>Multi-Agent</category>
+    </item>
+
+    <item>
+      <title>多個 Agent 一起開發時，怎麼讓大模型帶隊把協作做穩</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/multi_agent_dispatch_playbook_public.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/multi_agent_dispatch_playbook_public.html</guid>
+      <pubDate>Mon, 30 Mar 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>zh-Hant</dc:language>
+      <description><![CDATA[整理一套多 Agent 協作的實用流程：大模型怎麼帶隊、派工單怎麼寫、回報怎麼收、怎麼跟人類一起把不同 AI 工具接成同一條開發線。]]></description>
+      <category>多 Agent</category>
+    </item>
+
+    <item>
+      <title>How I Turned Multi-Agent Collaboration into a Real Workflow Inside 3KProject</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/agent_collaboration_public_en.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/agent_collaboration_public_en.html</guid>
+      <pubDate>Tue, 10 Mar 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>en</dc:language>
+      <description><![CDATA[A first-person technical article on how I turned multi-agent collaboration inside 3KProject into an executable workflow with task locks, gates, handoffs, and context-budget control.]]></description>
+      <category>Multi-Agent</category>
+    </item>
+
+    <item>
+      <title>我怎麼把多 Agent 協作做成 3KProject 裡真正可執行的工作流</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/agent_collaboration_public.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/agent_collaboration_public.html</guid>
+      <pubDate>Tue, 10 Mar 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>zh-Hant</dc:language>
+      <description><![CDATA[整理我在 3KProject 裡建立多 Agent 協作流程的經驗，說明如何用 task lock、compute gate、handoff 與 context budget 把協作變成可執行的工作流。]]></description>
+      <category>多 Agent</category>
+    </item>
+
+    <item>
+      <title>When AI Feels Like It Changed Its Mind: Passing Agent Work Modes Across Conversations</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/agent_mode_prompt_engineering_public_en.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/agent_mode_prompt_engineering_public_en.html</guid>
+      <pubDate>Wed, 18 Feb 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>en</dc:language>
+      <description><![CDATA[A technical note on using prompt engineering to preserve AI agent work modes, decision boundaries, and collaboration style across fresh conversations.]]></description>
+      <category>Prompt Engineering</category>
+    </item>
+
+    <item>
+      <title>像變了心的 AI？用模式提示詞把工作精神傳給下一個 Agent</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/agent_mode_prompt_engineering_public.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/agent_mode_prompt_engineering_public.html</guid>
+      <pubDate>Wed, 18 Feb 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>zh-Hant</dc:language>
+      <description><![CDATA[一篇關於如何用提示詞工程，把不同職責的 AI Agent 工作精神、決策邊界與溝通風格做成可召喚模式的技術筆記。]]></description>
+      <category>提示詞工程</category>
+    </item>
+
+    <item>
+      <title>How to Use Codex Subagents to Split Up Complex AI Coding Work</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/codex_subagents_complex_tasks_en.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/codex_subagents_complex_tasks_en.html</guid>
+      <pubDate>Wed, 28 Jan 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>en</dc:language>
+      <description><![CDATA[A practical field note on using Codex subagents, Claude Code, and GitHub Copilot together on a complex framework-style engineering project without stepping on each other.]]></description>
+      <category>Codex</category>
+    </item>
+
+    <item>
+      <title>如何用 Codex 小助手幫忙分工處理複雜的任務：實用篇</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/codex_subagents_complex_tasks.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/codex_subagents_complex_tasks.html</guid>
+      <pubDate>Wed, 28 Jan 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>zh-Hant</dc:language>
+      <description><![CDATA[一篇來自實際多 AI 協作經驗的實用筆記：如何用 Codex 小助手、Claude Code 與 GitHub Copilot 分工，讓複雜工程任務更容易被拆解、驗證與整合。]]></description>
+      <category>Codex</category>
+    </item>
+
+    <item>
+      <title>How to Train an AI Personality That Works in Sync With You - A Practical Guide</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/ai_personality_prompt_practical_public_en.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/ai_personality_prompt_practical_public_en.html</guid>
+      <pubDate>Mon, 12 Jan 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>en</dc:language>
+      <description><![CDATA[A practical note on extracting personality prompts from favorite AI conversations, people, historical material, and chat records, then turning them into reusable AI collaboration modes.]]></description>
+      <category>Prompt Engineering</category>
+    </item>
+
+    <item>
+      <title>如何訓練你的 AI 個性跟你最為默契 - 實用篇</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/ai_personality_prompt_practical_public.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/ai_personality_prompt_practical_public.html</guid>
+      <pubDate>Mon, 12 Jan 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>zh-Hant</dc:language>
+      <description><![CDATA[一篇關於如何從喜歡的 AI 對話、人物風格、歷史資料與聊天紀錄中提取性格提示詞，長期訓練更有默契 AI 夥伴的實用技術筆記。]]></description>
+      <category>提示詞工程</category>
+    </item>
+
+    <item>
+      <title>How I Turned RAG / ETL Into a Knowledge Pipeline That Can Actually Ship</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/rag_etl_pipeline_public_en.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/rag_etl_pipeline_public_en.html</guid>
+      <pubDate>Sat, 20 Dec 2025 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>en</dc:language>
+      <description><![CDATA[A more conversational breakdown of how I built a RAG / ETL pipeline inside 3KProject, and how that pipeline moves from source text to runtime data for the NPC brain and Cocos UI.]]></description>
+      <category>RAG</category>
+      <category>ETL</category>
+    </item>
+
+    <item>
+      <title>我怎麼把 RAG / ETL 做成一條真的能落地的資料生產線</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/rag_etl_pipeline_public.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/rag_etl_pipeline_public.html</guid>
+      <pubDate>Sat, 20 Dec 2025 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>zh-Hant</dc:language>
+      <description><![CDATA[用比較口語的方式整理我在 3KProject 裡實作 RAG / ETL 管線的方法，說明這條三國知識管線怎麼從原文、抽取、審核一路走到 NPC brain 與 Cocos UI。]]></description>
+      <category>RAG</category>
+      <category>ETL</category>
+    </item>
+  </channel>
+</rss>

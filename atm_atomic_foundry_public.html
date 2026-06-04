@@ -143,6 +143,41 @@
       text-decoration: none;
     }
     .byline a:hover { text-decoration: underline; }
+    .author-card-body {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 24px;
+      align-items: start;
+      margin-top: 4px;
+    }
+    .author-avatar {
+      width: 96px; height: 96px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 6px 24px rgba(13, 122, 115, 0.18);
+    }
+    .author-text p { margin: 0; line-height: 1.78; }
+    .author-text p + p { margin-top: 10px; }
+    .author-links {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    .author-links a {
+      color: var(--accent-strong);
+      text-decoration: none;
+    }
+    .author-links a:hover { text-decoration: underline; }
+    .author-note {
+      font-size: 0.92rem;
+      color: var(--ink-soft);
+      font-style: italic;
+    }
+    @media (max-width: 640px) {
+      .author-card-body { grid-template-columns: 1fr; }
+      .author-avatar { margin: 0 auto; }
+      .author-text { text-align: left; }
+    }
     .lang-switch { margin-top: 16px; font-size: 0.95rem; color: var(--ink-soft); }
     .lang-switch a { font-weight: 700; text-decoration: none; }
     .hero-grid {
@@ -360,11 +395,21 @@
   <meta property="og:site_name" content="AI Learning Notes">
   <meta property="og:locale" content="zh_TW">
   <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:image" content="https://eaglhuang.github.io/AI-learning-notes/assets/og/atm_atomic_foundry.svg">
+  <meta property="og:image:type" content="image/svg+xml">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AI 裸奔時代的終結：幫你的多 AI 加速開發同時加裝安全煞車 — by Eagl Huang">
   <meta property="article:author" content="Eagl Huang">
   <meta property="article:published_time" content="2026-06-04">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="AI 裸奔時代的終結：幫你的多 AI 加速開發同時加裝安全煞車">
   <meta name="twitter:description" content="N 個 Agent 同時改一個 Repo 不會把專案撞爛——七階治理生命週期 + 5D CID + atom map 五階替代 lifecycle 的 AI 工程煞車。">
+  <meta name="twitter:image" content="https://eaglhuang.github.io/AI-learning-notes/assets/og/atm_atomic_foundry.svg">
+  <meta name="twitter:image:alt" content="AI Learning Notes — Eagl Huang">
+
+  <!-- RSS feed -->
+  <link rel="alternate" type="application/rss+xml" title="AI Learning Notes — RSS" href="https://eaglhuang.github.io/AI-learning-notes/feed.xml">
 
   <!-- JSON-LD structured data -->
   <script type="application/ld+json">
@@ -1227,6 +1272,41 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
         </ul>
         <p>正式 spec、charter 文字、warrant 範例可以在 <a href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">github.com/eaglhuang/AI-Atomic-Framework</a> 找到。</p>
       </section>
+
+      <section class="panel author-card" id="about-author">
+        <h2>關於作者</h2>
+        <div class="author-card-body">
+          <div class="author-avatar" aria-hidden="true">
+            <svg viewBox="0 0 96 96" width="96" height="96">
+              <defs>
+                <radialGradient id="ac1" cx="38%" cy="34%" r="68%">
+                  <stop offset="0%" stop-color="#a9e0d6"/>
+                  <stop offset="100%" stop-color="#0d7a73"/>
+                </radialGradient>
+              </defs>
+              <circle cx="48" cy="48" r="46" fill="url(#ac1)" stroke="#085d58" stroke-width="2"/>
+              <ellipse cx="48" cy="48" rx="58" ry="20" fill="none" stroke="#fffaf2" stroke-width="2" stroke-opacity="0.55" transform="rotate(-22 48 48)"/>
+              <circle cx="78" cy="36" r="4" fill="#cb7d2e"/>
+              <circle cx="40" cy="42" r="5" fill="#fffaf2"/>
+              <circle cx="60" cy="42" r="5" fill="#fffaf2"/>
+              <circle cx="41" cy="43" r="2.4" fill="#19242f"/>
+              <circle cx="61" cy="43" r="2.4" fill="#19242f"/>
+              <path d="M40 58 Q48 66 56 58" stroke="#19242f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="author-text">
+            <p><strong>Eagl Huang</strong>，台灣獨立工程師。目前主力是 <a href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">AI-Atomic-Framework</a>——一個多 AI 並行協作的工程治理框架，以及 <strong>3KLife</strong>，一個三國題材的 AI 遊戲專案。每天讓 5 個 Agent 同時改一條 repo，所以非常在意這套煞車能不能撐住。</p>
+            <p class="author-links">
+              <a href="https://github.com/eaglhuang" target="_blank" rel="author noopener">GitHub</a>
+              <span class="byline-dot">·</span>
+              <a href="https://eaglhuang.github.io/AI-learning-notes/feed.xml">RSS</a>
+              <span class="byline-dot">·</span>
+              <a href="./">回首頁看更多文章</a>
+            </p>
+            <p class="author-note">喜歡這篇就分享給其他正被多 AI 開發逼瘋的朋友；有想法歡迎到 GitHub Discussions 來聊。</p>
+          </div>
+        </div>
+      </section>
     </main>
 
     <aside class="toc">
@@ -1245,6 +1325,7 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
         <li><a href="#market">CID 原子市場</a></li>
         <li><a href="#closing">結語</a></li>
         <li><a href="#roadmap-notes">* 註：roadmap</a></li>
+        <li><a href="#about-author">關於作者</a></li>
       </ol>
     </aside>
   </div>

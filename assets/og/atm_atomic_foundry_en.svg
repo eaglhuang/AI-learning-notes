@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8f4eb"/>
+      <stop offset="48%" stop-color="#f2ecdf"/>
+      <stop offset="100%" stop-color="#ebe5d8"/>
+    </linearGradient>
+    <radialGradient id="tealGlow" cx="14%" cy="18%" r="42%">
+      <stop offset="0%" stop-color="#0d7a73" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#0d7a73" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="warmGlow" cx="86%" cy="14%" r="36%">
+      <stop offset="0%" stop-color="#cb7d2e" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#cb7d2e" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M36 0H0V36" fill="none" stroke="#ffffff" stroke-opacity="0.16" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#paper)"/>
+  <rect width="1200" height="630" fill="url(#tealGlow)"/>
+  <rect width="1200" height="630" fill="url(#warmGlow)"/>
+  <rect width="1200" height="630" fill="url(#grid)" opacity="0.55"/>
+
+  <rect x="64" y="64" width="1072" height="502" rx="32" fill="#ffffff" fill-opacity="0.74" stroke="#ffffff" stroke-opacity="0.9"/>
+
+  <text x="112" y="148" font-family="'Aptos','IBM Plex Sans','Segoe UI',sans-serif"
+        font-size="22" font-weight="700" letter-spacing="4.5" fill="#085d58">
+    AI ENGINEERING GOVERNANCE · 2026
+  </text>
+
+  <text x="112" y="232" font-family="'Iowan Old Style','Georgia',serif"
+        font-size="54" font-weight="700" fill="#16222d">
+    The End of Naked AI Coding
+  </text>
+  <text x="112" y="296" font-family="'Iowan Old Style','Georgia',serif"
+        font-size="36" font-weight="600" fill="#19242f">
+    Accelerating Multi-Agent Development
+  </text>
+  <text x="112" y="342" font-family="'Iowan Old Style','Georgia',serif"
+        font-size="36" font-weight="600" fill="#19242f">
+    with a Deterministic Safety Brake
+  </text>
+
+  <text x="112" y="416" font-family="'Aptos','IBM Plex Sans',sans-serif"
+        font-size="22" fill="#465464">
+    When N agents mutate a single repo — leverage the Atomic Foundry
+  </text>
+  <text x="112" y="448" font-family="'Aptos','IBM Plex Sans',sans-serif"
+        font-size="22" fill="#465464">
+    + 5D CID + Atom Maps to forge a rock-solid governance foundation.
+  </text>
+
+  <g font-family="'Aptos','IBM Plex Sans',sans-serif" font-size="14" font-weight="700">
+    <g transform="translate(112,492)">
+      <rect width="158" height="34" rx="17" fill="#0d7a73" fill-opacity="0.14"/>
+      <text x="79" y="22" text-anchor="middle" fill="#085d58" letter-spacing="1.2">7-STAGE LIFECYCLE</text>
+    </g>
+    <g transform="translate(282,492)">
+      <rect width="130" height="34" rx="17" fill="#0d7a73" fill-opacity="0.14"/>
+      <text x="65" y="22" text-anchor="middle" fill="#085d58" letter-spacing="1.2">5D CID</text>
+    </g>
+    <g transform="translate(424,492)">
+      <rect width="138" height="34" rx="17" fill="#cb7d2e" fill-opacity="0.18"/>
+      <text x="69" y="22" text-anchor="middle" fill="#8d4f15" letter-spacing="1.2">ATOM MAP</text>
+    </g>
+    <g transform="translate(574,492)">
+      <rect width="180" height="34" rx="17" fill="#16222d" fill-opacity="0.85"/>
+      <text x="90" y="22" text-anchor="middle" fill="#ffffff" letter-spacing="1.2">CHARTER v2.0.0</text>
+    </g>
+  </g>
+
+  <line x1="112" y1="540" x2="1088" y2="540" stroke="#19242f" stroke-opacity="0.12" stroke-width="1"/>
+  <text x="112" y="566" font-family="'Aptos','IBM Plex Sans',sans-serif"
+        font-size="20" font-weight="700" fill="#16222d">
+    Eagl Huang
+  </text>
+  <text x="232" y="566" font-family="'Aptos','IBM Plex Sans',sans-serif"
+        font-size="20" fill="#465464">
+    · eaglhuang.github.io/AI-learning-notes
+  </text>
+
+  <g transform="translate(1010,140)" opacity="0.88">
+    <circle r="68" fill="#0d7a73" fill-opacity="0.18"/>
+    <circle r="44" fill="#0d7a73"/>
+    <ellipse rx="76" ry="28" fill="none" stroke="#085d58" stroke-width="2" stroke-opacity="0.7" transform="rotate(-22)"/>
+    <circle cx="62" cy="-24" r="5" fill="#cb7d2e"/>
+  </g>
+</svg>
