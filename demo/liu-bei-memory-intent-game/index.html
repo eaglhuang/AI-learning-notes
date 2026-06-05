@@ -956,7 +956,7 @@
     const API_KEY = searchParams.get("apiKey") || window.localStorage.getItem("npcBrainApiKey") || "";
     const DEFAULT_AUTO_DELAY = 12000;
     const DEFAULT_DIALOGUE_TIMEOUT_MS = 12000;
-    const DEFAULT_SCENE_DIRECTOR_TIMEOUT_MS = 12000;
+    const DEFAULT_SCENE_DIRECTOR_TIMEOUT_MS = 22000;
     const DEFAULT_SCENE_CHORUS_TIMEOUT_MS = 18000;
     const DEFAULT_ILLUSTRATION_TIMEOUT_MS = 32000;
     const DEFAULT_PROFILE_TIMEOUT_MS = 10000;
@@ -1676,7 +1676,7 @@
         includeChorus,
         storyTextOverride: storyTextOverride || null,
         locale: "zh-TW",
-        llmModelPreset: "scene_director_fast",
+        llmModelPreset: includeChorus ? "scene_director_fast" : "gemini_flash_lite",
         maxStoryChars: 320,
         maxChorusChars: 120,
       };
