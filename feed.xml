@@ -22,6 +22,30 @@
     </image>
 
     <item>
+      <title>Why "Same File = Conflict" Is Wrong for Multi-Agent Coding: A CID-Based Parallel Conflict Advisor</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/cid_parallel_conflict_advisor_en.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/cid_parallel_conflict_advisor_en.html</guid>
+      <pubDate>Sat, 06 Jun 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>en</dc:language>
+      <description><![CDATA[When two AI coding agents touch the same repo, Git's file-level conflict detector creates false positives and false negatives. CID — a deterministic contract fingerprint — adds a logical conflict layer that lets parallel agents work without serialization.]]></description>
+      <category>Multi-Agent</category>
+      <category>AI Engineering</category>
+    </item>
+
+    <item>
+      <title>Atom Maps: A Governance Replacement Surface for Retiring Legacy Modules with Multi-Agent AI</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/atom_map_legacy_replacement_en.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/atom_map_legacy_replacement_en.html</guid>
+      <pubDate>Sat, 06 Jun 2026 09:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>en</dc:language>
+      <description><![CDATA[Slicing a 1500-line legacy file into 30 atoms doesn't solve the refactor problem — the integrated entry point is gone. Atom maps put it back, with a contract-bound five-stage replacement lifecycle (draft → shadow → canary → active → legacy-retired).]]></description>
+      <category>Legacy Refactor</category>
+      <category>AI Engineering</category>
+    </item>
+
+    <item>
       <title>The End of Naked AI Coding: Accelerating Multi-Agent Development with a Deterministic Safety Brake</title>
       <link>https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public_en.html</link>
       <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public_en.html</guid>

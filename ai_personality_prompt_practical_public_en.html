@@ -492,6 +492,24 @@
 
   </style>
   <link rel="stylesheet" href="assets/css/article-base.css">
+  <style>
+    :root, html, body { --content-width: 1320px !important; }
+    .page { width: min(calc(100% - 40px), 1320px); }
+    h1 { max-width: none !important; }
+    @media (max-width: 1080px) {
+      .page { grid-template-columns: 1fr; width: min(calc(100% - 36px), 1320px); }
+      .toc { position: static; order: -1; }
+    }
+    @media (max-width: 640px) {
+      .page { width: calc(100% - 24px); padding: 24px 0 60px; }
+      .hero, .panel { padding: 22px; border-radius: 22px; }
+      h1 { font-size: 1.9rem; line-height: 1.18; }
+      .hero-grid, .split, .split-3 { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+      pre { font-size: 0.82rem; }
+    }
+  </style>
+  <link rel="alternate" type="application/rss+xml" title="AI Learning Notes RSS" href="https://eaglhuang.github.io/AI-learning-notes/feed.xml">
   <script defer src="assets/js/article-base.js"></script>
 </head>
 <body id="top">

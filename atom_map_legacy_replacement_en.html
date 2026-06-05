@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atom Maps: A Governance Replacement Surface for Retiring Legacy Modules with Multi-Agent AI</title>
+  <meta name="description" content="Slicing a 1500-line legacy file into 30 atoms doesn't solve the refactor problem — the integrated entry point is gone. Atom maps put the entry point back, with a contract-bound five-stage replacement lifecycle (draft → shadow → canary → active → legacy-retired) that lets AI agents retire legacy safely.">
+  <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/atom_map_legacy_replacement_en.html">
+  <link rel="alternate" hreflang="en" href="https://eaglhuang.github.io/AI-learning-notes/atom_map_legacy_replacement_en.html">
+  <link rel="alternate" type="application/rss+xml" title="AI Learning Notes RSS" href="https://eaglhuang.github.io/AI-learning-notes/feed.xml">
+
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Atom Maps: A Governance Replacement Surface for Retiring Legacy Modules">
+  <meta property="og:description" content="Slicing legacy into 30 atoms doesn't solve the refactor problem. Atom maps put the entry point back, with a gated five-stage replacement lifecycle.">
+  <meta property="og:url" content="https://eaglhuang.github.io/AI-learning-notes/atom_map_legacy_replacement_en.html">
+  <meta property="og:site_name" content="AI Learning Notes">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://eaglhuang.github.io/AI-learning-notes/assets/og/atm_atomic_foundry_en.svg">
+  <meta property="og:image:type" content="image/svg+xml">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="article:author" content="Eagl Huang">
+  <meta property="article:published_time" content="2026-06-06">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Atom Maps: A Governance Replacement Surface for Retiring Legacy Modules">
+  <meta name="twitter:description" content="Slicing legacy into atoms isn't enough. Atom maps add a replacement contract — draft → shadow → canary → active → legacy-retired.">
+  <meta name="twitter:image" content="https://eaglhuang.github.io/AI-learning-notes/assets/og/atm_atomic_foundry_en.svg">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Atom Maps: A Governance Replacement Surface for Retiring Legacy Modules with Multi-Agent AI",
+    "author": { "@type": "Person", "name": "Eagl Huang", "url": "https://github.com/eaglhuang" },
+    "datePublished": "2026-06-06",
+    "dateModified": "2026-06-06",
+    "url": "https://eaglhuang.github.io/AI-learning-notes/atom_map_legacy_replacement_en.html",
+    "inLanguage": "en",
+    "publisher": { "@type": "Organization", "name": "AI Learning Notes", "url": "https://eaglhuang.github.io/AI-learning-notes/" },
+    "mainEntityOfPage": "https://eaglhuang.github.io/AI-learning-notes/atom_map_legacy_replacement_en.html",
+    "keywords": "Atom Map, Legacy Refactor, AI Agent Refactoring, Replacement Lifecycle, Governance Replacement Surface, Multi-Agent Refactor, AI Code Migration, Shadow Canary, Software Modernization",
+    "isPartOf": { "@type": "TechArticle", "headline": "The End of Naked AI Coding", "url": "https://eaglhuang.github.io/AI-learning-notes/atm_atomic_foundry_public_en.html" }
+  }
+  </script>
+
+  <link rel="stylesheet" href="assets/css/dark-override.css">
+  <link rel="stylesheet" href="assets/css/article-base.css">
+  <style>
+    :root { --paper:#f6f1e7; --ink:#19242f; --ink-soft:#465464; --line:rgba(25,36,47,0.12); --accent-strong:#085d58; --shadow:0 24px 80px rgba(26,40,55,0.12); --content-width:1320px; }
+    :root, html, body { --content-width: 1320px !important; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"Aptos","IBM Plex Sans","Segoe UI",system-ui,sans-serif; color:var(--ink); background:radial-gradient(circle at top left,rgba(13,122,115,0.16),transparent 28%),radial-gradient(circle at 80% 12%,rgba(203,125,46,0.14),transparent 26%),linear-gradient(180deg,#f8f4eb 0%,#f2ecdf 48%,#ebe5d8 100%); min-height:100vh; }
+    a { color: var(--accent-strong); }
+    .page { width: min(calc(100% - 40px), 1320px); margin: 0 auto; padding: 40px 0 80px; max-width: 980px; }
+    .hero, .panel { background: linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.72)); border: 1px solid rgba(255,255,255,0.7); box-shadow: var(--shadow); border-radius: 32px; padding: 36px; margin-bottom: 24px; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+    .eyebrow { margin:0 0 12px; font-size:0.8rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent-strong); font-weight:700; }
+    h1 { font-family:"Iowan Old Style","Georgia",serif; font-size: clamp(1.9rem, 2.8vw, 2.6rem); line-height:1.18; margin:0 0 16px; max-width:none; letter-spacing:0.01em; }
+    h2 { font-family:"Iowan Old Style","Georgia",serif; font-size: clamp(1.4rem, 2vw, 1.8rem); margin: 0 0 12px; }
+    p { color: var(--ink-soft); line-height: 1.82; margin: 0 0 14px; }
+    .lede { font-size: 1.08rem; color: var(--ink-soft); line-height: 1.84; max-width: 880px; }
+    .byline { margin: 14px 0 0; color: var(--ink-soft); font-size: 0.95rem; }
+    .byline strong { color: var(--ink); }
+    .byline a { color: var(--accent-strong); text-decoration: none; }
+    .quote { font-size:1.04rem; color:var(--ink); border-left:4px solid rgba(13,122,115,0.4); padding: 6px 0 6px 14px; margin: 18px 0; }
+    .callout { border-radius: 16px; padding: 18px 20px; border: 1px solid rgba(13,122,115,0.14); background: linear-gradient(135deg, rgba(13,122,115,0.08), rgba(203,125,46,0.08)); color: var(--ink); margin: 18px 0; line-height: 1.78; }
+    code { font-family: "JetBrains Mono","Cascadia Code",monospace; font-size: 0.92em; background: rgba(13,122,115,0.07); padding: 1px 6px; border-radius: 4px; }
+    .stages { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0; }
+    .stage { flex: 1 1 160px; padding: 14px; border-radius: 12px; background: rgba(255,255,255,0.7); border: 1px solid var(--line); }
+    .stage h3 { margin: 0 0 6px; font-size: 0.95rem; font-family: 'JetBrains Mono', monospace; color: var(--accent-strong); }
+    .stage p { margin: 0; font-size: 0.85rem; line-height: 1.55; }
+    .cta { display: inline-block; margin-top: 18px; padding: 14px 22px; border-radius: 999px; background: #16222d; color: #fff; text-decoration: none; font-weight: 700; transition: transform 140ms ease, background 140ms ease; }
+    .cta:hover { background: #0d7a73; transform: translateY(-1px); }
+    .back-links { margin: 0 0 18px; color: var(--ink-soft); font-size: 0.92rem; }
+    .back-links a { font-weight: 700; text-decoration: none; }
+    @media (max-width: 640px) { .hero, .panel { padding: 22px; border-radius: 22px; } h1 { font-size: 1.7rem; } .stages { flex-direction: column; } }
+  </style>
+</head>
+<body id="top">
+  <div class="page">
+    <p class="back-links">
+      <a href="./">Home</a>
+      ｜
+      <a href="articles/">Articles</a>
+      ｜
+      <a href="atm_atomic_foundry_public_en.html">Full ATM Foundry article →</a>
+    </p>
+
+    <header class="hero">
+      <p class="eyebrow">AI Engineering · Legacy Refactor · 2026</p>
+      <h1>Atom Maps: A Governance Replacement Surface for Retiring Legacy Modules with Multi-Agent AI</h1>
+      <p class="lede">You asked five AI agents to refactor your 1500-line <code>checkout.py</code>. They returned 30 clean atoms. Are you done? <strong>No.</strong> The integrated entry point is gone, and nothing currently in your repo stands up and says "I'm the new checkout — retire the old one." That's what atom maps are for.</p>
+      <p class="byline">by <strong><a href="https://github.com/eaglhuang" rel="author">Eagl Huang</a></strong> · June 6, 2026 · 6 min read</p>
+    </header>
+
+    <section class="panel">
+      <h2>The price of slicing finely</h2>
+      <p>Atomizing legacy is the easy part. AI agents are great at finding the function boundaries and pulling them out into named, governed units. But four questions remain that no single atom can answer:</p>
+      <ul>
+        <li>Which atom is the new entry point? Which atoms play <em>entry-adapter</em>, <em>validator</em>, <em>side-effect-adapter</em>?</li>
+        <li>Where do <em>data-flow</em>, <em>control-flow</em>, and <em>validation</em> edges run between atoms?</li>
+        <li>Does the new constellation actually behave like the old monolith? Which divergences are acceptable?</li>
+        <li>If something goes wrong, is there a safe rollback path back to legacy?</li>
+      </ul>
+      <p class="quote">An atom is a cell; a map is an organ. Without a map, even a perfectly shredded legacy module has no single thing that can stand up and say "I'm the new checkout, retire the old one."</p>
+    </section>
+
+    <section class="panel">
+      <h2>The four replacement contracts</h2>
+      <p>A real atom map is more than "a list of members and edges." It promises four things to the outside world — together, they form a <strong>governance replacement surface</strong>:</p>
+      <ul>
+        <li><strong>Structural semantics</strong>: <code>members[].role</code> (entry-adapter / validator / side-effect-adapter) and <code>edges[].edgeKind</code> (data-flow / control-flow / validation). No role + edgeKind, no promotion.</li>
+        <li><strong>Replacement declaration</strong>: <code>replacement.legacyUris[]</code> explicitly enumerates the legacy entry being replaced, e.g. <code>legacy://app/checkout.py#L1-L1500</code>.</li>
+        <li><strong>Verifiable equivalence</strong>: a <code>map-equivalence-report</code> proves the map behaves like the legacy entry. Known divergences are allowed — but only if explicitly enumerated in <code>knownDivergences[]</code>.</li>
+        <li><strong>Safe exit</strong>: reaching <code>legacy-retired</code> requires a <code>rollback-proof</code> or <code>retirement-proof</code>. No reverse path, no retirement.</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>Five-stage replacement lifecycle</h2>
+      <p>Legacy is never cut over in one step. It is a gated five-stage pipeline; every transition is guarded by police + evidence:</p>
+      <div class="stages">
+        <div class="stage"><h3>draft</h3><p>Map created. No replacement claim yet.</p></div>
+        <div class="stage"><h3>shadow</h3><p>Runs parallel to legacy. Compares, never decides.</p></div>
+        <div class="stage"><h3>canary</h3><p>Small slice goes live. Rollback path preserved.</p></div>
+        <div class="stage"><h3>active</h3><p>Becomes the entry. Legacy demoted to backup.</p></div>
+        <div class="stage"><h3>legacy-retired</h3><p>Old entry retired. Rollback proof required.</p></div>
+      </div>
+      <p>shadow → canary needs a map-integration pass; canary → active needs equivalence + propagation + human review; active → retired needs a rollback proof. <strong>No stage can be skipped.</strong></p>
+    </section>
+
+    <section class="panel">
+      <h2>Three data tiers, one golden property</h2>
+      <p>Everything around the map is classified into three tiers, each with its own tolerance rule:</p>
+      <ul>
+        <li><strong>Source-of-truth</strong>: atom source, <code>map.spec.json</code>, capsule manifest. Must be verifiable and rebuildable; never overwritten by cache.</li>
+        <li><strong>Derived state</strong>: registry, Mermaid diagrams, health reports. Deletable and rebuildable; must carry <code>generatedAt</code>.</li>
+        <li><strong>Local volatile</strong>: daemon PID, guide cache. Off-git by default; safe to delete on corruption.</li>
+      </ul>
+      <div class="callout">
+        Combined with the Rescue Police and Disaster Recovery CLI, this guarantees a golden property: <strong>as long as source-of-truth survives, every registry and derived report can be rebuilt from scratch</strong>. Even after a corrupted upgrade or a botched retirement, you still have a road back to a known-good map.
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Why this matters for multi-agent refactors</h2>
+      <p>Without the map layer, your five agents can each produce clean atoms — but the result is a pile of cells on the floor with no organ to transplant in. The legacy <code>checkout.py</code> still owns the entry point, the integration tests still target it, and nobody can say with confidence whether the new constellation matches the old behavior.</p>
+      <p>With the map, you have <strong>a single named thing</strong> that declares which legacy URIs it replaces, carries an equivalence report, walks through a gated lifecycle, and ships with a rollback proof before the old entry can be retired. <strong>Atoms answer "what is this piece of code?"; maps answer "how is this legacy being replaced, with what evidence, and how do we roll back if it goes wrong?"</strong></p>
+      <p><a class="cta" href="atm_atomic_foundry_public_en.html">Read the full ATM Foundry article →</a></p>
+      <p style="margin-top:18px;font-size:0.92rem;color:var(--ink-soft);">Source: AI-Atomic-Framework on <a href="https://github.com/eaglhuang/AI-Atomic-Framework">GitHub</a>. The five-stage lifecycle, equivalence report, and Rescue Police / Disaster Recovery CLI described here belong to the Map Replacement Protocol v2-r2 roadmap (TASK-MRP-0011~0027); the base atom-map schema and integration tests are shipped today.</p>
+    </section>
+  </div>
+</body>
+</html>
