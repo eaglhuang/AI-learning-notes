@@ -97,9 +97,9 @@
       margin: 0;
     }
     h1 {
-      font-size: clamp(2.2rem, 4vw, 3.6rem);
-      line-height: 1.08;
-      max-width: 12em;
+      font-size: clamp(2rem, 3.2vw, 3rem);
+      line-height: 1.16;
+      max-width: none;
     }
     h2 {
       font-size: clamp(1.5rem, 2.4vw, 2.2rem);
@@ -709,8 +709,110 @@
         <p>所以 atom map 才是 ATM 真正回應「legacy 大模組」的那一層。<sup><a href="#roadmap-notes">*</a></sup>原子（§2）回答「這段程式碼是什麼」；map 回答「這一坨 legacy 該怎麼被有秩序、有 evidence、有 rollback 路徑地替換掉」。少了 map，你只是把一堆細胞掛在牆上；有了 map，你才有真正能替換掉舊器官的新器官。</p>
       </section>
 
+      <section class="panel" id="parallel">
+        <h2>4. CID 衝突仲裁：讓兩個 Agent 真的能同時動手的關鍵技術</h2>
+        <p>到這裡我們有了「有身分的細胞（atom）」與「有契約的器官（map）」。但實務上多 Agent 同時開發最關鍵的問題還沒回答：<strong>給我兩張任務卡，框架要怎麼判斷它們可不可以平行做？</strong></p>
+        <p class="quote">Git 解決物理衝突：你跟我改了同一行。CID 解決邏輯衝突：你跟我改的是同一個合約指紋。兩者不能互相取代，少一邊都不行。</p>
+
+        <h3>4.1 為什麼「同檔案就擋」是錯的</h3>
+        <p>傳統多人協作的衝突偵測只看一件事：兩個人有沒有改同一個檔案。這對檔案級 IDE 夠用，但在「同一個 monorepo 跑五個 Agent」的情境會出兩種錯：</p>
+        <ul>
+          <li><strong>偽陽性（誤擋）</strong>：兩個 Agent 改 <code>tasks.ts</code> 的不同函式——明明邏輯獨立，卻被「同檔」鎖死成序列化。</li>
+          <li><strong>偽陰性（漏擋）</strong>：兩個 Agent 改不同檔，但都動到了同一個 generator 或 validator 的對外契約——Git 看不到衝突，等部署才崩。</li>
+        </ul>
+        <p>ATM 的回答是：<strong>把「檔案」這個物理層降級成 fallback，把「CID」這個合約層升級成第一信號</strong>。同檔不是衝突，<strong>同一張 CID 才是衝突</strong>。</p>
+
+        <h3>4.2 八種判定 verdict</h3>
+        <p>給定任務 A 跟任務 B，框架的 parallel conflict advisor 會吐出八種判定之一（依嚴重度排序）：</p>
+        <table>
+          <thead><tr><th>判定</th><th>含義</th><th>行為</th></tr></thead>
+          <tbody>
+            <tr><td><code>parallel-safe</code></td><td>CID 不同、檔案不重、無共享表面</td><td>✅ 兩 Agent 各做各的，框架不介入</td></tr>
+            <tr><td><code>needs-physical-split</code></td><td>CID 不同但檔案重疊</td><td>🔄 可平行；交給 deterministic composer 或 Neutral Write Steward 合併</td></tr>
+            <tr><td><code>blocked-cid-conflict</code></td><td>同一個 <code>atom_cid</code></td><td>❌ 真語意衝突，必須序列化或 Captain 仲裁</td></tr>
+            <tr><td><code>blocked-shared-generator</code></td><td>共用同一個 code generator</td><td>❌ 拆原子或序列化</td></tr>
+            <tr><td><code>blocked-shared-validator</code></td><td>共用同一個 validator</td><td>❌ 同上</td></tr>
+            <tr><td><code>blocked-shared-projection</code></td><td>共用同一個視圖/索引</td><td>❌ 同上</td></tr>
+            <tr><td><code>blocked-shared-artifact</code></td><td>共用同一份輸出 artifact</td><td>❌ 同上</td></tr>
+            <tr><td><code>blocked-active-lease</code></td><td>已被另一個 active lease 持有</td><td>❌ 等釋放或換 scope</td></tr>
+          </tbody>
+        </table>
+
+        <figure class="figure-card" data-figure-name="atm-cid-parallel-verdict">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>下載 SVG</button>
+            <button type="button" data-download-png>下載 PNG</button>
+          </div>
+          <svg viewBox="0 0 1120 420" role="img" aria-label="CID 衝突仲裁的三條主要決策路徑">
+            <defs>
+              <marker id="pcArrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+                <path d="M0 0 L12 6 L0 12 z" fill="#465464"/>
+              </marker>
+            </defs>
+            <rect width="1120" height="420" rx="24" fill="#fffaf2"/>
+            <!-- Input task pair -->
+            <g transform="translate(60,160)">
+              <rect width="180" height="100" rx="20" fill="#16222d"/>
+              <text x="90" y="42" text-anchor="middle" fill="#fffaf2" font-size="18" font-weight="700">Task A + Task B</text>
+              <text x="90" y="68" text-anchor="middle" fill="#a9c2d3" font-size="12" font-family="monospace">atom_cid + 檔案範圍</text>
+              <text x="90" y="86" text-anchor="middle" fill="#a9c2d3" font-size="12" font-family="monospace">+ 共享表面集合</text>
+            </g>
+            <!-- Advisor box -->
+            <g transform="translate(310,148)">
+              <rect width="220" height="124" rx="22" fill="#0d7a73"/>
+              <text x="110" y="40" text-anchor="middle" fill="#fffaf2" font-size="18" font-weight="700">Parallel Conflict</text>
+              <text x="110" y="62" text-anchor="middle" fill="#fffaf2" font-size="18" font-weight="700">Advisor</text>
+              <text x="110" y="92" text-anchor="middle" fill="#a9e0d6" font-size="12" font-family="monospace">atm tasks parallel</text>
+              <text x="110" y="108" text-anchor="middle" fill="#a9e0d6" font-size="12" font-family="monospace">--task A --with B</text>
+            </g>
+            <!-- 3 verdicts -->
+            <g transform="translate(620,60)">
+              <rect width="440" height="80" rx="18" fill="#eaf7f4" stroke="#9bd0ca" stroke-width="2"/>
+              <text x="20" y="32" fill="#085d58" font-size="16" font-weight="700">✅ parallel-safe</text>
+              <text x="20" y="56" fill="#3c5f6e" font-size="13">CID 不同、檔案不重、無共享表面</text>
+              <text x="20" y="72" fill="#3c5f6e" font-size="13">→ 兩個 Agent 直接並行寫，框架不介入</text>
+            </g>
+            <g transform="translate(620,170)">
+              <rect width="440" height="80" rx="18" fill="#fbf0e9" stroke="#e1b98f" stroke-width="2"/>
+              <text x="20" y="32" fill="#8d4f15" font-size="16" font-weight="700">🔄 needs-physical-split</text>
+              <text x="20" y="56" fill="#3c5f6e" font-size="13">CID 不同但檔案重疊（Git 級衝突）</text>
+              <text x="20" y="72" fill="#3c5f6e" font-size="13">→ 可平行；用 deterministic composer 合併</text>
+            </g>
+            <g transform="translate(620,280)">
+              <rect width="440" height="80" rx="18" fill="#f6edf2" stroke="#c89aaf" stroke-width="2"/>
+              <text x="20" y="32" fill="#8f425e" font-size="16" font-weight="700">❌ blocked-cid-conflict</text>
+              <text x="20" y="56" fill="#3c5f6e" font-size="13">同一個 atom_cid（真語意衝突）</text>
+              <text x="20" y="72" fill="#3c5f6e" font-size="13">→ 序列化、Captain 仲裁或建議拆原子</text>
+            </g>
+            <!-- Arrows -->
+            <line x1="240" y1="210" x2="310" y2="210" stroke="#465464" stroke-width="3" marker-end="url(#pcArrow)"/>
+            <path d="M530 210 C 580 210, 580 100, 620 100" fill="none" stroke="#465464" stroke-width="3" marker-end="url(#pcArrow)"/>
+            <line x1="530" y1="210" x2="620" y2="210" stroke="#465464" stroke-width="3" marker-end="url(#pcArrow)"/>
+            <path d="M530 210 C 580 210, 580 320, 620 320" fill="none" stroke="#465464" stroke-width="3" marker-end="url(#pcArrow)"/>
+            <!-- caption text -->
+            <text x="560" y="382" text-anchor="middle" font-size="13" fill="#465464" font-family="monospace">另有 5 種 blocked-shared-* 與 blocked-active-lease 判定，覆蓋 generator / validator / projection / artifact / lease 等共享表面。</text>
+          </svg>
+          <figcaption>圖 4：parallel conflict advisor 的三條主要路徑。注意中間那條 <code>needs-physical-split</code>——這就是 CID 比「同檔就鎖」聰明的地方：物理層交給 Git，邏輯層交給 CID，兩條軌道並行運作。</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+
+        <h3>4.3 不只是「擋住」，還會建議怎麼拆</h3>
+        <p>判定 <code>blocked-cid-conflict</code> 或 <code>needs-physical-split</code> 時，advisor 不會只回 ❌ 走人，它會吐一份 <strong>merge plan</strong>，內容包括：</p>
+        <ul>
+          <li><strong>衝突原因</strong>：哪一張 CID、哪一個共享 generator、哪一份 artifact 撞上了</li>
+          <li><strong>建議 lane</strong>：走 deterministic composer（範圍清楚，工具能合）、Neutral Write Steward（雙方都有語意判斷，需中立寫手）、還是 shared-surface guard（先拆表面）</li>
+          <li><strong>hotspot 報告</strong>：這個衝突點在最近 N 張卡裡撞過幾次——撞越多次代表越該優先把那個 atom / 那個檔案拆掉</li>
+          <li><strong>需要的 evidence</strong>：merge 之後要過哪幾個 validator 才能 close</li>
+        </ul>
+        <p>這就是「先派調度雷達、確認要撞才派合併工」的設計哲學。框架不會把所有任務都拖進大修廠——只有真的撞上同一張 CID，才會升級到序列化或仲裁。</p>
+
+        <div class="callout">
+          <strong>關鍵洞察</strong>：這是<strong>邏輯層的解法</strong>，不是物理層的解法。Git 處理「保存歷史、分支、merge fallback、commit、rollback」這些物理工作；CID 處理「這兩個改動在語意上撞不撞」這個合約問題。<strong>少了 atom 和 atom map，CID 沒有可以指向的單位；少了 CID，多 Agent 平行只能退回到「同檔就鎖」的笨方法</strong>——這就是為什麼這三層必須一起出現，才能真的把多 Agent 並行從「祈禱不撞」升級成「可被計算判定」。<sup><a href="#roadmap-notes">*</a></sup>
+        </div>
+      </section>
+
       <section class="panel" id="roles">
-        <h2>4. 治理骨架：七階生命週期 + 五個原子 + 完整行為集合</h2>
+        <h2>5. 治理骨架：七階生命週期 + 五個原子 + 完整行為集合</h2>
         <p>講「煞車」之前要先講「煞車裝在哪」。鑄造廠的骨架不是「派一個 Agent 從頭做到尾」，而是<strong>把一次完整工作拆成七個可被機器偵測的階段</strong>，並在每階段用「原子（atom）」與「行為（behavior）」這兩個對外穩定的合約來綁住變動。下面這張圖是現況實作（不是 roadmap）：</p>
 
         <figure class="figure-card" data-figure-name="atm-7-stage-lifecycle">
@@ -753,7 +855,7 @@
               <text x="600" y="66" text-anchor="middle" font-size="11" fill="#465464">10 個 plugin 行為：split / atomize / merge / dedup-merge / compose / evolve / polymorphize / expire / sweep / infect（另含 anchorize、promote 兩個 capsule 階梯輔助）</text>
             </g>
           </svg>
-          <figcaption>圖 4：ATM 七階治理生命週期。每階都有對應的 CLI 命令、對應的失敗守則（doctor check）、對應的驗證契約。下方橫條是「對外穩定的治理單位」：5 個 active 原子（governed tier）負責身分基礎與生成 / 中性 / 指紋計算；11 個行為類別則是對原子做的合法動詞。</figcaption>
+          <figcaption>圖 5：ATM 七階治理生命週期。每階都有對應的 CLI 命令、對應的失敗守則（doctor check）、對應的驗證契約。下方橫條是「對外穩定的治理單位」：5 個 active 原子（governed tier）負責身分基礎與生成 / 中性 / 指紋計算；11 個行為類別則是對原子做的合法動詞。</figcaption>
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
@@ -791,7 +893,7 @@
 
 
       <section class="panel" id="cid">
-        <h2>5. 5D CID：給每個原子的多維身分證</h2>
+        <h2>6. 5D CID：給每個原子的多維身分證</h2>
         <p>這是整個鑄造廠隱喻的核心。<strong>每個 atom 都有一張身分證——CID（content-addressable identifier）</strong>。它不是「程式語意」的指紋（那是計算機科學上做不到的事），而是這個原子<strong>對外宣告的合約指紋</strong>。</p>
         <p><strong>CID 是確定性的</strong>——不讀原始碼、不解析 AST、不呼叫 LLM、不算 embedding。它 hash 的是 atom 自己宣告出來的合約欄位（input/output ports、語言、效能預算）。同一份宣告永遠得到同一張證；任何非確定性訊號永遠不准進這把雜湊鎖。</p>
         <p>用一個具體例子走一次。假設兩個 Agent 各寫了一個 retry helper，<strong>實作寫法不同</strong>，但他們<strong>宣告了一樣的對外合約</strong>：</p>
@@ -894,7 +996,7 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
             </g>
             <text x="826" y="258" text-anchor="middle" font-size="13" fill="#465464">合約一致 → 同一張證</text>
           </svg>
-          <figcaption>圖 5：把 atom 對外宣告的合約（ports、語言、執行約束）丟進機器，機器正規化後蓋上 SHA256 鋼印，吐出 CID.Interface。實作寫法不同沒關係——只要對外宣告一致，就會得到同一張身分證。</figcaption>
+          <figcaption>圖 6：把 atom 對外宣告的合約（ports、語言、執行約束）丟進機器，機器正規化後蓋上 SHA256 鋼印，吐出 CID.Interface。實作寫法不同沒關係——只要對外宣告一致，就會得到同一張身分證。</figcaption>
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
@@ -911,7 +1013,7 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
       </section>
 
       <section class="panel" id="permission">
-        <h2>6. 權限就是裝備：lease 取代資料夾隔離</h2>
+        <h2>7. 權限就是裝備：lease 取代資料夾隔離</h2>
         <p class="quote">兩個 Agent 不可能同時拿到同一張寫入權，因為這層在 git 之前就攔下來了。</p>
         <p>多 Agent 並行最容易撞牆的地方是「誰可以寫什麼」。傳統做法是用資料夾權限或工具白名單，但這兩種方式都有同一個問題：<strong>它們是靜態的，不會隨著任務變化</strong>。</p>
         <p>鑄造廠的做法是把權限拆成命名物件，每個都有 mode 屬性：</p>
@@ -994,7 +1096,7 @@ $ node atm.mjs team lease --agent builder-02 \
               <text x="40" y="25" font-size="12" font-weight="700" fill="#cb7d2e">CONFLICT</text>
             </g>
           </svg>
-          <figcaption>圖 6：<code>file.write</code> 是一把唯一的鑰匙。builder-01 拿著的時候，builder-02 連碰都碰不到——衝突在權限層就被擋下，不必等到 git merge 才發現。</figcaption>
+          <figcaption>圖 7：<code>file.write</code> 是一把唯一的鑰匙。builder-01 拿著的時候，builder-02 連碰都碰不到——衝突在權限層就被擋下，不必等到 git merge 才發現。</figcaption>
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
@@ -1003,7 +1105,7 @@ $ node atm.mjs team lease --agent builder-02 \
       </section>
 
       <section class="panel" id="memory">
-        <h2>7. 共享記憶：charter 是最高權威、ATMChart 是執行期煞車、closure-packet 是證據鏈</h2>
+        <h2>8. 共享記憶：charter 是最高權威、ATMChart 是執行期煞車、closure-packet 是證據鏈</h2>
         <p>多 AI 協作最容易翻車的另一個點是「上下文漂移」——Agent A 跟我講過一個假設，Agent B 進場時不知道，於是寫出來的程式碼跟 A 不一致。等發現時，三個檔案都飄在四處。鑄造廠的對策不是「靠 prompt 提醒」，而是把治理規則寫成三層被機器讀的合約：</p>
         <ul>
           <li><strong>最高權威 = atomic charter（<code>.atm/charter/atomic-charter.md</code>）+ 7 條 INV-ATM</strong>。Charter 是 framework 的最終裁判，當前版本 v2.0.0；INV-ATM-001~007 是不可逾越的紅線（由 gate / doctor / waiver-required 三種機制執行）。違反 invariant 不能繞過，必須走 charter waiver 流程（<code>behavior.evolve</code> + <code>charterWaiver</code> + <code>HumanReviewDecision</code>）。</li>
@@ -1042,7 +1144,7 @@ $ node atm.mjs team lease --agent builder-02 \
       </section>
 
       <section class="panel" id="police">
-        <h2>8. 7 條 INV-ATM 紅線 + 常駐警察家族：合約煞車與結構良心</h2>
+        <h2>9. 7 條 INV-ATM 紅線 + 常駐警察家族：合約煞車與結構良心</h2>
         <p class="quote">你睡覺的時候，警察還在巡；invariants 一直釘在那裡，從來沒下班。</p>
 
         <p>鑄造廠的「煞車」其實分兩層。<strong>合約層的煞車是 charter 上的 7 條 INV-ATM</strong>（公開、穩定、寫進 framework），<strong>偵測層的煞車是 9 個常駐警察家族</strong>（advisory、機器自動跑、報給人類定奪）。它們的分工是：</p>
@@ -1130,7 +1232,7 @@ $ node atm.mjs team lease --agent builder-02 \
             <!-- advisory 標記，不動手 -->
             <g transform="translate(920,120)"><rect width="150" height="60" rx="14" fill="#eaf7f4" stroke="#90cbc1"/><text x="75" y="26" text-anchor="middle" font-size="12" font-weight="700" fill="#085d58">產出 finding</text><text x="75" y="46" text-anchor="middle" font-size="11" fill="#3c5f6e">advisory · 不動手</text></g>
           </svg>
-          <figcaption>圖 7：警察 bot 沿著 registry 巡邏，發現一個語意指紋跟別人很近的細胞，就掛一張 <code>dup?</code> 旗子、產出一筆 finding——然後就停在這裡。它只通報，不會自己動手合併。</figcaption>
+          <figcaption>圖 8：警察 bot 沿著 registry 巡邏，發現一個語意指紋跟別人很近的細胞，就掛一張 <code>dup?</code> 旗子、產出一筆 finding——然後就停在這裡。它只通報，不會自己動手合併。</figcaption>
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
@@ -1149,7 +1251,7 @@ $ node atm.mjs team lease --agent builder-02 \
       </section>
 
       <section class="panel" id="setup">
-        <h2>9. 從 git clone 到第一張卡 close：採用 ATM 的最小路徑</h2>
+        <h2>10. 從 git clone 到第一張卡 close：採用 ATM 的最小路徑</h2>
         <p>所有這些聽起來很複雜的東西，採用門檻其實不高。ATM 的官方分發單位是<strong>單檔 runner <code>atm.mjs</code></strong>（約 3.1 MB 的 strip-types bundle，無 transitive dep）；部署是「framework 端 push 給 adopter」的顯式 sync，不是 <code>npm install</code>。下面是從 0 到第一張 closure-packet 的最小路徑：</p>
         <pre><code># 0-15 min：取得 runner + ORIENT
 # Framework 端（onefile 已 build 好）：
@@ -1195,7 +1297,7 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
       </section>
 
       <section class="panel" id="fail">
-        <h2>10. 容易失敗的地方（與對應的 doctor 守則）</h2>
+        <h2>11. 容易失敗的地方（與對應的 doctor 守則）</h2>
         <p>誠實講，鑄造廠不是一鍵綠的。下面六個是我最常踩到、也是 ATM doctor 守則直接點名的場景。每一個都對應一條具體的 doctor 檢查，失敗時會回傳 <code>firstFailedCheck</code> 加 <code>suggestion</code>，agent 不需要猜：</p>
         <div class="split-3">
           <div class="mini-card">
@@ -1227,7 +1329,7 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
       </section>
 
       <section class="panel" id="market">
-        <h2>11. CID-Native 原子代碼市場：北極星，不是明天就上線</h2>
+        <h2>12. CID-Native 原子代碼市場：北極星，不是明天就上線</h2>
         <p>到目前為止講的都是<strong>單一專案內</strong>怎麼治理。從這裡開始是 roadmap——我想先講清楚這條路真的能走的部分、跟還在 north star 階段的部分，避免賣空頭支票。</p>
         <p>骨牌可以這樣排：CID.Interface 是確定性的，意思是同一份對外宣告 → 同一張 CID.Interface → 不分作者、不分專案。如果一萬個專案都採用同一套治理協議，每個專案都會產出帶 CID 的 atom 清單。某天你在新專案需要 <code>idempotent-http-retry-with-jitter</code>：</p>
         <ol>
@@ -1246,7 +1348,7 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
       </section>
 
       <section class="panel" id="closing">
-        <h2>12. 結語</h2>
+        <h2>13. 結語</h2>
         <p>2025 年大家在比「我的 AI Agent 有多聰明」。2026 年我覺得該換個題目：<strong>當 N 個聰明的 Agent 同時改一個 repo 時，這個 repo 還能不能保持可治理</strong>。</p>
         <p>我給自己的答案是鑄造廠 + 五維身分證 + 七階煞車。把每段程式碼變成有名字的細胞、把每次改動變成有 hash 的證據、把 7 條 INV-ATM 寫成 charter 紅線、讓 9 個常駐警察看著結構健康度、把 ORIENT→CLOSURE 釘成不能跳階的生命週期。這套東西聽起來規矩很多，但它的回報是：<strong>半年後我的 repo 還能讀懂、還能被審計、還能被重用——而且我同時開 5 個 Agent 也不會把它撞爛</strong>。</p>
         <p>如果你只想做一個小 feature，這套協議是 overkill。但如果你要做一個跑半年、多個 AI 並行介入、未來可能要送合規、甚至想把寫過的好 atom 分享給世界的專案——你需要的就是這樣一座有煞車的鑄造廠。</p>
@@ -1265,7 +1367,8 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
               <li><strong>5D CID 的其他四維</strong>（Strict / Effects / Semantic / Behavior）：只有 Interface 已實作，其餘為提案；非確定性訊號永遠不准進 identity hash。</li>
               <li><strong>Team Agents lane</strong>：<code>team lease</code> CLI、權限表（task.lifecycle / git.write / file.write …）、15 角色 4 層協作、`team-memory-shard.md`、`patrol-report.md` 都是這條 lane 的設計提案；目前 lease 只走 <code>ScopeLockRecord</code> + INV-ATM-002 這條最小路徑，memory shard 與 patrol report 屬模板，**不會被自動載入下一個 Agent 上下文**，需由人類或 Captain 主動引用。</li>
               <li><strong>Map Replacement Protocol v2-r2</strong>：本文 §3 介紹的 <code>replacement.legacyUris[]</code>、五階 lifecycle（draft → shadow → canary → active → legacy-retired）、<code>map-equivalence-report</code>、<code>create-map</code> / <code>test --equivalence-fixtures</code> / <code>test --propagate</code> CLI、M26 Rescue Police、M27 Disaster Recovery CLI 屬於 TASK-MRP-0011~0027（17 張任務卡）。其中 MRP-0018 / 0021 已完成，MRP-0026 進行中，MRP-0022（Daemon）/ MRP-0024（Guide Cache）為 opt-in 預設 OFF。</li>
-              <li><strong>CID 原子市場（§11）</strong>：跨組織查詢與市場是<strong>北極星</strong>，需先等本地端跑成熟、Trust Tier 制度化、零信任沙盒落地。不會取代 npm / Docker，補位「函式級 + 被治理 + 可重組」的中間層。infect 永遠是 advisory + 人審。</li>
+              <li><strong>Parallel Conflict Advisor（§4）</strong>：本文 §4 介紹的 <code>atm tasks parallel</code> CLI、八種 verdict、merge plan / hotspot 報告屬於 <strong>TASK-CID-0005（P0 planning-only contract card）</strong>。CID / semanticFingerprint 本身已確定性實作；advisor 的合約已定義，後續實作走 AAF target-repo card。Write Broker / Steward lane 整合（TASK-CID-0009~0012）也屬同一條 P0 規劃線。</li>
+              <li><strong>CID 原子市場（§12）</strong>：跨組織查詢與市場是<strong>北極星</strong>，需先等本地端跑成熟、Trust Tier 制度化、零信任沙盒落地。不會取代 npm / Docker，補位「函式級 + 被治理 + 可重組」的中間層。infect 永遠是 advisory + 人審。</li>
               <li><strong>Tier 3 證據</strong>：本機 sandbox 證據只能達 Tier 2。要升到 Tier 3 / marketplace-grade，closure 必須帶外部 <code>AttestationProvider</code> 的簽章與可驗證 provenance（GitHub Actions 為第一個 reference adapter）。突變測試與對抗 QA 永不掛同步 close 路徑，要走 async police。</li>
             </ul>
           </li>
@@ -1315,7 +1418,8 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
         <li><a href="#pain">N AI 開發撞的四面牆</a></li>
         <li><a href="#metaphor">原子鑄造廠</a></li>
         <li><a href="#map">原子之上的 map：拆 legacy</a></li>
-        <li><a href="#roles">7 階 + 5 原子 + 11 行為</a></li>
+        <li><a href="#parallel">CID 衝突仲裁：平行開發</a></li>
+        <li><a href="#roles">7 階 + 5 原子 + 完整行為</a></li>
         <li><a href="#cid">5D CID 多維身分證</a></li>
         <li><a href="#permission">權限就是裝備</a></li>
         <li><a href="#memory">charter / ATMChart / closure-packet</a></li>

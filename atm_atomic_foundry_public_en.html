@@ -97,9 +97,9 @@
       margin: 0;
     }
     h1 {
-      font-size: clamp(2.2rem, 4vw, 3.4rem);
-      line-height: 1.1;
-      max-width: 14em;
+      font-size: clamp(1.9rem, 2.8vw, 2.8rem);
+      line-height: 1.18;
+      max-width: none;
     }
     h2 {
       font-size: clamp(1.5rem, 2.4vw, 2.2rem);
@@ -697,8 +697,105 @@
         <p>So atom maps are where ATM actually answers "legacy module."<sup><a href="#roadmap-notes">*</a></sup> Atoms (§2) tell you <em>what a piece of code is</em>; maps tell you <em>how a chunk of legacy gets replaced in an orderly, evidence-backed, rollback-safe way</em>. Without the map, you've only pinned cells to a wall. With the map, you have an organ you can actually transplant.</p>
       </section>
 
+      <section class="panel" id="parallel">
+        <h2>4. CID conflict adjudication: the key that actually lets two agents work in parallel</h2>
+        <p>By now we have ID-bearing cells (atoms) and contract-bound organs (maps). But the most important question in real multi-agent dev hasn't been answered yet: <strong>given two task cards, how does the framework decide whether they can be run in parallel?</strong></p>
+        <p class="quote">Git solves the physical conflict: you and I edited the same line. CID solves the logical conflict: you and I touched the same contract fingerprint. Neither can substitute for the other — you need both.</p>
+
+        <h3>4.1 Why "same file blocks" is the wrong question</h3>
+        <p>Traditional collaboration tools detect conflicts on one signal: did two people touch the same file? That's fine for IDE-level pairing, but with five agents in one monorepo it fails in two ways:</p>
+        <ul>
+          <li><strong>False positives</strong>: two agents edit different functions inside <code>tasks.ts</code> — logically independent, but serialized into "same file, must wait."</li>
+          <li><strong>False negatives</strong>: two agents touch different files but change the same generator's or validator's public contract — Git sees no conflict, deployment blows up.</li>
+        </ul>
+        <p>ATM's answer: <strong>demote "file overlap" to a fallback signal and promote "CID match" to the primary one</strong>. Same file isn't a conflict. <strong>Same CID is the conflict.</strong></p>
+
+        <h3>4.2 Eight verdicts</h3>
+        <p>Given tasks A and B, the parallel conflict advisor emits one of eight verdicts (ordered by severity):</p>
+        <table>
+          <thead><tr><th>Verdict</th><th>Meaning</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><code>parallel-safe</code></td><td>Different CIDs, no file overlap, no shared surface</td><td>✅ Both agents work independently; framework stays out of the way</td></tr>
+            <tr><td><code>needs-physical-split</code></td><td>Different CIDs but overlapping file ranges</td><td>🔄 Parallel-OK; routed to deterministic composer or Neutral Write Steward</td></tr>
+            <tr><td><code>blocked-cid-conflict</code></td><td>Same <code>atom_cid</code></td><td>❌ Real semantic conflict — serialize or escalate to Captain</td></tr>
+            <tr><td><code>blocked-shared-generator</code></td><td>Same code generator</td><td>❌ Split the atom or serialize</td></tr>
+            <tr><td><code>blocked-shared-validator</code></td><td>Same validator</td><td>❌ Same as above</td></tr>
+            <tr><td><code>blocked-shared-projection</code></td><td>Same view / index</td><td>❌ Same as above</td></tr>
+            <tr><td><code>blocked-shared-artifact</code></td><td>Same output artifact</td><td>❌ Same as above</td></tr>
+            <tr><td><code>blocked-active-lease</code></td><td>Already held by an active lease</td><td>❌ Wait for release or change scope</td></tr>
+          </tbody>
+        </table>
+
+        <figure class="figure-card" data-figure-name="atm-cid-parallel-verdict">
+          <div class="figure-actions">
+            <button type="button" data-download-svg>Download SVG</button>
+            <button type="button" data-download-png>Download PNG</button>
+          </div>
+          <svg viewBox="0 0 1120 420" role="img" aria-label="Three main verdicts from the CID conflict advisor">
+            <defs>
+              <marker id="pcArrowEn" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+                <path d="M0 0 L12 6 L0 12 z" fill="#465464"/>
+              </marker>
+            </defs>
+            <rect width="1120" height="420" rx="24" fill="#fffaf2"/>
+            <g transform="translate(60,160)">
+              <rect width="180" height="100" rx="20" fill="#16222d"/>
+              <text x="90" y="42" text-anchor="middle" fill="#fffaf2" font-size="18" font-weight="700">Task A + Task B</text>
+              <text x="90" y="68" text-anchor="middle" fill="#a9c2d3" font-size="12" font-family="monospace">atom_cid + file range</text>
+              <text x="90" y="86" text-anchor="middle" fill="#a9c2d3" font-size="12" font-family="monospace">+ shared surfaces</text>
+            </g>
+            <g transform="translate(310,148)">
+              <rect width="220" height="124" rx="22" fill="#0d7a73"/>
+              <text x="110" y="40" text-anchor="middle" fill="#fffaf2" font-size="18" font-weight="700">Parallel Conflict</text>
+              <text x="110" y="62" text-anchor="middle" fill="#fffaf2" font-size="18" font-weight="700">Advisor</text>
+              <text x="110" y="92" text-anchor="middle" fill="#a9e0d6" font-size="12" font-family="monospace">atm tasks parallel</text>
+              <text x="110" y="108" text-anchor="middle" fill="#a9e0d6" font-size="12" font-family="monospace">--task A --with B</text>
+            </g>
+            <g transform="translate(620,60)">
+              <rect width="440" height="80" rx="18" fill="#eaf7f4" stroke="#9bd0ca" stroke-width="2"/>
+              <text x="20" y="32" fill="#085d58" font-size="16" font-weight="700">✅ parallel-safe</text>
+              <text x="20" y="56" fill="#3c5f6e" font-size="13">Different CIDs, no file overlap, no shared surface</text>
+              <text x="20" y="72" fill="#3c5f6e" font-size="13">→ both agents write in parallel; framework stays out</text>
+            </g>
+            <g transform="translate(620,170)">
+              <rect width="440" height="80" rx="18" fill="#fbf0e9" stroke="#e1b98f" stroke-width="2"/>
+              <text x="20" y="32" fill="#8d4f15" font-size="16" font-weight="700">🔄 needs-physical-split</text>
+              <text x="20" y="56" fill="#3c5f6e" font-size="13">Different CIDs but overlapping file ranges</text>
+              <text x="20" y="72" fill="#3c5f6e" font-size="13">→ parallel-OK; merge via deterministic composer</text>
+            </g>
+            <g transform="translate(620,280)">
+              <rect width="440" height="80" rx="18" fill="#f6edf2" stroke="#c89aaf" stroke-width="2"/>
+              <text x="20" y="32" fill="#8f425e" font-size="16" font-weight="700">❌ blocked-cid-conflict</text>
+              <text x="20" y="56" fill="#3c5f6e" font-size="13">Same atom_cid (true semantic conflict)</text>
+              <text x="20" y="72" fill="#3c5f6e" font-size="13">→ serialize, Captain arbitration, or split the atom</text>
+            </g>
+            <line x1="240" y1="210" x2="310" y2="210" stroke="#465464" stroke-width="3" marker-end="url(#pcArrowEn)"/>
+            <path d="M530 210 C 580 210, 580 100, 620 100" fill="none" stroke="#465464" stroke-width="3" marker-end="url(#pcArrowEn)"/>
+            <line x1="530" y1="210" x2="620" y2="210" stroke="#465464" stroke-width="3" marker-end="url(#pcArrowEn)"/>
+            <path d="M530 210 C 580 210, 580 320, 620 320" fill="none" stroke="#465464" stroke-width="3" marker-end="url(#pcArrowEn)"/>
+            <text x="560" y="382" text-anchor="middle" font-size="13" fill="#465464" font-family="monospace">Five more blocked-shared-* / blocked-active-lease verdicts cover generator / validator / projection / artifact / lease.</text>
+          </svg>
+          <figcaption>Figure 4: The advisor's three main paths. The middle one, <code>needs-physical-split</code>, is where CID gets smarter than "same file = locked" — the physical layer goes to Git, the logical layer goes to CID, and the two tracks run in parallel.</figcaption>
+          <div class="copy-status" aria-live="polite"></div>
+        </figure>
+
+        <h3>4.3 Not just "blocked" — also "here's how to split"</h3>
+        <p>When the verdict is <code>blocked-cid-conflict</code> or <code>needs-physical-split</code>, the advisor doesn't just say ❌ and walk away. It emits a <strong>merge plan</strong> that contains:</p>
+        <ul>
+          <li><strong>Reason</strong>: which CID, which shared generator, which artifact actually collides</li>
+          <li><strong>Recommended lane</strong>: deterministic composer (ranges are clear, tooling can merge), Neutral Write Steward (both sides have semantic judgment, need a neutral writer), or shared-surface guard (the surface itself needs splitting first)</li>
+          <li><strong>Hotspot report</strong>: how many times this same conflict point has shown up across recent tasks — the higher the count, the more urgent it becomes to split that atom or that file</li>
+          <li><strong>Required evidence</strong>: which validators must pass before close after the merge</li>
+        </ul>
+        <p>The design philosophy: send out the traffic radar first, dispatch the merge mechanic only when two cars actually want the same lane. The framework doesn't drag every task into the shop — it only escalates to serialization or arbitration when a real CID collision is detected.</p>
+
+        <div class="callout">
+          <strong>The key insight</strong>: this is a <strong>logical-layer solution</strong>, not a physical-layer one. Git handles "preserve history, branch, merge fallback, commit, rollback" — physical work. CID handles "do these two changes collide in meaning?" — the contract question. <strong>Without atoms and atom maps, CID has nothing to point at; without CID, parallel multi-agent dev falls back to the dumb "same file = locked" heuristic.</strong> All three layers must show up together to lift parallel agents from "praying nothing collides" into "decidable by computation."<sup><a href="#roadmap-notes">*</a></sup>
+        </div>
+      </section>
+
       <section class="panel" id="roles">
-        <h2>4. The governance skeleton: seven stages + five atoms + the full behavior set</h2>
+        <h2>5. The governance skeleton: seven stages + five atoms + the full behavior set</h2>
         <p>Before we talk about the "brake," we need to look at where the brake is mounted. The foundry's skeleton is not "one agent doing the job end-to-end." It is <strong>a single piece of work split into seven machine-detectable stages</strong>, with two stable outward contracts — <em>atoms</em> and <em>behaviors</em> — strapping every change down. The diagram below is what's actually shipped today (not roadmap):</p>
 
         <figure class="figure-card" data-figure-name="atm-7-stage-lifecycle">
@@ -741,7 +838,7 @@
               <text x="600" y="66" text-anchor="middle" font-size="11" fill="#465464">11 behavior families (plugin-behavior-pack): split / atomize / merge / dedup-merge / compose / evolve / polymorphize / expire / sweep / infect</text>
             </g>
           </svg>
-          <figcaption>Fig. 4: ATM's seven-stage governance lifecycle. Each stage has its own CLI command, its own doctor check, and its own verification contract. The strip at the bottom is the "stable outward governance units": five active atoms (governed tier) handling identity / provisioning / neutrality / fingerprint, plus ten plugin behaviors (plus two capsule-tier helpers: anchorize, promote) — the legal verbs you can apply to atoms.</figcaption>
+          <figcaption>Fig. 5: ATM's seven-stage governance lifecycle. Each stage has its own CLI command, its own doctor check, and its own verification contract. The strip at the bottom is the "stable outward governance units": five active atoms (governed tier) handling identity / provisioning / neutrality / fingerprint, plus ten plugin behaviors (plus two capsule-tier helpers: anchorize, promote) — the legal verbs you can apply to atoms.</figcaption>
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
@@ -778,7 +875,7 @@
       </section>
 
       <section class="panel" id="cid">
-        <h2>5. 5D CID: a multi-dimensional ID card for every atom</h2>
+        <h2>6. 5D CID: a multi-dimensional ID card for every atom</h2>
         <p>This is the heart of the foundry metaphor. <strong>Every atom carries an ID card — a CID (content-addressable identifier).</strong> It is not a fingerprint of "what the code means" (that's something computer science can't actually deliver). It's a fingerprint of <strong>what the atom publicly declares it does</strong>.</p>
         <p><strong>A CID is deterministic</strong> — no source parsing, no AST analysis, no LLM call, no embedding. What it hashes are the contract fields the atom declares for itself (input / output ports, language, performance budget). The same declaration always yields the same card; non-deterministic signals are forbidden from this hash.</p>
         <p>A concrete example. Two agents write a retry helper. The <strong>implementations look completely different</strong>:</p>
@@ -876,7 +973,7 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
             </g>
             <text x="826" y="258" text-anchor="middle" font-size="13" fill="#465464">same contract &rarr; same card</text>
           </svg>
-          <figcaption>Fig. 5: Feed in the atom's declared contract (ports, language, execution constraints). The machine normalizes it, stamps on a SHA256 seal, and emits a CID.Interface. Different implementations are fine — as long as they declare the same outward contract, they receive the same ID card.</figcaption>
+          <figcaption>Fig. 6: Feed in the atom's declared contract (ports, language, execution constraints). The machine normalizes it, stamps on a SHA256 seal, and emits a CID.Interface. Different implementations are fine — as long as they declare the same outward contract, they receive the same ID card.</figcaption>
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
@@ -893,7 +990,7 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
       </section>
 
       <section class="panel" id="permission">
-        <h2>6. Permission is the gear: leases replace folder isolation</h2>
+        <h2>7. Permission is the gear: leases replace folder isolation</h2>
         <p class="quote">Two agents cannot hold the same write key at the same time — this layer stops it before git ever runs.</p>
         <p>The place multi-agent work crashes hardest is "who may write what." The traditional answer is folder permissions or tool allowlists, and both share a flaw: <strong>they are static and don't change with the task</strong>.</p>
         <p>The foundry splits permission into named objects, each with a mode:</p>
@@ -970,7 +1067,7 @@ $ node atm.mjs team lease --agent builder-02 \
               <text x="40" y="25" font-size="12" font-weight="700" fill="#cb7d2e">CONFLICT</text>
             </g>
           </svg>
-          <figcaption>Fig. 6: <code>file.write</code> is a single key. While builder-01 holds it, builder-02 can't even reach it — the conflict is stopped at the permission layer, long before a git merge.</figcaption>
+          <figcaption>Fig. 7: <code>file.write</code> is a single key. While builder-01 holds it, builder-02 can't even reach it — the conflict is stopped at the permission layer, long before a git merge.</figcaption>
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
@@ -979,7 +1076,7 @@ $ node atm.mjs team lease --agent builder-02 \
       </section>
 
       <section class="panel" id="memory">
-        <h2>7. Shared memory: charter is the supreme authority, ATMChart is the runtime brake, closure-packet is the evidence chain</h2>
+        <h2>8. Shared memory: charter is the supreme authority, ATMChart is the runtime brake, closure-packet is the evidence chain</h2>
         <p>The other place multi-AI work tips over is context drift — Agent A told me an assumption, Agent B never heard it, and so B writes code inconsistent with A. By the time you notice, three files are adrift. The foundry doesn't fight this with "prompt reminders." It writes the governance rules into three layers of machine-readable contract:</p>
         <ul>
           <li><strong>Supreme authority = the atomic charter (<code>.atm/charter/atomic-charter.md</code>) + 7 INV-ATM</strong>. The charter is the framework's final arbiter, currently at v2.0.0; INV-ATM-001~007 are immovable red lines, enforced by three mechanisms (gate / doctor / waiver-required). Breaking an invariant cannot be routed around — it must go through the charter waiver flow (<code>behavior.evolve</code> + <code>charterWaiver</code> + <code>HumanReviewDecision</code>).</li>
@@ -1018,7 +1115,7 @@ $ node atm.mjs team lease --agent builder-02 \
       </section>
 
       <section class="panel" id="police">
-        <h2>8. 7 INV-ATM red lines + resident police families: contract brake & structural conscience</h2>
+        <h2>9. 7 INV-ATM red lines + resident police families: contract brake & structural conscience</h2>
         <p class="quote">While you sleep, the patrol keeps walking; the invariants never clock out.</p>
 
         <p>The foundry's "brake" comes in two layers. <strong>The contract-layer brake is the seven INV-ATM red lines</strong> on the charter (public, stable, written into the framework). <strong>The detection-layer brake is the nine resident police families</strong> (advisory, run automatically, report to humans for the verdict). They split labor like this:</p>
@@ -1100,7 +1197,7 @@ $ node atm.mjs team lease --agent builder-02 \
             </g>
             <g transform="translate(920,120)"><rect width="150" height="60" rx="14" fill="#eaf7f4" stroke="#90cbc1"/><text x="75" y="26" text-anchor="middle" font-size="12" font-weight="700" fill="#085d58">emits a finding</text><text x="75" y="46" text-anchor="middle" font-size="11" fill="#3c5f6e">advisory · no touch</text></g>
           </svg>
-          <figcaption>Fig. 7: The police bot walks the registry, spots a cell whose fingerprint is suspiciously close to another, plants a <code>dup?</code> flag, and emits a finding — then stops right there. It only reports; it never merges on its own.</figcaption>
+          <figcaption>Fig. 8: The police bot walks the registry, spots a cell whose fingerprint is suspiciously close to another, plants a <code>dup?</code> flag, and emits a finding — then stops right there. It only reports; it never merges on its own.</figcaption>
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
@@ -1119,7 +1216,7 @@ $ node atm.mjs team lease --agent builder-02 \
       </section>
 
       <section class="panel" id="setup">
-        <h2>9. From git clone to first task close: the minimum adoption path</h2>
+        <h2>10. From git clone to first task close: the minimum adoption path</h2>
         <p>For all of this complexity, the adoption barrier is low. ATM's official distribution unit is a <strong>single-file runner <code>atm.mjs</code></strong> (about 3.1 MB of strip-types bundle, zero transitive deps); deployment is an explicit framework → adopter <em>sync</em>, not <code>npm install</code>. The minimum path from zero to your first closure-packet:</p>
         <pre><code># 0-15 min: get the runner + ORIENT
 # Framework side (onefile is already built):
@@ -1165,7 +1262,7 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
       </section>
 
       <section class="panel" id="fail">
-        <h2>10. Where it tends to fail (and the doctor checks that catch it)</h2>
+        <h2>11. Where it tends to fail (and the doctor checks that catch it)</h2>
         <p>Honestly, the foundry isn't green on the first try. The six scenarios below are the ones I hit most often, and they're also the ones ATM doctor checks name directly. Each maps to a specific check; failure returns a <code>firstFailedCheck</code> with a <code>suggestion</code> — no guesswork needed:</p>
         <div class="split-3">
           <div class="mini-card">
@@ -1197,7 +1294,7 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
       </section>
 
       <section class="panel" id="market">
-        <h2>11. A CID-native atom market: the north star, not next month's release</h2>
+        <h2>12. A CID-native atom market: the north star, not next month's release</h2>
         <p>Everything so far has been about a <strong>single project</strong>. From here on, this is roadmap territory — and I want to draw the line clearly between what this road can actually deliver and what's still north star, so I don't sell empty promises.</p>
         <p>The dominoes line up like this: CID.Interface is deterministic, which means the same outward declaration produces the same CID.Interface regardless of author or project. If ten thousand projects adopt the same governance protocol, each produces a list of CID-bearing atoms. One day in a new project you need <code>idempotent-http-retry-with-jitter</code>:</p>
         <ol>
@@ -1216,7 +1313,7 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
       </section>
 
       <section class="panel" id="closing">
-        <h2>12. Closing</h2>
+        <h2>13. Closing</h2>
         <p>In 2025 everyone competed on "how smart is my AI agent." In 2026 I think the question should change: <strong>when N smart agents edit one repo at once, can that repo stay governable?</strong></p>
         <p>My answer is the foundry + the multi-dimensional ID card + the seven-stage brake. Turn every piece of code into a named cell, every change into a hashed evidence record, write the seven INV-ATM as charter red lines, let the resident police families watch structural health, and pin ORIENT→CLOSURE down as a lifecycle you can't skip. It sounds like a lot of rules, but the payoff is this: <strong>six months later my repo is still readable, still auditable, still reusable — and I can run five agents in parallel without smashing it</strong>.</p>
         <p>If all you want is one small feature, this protocol is overkill. But if you're building something that runs for months, with multiple AIs working in parallel, that may one day face compliance, and whose good atoms you'd like to share with the world — what you need is a foundry like this, with brakes.</p>
@@ -1235,7 +1332,8 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
               <li><strong>The other four CID dimensions</strong> (Strict / Effects / Semantic / Behavior): only Interface is shipped; the rest are proposals. Non-deterministic signals are forever banned from the identity hash.</li>
               <li><strong>Team Agents lane</strong>: the <code>team lease</code> CLI, the permission table (task.lifecycle / git.write / file.write …), 15-role 4-layer collaboration, <code>team-memory-shard.md</code>, and <code>patrol-report.md</code> are all proposals in this lane. Today's lease only uses <code>ScopeLockRecord</code> + INV-ATM-002 — the minimum path. Memory shards and patrol reports are templates; <strong>they are NOT auto-loaded into the next agent's context</strong>. They are git markdown files, to be cited by a human or the Captain when the next task opens.</li>
               <li><strong>Map Replacement Protocol v2-r2</strong>: §3's <code>replacement.legacyUris[]</code>, the five-stage lifecycle (draft → shadow → canary → active → legacy-retired), <code>map-equivalence-report</code>, the <code>create-map</code> / <code>test --equivalence-fixtures</code> / <code>test --propagate</code> CLI, M26 Rescue Police, and M27 Disaster Recovery CLI belong to TASK-MRP-0011~0027 (17 task cards). MRP-0018 / 0021 are done; MRP-0026 is in progress; MRP-0022 (Daemon) / MRP-0024 (Guide Cache) are opt-in, off by default, with a kill switch.</li>
-              <li><strong>CID atom market (§11)</strong>: a cross-organization market is the <strong>north star</strong>. It needs the local layer to mature first, Trust Tier institutionalized, and a zero-trust sandbox shipped. It does not replace npm / Docker — it fills the "function-grain, governed, recomposable" middle layer. <code>infect</code> is always advisory + human-reviewed.</li>
+              <li><strong>Parallel Conflict Advisor (§4)</strong>: the <code>atm tasks parallel</code> CLI, the eight verdicts, and the merge-plan / hotspot reports described in §4 belong to <strong>TASK-CID-0005 (P0 planning-only contract card)</strong>. CID / semanticFingerprint itself is deterministic and already shipped; the advisor's CLI contract is defined and the implementation lands in subsequent AAF target-repo cards. Write Broker / Steward lane integration (TASK-CID-0009~0012) is on the same P0 planning lane.</li>
+              <li><strong>CID atom market (§12)</strong>: a cross-organization market is the <strong>north star</strong>. It needs the local layer to mature first, Trust Tier institutionalized, and a zero-trust sandbox shipped. It does not replace npm / Docker — it fills the "function-grain, governed, recomposable" middle layer. <code>infect</code> is always advisory + human-reviewed.</li>
               <li><strong>Tier 3 evidence</strong>: local sandbox evidence only reaches Tier 2. To climb to Tier 3 / marketplace-grade, a closure must carry an external <code>AttestationProvider</code> signature with verifiable provenance (GitHub Actions is the first reference adapter). Mutation testing and adversarial QA never sit on the synchronous close path — they live in async police.</li>
             </ul>
           </li>
@@ -1285,7 +1383,8 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
         <li><a href="#pain">Four walls of N-AI dev</a></li>
         <li><a href="#metaphor">The atomic foundry</a></li>
         <li><a href="#map">Atom map: replacing legacy</a></li>
-        <li><a href="#roles">7 stages + 5 atoms + 11 behaviors</a></li>
+        <li><a href="#parallel">CID conflict adjudication</a></li>
+        <li><a href="#roles">7 stages + 5 atoms + full behavior set</a></li>
         <li><a href="#cid">5D CID — multi-dim ID card</a></li>
         <li><a href="#permission">Permission as gear</a></li>
         <li><a href="#memory">charter / ATMChart / closure-packet</a></li>
