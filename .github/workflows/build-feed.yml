@@ -1,0 +1,55 @@
+name: Build RSS feed
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "sitemap.xml"
+      - "*.html"
+      - "scripts/build-feed.py"
+      - ".github/workflows/build-feed.yml"
+  workflow_dispatch: {}
+
+# Allow the GITHUB_TOKEN to push back to the repo
+permissions:
+  contents: write
+
+# Avoid two builds racing on the same branch
+concurrency:
+  group: build-feed-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # Skip when the previous commit was authored by this workflow,
+    # otherwise feed.xml updates would trigger an infinite loop.
+    if: "!contains(github.event.head_commit.message, '[skip-feed]')"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # We need full history so the script can read git log dates.
+          fetch-depth: 0
+          # Use the default token; we have contents:write above.
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build feed.xml from sitemap.xml
+        run: python scripts/build-feed.py
+
+      - name: Commit & push if feed.xml changed
+        run: |
+          if git diff --quiet -- feed.xml; then
+            echo "feed.xml unchanged — nothing to commit."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add feed.xml
+          git commit -m "chore(feed): regenerate from sitemap [skip-feed]"
+          git push
