@@ -367,9 +367,10 @@
   <link rel="stylesheet" href="assets/css/dark-override.css">
   <link rel="stylesheet" href="assets/css/article-base.css">
   <style>
-    /* Restore wide desktop width (overrides article-base.css default of 960px) */
+    /* Restore wide desktop width + un-clamp H1 (overrides article-base.css defaults) */
     :root, html, body { --content-width: 1320px !important; }
     .page { width: min(calc(100% - 40px), 1320px); }
+    h1 { max-width: none !important; }
     /* Landscape tablets / small desktop */
     @media (max-width: 1080px) {
       .page { grid-template-columns: 1fr; width: min(calc(100% - 36px), 1320px); }
