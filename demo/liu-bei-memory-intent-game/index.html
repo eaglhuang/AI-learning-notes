@@ -1109,6 +1109,7 @@
       currentBundle: null,
       data: null,
       linkedIndex: null,
+      blockedDirectorPairs: new Set(),
       meters: {
         benevolence: 74,
         bond: 83,
@@ -2759,6 +2760,34 @@
       return `${String(angle || "")}@@${String(targetId || "")}`;
     }
 
+    function isBlockedDirectorPair(angle, targetId) {
+      return state.blockedDirectorPairs.has(pairKey(angle, targetId));
+    }
+
+    function clearBlockedDirectorPair(angle, targetId) {
+      state.blockedDirectorPairs.delete(pairKey(angle, targetId));
+    }
+
+    function shouldRetryDirectorResult(result) {
+      return Boolean(
+        result
+        && !result.ok
+        && ["empty", "timeout", "network", "server", "http"].includes(String(result.kind || "").trim()),
+      );
+    }
+
+    function shouldBlockDirectorPair(result) {
+      return Boolean(result && !result.ok && String(result.kind || "").trim() === "empty");
+    }
+
+    function blockDirectorPair(angle, targetId, result) {
+      if (!shouldBlockDirectorPair(result)) {
+        return false;
+      }
+      state.blockedDirectorPairs.add(pairKey(angle, targetId));
+      return true;
+    }
+
     function buildLinkedDataIndex(data) {
       const targetIds = new Set((data.relationships || []).map((target) => String(target.targetId || "")).filter(Boolean));
       const angleToTargets = new Map();
@@ -2797,12 +2826,12 @@
     }
 
     function getAnglesWithAnyData() {
-      return Object.keys(angleDefinitions).filter((angle) => (state.linkedIndex?.angleToTargets?.get(angle)?.size || 0) > 0);
+      return Object.keys(angleDefinitions).filter((angle) => getAvailableTargetsForAngle(angle).length > 0);
     }
 
     function getTargetsWithAnyData() {
       return (state.data?.relationships || []).filter((target) => {
-        return (state.linkedIndex?.targetToAngles?.get(target.targetId)?.size || 0) > 0;
+        return getAvailableAnglesForTarget(target.targetId).length > 0;
       });
     }
 
@@ -2811,7 +2840,9 @@
       if (!targetSet) {
         return [];
       }
-      return (state.data?.relationships || []).filter((target) => targetSet.has(target.targetId));
+      return (state.data?.relationships || []).filter((target) => {
+        return targetSet.has(target.targetId) && !isBlockedDirectorPair(angle, target.targetId);
+      });
     }
 
     function getAvailableAnglesForTarget(targetId) {
@@ -2819,7 +2850,9 @@
       if (!angleSet) {
         return [];
       }
-      return Object.keys(angleDefinitions).filter((angle) => angleSet.has(angle));
+      return Object.keys(angleDefinitions).filter((angle) => {
+        return angleSet.has(angle) && !isBlockedDirectorPair(angle, targetId);
+      });
     }
 
     function ensureLinkedSelection({ prefer = "angle" } = {}) {
@@ -3371,17 +3404,36 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
         renderSceneDirectorLoading(bundle);
         updateLoadingTimer();
         loadingTimer = window.setInterval(updateLoadingTimer, 1000);
-        const sceneDirectorResult = await requestSceneDirector(bundle, { includeChorus: false });
+        let sceneDirectorResult = await requestSceneDirector(bundle, { includeChorus: false });
         if (isStaleRun()) {
           return;
         }
         if (!sceneDirectorResult) {
           return;
         }
+        if (!sceneDirectorResult.ok && shouldRetryDirectorResult(sceneDirectorResult)) {
+          sceneDirectorResult = await requestSceneDirector(bundle, { includeChorus: false });
+          if (isStaleRun()) {
+            return;
+          }
+          if (!sceneDirectorResult) {
+            return;
+          }
+        }
         if (!sceneDirectorResult.ok) {
+          const pairBlocked = blockDirectorPair(bundle.card?.angle, bundle.target?.targetId, sceneDirectorResult);
+          if (pairBlocked) {
+            ensureLinkedSelection({ prefer: "angle" });
+            renderAngles();
+            renderRelationships();
+            clearSceneOutputsForSelectionChange();
+            return sceneDirectorResult;
+          }
           renderSceneDirectorFailure(bundle, sceneDirectorResult);
           return sceneDirectorResult;
         }
+
+        clearBlockedDirectorPair(bundle.card?.angle, bundle.target?.targetId);
 
         const sceneDirectorPayload = sceneDirectorResult.payload || null;
         bundle.directorPayload = sceneDirectorPayload;
@@ -4081,9 +4133,13 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
     async function fetchNarrativeProfileFromApi(generalId, timeoutMs = DEFAULT_PROFILE_TIMEOUT_MS) {
       const timeout = createTimeoutController(timeoutMs);
       try {
-        const response = await fetch(`${API_BASE}/v1/npc/narrative-profile?generalId=${encodeURIComponent(generalId)}`, {
+        const url = new URL(`${API_BASE}/v1/npc/narrative-profile`);
+        url.searchParams.set("generalId", generalId);
+        url.searchParams.set("cb", String(Date.now()));
+        const response = await fetch(url, {
           headers: createApiHeaders(),
           signal: timeout.signal,
+          cache: "no-store",
         });
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
@@ -4168,6 +4224,7 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       const failed = data?.bootPhase === "failed" || data?.grade === "failed" || data?.sourceMode === "failed";
       state.bootPhase = failed ? "failed" : "ready";
       state.data = data;
+      state.blockedDirectorPairs = new Set();
       state.linkedIndex = buildLinkedDataIndex(data);
       const fallbackName = generalOptionById(currentGeneralId())?.label || currentGeneralId();
       const displayName = data.displayName || fallbackName;
