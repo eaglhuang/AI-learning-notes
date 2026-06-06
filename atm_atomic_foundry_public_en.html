@@ -450,7 +450,7 @@
         <h1>The End of Naked AI Coding: Accelerating Multi-Agent Development with a Deterministic Safety Brake</h1>
         <p class="sub-title">When N Agents Concurrently Mutate a Single Repo: How to Leverage the Atomic Foundry and 5D CID to Forge a Rock-Solid System Governance Foundation.</p>
         <p class="byline">by <strong><a href="https://github.com/eaglhuang" target="_blank" rel="author noopener">Eagl Huang</a></strong><span class="byline-dot">·</span>June 4, 2026<span class="byline-dot">·</span>22 min read</p>
-        <p class="lede">Picture the whole repo as a foundry. Every piece of code an AI writes gets stamped with a <strong>multi-dimensional ID card (5D CID)</strong>, a SHA256 evidence packet you can replay months later, and a <strong>seven-stage lifecycle</strong> running from ORIENT to CLOSURE. What's cast isn't an anonymous diff — it's a cell with a name, a contract, audit trails, and the ability to be reused. <strong>The brake isn't here to slow you down; it's so that running five agents in parallel doesn't smash the project to pieces.</strong></p>
+        <p class="lede">Picture your repo as a foundry. Every piece of code an AI writes gets a name (its <strong>5D CID</strong>), a SHA256 evidence packet you can replay months later, and a seven-stage trip from ORIENT to CLOSURE. What rolls off the line is a cell with a name, a contract, audit trail, and a slot ready to be reused elsewhere. <strong>With this brake in place, you can run five agents in parallel and the repo still holds together.</strong></p>
         <div class="hero-grid">
           <div class="stat-card"><strong>7-stage lifecycle</strong><span>ORIENT → NEXT → LOCK → EXECUTE → EVIDENCE → HANDOFF → CLOSURE. Each stage is doctor-detectable; you can't skip stages.</span></div>
           <div class="stat-card"><strong>5D CID fingerprint</strong><span>Strict / Interface / Effects / Semantic / Behavior. Only Interface ships today; the rest are roadmap, and non-deterministic signals never enter the identity hash.</span></div>
@@ -528,19 +528,19 @@
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
-        <p>Coding with a single AI assistant feels great at first. It fills in files, writes tests, drafts your README — progress without typing. Then you open a few more: one agent on this task, another on that one, a third opening a PR in your editor. You expect 3× the speed; you hit three walls.</p>
-        <p><strong>The first wall is reinvented work.</strong> Agent A writes an HTTP retry helper. Three weeks later Agent B writes an almost identical one in another feature. Two weeks after that, Agent C writes a third. Nobody notices "this already exists semantically," because each agent only sees its own slice.</p>
-        <p><strong>The second wall is scope collisions.</strong> Three agents edit one repo with no mechanism telling them "someone is already touching this file" or "this write permission can go to only one of you this round." You find out at <code>git merge</code> — far too late.</p>
-        <p><strong>The third wall is slow structural decay.</strong> Every feature is correct, yet six months later files keep swelling, <code>tasks.ts</code> grows from 300 lines to 1,500, and nobody is watching for "this file should be split" or "twelve of these thirty atoms are semantic duplicates." Each part is fine; the whole is quietly rotting. This is structural entropy, and it never shows up in any single PR — it's a chronic condition that only time reveals.</p>
-        <p><strong>The fourth wall is the subtlest — no identity.</strong> However beautifully it's written, every snippet an AI produces is an anonymous string that lives only in that project's git history. If a helper in the project next door is semantically identical, the two never know about each other, and the next new project can't recognize either. Every piece of code is an orphan.</p>
+        <p>Coding with a single AI assistant feels great at first. It fills in files, writes tests, drafts your README — progress without typing. Then you open a few more: one agent on this task, another on that one, a third opening a PR in your editor. You expect 3× the speed; you hit four walls.</p>
+        <p><strong>Wall one: reinvented work.</strong> Agent A writes an HTTP retry helper. Three weeks later Agent B writes an almost identical one in another feature. Two weeks after that, Agent C writes a third. Each agent only sees its own slice, so nobody notices "this already exists somewhere."</p>
+        <p><strong>Wall two: scope collisions.</strong> Three agents edit one repo, and no mechanism tells them "someone is already touching this file" or "this write permission only goes to one of you this round." You find out at <code>git merge</code> — far too late.</p>
+        <p><strong>Wall three: slow structural decay.</strong> Every feature is correct, yet six months later files keep swelling: <code>tasks.ts</code> grows from 300 lines to 1,500, and nobody watches for "this file should be split" or "twelve of these thirty atoms are doing the same thing." Each part is fine; the whole is quietly rotting. This is structural entropy — code review can't catch it, it only shows up over time.</p>
+        <p><strong>Wall four is the subtlest — no identity.</strong> However beautifully it's written, every snippet an AI produces is an anonymous string living inside one project's git history. A semantically identical helper in the project next door has no way to find it, and the next new project will reinvent it again. Every piece of code is an orphan.</p>
         <div class="callout">
-          This article is how I answer those four walls. The core is one metaphor: treat the whole repo as a <strong>foundry</strong>. What it casts is not a "diff" but a <strong>code cell with an ID card</strong> — it has a name, a fingerprint, a status, and evidence. It can be governed, audited, and reassembled later.
+          This article is how I answer those four walls. The core is one metaphor: treat the whole repo as a <strong>foundry</strong>. Every casting that comes off the line is a <strong>code cell with an ID card</strong> — name, fingerprint, status, evidence. It can be governed, audited, and reassembled later.
         </div>
       </section>
 
       <section class="panel" id="metaphor">
         <h2>2. The atomic foundry: turning code into cells with identity</h2>
-        <p>The word "atom" means something very specific here. It is not a task, not a commit, not a prompt. It is a <strong>code cell with a spec</strong>:</p>
+        <p>The word "atom" has a specific meaning here. It's not a task, not a commit, not a prompt. It's a <strong>code cell with a spec</strong>:</p>
         <ul>
           <li><strong>It has a name</strong>: every atom has a unique ID, e.g. <code>ATM-MAP-0042</code></li>
           <li><strong>It has a semantic fingerprint</strong>: input signature + output signature + invariants are normalized and SHA256-hashed — that is the CID</li>
@@ -549,7 +549,7 @@
           <li><strong>It has an evidence history</strong>: every change leaves a SHA256 record</li>
           <li><strong>It grows</strong>: it can split, merge, evolve, or go dormant (sweep)</li>
         </ul>
-        <p>In plain terms, here's what an atom looks like in the registry — not a floating snippet, but a record with fields, a fingerprint, and a history:</p>
+        <p>Here's what an atom actually looks like in the registry — a structured record with fields, a fingerprint, and a history:</p>
         <pre><code>{
   "atomId": "ATM-MAP-0042",
   "name": "idempotent-http-retry",
@@ -610,27 +610,27 @@
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
-        <p>So the foundry metaphor is precise. A factory ships finished assemblies; a foundry ships <strong>castings, each stamped with a serial number</strong> — traceable on its own, with its own recipe, ready to flow into the next product. Code should work the same way.</p>
-        <p>Once your repo enters this mode, an AI agent's job becomes "cast a new atom" or "apply a governed transformation to an existing one." It cannot write a floating, identity-less snippet, because the foundry refuses anything without a serial number.</p>
+        <p>The foundry metaphor is precise. A factory ships finished assemblies; a foundry ships <strong>castings, each stamped with a serial number</strong> — traceable on its own, with its own recipe, ready to flow into the next product. Code should work the same way.</p>
+        <p>Once your repo enters this mode, an AI agent's job becomes very simple: "cast a new atom" or "run a governed transformation on an existing one." It can no longer drop floating snippets, because the foundry only accepts things with serial numbers.</p>
       </section>
 
       <section class="panel" id="map">
         <h2>3. Above atoms there's the map: a governance replacement surface for legacy modules</h2>
-        <p>You might be wondering: "OK, every piece of code becomes an ID-bearing cell — but what about that 1500-line legacy <code>checkout.py</code>? If I shred it into 30 atoms, am I done?" Not yet. <strong>Atoms own capability; composition semantics belong to the map.</strong></p>
-        <p class="quote">An atom is a cell; a map is an organ. Without a map, even a perfectly shredded legacy module has no single thing that can stand up and say "I'm the new checkout, retire the old one."</p>
+        <p>You might be wondering: "OK, every piece of code becomes an ID-bearing cell — but what about that 1500-line legacy <code>checkout.py</code>? If I shred it into 30 atoms, am I done?" Almost, but not quite. <strong>Atoms own capability; composition semantics belong to the map.</strong></p>
+        <p class="quote">An atom is a cell; a map is an organ. Even a perfectly shredded legacy module needs a single thing that can stand up and say "I'm the new checkout, the old one can retire now." That thing is the map.</p>
 
         <h3>3.1 Why atom maps exist</h3>
-        <p>The price of slicing finely (§2) is that the integrated entry point is gone. A checkout flow turned into 30 atoms still owes you these answers:</p>
+        <p>Slicing finely (§2) comes with a price: the integrated entry point is gone. A checkout flow turned into 30 atoms still owes you these answers:</p>
         <ul>
           <li>Which atom is the new entry point? Which atoms play <em>entry-adapter</em>, <em>validator</em>, <em>side-effect-adapter</em>?</li>
           <li>Where do <em>data-flow</em> / <em>control-flow</em> / <em>validation</em> edges run between atoms?</li>
           <li>Does it actually behave like the old <code>checkout.py</code>? Which known divergences are acceptable?</li>
           <li>If something goes wrong, is there a clean rollback path back to legacy?</li>
         </ul>
-        <p>None of these can be answered by a single atom, so ATM adds a layer above atoms — the <strong>atomic map</strong>. Its schema is <code>atomic-map.schema.json</code>, and it lives parallel to atoms at <code>atomic_workbench/maps/&lt;mapId&gt;/map.spec.json</code>.</p>
+        <p>A single atom can answer none of these, so ATM adds a layer above atoms — the <strong>atomic map</strong>. Its schema is <code>atomic-map.schema.json</code>, and it lives parallel to atoms at <code>atomic_workbench/maps/&lt;mapId&gt;/map.spec.json</code>.</p>
 
         <h3>3.2 The four replacement contracts</h3>
-        <p>A real map is not just a list of members plus edges. It promises four things — together they form the <strong>governance replacement surface</strong>:</p>
+        <p>A real map goes beyond "a list of members plus edges." It promises four things — together they form the <strong>governance replacement surface</strong>:</p>
         <div class="split">
           <div class="mini-card">
             <h3>Structural semantics</h3>
@@ -692,23 +692,23 @@
             <tr><td><strong>Local volatile</strong></td><td>daemon PID, guide cache</td><td>Off-git by default; safe to delete on corruption</td></tr>
           </tbody>
         </table>
-        <p>Combined with <strong>M26 Rescue Police</strong> and <strong>M27 Disaster Recovery CLI</strong> (two task cards in map-replacement-protocol), this guarantees a golden property: <strong>as long as source-of-truth survives, every registry and derived report can be rebuilt from scratch</strong>. Even if the map has retired legacy and derived data is corrupted, you still have a road back.</p>
+        <p>Combined with <strong>M26 Rescue Police</strong> and <strong>M27 Disaster Recovery CLI</strong> (two task cards in map-replacement-protocol), this guarantees a golden property: <strong>as long as source-of-truth survives, every registry and derived report can be rebuilt from scratch</strong>. Even after a botched retirement or corrupted derived data, you still have a road back.</p>
 
-        <p>So atom maps are where ATM actually answers "legacy module."<sup><a href="#roadmap-notes">*</a></sup> Atoms (§2) tell you <em>what a piece of code is</em>; maps tell you <em>how a chunk of legacy gets replaced in an orderly, evidence-backed, rollback-safe way</em>. Without the map, you've only pinned cells to a wall. With the map, you have an organ you can actually transplant.</p>
+        <p>So atom maps are where ATM truly handles "legacy module."<sup><a href="#roadmap-notes">*</a></sup> Atoms (§2) tell you <em>what a piece of code is</em>; maps tell you <em>how a chunk of legacy gets replaced in an orderly, evidence-backed, rollback-safe way</em>. Without the map, you've only pinned cells to a wall. With the map, you have an organ you can actually transplant.</p>
       </section>
 
       <section class="panel" id="parallel">
         <h2>4. CID conflict adjudication: the key that actually lets two agents work in parallel</h2>
-        <p>By now we have ID-bearing cells (atoms) and contract-bound organs (maps). But the most important question in real multi-agent dev hasn't been answered yet: <strong>given two task cards, how does the framework decide whether they can be run in parallel?</strong></p>
-        <p class="quote">Git solves the physical conflict: you and I edited the same line. CID solves the logical conflict: you and I touched the same contract fingerprint. Neither can substitute for the other — you need both.</p>
+        <p>By now we have ID-bearing cells (atoms) and contract-bound organs (maps). One key question in real multi-agent work still stands: <strong>given two task cards, how does the framework decide whether they can run in parallel?</strong></p>
+        <p class="quote">Git solves the physical conflict: you and I edited the same line. CID solves the logical conflict: you and I touched the same contract fingerprint. They work together; you want both.</p>
 
         <h3>4.1 Why "same file blocks" is the wrong question</h3>
-        <p>Traditional collaboration tools detect conflicts on one signal: did two people touch the same file? That's fine for IDE-level pairing, but with five agents in one monorepo it fails in two ways:</p>
+        <p>Traditional collaboration tools detect conflicts on one signal: did two people touch the same file? Good enough for a pair of humans in an IDE. With five agents in one monorepo it goes wrong in two ways:</p>
         <ul>
-          <li><strong>False positives</strong>: two agents edit different functions inside <code>tasks.ts</code> — logically independent, but serialized into "same file, must wait."</li>
-          <li><strong>False negatives</strong>: two agents touch different files but change the same generator's or validator's public contract — Git sees no conflict, deployment blows up.</li>
+          <li><strong>False positives</strong>: two agents edit different functions inside <code>tasks.ts</code> — logically independent, yet serialized into "same file, must wait."</li>
+          <li><strong>False negatives</strong>: two agents touch different files but both change the public contract of a shared generator or validator. Git sees nothing wrong; deployment blows up.</li>
         </ul>
-        <p>ATM's answer: <strong>demote "file overlap" to a fallback signal and promote "CID match" to the primary one</strong>. Same file isn't a conflict. <strong>Same CID is the conflict.</strong></p>
+        <p>ATM's move: <strong>treat "file overlap" as a secondary signal and put "CID match" in front as the primary one</strong>. Same file is a secondary clue; <strong>the real conflict is when both sides touch the same CID</strong>.</p>
 
         <h3>4.2 Eight verdicts</h3>
         <p>Given tasks A and B, the parallel conflict advisor emits one of eight verdicts (ordered by severity):</p>
@@ -787,16 +787,16 @@
           <li><strong>Hotspot report</strong>: how many times this same conflict point has shown up across recent tasks — the higher the count, the more urgent it becomes to split that atom or that file</li>
           <li><strong>Required evidence</strong>: which validators must pass before close after the merge</li>
         </ul>
-        <p>The design philosophy: send out the traffic radar first, dispatch the merge mechanic only when two cars actually want the same lane. The framework doesn't drag every task into the shop — it only escalates to serialization or arbitration when a real CID collision is detected.</p>
+        <p>The design philosophy: send out the traffic radar first, dispatch the merge mechanic only when two cars actually want the same lane. The framework lets tasks run freely most of the time, escalating to serialization or arbitration only when a real CID collision shows up.</p>
 
         <div class="callout">
-          <strong>The key insight</strong>: this is a <strong>logical-layer solution</strong>, not a physical-layer one. Git handles "preserve history, branch, merge fallback, commit, rollback" — physical work. CID handles "do these two changes collide in meaning?" — the contract question. <strong>Without atoms and atom maps, CID has nothing to point at; without CID, parallel multi-agent dev falls back to the dumb "same file = locked" heuristic.</strong> All three layers must show up together to lift parallel agents from "praying nothing collides" into "decidable by computation."<sup><a href="#roadmap-notes">*</a></sup>
+          <strong>The key insight</strong>: this is a <strong>logical-layer solution</strong>, with Git owning the physical layer. Git takes care of history, branches, merges, commits, rollback. CID takes care of "do these two changes collide in meaning?" — the contract question. <strong>With atoms and atom maps, CID has units to point at; with CID, parallel multi-agent dev lifts from "praying nothing collides" up to "decidable by computation."</strong> All three layers show up together for the brake to really hold.<sup><a href="#roadmap-notes">*</a></sup>
         </div>
       </section>
 
       <section class="panel" id="roles">
         <h2>5. The governance skeleton: seven stages + five atoms + the full behavior set</h2>
-        <p>Before we talk about the "brake," we need to look at where the brake is mounted. The foundry's skeleton is not "one agent doing the job end-to-end." It is <strong>a single piece of work split into seven machine-detectable stages</strong>, with two stable outward contracts — <em>atoms</em> and <em>behaviors</em> — strapping every change down. The diagram below is what's actually shipped today (not roadmap):</p>
+        <p>Before we talk about the "brake," we need to look at where the brake is mounted. The foundry's skeleton splits <strong>one piece of work into seven machine-detectable stages</strong>, and uses two stable outward contracts — <em>atoms</em> and <em>behaviors</em> — to strap every change down. (One agent doing the job end-to-end is the older shape; this one survives N agents better.) The diagram below is what's shipped today:</p>
 
         <figure class="figure-card" data-figure-name="atm-7-stage-lifecycle">
           <div class="figure-actions">
@@ -876,8 +876,8 @@
 
       <section class="panel" id="cid">
         <h2>6. 5D CID: a multi-dimensional ID card for every atom</h2>
-        <p>This is the heart of the foundry metaphor. <strong>Every atom carries an ID card — a CID (content-addressable identifier).</strong> It is not a fingerprint of "what the code means" (that's something computer science can't actually deliver). It's a fingerprint of <strong>what the atom publicly declares it does</strong>.</p>
-        <p><strong>A CID is deterministic</strong> — no source parsing, no AST analysis, no LLM call, no embedding. What it hashes are the contract fields the atom declares for itself (input / output ports, language, performance budget). The same declaration always yields the same card; non-deterministic signals are forbidden from this hash.</p>
+        <p>This is the heart of the foundry metaphor. <strong>Every atom carries an ID card — a CID (content-addressable identifier).</strong> It's a fingerprint of <strong>what the atom publicly declares it does</strong> (not a fingerprint of "what the code means," which computer science still can't actually deliver).</p>
+        <p><strong>A CID is deterministic</strong> — it looks only at what the atom declares for itself (input / output ports, language, performance budget) and skips source parsing, AST analysis, LLM calls, embeddings. The same declaration always yields the same card; non-deterministic signals stay out of this hash.</p>
         <p>A concrete example. Two agents write a retry helper. The <strong>implementations look completely different</strong>:</p>
         <pre><code>// Version A: for-loop
 async function retry(url, opts) { /* ... */ }
@@ -906,9 +906,9 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
 //   A &rarr; sf:sha256:a3f9c2e8…1b40
 //   B &rarr; sf:sha256:a3f9c2e8…1b40   &larr; same CID.Interface
 </code></pre>
-        <p>Notice what's <strong>not</strong> happening: no "effects extraction," no "invariants inferred," no "variable names stripped." The CID doesn't guess what the code does — it reads what the atom <strong>publicly promised</strong> as its interface and execution constraints. Matching declarations → matching hashes → same ID card. This is engineering-tractable, and it's what ATM already runs today.</p>
+        <p>The process skips "effects extraction," "invariant inference," and "variable-name stripping" on purpose. CID reads what the atom <strong>publicly promised</strong> as its interface and execution constraints, rather than guessing. Matching declarations → matching hashes → same ID card. This is engineering-tractable, and it's what ATM runs today.</p>
 
-        <p>Identity actually has five possible dimensions; only <strong>CID.Interface is shipped</strong> right now. The rest are roadmap:</p>
+        <p>Identity has five possible dimensions; only <strong>CID.Interface is shipped</strong> right now. The rest are roadmap:</p>
         <table>
           <thead><tr><th>Dimension</th><th>What it certifies</th><th>Status</th></tr></thead>
           <tbody>
@@ -919,7 +919,7 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
             <tr><td><code>CID.Behavior</code></td><td>Bound to a test-harness id: "indistinguishable under this harness"</td><td>proposed, not built</td></tr>
           </tbody>
         </table>
-        <p>The last three (Effects / Semantic / Behavior) will <strong>never</strong> be mixed into the identity hash — they're advisory, not identity. This firewall is the <strong>determinism axiom</strong>: identity has to be stable, recomputable, and unaffected by model-version drift.</p>
+        <p>The last three (Effects / Semantic / Behavior) stay in advisory land — <strong>never</strong> mixed into the identity hash. This firewall is the <strong>determinism axiom</strong>: identity stays stable, recomputable, and independent of model-version drift.</p>
 
         <figure class="figure-card" data-figure-name="atm-cid-interface-machine">
           <div class="figure-actions">
@@ -985,14 +985,14 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
             <li><strong>Cross-organization atom market</strong> (roadmap, gated by local maturity): see §10 for the honest boundary.</li>
           </ul>
         </div>
-        <p>CIDs also resolve an old question: "how much interface-level duplication does my codebase have?" That used to be fragile static analysis; now that every atom carries a deterministic fingerprint, it's an O(1) lookup. One caveat to be loud about — <strong>matching interface ≠ matching behavior</strong>. The latter belongs to runtime testing (which is where CID.Behavior and the zero-trust sandbox are headed on the roadmap). CID itself only covers the layer of "who declared what contract."</p>
+        <p>CIDs also clear up an old question: "how much interface-level duplication does my codebase have?" That used to be fragile static analysis; with every atom carrying a deterministic fingerprint, it becomes an O(1) lookup. One thing to keep in mind — <strong>matching interface means matching contract, not matching behavior</strong>. Behavior equivalence belongs to runtime testing (which is where CID.Behavior and the zero-trust sandbox are headed on the roadmap). CID itself only covers "who declared what contract."</p>
 
       </section>
 
       <section class="panel" id="permission">
         <h2>7. Permission is the gear: leases replace folder isolation</h2>
         <p class="quote">Two agents cannot hold the same write key at the same time — this layer stops it before git ever runs.</p>
-        <p>The place multi-agent work crashes hardest is "who may write what." The traditional answer is folder permissions or tool allowlists, and both share a flaw: <strong>they are static and don't change with the task</strong>.</p>
+        <p>The place multi-agent work crashes hardest is "who may write what." Traditional answers — folder permissions or tool allowlists — share the same flaw: <strong>they're static and don't track the task</strong>.</p>
         <p>The foundry splits permission into named objects, each with a mode:</p>
         <table>
           <thead>
@@ -1009,7 +1009,7 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
             <tr><td><code>web.download</code></td><td>exclusive</td><td>explicit grant</td><td>download external data or packages</td></tr>
           </tbody>
         </table>
-        <p>An <strong>exclusive permission has only one holder at a time</strong>. When a second agent reaches for it, the framework returns <code>ATM_TEAM_PERMISSION_CONFLICT</code> before git is even involved. Live, it looks like this:</p>
+        <p>An <strong>exclusive permission goes to only one holder at a time</strong>. When a second agent reaches for it, the framework returns <code>ATM_TEAM_PERMISSION_CONFLICT</code> before git is even involved. Live, it looks like this:</p>
         <pre><code>$ node atm.mjs team lease --agent builder-01 \
     --permission file.write --paths "packages/cli/src/commands/**"
 &check; lease granted — file.write &rarr; builder-01
@@ -1077,13 +1077,13 @@ $ node atm.mjs team lease --agent builder-02 \
 
       <section class="panel" id="memory">
         <h2>8. Shared memory: charter is the supreme authority, ATMChart is the runtime brake, closure-packet is the evidence chain</h2>
-        <p>The other place multi-AI work tips over is context drift — Agent A told me an assumption, Agent B never heard it, and so B writes code inconsistent with A. By the time you notice, three files are adrift. The foundry doesn't fight this with "prompt reminders." It writes the governance rules into three layers of machine-readable contract:</p>
+        <p>The other place multi-AI work tips over is context drift — Agent A told me an assumption, Agent B never heard it, and B writes code that doesn't line up with A. By the time you notice, three files have drifted apart. The foundry's response is direct: write the governance rules into three layers of machine-readable contract, and let the machine enforce them on the spot:</p>
         <ul>
           <li><strong>Supreme authority = the atomic charter (<code>.atm/charter/atomic-charter.md</code>) + 7 INV-ATM</strong>. The charter is the framework's final arbiter, currently at v2.0.0; INV-ATM-001~007 are immovable red lines, enforced by three mechanisms (gate / doctor / waiver-required). Breaking an invariant cannot be routed around — it must go through the charter waiver flow (<code>behavior.evolve</code> + <code>charterWaiver</code> + <code>HumanReviewDecision</code>).</li>
           <li><strong>Runtime brake = the ATMChart (<code>.atm/memory/atm-chart.md</code>) SHA256 drift detection</strong>. Not supreme authority, but the lock that catches anyone trying to act on a stale map.</li>
           <li><strong>Evidence chain = closure-packet.v1</strong>. Each close writes to a permanent ledger that you can re-walk command-by-command months later for audit.</li>
         </ul>
-        <p>The next two mechanisms (ATMChart, closure-packet) are spread out below; the seven INV-ATM red lines join the police family discussion in §7.</p>
+        <p>The next two mechanisms (ATMChart, closure-packet) are spread out below; the seven INV-ATM red lines join the police family discussion in the next section.</p>
         <div class="split">
           <div class="mini-card">
             <h3>ATMChart drift detection</h3>
@@ -1094,7 +1094,7 @@ $ node atm.mjs team lease --agent builder-02 \
             <p>Each task writes an <code>atm.closurePacket.v1</code> on close: commitDelta, commandRuns (the SHA256 of each command's stdout/stderr), runnerVersion, teamRunId. Months later you can re-verify whether the recorded output still matches a fresh run. That hash chain is the biggest difference between ATM and a "PR comment."</p>
           </div>
         </div>
-        <p>Opened up, a closure-packet looks like this — it records not "I think I'm done," but "which commands I ran, their exit codes, and the SHA256 of their output":</p>
+        <p>Opened up, a closure-packet looks like this — it records "which commands I ran, their exit codes, and the SHA256 of their output," rather than just an agent saying "I'm done":</p>
         <pre><code>{
   "schemaId": "atm.closurePacket.v1",
   "taskId": "TASK-AAO-0042",
@@ -1110,15 +1110,15 @@ $ node atm.mjs team lease --agent builder-02 \
   "teamRunId": "team-abc123",
   "runnerVersion": "0.1.0"
 }</code></pre>
-        <p>Note how <code>exitCode</code> and <code>stdoutSha256</code> are bound together. An agent cannot pass off an <code>exitCode: 1</code> validator as "passing" — a non-zero exit can only be recorded as a diagnostic, never as a pass. <strong>Evidence cannot lie.</strong></p>
-        <p>Together these two mechanisms guarantee one thing: <strong>no agent can claim "I thought the rule was X."</strong> The rule's version, hash, and supported range are written on the map in plain sight. A stale map gets blocked — there's no pretending you didn't see it.</p>
+        <p>Note how <code>exitCode</code> and <code>stdoutSha256</code> are bound together. An agent trying to pass off an <code>exitCode: 1</code> validator as "passing" gets nowhere — a non-zero exit can only be recorded as a diagnostic, never as a pass. <strong>The evidence speaks for itself.</strong></p>
+        <p>Together these two mechanisms give you one strong guarantee: <strong>the rule's version, hash, and supported range are written on the map in plain sight</strong>. A stale map gets caught the moment an agent tries to act on it — "I thought the rule was X" stops being a valid excuse.</p>
       </section>
 
       <section class="panel" id="police">
         <h2>9. 7 INV-ATM red lines + resident police families: contract brake & structural conscience</h2>
         <p class="quote">While you sleep, the patrol keeps walking; the invariants never clock out.</p>
 
-        <p>The foundry's "brake" comes in two layers. <strong>The contract-layer brake is the seven INV-ATM red lines</strong> on the charter (public, stable, written into the framework). <strong>The detection-layer brake is the nine resident police families</strong> (advisory, run automatically, report to humans for the verdict). They split labor like this:</p>
+        <p>The foundry's "brake" comes in two layers. <strong>The contract-layer brake is the seven INV-ATM red lines</strong> on the charter (public, stable, written into the framework). <strong>The detection-layer brake is the resident police families</strong> (advisory; they run automatically and leave the verdict to humans). They split labor like this:</p>
         <table>
           <thead><tr><th>Red line (INV-ATM-00X)</th><th>Brake type</th><th>Plain meaning</th></tr></thead>
           <tbody>
@@ -1201,7 +1201,7 @@ $ node atm.mjs team lease --agent builder-02 \
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
-        <p>These police share one iron rule: <strong><code>directApplyAllowed: false</code></strong>. They can find problems, suggest routes, and draft plans, but they <strong>never mutate directly</strong>. A finding, opened up, is quite plain — the line that matters is the last one:</p>
+        <p>These police share one iron rule: <strong><code>directApplyAllowed: false</code></strong>. They can find problems, suggest routes, draft plans — and they <strong>always leave the actual change for a human to apply</strong>. A finding, opened up, is quite plain; the line that matters is the last one:</p>
         <pre><code>{
   "policeFamily": "dedup",
   "severity": "advisory",
@@ -1211,13 +1211,13 @@ $ node atm.mjs team lease --agent builder-02 \
   "routeHint": "behavior.dedup-merge",
   "directApplyAllowed": false   // &larr; police only report; acting needs a human
 }</code></pre>
-        <p>Every apply must pass ReviewAdvisory machine-finding + HumanReviewDecision; the human promotion from advisory to blocker is a gate you cannot route around.</p>
-        <p>This is the foundry deliberately refusing "24/7 fully automatic evolution." When N agents are editing the repo at once, dropping in an autonomous refactoring robot is just manufacturing write-write conflict storms. <strong>The value of the police is to see, not to touch.</strong></p>
+        <p>Every apply passes through ReviewAdvisory machine-finding + HumanReviewDecision; the human-led promotion from advisory to blocker is a step the framework keeps in your hands on purpose.</p>
+        <p>The foundry deliberately leaves "24/7 fully automatic evolution" off the table. When N agents are already editing the repo, dropping in an autonomous refactoring robot only manufactures write-write conflict storms. <strong>The police see; the humans touch.</strong></p>
       </section>
 
       <section class="panel" id="setup">
         <h2>10. From git clone to first task close: the minimum adoption path</h2>
-        <p>For all of this complexity, the adoption barrier is low. ATM's official distribution unit is a <strong>single-file runner <code>atm.mjs</code></strong> (about 3.1 MB of strip-types bundle, zero transitive deps); deployment is an explicit framework → adopter <em>sync</em>, not <code>npm install</code>. The minimum path from zero to your first closure-packet:</p>
+        <p>It sounds complex, but the adoption barrier is low. ATM's official distribution unit is a <strong>single-file runner <code>atm.mjs</code></strong> (about 3.1 MB of strip-types bundle, zero transitive deps). Deployment is an explicit framework → adopter <em>sync</em>, which is a different path from <code>npm install</code>. Here's the minimum path from zero to your first closure-packet:</p>
         <pre><code># 0-15 min: get the runner + ORIENT
 # Framework side (onefile is already built):
 #   npm run build  →  release/atm-onefile/atm.mjs (~3.1 MB)
@@ -1258,12 +1258,12 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
           <li>A patrol-report.md recording the structural health at close time<sup><a href="#roadmap-notes">*</a></sup></li>
           <li>A team-memory-shard.md filing this task's lesson, to be re-read by a human or the Captain when opening the next task<sup><a href="#roadmap-notes">*</a></sup></li>
         </ul>
-        <p>The first two are the most direct difference between the foundry and ordinary vibe coding: <strong>you don't just get finished code — you get permanent evidence and a structural snapshot</strong>. The memory shard and patrol report are templates filed into git; they are not auto-injected into the next agent's context.</p>
+        <p>The first two are the most direct difference between the foundry and ordinary vibe coding: <strong>on top of the finished code, you also get permanent evidence and a structural snapshot</strong>. The memory shard and patrol report are templates filed into git, available for a human or the Captain to cite on the next task; the framework itself doesn't auto-inject them into the next agent's context.</p>
       </section>
 
       <section class="panel" id="fail">
         <h2>11. Where it tends to fail (and the doctor checks that catch it)</h2>
-        <p>Honestly, the foundry isn't green on the first try. The six scenarios below are the ones I hit most often, and they're also the ones ATM doctor checks name directly. Each maps to a specific check; failure returns a <code>firstFailedCheck</code> with a <code>suggestion</code> — no guesswork needed:</p>
+        <p>Honestly, the foundry has its share of pitfalls. The six scenarios below are the ones I hit most often; they're also the ones ATM doctor checks name directly. Each maps to a specific check, and on failure it returns a <code>firstFailedCheck</code> plus a <code>suggestion</code> the agent can run as-is — no guesswork:</p>
         <div class="split-3">
           <div class="mini-card">
             <h3>lock-before-edit (INV-ATM-002)</h3>
@@ -1290,13 +1290,13 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
             <p>charter.md and charter-invariants.json are out of sync (charterVersion / lastAmendedAt mismatch). Doctor asks you to align both. This is the health check on the supreme authority itself.</p>
           </div>
         </div>
-        <p>All six share one trait: <strong>they're not framework bugs, they're governance-discipline problems</strong>. The framework provides the interception + structured failure report + ready-to-run fix command, but you have to wire <code>atm doctor</code> into your pre-commit hook / CI step for the brake to keep working while you sleep.</p>
+        <p>All six share one trait: <strong>they're governance-discipline problems, not framework bugs</strong>. The framework already provides the interception, the structured failure report, and the ready-to-run fix command. Wire <code>atm doctor</code> into your pre-commit hook or CI step, and the brake keeps working while you sleep.</p>
       </section>
 
       <section class="panel" id="market">
         <h2>12. A CID-native atom market: the north star, not next month's release</h2>
-        <p>Everything so far has been about a <strong>single project</strong>. From here on, this is roadmap territory — and I want to draw the line clearly between what this road can actually deliver and what's still north star, so I don't sell empty promises.</p>
-        <p>The dominoes line up like this: CID.Interface is deterministic, which means the same outward declaration produces the same CID.Interface regardless of author or project. If ten thousand projects adopt the same governance protocol, each produces a list of CID-bearing atoms. One day in a new project you need <code>idempotent-http-retry-with-jitter</code>:</p>
+        <p>Everything so far has been about a <strong>single project</strong>. From here on it's roadmap territory. I want to draw the line clearly between what this road can deliver and what's still north star, so nobody walks away thinking "next month."</p>
+        <p>The dominoes line up like this: CID.Interface is deterministic, so the same outward declaration produces the same CID.Interface — author and project don't matter. If ten thousand projects adopt the same governance protocol, each produces a list of CID-bearing atoms. One day in a new project you need <code>idempotent-http-retry-with-jitter</code>:</p>
         <ol>
           <li>Locally compute the requirement's CID.Interface prefix</li>
           <li>Query the cross-organization CID index</li>
@@ -1304,27 +1304,27 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
           <li>Each carries its own closure-packet, evidence, clean police record, and declared capabilities (network / file / DB permissions)</li>
           <li>A human reviews → approves → <code>atm infect</code> wires it into your project, building the caller graph against your local contracts</li>
         </ol>
-        <p>What it would fill is a real gap that sits after <strong>npm + Docker Hub + Stack Overflow</strong> and isn't covered by any of them: npm gives you a package but not its internal structure, Stack Overflow gives you a snippet with no audit, Docker gives you an image at far too coarse a grain. <strong>Function-grain, governance-laden, machine-searchable code cells</strong> — yes, this slot deserves to exist.</p>
+        <p>It fills a real gap that lives between <strong>npm + Docker Hub + Stack Overflow</strong>, with none of those covering it: npm hands you a package but not its internals; Stack Overflow hands you a snippet with no audit; Docker hands you an image at far too coarse a grain. <strong>Function-grain, governance-laden, machine-searchable code cells</strong> — this slot deserves to exist.</p>
 
-        <p><strong>A few important boundaries.</strong> A cross-organization market is the last epoch, conditioned on Trust Tier and a zero-trust sandbox landing first. It does <strong>not replace npm or Docker</strong> — it fills the "function-grain, governed, recomposable" gap that those don't cover. <code>infect</code> is always advisory + human-reviewed; nothing auto-wires a stranger's atom into your code.<sup><a href="#roadmap-notes">*</a></sup></p>
+        <p><strong>A few important boundaries.</strong> A cross-organization market is the last epoch, conditioned on Trust Tier and a zero-trust sandbox landing first. It sits alongside <strong>npm and Docker rather than replacing them</strong> — it fills the "function-grain, governed, recomposable" gap that those leave open. <code>infect</code> always runs advisory + human-reviewed; a stranger's atom never auto-wires itself into your code.<sup><a href="#roadmap-notes">*</a></sup></p>
 
-        <p>So, honestly: the CID atom market is the <strong>north star</strong>, not a promised next version. What I'm actually building and can deliver on a sensible timeline is to make CID.Interface + the evidence chain + the patrol police work solidly inside a single project. The market is what naturally emerges when the same protocol gets stretched across organizations — it needs ground beneath it first.</p>
-        <p>Back to the picture I ultimately want to see: <strong>every piece of code an AI writes should be a named, auditable, findable cell — not an orphan living only in my repo</strong>. That doesn't have to wait for the market. It can start with the repo you're already in today, the moment every atom gets a deterministic CID.Interface.</p>
+        <p>So, honestly: the CID atom market is the <strong>north star</strong>, not next-version's promise. What I can deliver on a sensible timeline is making CID.Interface + the evidence chain + the patrol police work solidly inside a single project. The market emerges naturally once the same protocol gets stretched across organizations — it just needs ground beneath it first.</p>
+        <p>Back to the picture I ultimately want to see: <strong>every piece of code an AI writes should be a named, auditable, findable cell instead of an orphan stuck inside one repo</strong>. You don't have to wait for the market to start. It begins in the repo you're already in today, the moment every atom gets a deterministic CID.Interface.</p>
       </section>
 
       <section class="panel" id="closing">
         <h2>13. Closing</h2>
-        <p>In 2025 everyone competed on "how smart is my AI agent." In 2026 I think the question should change: <strong>when N smart agents edit one repo at once, can that repo stay governable?</strong></p>
-        <p>My answer is the foundry + the multi-dimensional ID card + the seven-stage brake. Turn every piece of code into a named cell, every change into a hashed evidence record, write the seven INV-ATM as charter red lines, let the resident police families watch structural health, and pin ORIENT→CLOSURE down as a lifecycle you can't skip. It sounds like a lot of rules, but the payoff is this: <strong>six months later my repo is still readable, still auditable, still reusable — and I can run five agents in parallel without smashing it</strong>.</p>
-        <p>If all you want is one small feature, this protocol is overkill. But if you're building something that runs for months, with multiple AIs working in parallel, that may one day face compliance, and whose good atoms you'd like to share with the world — what you need is a foundry like this, with brakes.</p>
+        <p>In 2025 everyone competed on "how smart is my AI agent." In 2026 the question I want to ask is: <strong>when N smart agents edit one repo at once, does that repo still hold together?</strong></p>
+        <p>My answer is the foundry + the multi-dimensional ID card + the seven-stage brake. Turn every piece of code into a named cell, every change into a hashed evidence record. Pin the seven INV-ATM as charter red lines, keep the resident police families watching structural health, and let ORIENT→CLOSURE run as a lifecycle that won't let you skip stages. A few more rules in exchange for a real payoff: <strong>six months later my repo is still readable, still auditable, still reusable — and five agents in parallel can't smash it</strong>.</p>
+        <p>For a single small feature, this protocol is overkill. For a project that runs for months, has multiple AIs in parallel, may face compliance, and whose good atoms you'd like to share — a foundry with brakes is exactly the right shape.</p>
         <div class="callout">
-          This is an intro. For the actual implementation, API, police-family mechanics, and permission-model details, see <a href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">github.com/eaglhuang/AI-Atomic-Framework</a>. The framework is MIT — the whole protocol can be forked, the governance bundle swapped for your own, or used in part (just the evidence chain, or just ATMChart).
+          This is an intro. For the actual implementation, API, police-family mechanics, and permission-model details, see <a href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">github.com/eaglhuang/AI-Atomic-Framework</a>. The framework is MIT — fork the whole protocol, swap the governance bundle for your own, or use it in part (just the evidence chain, or just ATMChart).
         </div>
       </section>
 
       <section class="panel" id="roadmap-notes">
         <h2>* Notes: roadmap &amp; current implementation status</h2>
-        <p>To keep this article readable, "shipped" and "planned" sit on the same map. Here's the line, drawn cleanly — skim it and come back when you need it.</p>
+        <p>To keep this article readable, "shipped" and "planned" sit on the same map. Here's the line, drawn cleanly — skim it once, come back when you need it.</p>
         <ul>
           <li><strong>Shipped (works once you clone)</strong>: the seven-stage lifecycle + the <code>node atm.mjs</code> onefile runner; CID.Interface (=today's semanticFingerprint); ScopeLock + INV-ATM-002 "lock-before-edit"; <code>closure-packet.v1</code> (with commandRuns SHA256); ATMChart drift detection; the seven INV-ATM red lines; advisory detection for Atomization / Dedup / Demand / Quality / Lifecycle / Rollback / Boundary / Map-Integration police; <code>atomic-map.schema.json</code> v0.1.0 + basic map integration tests.</li>
           <li><strong>Planned (roadmap, marked with <sup>*</sup> in the body)</strong>:

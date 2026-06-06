@@ -450,7 +450,7 @@
         <h1>AI 裸奔時代的終結：幫你的多 AI 加速開發同時加裝安全煞車</h1>
         <p class="sub-title">當 N 個 Agent 同時變更同一個 Repo，如何進駐「原子鑄造廠」，以 5D CID 鍛造穩固的系統治理基石</p>
         <p class="byline">作者 <strong><a href="https://github.com/eaglhuang" target="_blank" rel="author noopener">Eagl Huang</a></strong><span class="byline-dot">·</span>2026 年 6 月 4 日<span class="byline-dot">·</span>約 22 分鐘閱讀</p>
-        <p class="lede">把整個 repo 想像成一座鑄造廠。每段被 AI 寫出來的程式都會領到一張<strong>多維身分證（5D CID）</strong>、一份可被半年後重放的 SHA256 證據包、一條從 ORIENT 走到 CLOSURE 的<strong>七階生命週期</strong>。鑄出來的不是匿名 diff，是有名字、有合約、可被審計與重用的細胞。<strong>煞車不是讓你慢下來，而是讓你同時開五個 Agent 也不會把專案撞爛。</strong></p>
+        <p class="lede">想像你的 repo 是一座鑄造廠。AI 寫出來的每段程式，都會掛上一張身分證（<strong>5D CID</strong>），留下半年後還能重新驗證的 SHA256 證據包，走完從 ORIENT 到 CLOSURE 的<strong>七個階段</strong>。鑄出來的東西有名字、有合約、可以被審計、也可以被別的專案撿去重用。<strong>有了這套煞車，你可以放心同時開五個 Agent 動工，repo 也撐得住。</strong></p>
 <div class="hero-grid">
           <div class="stat-card"><strong>7 階治理生命週期</strong><span>ORIENT → NEXT → LOCK → EXECUTE → EVIDENCE → HANDOFF → CLOSURE。每階可被 doctor 偵測，不能跳階。</span></div>
           <div class="stat-card"><strong>5D CID 指紋</strong><span>Strict / Interface / Effects / Semantic / Behavior 五維度。目前 Interface 已實作，其餘為 roadmap，非確定性訊號永不混進 identity hash。</span></div>
@@ -535,13 +535,13 @@
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
-        <p>剛開始用單一 AI 助手寫程式，體驗會非常爽。它幫你補檔、補測試、補 README，你不用打字也能進度神速。然後你開始多開幾個 AI：Claude Code 處理一張卡、Codex 跑另一張、Copilot 在 IDE 裡開第三條 PR。你以為效率會三倍，結果撞到三面牆。</p>
-        <p><strong>第一面牆是重複造輪。</strong>Agent A 寫了一個 HTTP retry helper，三週後 Agent B 在另一個 feature 又寫了一個幾乎一樣的，再過兩週 Agent C 又寫了第三個。沒有人在看「這段語意上已經存在了」，因為每個 Agent 都只看到自己當下的上下文。</p>
-        <p><strong>第二面牆是 scope 互踩。</strong>三個 Agent 同時改一個 repo，沒有一個機制告訴它們「這個檔案有人正在動」、「這個權限這輪只能給一個人」。等到 git merge 才發現衝突，太晚了。</p>
-        <p><strong>第三面牆是結構慢性衰敗。</strong>每個 feature 都做對了，半年後檔案卻越來越肥，<code>tasks.ts</code> 從 300 行漲到 1500 行，沒有人在看「這個檔案該拆了」、「這 30 個原子裡有 12 個語意重複」。每個局部都對，整體在悄悄崩壞。這是結構熵，從來不會在某一個 PR 裡跳出來，它是時間累積出來的慢性病。</p>
-        <p><strong>第四面牆最隱蔽——沒有身分。</strong>不論你寫的多漂亮，每一段 AI 寫出來的程式碼都是匿名的字串，它只活在那一個專案的 git history 裡。如果隔壁專案的某個 helper 跟它語意上完全一樣，它們不知道彼此存在，下一個新專案也認不出它們。每段程式碼都是孤兒。</p>
+        <p>剛開始用單一 AI 助手寫程式，那體驗真的很爽。它幫你補檔、補測試、補 README，幾乎不用打字進度就飛快。後來你開始多開幾個 AI：Claude Code 處理一張卡、Codex 跑另一張、Copilot 在 IDE 裡開第三條 PR。原本以為效率會三倍，實際上會撞到四面牆。</p>
+        <p><strong>第一面牆是重複造輪。</strong>Agent A 寫了一個 HTTP retry helper，三週後 Agent B 在另一個 feature 又寫了一個幾乎一樣的，再兩週 Agent C 又寫了第三個。每個 Agent 都只看到自己當下的上下文，沒有人有全域視角去發現「這段東西其實已經存在了」。</p>
+        <p><strong>第二面牆是 scope 互踩。</strong>三個 Agent 同時改一個 repo，缺一個機制告訴它們「這個檔案有人正在動」「這個權限這輪只能給一個人」。等到 git merge 才看到衝突，已經太晚。</p>
+        <p><strong>第三面牆是結構慢性衰敗。</strong>每個 feature 都做對了，但半年後檔案還是會越來越肥。<code>tasks.ts</code> 從 300 行長到 1500 行，沒人主動去想「這檔案該拆了吧」「這 30 個原子裡有 12 個其實在做同一件事」。每個局部都對，整體卻在悄悄崩壞。這叫結構熵，平常的 code review 看不見，是時間慢慢累積出來的問題。</p>
+        <p><strong>第四面牆最隱蔽——沒有身分。</strong>就算 AI 寫得再漂亮，每段程式碼都只是一串匿名字串，活在那個專案的 git history 裡。隔壁專案的某個 helper 即使語意一模一樣，兩邊也認不出彼此，下一個新專案更不可能找到它們。每段程式碼都是孤兒。</p>
         <div class="callout">
-          這篇講的就是我怎麼回應這四面牆。核心是一個比喻：把整個 repo 當成<strong>鑄造廠</strong>，鑄出來的不是「diff」，是<strong>有身分證的程式細胞</strong>——它有名字、有指紋、有狀態、有 evidence，可被治理、可被審計、可被未來重新組裝。
+          這篇文章就是在講我怎麼回應這四面牆。核心是一個比喻：把整個 repo 當成<strong>鑄造廠</strong>，每次鑄出來的是<strong>有身分證的程式細胞</strong>——有名字、有指紋、有狀態、有 evidence。它們可以被治理、被審計，未來也可以被重新組合。
         </div>
       </section>
 
@@ -622,27 +622,27 @@
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
-        <p>所以鑄造廠的隱喻是準確的。一座工廠出貨的是組裝好的成品；一座鑄造廠出貨的是每件都帶序號的鑄件。<strong>鑄件可以單獨追溯、單獨入庫、單獨被下一個產品引用。</strong>程式碼也應該如此。</p>
-        <p>當你的 repo 進入這個模式之後，AI Agent 的工作就會變成「鑄造新原子」或「對既有原子做受治理的變換」。它沒有辦法寫一段沒有身分的浮動程式碼，因為鑄造廠不接受沒有序號的東西。</p>
+        <p>鑄造廠這個比喻其實滿準的。一般工廠出貨的是組裝好的成品；鑄造廠出貨的是每件都帶序號的鑄件。<strong>鑄件可以單獨追溯、單獨入庫、單獨被下一個產品引用。</strong>程式碼也該這樣。</p>
+        <p>你的 repo 進入這個模式之後，AI Agent 的工作會變得很單純：要嘛鑄造新原子，要嘛對既有原子做受治理的變換。它寫不出沒身分的浮動程式碼，因為鑄造廠只收有序號的東西。</p>
       </section>
 
       <section class="panel" id="map">
         <h2>3. 原子之上的 map：拆解 legacy 大模組的治理替代表面</h2>
-        <p>講到這裡你可能會問：「OK，每段程式都變成有身分證的細胞，那 <code>checkout.py</code> 這種 1500 行的 legacy 大功能怎麼辦？難道我把它拆成 30 顆 atom 之後就一勞永逸了嗎？」答案是：<strong>還沒</strong>。原子只負責「能力」，<strong>組合語義要交給 map 來承載</strong>。</p>
-        <p class="quote">原子是細胞，map 是器官。沒有 map，legacy 大模組就算被切成 30 顆細胞，也沒有任何一個東西能站出來說「我就是新的 checkout，可以把舊那條退役掉」。</p>
+        <p>看到這裡你可能會想：「OK，每段程式都變成有身分證的細胞了，那 <code>checkout.py</code> 這種 1500 行的 legacy 大功能呢？是不是把它切成 30 顆 atom 就解決了？」很可惜，<strong>還沒</strong>。原子負責的是「單一能力」，<strong>整體怎麼組合起來，要交給 map 來承載</strong>。</p>
+        <p class="quote">原子是細胞，map 是器官。少了 map，就算 legacy 大模組被切成 30 顆漂亮的細胞，也沒有任何一個能站出來說「我就是新的 checkout，舊那條可以退役了」。</p>
 
         <h3>3.1 為什麼需要 atom map</h3>
-        <p>原子（§2）拆得很細的代價是「整體入口不見了」。一個 checkout 流程被拆成 30 顆 atom 之後，你還欠這幾個答案：</p>
+        <p>把原子切得很細，代價是「整體入口不見了」。一個 checkout 流程被拆成 30 顆 atom 之後，下面這幾個問題還是要回答：</p>
         <ul>
           <li>新的 entry point 是哪一顆？哪些 atom 是 entry-adapter、validator、side-effect-adapter？</li>
           <li>data-flow / control-flow / validation 這三種邊在哪幾顆 atom 之間流？</li>
           <li>跑起來和舊的 <code>checkout.py</code> 行為一樣嗎？有哪些已知差異？</li>
           <li>如果不對，可不可以無痛 rollback 回 legacy 路徑？</li>
         </ul>
-        <p>這些問題每一條都不是單顆 atom 能回答的，所以 ATM 在 atom 之上額外多了一層治理單位——<strong>atomic map</strong>。它對應的 schema 是 <code>atomic-map.schema.json</code>，落地路徑與 atom 平行：<code>atomic_workbench/maps/&lt;mapId&gt;/map.spec.json</code>。</p>
+        <p>這些問題單顆 atom 回答不了，所以 ATM 在 atom 之上多加了一層治理單位——<strong>atomic map</strong>。對應的 schema 是 <code>atomic-map.schema.json</code>，存放路徑與 atom 平行：<code>atomic_workbench/maps/&lt;mapId&gt;/map.spec.json</code>。</p>
 
         <h3>3.2 Map 的四個替代契約</h3>
-        <p>一張正式 map 不只是「members 清單 + 連邊」，它對外承諾四件事——這四件事合起來就是<strong>「治理替代表面」（governance replacement surface）</strong>：</p>
+        <p>一張正式 map 比「members 清單 + 連邊」做得更多，它對外給出四個承諾——四件加起來就是<strong>「治理替代表面」（governance replacement surface）</strong>：</p>
         <div class="split">
           <div class="mini-card">
             <h3>結構語義</h3>
@@ -704,26 +704,26 @@
             <tr><td><strong>本機揮發態</strong></td><td>daemon PID、guide cache</td><td>預設不進 git；損壞時直接清除即可</td></tr>
           </tbody>
         </table>
-        <p>這條分類加上 <strong>M26 Rescue Police</strong> 與 <strong>M27 Disaster Recovery CLI</strong>（map-replacement-protocol 的兩張任務卡），保證一條黃金性質：<strong>只要 source-of-truth 還在，所有 registry 與 derived 報告都能從零重建</strong>。換句話說，map 即使把 legacy 拔了、衍生資料壞了，你也不會無路可退。</p>
+        <p>這個分類加上 <strong>M26 Rescue Police</strong> 跟 <strong>M27 Disaster Recovery CLI</strong>（map-replacement-protocol 的兩張任務卡），保證了一個黃金性質：<strong>只要 source-of-truth 還在，所有 registry 與 derived 報告都能從零重建</strong>。也就是說，就算 map 把 legacy 拔了、衍生資料壞了，你永遠都有路可退回安全狀態。</p>
 
-        <p>所以 atom map 才是 ATM 真正回應「legacy 大模組」的那一層。<sup><a href="#roadmap-notes">*</a></sup>原子（§2）回答「這段程式碼是什麼」；map 回答「這一坨 legacy 該怎麼被有秩序、有 evidence、有 rollback 路徑地替換掉」。少了 map，你只是把一堆細胞掛在牆上；有了 map，你才有真正能替換掉舊器官的新器官。</p>
+        <p>所以 atom map 才是 ATM 處理「legacy 大模組」真正的那一層。<sup><a href="#roadmap-notes">*</a></sup>原子（§2）回答「這段程式碼是什麼」；map 回答「這一坨 legacy 要怎麼被有秩序、有 evidence、有 rollback 路徑地替換掉」。少了 map，你只是把一堆細胞掛在牆上；有了 map，才有真正能替換舊器官的新器官。</p>
       </section>
 
       <section class="panel" id="parallel">
         <h2>4. CID 衝突仲裁：讓兩個 Agent 真的能同時動手的關鍵技術</h2>
-        <p>到這裡我們有了「有身分的細胞（atom）」與「有契約的器官（map）」。但實務上多 Agent 同時開發最關鍵的問題還沒回答：<strong>給我兩張任務卡，框架要怎麼判斷它們可不可以平行做？</strong></p>
-        <p class="quote">Git 解決物理衝突：你跟我改了同一行。CID 解決邏輯衝突：你跟我改的是同一個合約指紋。兩者不能互相取代，少一邊都不行。</p>
+        <p>到這裡我們有了「有身分的細胞（atom）」跟「有契約的器官（map）」。但實際多 Agent 同時開發時，最關鍵的一個問題還沒回答：<strong>給我兩張任務卡，框架要怎麼判斷它們能不能同時做？</strong></p>
+        <p class="quote">Git 解決物理衝突：你跟我改了同一行。CID 解決邏輯衝突：你跟我改的是同一個合約指紋。兩個合在一起才完整，少一邊都不夠。</p>
 
         <h3>4.1 為什麼「同檔案就擋」是錯的</h3>
-        <p>傳統多人協作的衝突偵測只看一件事：兩個人有沒有改同一個檔案。這對檔案級 IDE 夠用，但在「同一個 monorepo 跑五個 Agent」的情境會出兩種錯：</p>
+        <p>傳統多人協作的衝突偵測只看一件事：兩個人有沒有改同一個檔案。這對檔案級 IDE 夠用，但「同一個 monorepo 跑五個 Agent」就會出兩種錯：</p>
         <ul>
-          <li><strong>偽陽性（誤擋）</strong>：兩個 Agent 改 <code>tasks.ts</code> 的不同函式——明明邏輯獨立，卻被「同檔」鎖死成序列化。</li>
-          <li><strong>偽陰性（漏擋）</strong>：兩個 Agent 改不同檔，但都動到了同一個 generator 或 validator 的對外契約——Git 看不到衝突，等部署才崩。</li>
+          <li><strong>偽陽性（誤擋）</strong>：兩個 Agent 改 <code>tasks.ts</code> 的不同函式，邏輯獨立，卻被「同檔」鎖死成序列化。</li>
+          <li><strong>偽陰性（漏擋）</strong>：兩個 Agent 改不同檔，但都動到了同一個 generator 或 validator 的對外契約。Git 看不到衝突，等部署才崩。</li>
         </ul>
-        <p>ATM 的回答是：<strong>把「檔案」這個物理層降級成 fallback，把「CID」這個合約層升級成第一信號</strong>。同檔不是衝突，<strong>同一張 CID 才是衝突</strong>。</p>
+        <p>ATM 的做法是：<strong>把「檔案」降級成 fallback，把「CID」升級成第一信號</strong>。檔案重疊只是次要訊號，<strong>真正的衝突是兩邊改到同一張 CID</strong>。</p>
 
         <h3>4.2 八種判定 verdict</h3>
-        <p>給定任務 A 跟任務 B，框架的 parallel conflict advisor 會吐出八種判定之一（依嚴重度排序）：</p>
+        <p>給定任務 A 跟任務 B，框架的 parallel conflict advisor 會回傳八種判定之一（依嚴重度排序）：</p>
         <table>
           <thead><tr><th>判定</th><th>含義</th><th>行為</th></tr></thead>
           <tbody>
@@ -796,24 +796,24 @@
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
-        <h3>4.3 不只是「擋住」，還會建議怎麼拆</h3>
-        <p>判定 <code>blocked-cid-conflict</code> 或 <code>needs-physical-split</code> 時，advisor 不會只回 ❌ 走人，它會吐一份 <strong>merge plan</strong>，內容包括：</p>
+        <h3>4.3 「擋住」之外，還會告訴你怎麼拆</h3>
+        <p>遇到 <code>blocked-cid-conflict</code> 或 <code>needs-physical-split</code>，advisor 會多回一份 <strong>merge plan</strong>，包含：</p>
         <ul>
-          <li><strong>衝突原因</strong>：哪一張 CID、哪一個共享 generator、哪一份 artifact 撞上了</li>
-          <li><strong>建議 lane</strong>：走 deterministic composer（範圍清楚，工具能合）、Neutral Write Steward（雙方都有語意判斷，需中立寫手）、還是 shared-surface guard（先拆表面）</li>
-          <li><strong>hotspot 報告</strong>：這個衝突點在最近 N 張卡裡撞過幾次——撞越多次代表越該優先把那個 atom / 那個檔案拆掉</li>
-          <li><strong>需要的 evidence</strong>：merge 之後要過哪幾個 validator 才能 close</li>
+          <li><strong>衝突原因</strong>：哪一張 CID、哪一個共享 generator、哪一份 artifact 撞上了。</li>
+          <li><strong>建議 lane</strong>：走 deterministic composer（範圍清楚，工具能合）、Neutral Write Steward（雙方都有語意判斷，要找個中立的寫手）、還是 shared-surface guard（要先拆表面）。</li>
+          <li><strong>hotspot 報告</strong>：這個衝突點在最近 N 張卡裡撞過幾次；撞越多次，代表越該優先把那個 atom 或那個檔案拆掉。</li>
+          <li><strong>需要的 evidence</strong>：merge 之後要過哪幾個 validator 才能 close。</li>
         </ul>
-        <p>這就是「先派調度雷達、確認要撞才派合併工」的設計哲學。框架不會把所有任務都拖進大修廠——只有真的撞上同一張 CID，才會升級到序列化或仲裁。</p>
+        <p>這就是「先派調度雷達、確認要撞才派合併工」的設計哲學。框架平常讓任務自由跑，只有真的撞上同一張 CID，才會升級到序列化或仲裁。</p>
 
         <div class="callout">
-          <strong>關鍵洞察</strong>：這是<strong>邏輯層的解法</strong>，不是物理層的解法。Git 處理「保存歷史、分支、merge fallback、commit、rollback」這些物理工作；CID 處理「這兩個改動在語意上撞不撞」這個合約問題。<strong>少了 atom 和 atom map，CID 沒有可以指向的單位；少了 CID，多 Agent 平行只能退回到「同檔就鎖」的笨方法</strong>——這就是為什麼這三層必須一起出現，才能真的把多 Agent 並行從「祈禱不撞」升級成「可被計算判定」。<sup><a href="#roadmap-notes">*</a></sup>
+          <strong>關鍵洞察</strong>：這是<strong>邏輯層的解法</strong>，物理層交給 Git。Git 處理「保存歷史、分支、merge、commit、rollback」這些；CID 處理「這兩個改動在語意上會不會撞」這個合約問題。<strong>有了 atom 跟 atom map，CID 才有可以指向的單位；有了 CID，多 Agent 並行才能從「祈禱不撞」升級到「可以計算判定」</strong>。三層一起出現，整套煞車才真的成立。<sup><a href="#roadmap-notes">*</a></sup>
         </div>
       </section>
 
       <section class="panel" id="roles">
         <h2>5. 治理骨架：七階生命週期 + 五個原子 + 完整行為集合</h2>
-        <p>講「煞車」之前要先講「煞車裝在哪」。鑄造廠的骨架不是「派一個 Agent 從頭做到尾」，而是<strong>把一次完整工作拆成七個可被機器偵測的階段</strong>，並在每階段用「原子（atom）」與「行為（behavior）」這兩個對外穩定的合約來綁住變動。下面這張圖是現況實作（不是 roadmap）：</p>
+        <p>講「煞車」之前要先講「煞車裝在哪」。鑄造廠的骨架不是「派一個 Agent 從頭做到尾」，而是<strong>把一次完整工作切成七個機器能偵測的階段</strong>，再用「原子（atom）」跟「行為（behavior）」這兩個對外穩定的合約綁住每一次變動。下面這張圖是目前已經跑起來的實作：</p>
 
         <figure class="figure-card" data-figure-name="atm-7-stage-lifecycle">
           <div class="figure-actions">
@@ -894,9 +894,9 @@
 
       <section class="panel" id="cid">
         <h2>6. 5D CID：給每個原子的多維身分證</h2>
-        <p>這是整個鑄造廠隱喻的核心。<strong>每個 atom 都有一張身分證——CID（content-addressable identifier）</strong>。它不是「程式語意」的指紋（那是計算機科學上做不到的事），而是這個原子<strong>對外宣告的合約指紋</strong>。</p>
-        <p><strong>CID 是確定性的</strong>——不讀原始碼、不解析 AST、不呼叫 LLM、不算 embedding。它 hash 的是 atom 自己宣告出來的合約欄位（input/output ports、語言、效能預算）。同一份宣告永遠得到同一張證；任何非確定性訊號永遠不准進這把雜湊鎖。</p>
-        <p>用一個具體例子走一次。假設兩個 Agent 各寫了一個 retry helper，<strong>實作寫法不同</strong>，但他們<strong>宣告了一樣的對外合約</strong>：</p>
+        <p>這張身分證是整個鑄造廠比喻的核心。<strong>每個 atom 都領一張 CID（content-addressable identifier）</strong>。它不是「程式語意」的指紋（那種東西計算機科學還做不到），而是這個原子<strong>對外宣告的合約指紋</strong>。</p>
+        <p><strong>CID 是確定性的</strong>——只看 atom 自己宣告的合約欄位（input/output ports、語言、效能預算），跳過原始碼解析、AST、LLM、embedding。同樣的宣告永遠算出同一張證；任何會飄移的訊號都被擋在門外。</p>
+        <p>用一個例子走一次。假設兩個 Agent 各寫了一個 retry helper，<strong>實作寫法不同</strong>，但<strong>對外宣告的合約是一樣的</strong>：</p>
         <pre><code>// 寫法 A：for 迴圈
 async function retry(url, opts) { /* ... */ }
 
@@ -923,9 +923,9 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
 // 因為兩個 atom 宣告的合約一致，所以：
 //   A → sf:sha256:a3f9c2e8…1b40
 //   B → sf:sha256:a3f9c2e8…1b40   ← 同一張 CID.Interface</code></pre>
-        <p>注意這裡<strong>沒有</strong>「抽 effects」、「抽 invariants」、「砍變數名」這種事。CID 不去推測程式碼在做什麼，它只看 atom 自己<strong>明文承諾</strong>了什麼介面與執行約束。介面一致 → 雜湊一致 → 同一張身分證——這是工程上可實現的，也是目前 ATM 已經在跑的。</p>
+        <p>注意這個過程<strong>跳過了</strong>「抽 effects」「抽 invariants」「砍變數名」這些猜測動作。CID 不去推程式碼在做什麼，只看 atom 自己<strong>明文承諾</strong>了什麼介面跟執行約束。介面一致 → 雜湊一致 → 同一張身分證——工程上做得出來，目前 ATM 也已經在跑。</p>
 
-        <p>身分這件事其實有五個維度，目前只有 <strong>CID.Interface 已經實作</strong>，其餘四個是 roadmap 提案：</p>
+        <p>身分這件事一共有五個維度，目前只有 <strong>CID.Interface 已經實作</strong>，其餘四個是 roadmap 上的提案：</p>
         <table>
           <thead><tr><th>維度</th><th>它認證什麼</th><th>狀態</th></tr></thead>
           <tbody>
@@ -936,7 +936,7 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
             <tr><td><code>CID.Behavior</code></td><td>綁 test harness id：「在這組測試下不可區分」</td><td>提案，未實作</td></tr>
           </tbody>
         </table>
-        <p>後三個（Effects / Semantic / Behavior）<strong>永遠</strong>不會混進 identity hash——它們是 advisory，不是身分。這條防火牆叫<strong>確定性原則</strong>：身分必須穩定、可重算、不隨模型版本飄移。</p>
+        <p>後三個（Effects / Semantic / Behavior）<strong>永遠</strong>留在 advisory 層，<strong>不會</strong>混進 identity hash。這條防火牆叫<strong>確定性原則</strong>：身分必須穩定、可重算、跟模型版本無關。</p>
 
         <figure class="figure-card" data-figure-name="atm-cid-interface-machine">
           <div class="figure-actions">
@@ -1008,15 +1008,15 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
             <li><strong>跨組織原子市場</strong>（roadmap，需先把本地端跑成熟）：見最後一段「§10」的誠實邊界。</li>
           </ul>
         </div>
-        <p>CID 順便解決了一個老問題：「我這個 codebase 有多少地方對外介面其實一模一樣？」這以前要靠靜態分析勉強猜，現在因為每個 atom 都帶確定性指紋，變成一個 O(1) 查表問題。但要強調——<strong>介面一致 ≠ 行為等價</strong>。後者要靠執行期測試（這就是 roadmap 上 CID.Behavior 與零信任沙盒在做的事），CID 本身只負責「誰宣稱了什麼合約」這一層。</p>
+        <p>CID 順便解決了一個老問題：「我這個 codebase 到底有多少地方的對外介面其實一模一樣？」過去要靠靜態分析勉強猜，現在每個 atom 都帶確定性指紋，這就是個 O(1) 查表的問題。要記得一件事——<strong>介面一致只代表「合約相同」，行為等價要靠執行期測試</strong>（這就是 roadmap 上 CID.Behavior 跟零信任沙盒要做的事）。CID 本身只負責「誰宣稱了什麼合約」這一層。</p>
 
       </section>
 
       <section class="panel" id="permission">
         <h2>7. 權限就是裝備：lease 取代資料夾隔離</h2>
         <p class="quote">兩個 Agent 不可能同時拿到同一張寫入權，因為這層在 git 之前就攔下來了。</p>
-        <p>多 Agent 並行最容易撞牆的地方是「誰可以寫什麼」。傳統做法是用資料夾權限或工具白名單，但這兩種方式都有同一個問題：<strong>它們是靜態的，不會隨著任務變化</strong>。</p>
-        <p>鑄造廠的做法是把權限拆成命名物件，每個都有 mode 屬性：</p>
+        <p>多 Agent 並行最容易撞牆的地方就是「誰可以寫什麼」。傳統做法是用資料夾權限或工具白名單，但兩個方式都有同一個問題：<strong>它們是靜態的，跟著任務跑不動</strong>。</p>
+        <p>鑄造廠的做法是把權限拆成有名字的物件，每個都有 mode 屬性：</p>
         <table>
           <thead>
             <tr><th>權限</th><th>模式</th><th>誰預設拿</th><th>意義</th></tr>
@@ -1032,7 +1032,7 @@ const cidInterface = "sf:sha256:" + sha256(canonicalize(spec));
             <tr><td><code>web.download</code></td><td>exclusive</td><td>顯式授權</td><td>下載外部資料或套件</td></tr>
           </tbody>
         </table>
-        <p><strong>exclusive 權限同一時間只能有一個持有者</strong>。第二個 Agent 要拿，框架直接回 <code>ATM_TEAM_PERMISSION_CONFLICT</code> 錯誤碼，連 git 都還沒跑。實際跑起來長這樣：</p>
+        <p><strong>exclusive 權限同一時間只給一個人</strong>。第二個 Agent 要拿，框架直接回 <code>ATM_TEAM_PERMISSION_CONFLICT</code> 錯誤碼，連 git 都還沒跑就被擋了。實際跑起來長這樣：</p>
         <pre><code>$ node atm.mjs team lease --agent builder-01 \
     --permission file.write --paths "packages/cli/src/commands/**"
 ✓ lease granted — file.write → builder-01
@@ -1100,19 +1100,19 @@ $ node atm.mjs team lease --agent builder-02 \
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
-        <p>權限可以轉交，但必須走 <code>team lease</code> 與 <code>team release</code> CLI，每一次轉交都留時間戳、agentId、權限範圍。這份 lease 履歷會跟著 closure-packet 一起進入永久證據。</p>
+        <p>權限可以轉交，但要走 <code>team lease</code> 跟 <code>team release</code> CLI，每次轉交都留下時間戳、agentId、權限範圍。這份 lease 履歷會跟著 closure-packet 一起寫進永久證據。</p>
 
       </section>
 
       <section class="panel" id="memory">
         <h2>8. 共享記憶：charter 是最高權威、ATMChart 是執行期煞車、closure-packet 是證據鏈</h2>
-        <p>多 AI 協作最容易翻車的另一個點是「上下文漂移」——Agent A 跟我講過一個假設，Agent B 進場時不知道，於是寫出來的程式碼跟 A 不一致。等發現時，三個檔案都飄在四處。鑄造廠的對策不是「靠 prompt 提醒」，而是把治理規則寫成三層被機器讀的合約：</p>
+        <p>多 AI 協作另一個容易翻車的地方是「上下文漂移」——Agent A 跟我講過一個假設，Agent B 進場時並不知道，於是寫出來的程式碼跟 A 的版本對不上。等發現時，三個檔案已經飄向四個方向。鑄造廠的對策很直接：把治理規則寫成三層機器能讀的合約，由它們在現場把關：</p>
         <ul>
           <li><strong>最高權威 = atomic charter（<code>.atm/charter/atomic-charter.md</code>）+ 7 條 INV-ATM</strong>。Charter 是 framework 的最終裁判，當前版本 v2.0.0；INV-ATM-001~007 是不可逾越的紅線（由 gate / doctor / waiver-required 三種機制執行）。違反 invariant 不能繞過，必須走 charter waiver 流程（<code>behavior.evolve</code> + <code>charterWaiver</code> + <code>HumanReviewDecision</code>）。</li>
           <li><strong>執行期煞車 = ATMChart（<code>.atm/memory/atm-chart.md</code>）的 SHA256 drift detection</strong>。它不是最高權威，但它是「拿著過期地圖會被當場攔下」的那把鎖。</li>
           <li><strong>證據鏈 = closure-packet.v1</strong>。每次 close 寫入永久 ledger，可被半年後 audit 逐條重放。</li>
         </ul>
-        <p>下面把後兩個機制（ATMChart、closure-packet）攤開講；7 條 INV-ATM 留到 §7 跟警察家族一起講。</p>
+        <p>下面先把後兩個機制（ATMChart、closure-packet）攤開講；7 條 INV-ATM 留到下一節跟警察家族一起講。</p>
         <div class="split">
           <div class="mini-card">
             <h3>ATMChart 漂移偵測</h3>
@@ -1123,7 +1123,7 @@ $ node atm.mjs team lease --agent builder-02 \
             <p>每張卡 close 時寫入 <code>atm.closurePacket.v1</code>：commitDelta、commandRuns（每條指令的 stdout/stderr SHA256）、runnerVersion、teamRunId。半年後你可以重新驗證「當時跑的指令輸出，跟今天重跑是否一致」。這條 hash chain 就是 ATM 跟「PR 註解」最大的差別。</p>
           </div>
         </div>
-        <p>一份 closure-packet 攤開來長這樣——它記的不是「我覺得我做完了」，而是「我跑了哪些指令、各自的退出碼、輸出的 SHA256 是多少」：</p>
+        <p>一份 closure-packet 攤開來長這樣——它記的是「我跑了哪些指令、各自的退出碼、輸出的 SHA256 是多少」，而不只是 Agent 自己說「做完了」：</p>
         <pre><code>{
   "schemaId": "atm.closurePacket.v1",
   "taskId": "TASK-AAO-0042",
@@ -1139,15 +1139,15 @@ $ node atm.mjs team lease --agent builder-02 \
   "teamRunId": "team-abc123",
   "runnerVersion": "0.1.0"
 }</code></pre>
-        <p>注意 <code>exitCode</code> 跟 <code>stdoutSha256</code> 是綁在一起的。Agent 沒辦法把一個 <code>exitCode: 1</code> 的 validator 說成「通過」——退出碼非 0 就只能記成 diagnostic，不能算 pass。<strong>證據不會說謊。</strong></p>
-        <p>這兩個機制合起來提供一個保證：<strong>沒有 Agent 可以宣稱「我以為規則是這樣」</strong>。規則的版本、規則的 hash、規則的支援範圍，都在地圖上明文寫著。地圖過期就會被擋，不可能裝沒看到。</p>
+        <p>注意 <code>exitCode</code> 跟 <code>stdoutSha256</code> 是綁在一起的。Agent 想把 <code>exitCode: 1</code> 的 validator 講成「通過」也辦不到——退出碼只要不是 0，就只能記成 diagnostic，算不了 pass。<strong>證據自己會說話。</strong></p>
+        <p>這兩個機制合起來給了一個強保證：<strong>規則的版本、hash、支援範圍，全都明文寫在地圖上</strong>。Agent 拿著過期地圖會被當場擋下，「我以為規則是這樣」這種辯解再也行不通。</p>
       </section>
 
       <section class="panel" id="police">
         <h2>9. 7 條 INV-ATM 紅線 + 常駐警察家族：合約煞車與結構良心</h2>
         <p class="quote">你睡覺的時候，警察還在巡；invariants 一直釘在那裡，從來沒下班。</p>
 
-        <p>鑄造廠的「煞車」其實分兩層。<strong>合約層的煞車是 charter 上的 7 條 INV-ATM</strong>（公開、穩定、寫進 framework），<strong>偵測層的煞車是 9 個常駐警察家族</strong>（advisory、機器自動跑、報給人類定奪）。它們的分工是：</p>
+        <p>鑄造廠的「煞車」分兩層。<strong>合約層的煞車是 charter 上的 7 條 INV-ATM</strong>（公開、穩定、寫進 framework）；<strong>偵測層的煞車是常駐警察家族</strong>（advisory，機器自動跑，把判斷權留給人類）。它們的分工是：</p>
         <table>
           <thead><tr><th>合約紅線（INV-ATM-00X）</th><th>對應煞車類型</th><th>白話意義</th></tr></thead>
           <tbody>
@@ -1236,7 +1236,7 @@ $ node atm.mjs team lease --agent builder-02 \
           <div class="copy-status" aria-live="polite"></div>
         </figure>
 
-        <p>這些警察有一個共同的鐵律：<strong><code>directApplyAllowed: false</code></strong>。它們可以發現問題、可以建議路徑、可以產出 plan draft，但<strong>它們永遠不會直接 mutate</strong>。一筆 finding 攤開來其實很樸素，重點是最後那一行：</p>
+        <p>這些警察都共用一條鐵律：<strong><code>directApplyAllowed: false</code></strong>。它們可以發現問題、建議方向、產出 plan draft，但<strong>動手的事永遠交給人類</strong>。一筆 finding 攤開來其實很樸素，重點在最後那一行：</p>
         <pre><code>{
   "policeFamily": "dedup",
   "severity": "advisory",
@@ -1246,13 +1246,13 @@ $ node atm.mjs team lease --agent builder-02 \
   "routeHint": "behavior.dedup-merge",
   "directApplyAllowed": false   // ← 警察只通報，動手要人類批准
 }</code></pre>
-        <p>所有 apply 都要過 ReviewAdvisory machine-finding + HumanReviewDecision，人類在 advisory 升 blocker 的 promotion 是不可繞過的閘門。</p>
-        <p>這是鑄造廠刻意拒絕「24 小時全自動演進」的設計選擇——當你有 N 個 Agent 同時改 repo 時，再放一個自主重構機器人進來，是在製造寫-寫衝突風暴。<strong>警察的價值是「看見」，不是「動手」。</strong></p>
+        <p>所有 apply 都要經過 ReviewAdvisory machine-finding + HumanReviewDecision。「advisory 升 blocker」這一步固定由人類拍板，框架不會替你決定。</p>
+        <p>鑄造廠刻意把「24 小時全自動演進」收掉——當你已經有 N 個 Agent 同時改 repo 時，再多加一個自主重構機器人只會引爆寫-寫衝突。<strong>警察的價值是「看見」，把「動手」留給人。</strong></p>
       </section>
 
       <section class="panel" id="setup">
         <h2>10. 從 git clone 到第一張卡 close：採用 ATM 的最小路徑</h2>
-        <p>所有這些聽起來很複雜的東西，採用門檻其實不高。ATM 的官方分發單位是<strong>單檔 runner <code>atm.mjs</code></strong>（約 3.1 MB 的 strip-types bundle，無 transitive dep）；部署是「framework 端 push 給 adopter」的顯式 sync，不是 <code>npm install</code>。下面是從 0 到第一張 closure-packet 的最小路徑：</p>
+        <p>聽起來複雜，採用門檻其實不高。ATM 的官方分發單位是<strong>單檔 runner <code>atm.mjs</code></strong>（大約 3.1 MB 的 strip-types bundle，零 transitive dep）。部署走「framework 端顯式 push 給 adopter」的 sync，跟 <code>npm install</code> 是不一樣的路徑。從 0 到第一張 closure-packet 的最小流程如下：</p>
         <pre><code># 0-15 min：取得 runner + ORIENT
 # Framework 端（onefile 已 build 好）：
 #   npm run build  →  release/atm-onefile/atm.mjs（約 3.1 MB）
@@ -1293,12 +1293,12 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
           <li>一份 patrol-report.md，記錄這張卡 close 時的結構健康度<sup><a href="#roadmap-notes">*</a></sup></li>
           <li>一份 team-memory-shard.md，把這次的教訓用模板形式落檔，供下一個人類或 Captain 開卡時主動翻閱<sup><a href="#roadmap-notes">*</a></sup></li>
         </ul>
-        <p>這四樣東西是鑄造廠跟一般 vibe coding 流程最直接的差異：<strong>你不只拿到改完的程式，你還拿到永久證據與結構快照</strong>。memory shard 與 patrol report 不是自動載入下一個 Agent 上下文的「自我演化」記憶，它們就是 git 裡的 markdown，由人類或 Captain 在下次開卡時主動引用。</p>
+        <p>這四樣是鑄造廠跟一般 vibe coding 流程最直接的差異：<strong>除了改完的程式，你還拿到永久證據跟結構快照</strong>。memory shard 跟 patrol report 是 git 裡的 markdown，由人類或 Captain 在下次開卡時主動引用，框架本身不會自動把它們塞進下一個 Agent 的上下文。</p>
       </section>
 
       <section class="panel" id="fail">
         <h2>11. 容易失敗的地方（與對應的 doctor 守則）</h2>
-        <p>誠實講，鑄造廠不是一鍵綠的。下面六個是我最常踩到、也是 ATM doctor 守則直接點名的場景。每一個都對應一條具體的 doctor 檢查，失敗時會回傳 <code>firstFailedCheck</code> 加 <code>suggestion</code>，agent 不需要猜：</p>
+        <p>老實說，鑄造廠也有踩過的坑。下面六個是我最常遇到、ATM doctor 守則直接點名的場景。每一個都對應一條具體的 doctor 檢查，失敗時會回傳 <code>firstFailedCheck</code> 加 <code>suggestion</code>，Agent 直接照著做就行，不用猜：</p>
         <div class="split-3">
           <div class="mini-card">
             <h3>lock-before-edit（INV-ATM-002）</h3>
@@ -1325,13 +1325,13 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
             <p>charter.md 與 charter-invariants.json 不同步（charterVersion / lastAmendedAt 對不上）。Doctor 要求對齊兩端。這是「最高權威」自身的健康檢查。</p>
           </div>
         </div>
-        <p>這六個坑都有一個共同特徵：<strong>它們不是 framework bug，是治理紀律問題</strong>。框架提供攔截機制 + 結構化失敗回報 + 可直接執行的修復指令，但你要把 <code>atm doctor</code> 接進你的 pre-commit hook / CI 步驟，這套煞車才會真正在你睡著時也運作。</p>
+        <p>這六個坑都有一個共同點：<strong>它們是治理紀律問題，不是 framework bug</strong>。框架幫你把攔截機制、結構化失敗回報、可執行的修復指令都備好了；剩下的工作是把 <code>atm doctor</code> 串進你的 pre-commit hook 或 CI 步驟，這樣你睡覺時這套煞車才會一直幫你看著。</p>
       </section>
 
       <section class="panel" id="market">
         <h2>12. CID-Native 原子代碼市場：北極星，不是明天就上線</h2>
-        <p>到目前為止講的都是<strong>單一專案內</strong>怎麼治理。從這裡開始是 roadmap——我想先講清楚這條路真的能走的部分、跟還在 north star 階段的部分，避免賣空頭支票。</p>
-        <p>骨牌可以這樣排：CID.Interface 是確定性的，意思是同一份對外宣告 → 同一張 CID.Interface → 不分作者、不分專案。如果一萬個專案都採用同一套治理協議，每個專案都會產出帶 CID 的 atom 清單。某天你在新專案需要 <code>idempotent-http-retry-with-jitter</code>：</p>
+        <p>前面講的都是<strong>單一專案內</strong>怎麼治理。從這裡開始是 roadmap。我想先講清楚哪一段已經做得到、哪一段還在 north star 階段，免得讓人以為「明天就能用」。</p>
+        <p>骨牌可以這樣排：CID.Interface 是確定性的，同一份對外宣告 → 同一張 CID.Interface → 不分作者、不分專案都會一致。如果一萬個專案都採用同一套治理協議，每個專案都會產出帶 CID 的 atom 清單。哪天你在新專案需要 <code>idempotent-http-retry-with-jitter</code>：</p>
         <ol>
           <li>本地算這個需求的 CID.Interface 前綴</li>
           <li>查跨組織 CID 索引</li>
@@ -1339,27 +1339,27 @@ node atm.mjs tasks close --task &lt;workItemId&gt; --actor codex-main --status d
           <li>每個候選 atom 都帶它自己的 closure-packet、evidence、police clean record、宣告的能力（網路 / 檔案 / DB 權限）</li>
           <li>人類審 → 通過 → <code>atm infect</code> 把它接進你的專案，並依本地契約建立 caller graph</li>
         </ol>
-        <p>它要填的位置是 <strong>npm + Docker Hub + Stack Overflow</strong> 之後一個還沒有人補上的中間層：npm 給你 package 但不告訴你內部結構，Stack Overflow 給你 snippet 但沒有任何 audit，Docker 給你 image 但顆粒太大。<strong>函式級、帶完整治理履歷、可被機器搜尋的程式細胞</strong>——這個空缺確實值得填。</p>
+        <p>它要填的位置是 <strong>npm + Docker Hub + Stack Overflow</strong> 之間一個還沒人補上的中間層：npm 給你 package、看不到內部結構；Stack Overflow 給你 snippet、缺 audit；Docker 給你 image、顆粒又太粗。<strong>函式級、帶完整治理履歷、可被機器搜尋的程式細胞</strong>——這個空缺值得填上去。</p>
 
-        <p><strong>幾個重要邊界</strong>：跨組織市場屬於最後一個 epoch，要先等本地端跑成熟、Trust Tier 與零信任沙盒落地。它<strong>不取代 npm / Docker</strong>，處理的是「函式級 + 被治理 + 可重組」這個顆粒度，是補位。`infect` 永遠是 advisory + 人審，不會自動把陌生原子接進你的程式。<sup><a href="#roadmap-notes">*</a></sup></p>
+        <p><strong>幾個重要邊界</strong>：跨組織市場屬於最後一個 epoch，要先等本地端跑成熟、Trust Tier 跟零信任沙盒落地。它跟 npm / Docker <strong>是補位關係</strong>，處理的是「函式級 + 被治理 + 可重組」這個顆粒度。`infect` 永遠走 advisory + 人審，不會自動把陌生原子接進你的程式。<sup><a href="#roadmap-notes">*</a></sup></p>
 
-        <p>所以我會誠實地說：CID 原子市場是<strong>北極星</strong>，不是承諾的下一個版本。我目前在做的、能在合理時間內交付的，是把單一專案內的 CID.Interface + 證據鏈 + 巡邏警察跑紮實。市場是把同一套協議外推到跨組織時自然會浮現的東西——它要等地基。</p>
-        <p>說回那個我最終想看到的圖像：<strong>AI 寫的每一段程式碼，都應該是有名字、可被審計、可被找到的細胞，而不是只活在我這個 repo 的孤兒。</strong>這件事不需要等市場才能開始——從你今天打開的這個 repo，給每個 atom 一個確定性的 CID.Interface 開始，就是。</p>
+        <p>所以老實說：CID 原子市場是<strong>北極星</strong>，不是下一個版本的承諾。我目前能在合理時間內交付的，是把單一專案內的 CID.Interface + 證據鏈 + 巡邏警察跑紮實。市場是同一套協議外推到跨組織時自然會浮現的東西，要等地基穩了才會出現。</p>
+        <p>說回我最終想看到的畫面：<strong>AI 寫的每一段程式碼，都該是有名字、可被審計、可被找到的細胞，而不只是活在我這個 repo 裡的孤兒。</strong>這件事今天就能開始——從你正在開的這個 repo，給每個 atom 一個確定性的 CID.Interface，就算起點了。</p>
       </section>
 
       <section class="panel" id="closing">
         <h2>13. 結語</h2>
-        <p>2025 年大家在比「我的 AI Agent 有多聰明」。2026 年我覺得該換個題目：<strong>當 N 個聰明的 Agent 同時改一個 repo 時，這個 repo 還能不能保持可治理</strong>。</p>
-        <p>我給自己的答案是鑄造廠 + 五維身分證 + 七階煞車。把每段程式碼變成有名字的細胞、把每次改動變成有 hash 的證據、把 7 條 INV-ATM 寫成 charter 紅線、讓 9 個常駐警察看著結構健康度、把 ORIENT→CLOSURE 釘成不能跳階的生命週期。這套東西聽起來規矩很多，但它的回報是：<strong>半年後我的 repo 還能讀懂、還能被審計、還能被重用——而且我同時開 5 個 Agent 也不會把它撞爛</strong>。</p>
-        <p>如果你只想做一個小 feature，這套協議是 overkill。但如果你要做一個跑半年、多個 AI 並行介入、未來可能要送合規、甚至想把寫過的好 atom 分享給世界的專案——你需要的就是這樣一座有煞車的鑄造廠。</p>
+        <p>2025 年大家在比「我的 AI Agent 有多聰明」。2026 年我覺得題目該換成：<strong>當 N 個聰明的 Agent 同時改一個 repo 時，這個 repo 還撐得住嗎？</strong></p>
+        <p>我給自己的答案是：鑄造廠 + 多維身分證 + 七階煞車。每段程式碼變成有名字的細胞、每次改動留下有 hash 的證據、7 條 INV-ATM 釘成 charter 紅線、常駐警察家族盯著結構健康度、ORIENT→CLOSURE 走成不能跳階的生命週期。規矩多了一點，回報很實在：<strong>半年後我的 repo 還讀得懂、查得到、能被重用——而且我同時開 5 個 Agent，它也撐得住</strong>。</p>
+        <p>如果只是要做一個小 feature，這套協議確實 overkill。但你的專案要跑半年、多個 AI 同時介入、未來要送合規，甚至想把寫過的好 atom 分享出去——這時候就會需要一座有煞車的鑄造廠。</p>
         <div class="callout">
-          這篇是入門介紹。如果你想看具體實作、API、police family 機制、權限模型細節，可以看 <a href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">github.com/eaglhuang/AI-Atomic-Framework</a>。框架本身是 MIT，整套治理協議可以直接 fork、可以替換成自己的 governance bundle、也可以只用其中一部分（例如只接證據鏈、只接 ATMChart）。
+          這篇是入門介紹。想看具體實作、API、police family 機制、權限模型細節，可以看 <a href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">github.com/eaglhuang/AI-Atomic-Framework</a>。框架本身是 MIT，整套治理協議可以直接 fork、替換成你自己的 governance bundle，或者只挑其中一部分用（例如只接證據鏈，只接 ATMChart）。
         </div>
       </section>
 
       <section class="panel" id="roadmap-notes">
         <h2>* 註：roadmap 與目前實作狀態</h2>
-        <p>這篇文章為了好讀，把「已實作」與「規劃中」的東西放在同一張地圖上講。下面把分界一次補清楚——你大致掃過就好，需要的時候再回頭查。</p>
+        <p>這篇文章為了好讀，把「已實作」跟「規劃中」放在同一張地圖上講。下面把分界一次補清楚——掃過去就好，要查的時候再回來看。</p>
         <ul>
           <li><strong>已實作（你 clone 下來就能跑）</strong>：七階生命週期 + <code>node atm.mjs</code> onefile runner、CID.Interface（=現況 semanticFingerprint）、ScopeLock + INV-ATM-002「lock-before-edit」、<code>closure-packet.v1</code>（含 commandRuns SHA256）、ATMChart drift detection、七條 INV-ATM 紅線、Atomization / Dedup / Demand / Quality / Lifecycle / Rollback / Boundary / Map-Integration 等警察家族 advisory 偵測、<code>atomic-map.schema.json</code> v0.1.0 與 basic map integration test。</li>
           <li><strong>規劃中（roadmap，文章內以 <sup>*</sup> 標註）</strong>：
