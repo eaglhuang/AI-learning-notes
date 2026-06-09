@@ -2057,9 +2057,18 @@
           return null;
         }
         state.sceneDirectorCircuitOpenUntil = 0;
+        // 後端不一定回 storyStatus 欄位（新版只回 dataStatus / isEmpty / beats）。
+        // 接受條件：明確標 isEmpty=true 才當失敗；否則只要有 storyText 或任一 beat 有實質文字就視為 ok。
         const storyStatus = String(payload?.storyStatus || "").trim();
         const storyText = String(payload?.storyText || "").trim();
-        if (storyStatus !== "ok" || !storyText) {
+        const beats = payload?.beats || {};
+        const anyBeatText = ["sceneText", "memoryText", "emotionText", "dialogueText", "intentText"]
+          .some((key) => String(beats[key] || "").trim().length > 0);
+        const explicitlyEmpty = payload?.isEmpty === true
+          || String(payload?.dataStatus || "").trim() === "empty"
+          || storyStatus === "timeout"
+          || storyStatus === "provider_error";
+        if (explicitlyEmpty || (!storyText && !anyBeatText)) {
           return {
             ok: false,
             kind: storyStatus === "timeout"
@@ -2069,7 +2078,7 @@
                 : "empty",
             status: response.status,
             payload,
-            message: `Scene director unavailable: ${storyStatus || "no_data"}`,
+            message: `Scene director unavailable: ${storyStatus || payload?.dataStatus || "no_data"}`,
           };
         }
         return {
@@ -3353,9 +3362,23 @@
     }
 
     function directorStoryStatus(payload) {
+      // 與 requestSceneDirector 的判斷保持一致：
+      // 只在後端明確標 empty / timeout / provider_error 時才當作 no_data。
       const storyStatus = String(payload?.storyStatus || "").trim();
+      if (storyStatus === "timeout" || storyStatus === "provider_error") {
+        return "no_data";
+      }
+      if (payload?.isEmpty === true || String(payload?.dataStatus || "").trim() === "empty") {
+        return "no_data";
+      }
       const storyText = sanitizeDisplayText(payload?.storyText || "", { removeActor: false });
-      return storyStatus === "ok" && storyText ? "ok" : "no_data";
+      if (storyText) {
+        return "ok";
+      }
+      const beats = payload?.beats || {};
+      const anyBeatText = ["sceneText", "memoryText", "emotionText", "dialogueText", "intentText"]
+        .some((key) => String(beats[key] || "").trim().length > 0);
+      return anyBeatText ? "ok" : "no_data";
     }
 
     function directorStatusLabel(payload) {
