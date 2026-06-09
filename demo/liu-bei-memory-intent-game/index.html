@@ -1312,7 +1312,7 @@
         updatePrimaryStartButton();
         pingHealthz();
         try {
-          const data = await loadNarrativeData(generalId, requestToken);
+          const data = await loadNarrativeData(generalId, requestToken, attempt);
           if (requestToken !== state.profileRequestToken) {
             break;
           }
@@ -1368,7 +1368,8 @@
       const requestToken = state.profileRequestToken;
       pingHealthz();
       try {
-        const data = await loadNarrativeData(generalId, requestToken);
+        // 背景刷新允許比較長的等待（不阻塞使用者體驗），直接走階梯最後一段。
+        const data = await loadNarrativeData(generalId, requestToken, PROFILE_TIMEOUT_STAIRCASE_MS.length);
         if (requestToken !== state.profileRequestToken) {
           return;
         }
@@ -4112,7 +4113,16 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
     }
 
 
-    async function loadNarrativeData(generalId = currentGeneralId(), requestToken = state.profileRequestToken) {
+    // 階梯式 timeout：第 1 次短（快路徑），後續長到能扛 onrender 冷啟動（~30-60s）。
+    // 索引超出陣列時用最後一個值。
+    const PROFILE_TIMEOUT_STAIRCASE_MS = [8000, 35000, 35000, 35000, 35000];
+
+    function profileTimeoutForAttempt(attempt) {
+      const index = Math.max(0, (attempt || 1) - 1);
+      return PROFILE_TIMEOUT_STAIRCASE_MS[index] ?? PROFILE_TIMEOUT_STAIRCASE_MS[PROFILE_TIMEOUT_STAIRCASE_MS.length - 1];
+    }
+
+    async function loadNarrativeData(generalId = currentGeneralId(), requestToken = state.profileRequestToken, attempt = 1) {
       const displayName = generalOptionById(generalId)?.label || generalId;
       if (requestToken === state.profileRequestToken) {
         setBootPhase("api_connect", { requestToken, generalId, displayName });
@@ -4121,7 +4131,7 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
         resetStageTexts();
       }
       try {
-        const payload = await fetchNarrativeProfileFromApi(generalId, DEFAULT_PROFILE_TIMEOUT_MS);
+        const payload = await fetchNarrativeProfileFromApi(generalId, profileTimeoutForAttempt(attempt));
         if (requestToken === state.profileRequestToken) {
           setBootPhase("api_parse", { requestToken, generalId, displayName });
           renderAngles();
