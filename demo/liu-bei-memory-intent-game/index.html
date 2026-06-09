@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://threeklife-npc-brain.onrender.com">
   <link rel="icon" href="data:,">
   <title>人物回憶意圖劇場</title>
   <style>
@@ -107,6 +108,53 @@
       color: var(--muted);
       font-size: 13px;
       line-height: 1.55;
+    }
+
+    .start-row {
+      display: flex;
+      justify-content: flex-end;
+      padding: 12px 0 0;
+    }
+
+    .primary-start {
+      height: 50px;
+      width: 240px;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--cinnabar);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: transform 120ms ease, opacity 120ms ease, width 180ms ease, height 180ms ease;
+    }
+
+    .primary-start:hover:not(:disabled) {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .primary-start:active:not(:disabled) {
+      transform: translateY(0);
+      filter: brightness(0.95);
+    }
+
+    .primary-start:disabled {
+      opacity: 0.72;
+      cursor: wait;
+    }
+
+    .primary-start.prominent {
+      width: 280px;
+      height: 56px;
+      font-size: 19px;
+      animation: start-pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes start-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(158, 67, 55, 0.45); }
+      50% { box-shadow: 0 0 0 10px rgba(158, 67, 55, 0); }
     }
 
     .game {
@@ -829,6 +877,10 @@
       </div>
     </header>
 
+    <div class="start-row">
+      <button id="primaryStartButton" class="primary-start prominent" type="button">開始</button>
+    </div>
+
     <section class="game">
       <aside>
         <section class="panel profile">
@@ -967,6 +1019,8 @@
     const DEFAULT_NARRATIVE_TIMEOUT_MS = 16000;
     const DEFAULT_STORY_FUSION_TIMEOUT_MS = 22000;
     const LOADING_MESSAGE = "飛鴿傳書中...";
+    const NARRATIVE_CACHE_PREFIX = "npc-brain:v1:narrative:";
+    const AUTO_FETCH_MAX_ATTEMPTS = 5;
 
     const GENERAL_OPTIONS = [
       { id: "liu-bei", label: "劉備" },
@@ -1013,7 +1067,7 @@
       displayName: "",
       grade: "loading",
       dataMode: "等待服務資料",
-      dataHint: "未收到 npc-brain narrative-profile 資料，暫停播放，等待服務就緒。",
+      dataHint: "載入失敗，請按開始重試",
       sourceMode: "runtime-general-profiles",
       traits: [],
       persona: {
@@ -1042,6 +1096,7 @@
     ]);
 
     const elements = {
+      primaryStartButton: document.getElementById("primaryStartButton"),
       dataModeValue: document.getElementById("dataModeValue"),
       dataModeHint: document.getElementById("dataModeHint"),
       profileName: document.getElementById("profileName"),
@@ -1094,6 +1149,7 @@
       activePerson: "mi-shi",
       auto: false,
       timer: null,
+      selectionAdvanceTimer: null,
       rendering: false,
       renderingRunToken: 0,
       revealToken: 0,
@@ -1109,6 +1165,9 @@
       currentBundle: null,
       data: null,
       linkedIndex: null,
+      autoFetchRunning: false,
+      autoFetchAttempt: 0,
+      autoFetchMax: AUTO_FETCH_MAX_ATTEMPTS,
       blockedDirectorPairs: new Set(),
       meters: {
         benevolence: 74,
@@ -1122,6 +1181,206 @@
     function wait(ms) {
       return new Promise((resolve) => window.setTimeout(resolve, ms));
     }
+
+    function narrativeCacheKey(generalId) {
+      return `${NARRATIVE_CACHE_PREFIX}${generalId}`;
+    }
+
+    function readCachedNarrative(generalId) {
+      try {
+        const raw = window.localStorage.getItem(narrativeCacheKey(generalId));
+        if (!raw) {
+          return null;
+        }
+        const entry = JSON.parse(raw);
+        if (!entry || !entry.payload || typeof entry.payload !== "object") {
+          return null;
+        }
+        const cachedAtLabel = entry.cachedAt
+          ? new Date(entry.cachedAt).toLocaleString("zh-TW")
+          : "未知時間";
+        return {
+          ...entry.payload,
+          dataMode: "離線快取",
+          dataHint: `使用 ${cachedAtLabel} 的快取資料；背景同步中。`,
+          sourceMode: "cache",
+        };
+      } catch (error) {
+        console.warn("narrative cache read failed:", error);
+        return null;
+      }
+    }
+
+    function writeCachedNarrative(generalId, payload) {
+      try {
+        window.localStorage.setItem(narrativeCacheKey(generalId), JSON.stringify({
+          payload,
+          cachedAt: Date.now(),
+        }));
+      } catch (error) {
+        console.warn("narrative cache write failed:", error);
+      }
+    }
+
+    function pingHealthz() {
+      fetch(`${API_BASE}/healthz`, { keepalive: true }).catch(() => {});
+    }
+
+    function isDataEmpty(data) {
+      if (!data) {
+        return true;
+      }
+      const cards = Array.isArray(data.evidenceCards) ? data.evidenceCards : [];
+      const relationships = Array.isArray(data.relationships) ? data.relationships : [];
+      return cards.length === 0 && relationships.length === 0;
+    }
+
+    function isGoodEnough(data) {
+      if (!data || data.grade === "failed" || isDataEmpty(data)) {
+        return false;
+      }
+      const cards = data.evidenceCards || [];
+      const relationships = data.relationships || [];
+      if (cards.length < 3 || relationships.length < 2) {
+        return false;
+      }
+      const relationshipIds = new Set(relationships.map((item) => String(item.targetId || "")).filter(Boolean));
+      const anglesWithTargets = new Set();
+      for (const card of cards) {
+        const angle = String(card.angle || "").trim();
+        if (!angle) {
+          continue;
+        }
+        const relatedTargetIds = Array.isArray(card.relatedTargetIds) ? card.relatedTargetIds : [];
+        if (relatedTargetIds.some((targetId) => relationshipIds.has(String(targetId)))) {
+          anglesWithTargets.add(angle);
+        }
+      }
+      return anglesWithTargets.size >= 2;
+    }
+
+    function updatePrimaryStartButton() {
+      const button = elements.primaryStartButton;
+      if (!button) {
+        return;
+      }
+      if (state.autoFetchRunning) {
+        button.disabled = true;
+        button.classList.remove("prominent");
+        button.textContent = `載入中… (${state.autoFetchAttempt}/${state.autoFetchMax})`;
+        return;
+      }
+      button.disabled = false;
+      if (isDataEmpty(state.data)) {
+        button.classList.add("prominent");
+        button.textContent = "開始";
+        return;
+      }
+      button.classList.remove("prominent");
+      button.textContent = "重新抽一筆";
+    }
+
+    function showStartButtonProminent() {
+      const displayName = generalOptionById(currentGeneralId())?.label || currentGeneralId();
+      applyData({
+        ...EMPTY_NARRATIVE_DATA,
+        displayName,
+        grade: "empty",
+        dataMode: "等待資料",
+        dataHint: "載入失敗，請按開始重試",
+        sourceMode: "empty",
+      });
+      renderAngles();
+      renderRelationships();
+      resetStageTexts();
+      updatePrimaryStartButton();
+    }
+
+    async function startAutoFetchUntilGoodData() {
+      if (state.autoFetchRunning) {
+        return;
+      }
+      state.autoFetchRunning = true;
+      const generalId = currentGeneralId();
+      const requestToken = state.profileRequestToken;
+      let succeeded = false;
+
+      for (let attempt = 1; attempt <= state.autoFetchMax; attempt += 1) {
+        if (requestToken !== state.profileRequestToken) {
+          break;
+        }
+        state.autoFetchAttempt = attempt;
+        updatePrimaryStartButton();
+        pingHealthz();
+        try {
+          const data = await loadNarrativeData(generalId, requestToken);
+          if (requestToken !== state.profileRequestToken) {
+            break;
+          }
+          if (isGoodEnough(data)) {
+            applyData(data);
+            ensureLinkedSelection({ prefer: "angle" });
+            renderMeters();
+            renderAngles();
+            renderRelationships();
+            resetStageTexts();
+            updatePrimaryStartButton();
+            await advanceScene();
+            succeeded = true;
+            break;
+          }
+          if (!isDataEmpty(data)) {
+            applyData(data);
+            renderAngles();
+            renderRelationships();
+            updatePrimaryStartButton();
+          }
+        } catch (error) {
+          console.warn(`auto-fetch attempt ${attempt}/${state.autoFetchMax} failed:`, error);
+        }
+        if (attempt < state.autoFetchMax) {
+          await wait(1500);
+        }
+      }
+
+      if (requestToken === state.profileRequestToken) {
+        if (!succeeded && (isDataEmpty(state.data) || !isGoodEnough(state.data))) {
+          setStatus("中台暫時忙碌", "中台暫時忙碌，請稍後再試");
+        }
+        state.autoFetchRunning = false;
+        state.autoFetchAttempt = 0;
+        updatePrimaryStartButton();
+      }
+    }
+
+    async function revalidateInBackground() {
+      const generalId = currentGeneralId();
+      const requestToken = state.profileRequestToken;
+      pingHealthz();
+      try {
+        const data = await loadNarrativeData(generalId, requestToken);
+        if (requestToken !== state.profileRequestToken) {
+          return;
+        }
+        if (isDataEmpty(data)) {
+          return;
+        }
+        applyData(data);
+        ensureLinkedSelection({ prefer: "angle" });
+        renderMeters();
+        renderAngles();
+        renderRelationships();
+        updatePrimaryStartButton();
+        if (isGoodEnough(data) && state.bootPhase === "ready" && !state.currentBundle) {
+          resetStageTexts();
+          await advanceScene();
+        }
+      } catch (error) {
+        console.warn("background revalidate failed:", error);
+      }
+    }
+
+    pingHealthz();
 
     function escapeHtml(value) {
       return String(value ?? "")
@@ -3561,6 +3820,19 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       }
     }
 
+    function scheduleSceneAdvanceForSelectionChange() {
+      if (state.selectionAdvanceTimer) {
+        window.clearTimeout(state.selectionAdvanceTimer);
+      }
+      state.selectionAdvanceTimer = window.setTimeout(async () => {
+        state.selectionAdvanceTimer = null;
+        if (state.bootPhase !== "ready" || state.rendering) {
+          return;
+        }
+        await advanceScene();
+      }, 0);
+    }
+
     function scheduleAuto() {
       clearAutoTimer();
       if (!state.auto) {
@@ -3641,24 +3913,29 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       state.dialogueAbortController = null;
       state.sceneDirectorAbortController = null;
       state.currentBundle = null;
+      if (state.selectionAdvanceTimer) {
+        window.clearTimeout(state.selectionAdvanceTimer);
+        state.selectionAdvanceTimer = null;
+      }
       elements.sceneTitle.textContent = `角度：${angleDefinitions[state.activeAngle]?.label || ""} / 對象：${activeTarget()?.label || ""}`;
-      elements.sceneNote.textContent = "已切換角度或對象，請按「下一幕」載入新場景。";
+      elements.sceneNote.textContent = "正在為新的角度與互動對象載入場景……";
       elements.sourceBadge.textContent = "";
       elements.sceneMeta.innerHTML = "";
-      elements.sceneText.textContent = "";
-      elements.memoryText.textContent = "";
-      elements.emotionText.textContent = "";
-      elements.dialogueText.textContent = "";
-      elements.intentText.textContent = "";
-      elements.storyText.textContent = "";
-      elements.illustrationPrompt.textContent = "";
-      elements.illustrationHint.textContent = "已切換角度或對象，等待新場景後再生成插圖提示。";
+      elements.sceneText.textContent = "場景資料載入中...";
+      elements.memoryText.textContent = "回憶焦點整理中...";
+      elements.emotionText.textContent = "情緒線索整理中...";
+      elements.dialogueText.textContent = "對話線索整理中...";
+      elements.intentText.textContent = "下一步意圖整理中...";
+      elements.storyText.textContent = "小劇場生成中...";
+      elements.illustrationPrompt.textContent = "載入新場景後會同步更新插圖 prompt。";
+      elements.illustrationHint.textContent = "切換完成後會自動補上新一幕，不必再手動按下一幕。";
       elements.illustrationImage.hidden = true;
       elements.illustrationImage.removeAttribute("src");
-      setIllustrationVisualState("等待下一幕。", { showPlaceholder: true });
+      setIllustrationVisualState("正在載入新場景。", { showPlaceholder: true });
       if (elements.chorusGrid) {
         elements.chorusGrid.innerHTML = "";
       }
+      scheduleSceneAdvanceForSelectionChange();
     }
 
     function resetGame() {
@@ -3729,9 +4006,17 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       renderAngles();
       renderRelationships();
       resetStageTexts();
+      await advanceScene();
     }
 
     function bindEvents() {
+      elements.primaryStartButton?.addEventListener("click", () => {
+        if (state.autoFetchRunning) {
+          return;
+        }
+        ++state.profileRequestToken;
+        startAutoFetchUntilGoodData();
+      });
       elements.speedRange.addEventListener("input", () => {
         state.autoDelayMs = Number(elements.speedRange.value);
         updateSpeedLabel();
@@ -4172,52 +4457,49 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
         if (!hasUsableNarrativeData) {
           throw new Error("Narrative payload is empty.");
         }
-        return normalizeNarrativePayload(payload);
+        const normalized = normalizeNarrativePayload(payload);
+        writeCachedNarrative(generalId, normalized);
+        return normalized;
       } catch (error) {
-        console.warn("narrative-profile fallback:", error);
+        console.warn("narrative-profile fetch failed:", error);
+        const cached = readCachedNarrative(generalId);
+        if (cached) {
+          if (requestToken === state.profileRequestToken) {
+            setBootPhase("ready", { requestToken, generalId, displayName });
+            renderAngles();
+            renderRelationships();
+            resetStageTexts();
+          }
+          return cached;
+        }
         if (requestToken === state.profileRequestToken) {
-          setBootPhase("fallback_connect", { requestToken, generalId, displayName });
+          setBootPhase("failed", { requestToken, generalId, displayName });
           renderAngles();
           renderRelationships();
           resetStageTexts();
         }
-        try {
-          return await loadPublishedRuntimeNarrativeData(generalId, requestToken);
-        } catch (publishedError) {
-          console.warn("published runtime-profile fallback failed:", publishedError);
-          try {
-            if (requestToken === state.profileRequestToken) {
-              setBootPhase("api_connect", { requestToken, generalId, displayName });
-              renderAngles();
-              renderRelationships();
-              resetStageTexts();
-              setStatus("服務暖機中", "備援資料暫不可用，正在重試 NPC Brain 人物檔案。");
-            }
-            const recoveryPayload = await fetchNarrativeProfileFromApi(generalId, PROFILE_RECOVERY_TIMEOUT_MS);
-            if (requestToken === state.profileRequestToken) {
-              setBootPhase("api_parse", { requestToken, generalId, displayName });
-              renderAngles();
-              renderRelationships();
-              resetStageTexts();
-            }
-            const hasUsableRecoveryData = Array.isArray(recoveryPayload.evidenceCards) && recoveryPayload.evidenceCards.length > 0
-              && Array.isArray(recoveryPayload.interactionTargets) && recoveryPayload.interactionTargets.length > 0;
-            if (!hasUsableRecoveryData) {
-              throw new Error("Narrative recovery payload is empty.");
-            }
-            return normalizeNarrativePayload(recoveryPayload);
-          } catch (recoveryError) {
-            console.warn("narrative-profile recovery retry failed:", recoveryError);
-            if (requestToken === state.profileRequestToken) {
-              setBootPhase("failed", { requestToken, generalId, displayName });
-              renderAngles();
-              renderRelationships();
-              resetStageTexts();
-            }
-            return buildNarrativeFailureData(generalId, "人物檔案暫時讀取失敗，請稍後再試。");
-          }
-        }
+        return {
+          ...EMPTY_NARRATIVE_DATA,
+          displayName,
+          grade: "empty",
+          dataMode: "等待資料",
+          dataHint: "載入失敗，請按開始重試",
+          sourceMode: "empty",
+        };
       }
+    }
+
+    function resolveSourceBadge(sourceMode) {
+      if (sourceMode === "cache") {
+        return "快取";
+      }
+      if (sourceMode === "runtime-general-profiles") {
+        return "備援資料";
+      }
+      if (sourceMode === "empty" || sourceMode === "failed") {
+        return "等待資料";
+      }
+      return "API 生成";
     }
 
     function applyData(data) {
@@ -4239,14 +4521,15 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       }
       elements.traitList.innerHTML = (data.traits || []).map((trait) => `<li>${trait}</li>`).join("");
       setStatus(data.dataMode, data.dataHint);
-      elements.sourceBadge.textContent = data.sourceMode === "runtime-general-profiles" ? "備援資料" : "API 生成";
+      elements.sourceBadge.textContent = resolveSourceBadge(data.sourceMode);
       if (elements.chorusHint) {
-        elements.chorusHint.textContent = `可用資料卡 ${data.evidenceCards.length} 張；可互動對象 ${data.relationships.length} 位。`;
+        elements.chorusHint.textContent = `可用資料卡 ${(data.evidenceCards || []).length} 張；可互動對象 ${(data.relationships || []).length} 位。`;
       }
-      if (!failed) {
+      if (!failed && !isDataEmpty(data)) {
         ensureLinkedSelection({ prefer: "angle" });
       }
       updateAngleCoverageNote();
+      updatePrimaryStartButton();
     }
 
     function resetStageTexts() {
@@ -4306,6 +4589,8 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
         return;
       }
       const requestToken = ++state.profileRequestToken;
+      state.autoFetchRunning = false;
+      state.autoFetchAttempt = 0;
       clearAutoTimer();
       state.auto = false;
       state.rendering = false;
@@ -4328,20 +4613,21 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       elements.profileName.textContent = option.label;
       elements.profileGrade.textContent = "loading";
       elements.traitList.innerHTML = "";
-      state.data = { ...EMPTY_NARRATIVE_DATA, displayName: option.label };
-      state.linkedIndex = buildLinkedDataIndex(state.data);
       renderMeters();
       elements.autoButton.textContent = "自動前進";
-      const data = await loadNarrativeData(option.id, requestToken);
-      if (requestToken !== state.profileRequestToken) {
+      pingHealthz();
+      const cached = readCachedNarrative(option.id);
+      if (cached) {
+        applyData(cached);
+        renderAngles();
+        renderRelationships();
+        resetStageTexts();
+        updatePrimaryStartButton();
+        revalidateInBackground();
         return;
       }
-      applyData(data);
-      ensureLinkedSelection({ prefer: "angle" });
-      renderMeters();
-      renderAngles();
-      renderRelationships();
-      resetStageTexts();
+      showStartButtonProminent();
+      startAutoFetchUntilGoodData();
     }
 
     async function init() {
@@ -4353,38 +4639,32 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
         elements.profileName.textContent = generalOptionById(currentGeneralId())?.label || currentGeneralId();
         elements.profileGrade.textContent = "loading";
         renderMeters();
-        const requestToken = ++state.profileRequestToken;
-        const data = await loadNarrativeData(currentGeneralId(), requestToken);
-        if (requestToken !== state.profileRequestToken) {
+        pingHealthz();
+        ++state.profileRequestToken;
+        const cached = readCachedNarrative(currentGeneralId());
+        if (cached) {
+          applyData(cached);
+          renderAngles();
+          renderRelationships();
+          resetStageTexts();
+          updatePrimaryStartButton();
+          revalidateInBackground();
           return;
         }
-        applyData(data);
-        ensureLinkedSelection({ prefer: "angle" });
-        renderMeters();
-        renderAngles();
-        renderRelationships();
-        resetStageTexts();
-        if (state.bootPhase === "ready") {
-          await advanceScene();
-        }
+        showStartButtonProminent();
+        startAutoFetchUntilGoodData();
       } catch (error) {
         console.error(error);
-        applyData(buildNarrativeFailureData(currentGeneralId(), "初始化失敗，暫時等待服務資料回補。"));
-        renderAngles();
-        renderRelationships();
-        resetStageTexts();
-        setStatus("服務待補", "初始化失敗，暫時等待服務資料回補。");
+        showStartButtonProminent();
+        setStatus("中台暫時忙碌", "中台暫時忙碌，請稍後再試");
       }
     }
 
     
     init().catch((error) => {
       console.error(error);
-      applyData({ ...EMPTY_NARRATIVE_DATA });
-      renderAngles();
-      renderRelationships();
-      resetStageTexts();
-      setStatus("服務待補", "初始化失敗，暫時等待服務資料回補。");
+      showStartButtonProminent();
+      setStatus("中台暫時忙碌", "中台暫時忙碌，請稍後再試");
     });
   </script>
 </body>
