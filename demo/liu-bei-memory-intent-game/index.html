@@ -113,7 +113,107 @@
     .start-row {
       display: flex;
       justify-content: flex-end;
+      align-items: flex-start;
+      gap: 12px;
       padding: 12px 0 0;
+    }
+
+    .api-key-box {
+      min-width: 220px;
+    }
+
+    .api-key-box details {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: rgba(255, 252, 245, 0.85);
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    .api-key-box summary {
+      cursor: pointer;
+      color: var(--muted);
+      font-weight: 600;
+      list-style: none;
+    }
+
+    .api-key-box summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .api-key-box summary::before {
+      content: "🔑 ";
+    }
+
+    .api-key-box[data-state="set"] summary {
+      color: var(--jade);
+    }
+
+    .api-key-controls {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .api-key-hint {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .api-key-hint code {
+      font-size: 11px;
+      background: rgba(28, 33, 28, 0.06);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    .api-key-controls input {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      background: #fff;
+    }
+
+    .api-key-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .api-key-actions button {
+      flex: 1;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--cinnabar);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .api-key-actions button.secondary {
+      background: rgba(28, 33, 28, 0.04);
+      color: var(--ink);
+    }
+
+    .api-key-actions button:hover {
+      filter: brightness(1.05);
+    }
+
+    .api-key-status {
+      margin: 0;
+      font-size: 12px;
+      color: var(--jade);
+      min-height: 16px;
+    }
+
+    .api-key-status.error {
+      color: var(--cinnabar);
     }
 
     .primary-start {
@@ -879,6 +979,21 @@
 
     <div class="start-row">
       <button id="primaryStartButton" class="primary-start prominent" type="button">開始</button>
+      <div class="api-key-box" id="apiKeyBox">
+        <details id="apiKeyDetails">
+          <summary id="apiKeySummary">API key：未設定</summary>
+          <div class="api-key-controls">
+            <p class="api-key-hint">scene-director / scene-illustration 需要 <code>NPC_BRAIN_DEPLOY_API_KEY</code>。沒設定時自動走 dialogue fallback。</p>
+            <input id="apiKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="貼上 X-API-Key 值">
+            <div class="api-key-actions">
+              <button id="apiKeySaveButton" type="button">儲存</button>
+              <button id="apiKeyClearButton" type="button" class="secondary">清除</button>
+              <button id="apiKeyShowButton" type="button" class="secondary">顯示</button>
+            </div>
+            <p class="api-key-status" id="apiKeyStatus"></p>
+          </div>
+        </details>
+      </div>
     </div>
 
     <section class="game">
@@ -1095,6 +1210,14 @@
 
     const elements = {
       primaryStartButton: document.getElementById("primaryStartButton"),
+      apiKeyBox: document.getElementById("apiKeyBox"),
+      apiKeyDetails: document.getElementById("apiKeyDetails"),
+      apiKeySummary: document.getElementById("apiKeySummary"),
+      apiKeyInput: document.getElementById("apiKeyInput"),
+      apiKeySaveButton: document.getElementById("apiKeySaveButton"),
+      apiKeyClearButton: document.getElementById("apiKeyClearButton"),
+      apiKeyShowButton: document.getElementById("apiKeyShowButton"),
+      apiKeyStatus: document.getElementById("apiKeyStatus"),
       dataModeValue: document.getElementById("dataModeValue"),
       dataModeHint: document.getElementById("dataModeHint"),
       profileName: document.getElementById("profileName"),
@@ -3997,7 +4120,56 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       await advanceScene();
     }
 
+    function refreshApiKeyUi() {
+      const stored = window.localStorage.getItem("npcBrainApiKey") || "";
+      if (elements.apiKeyBox) {
+        elements.apiKeyBox.setAttribute("data-state", stored ? "set" : "empty");
+      }
+      if (elements.apiKeySummary) {
+        if (stored) {
+          const masked = stored.length <= 6 ? "***" : `${stored.slice(0, 3)}…${stored.slice(-3)}`;
+          elements.apiKeySummary.textContent = `API key：已設定 (${masked})`;
+        } else {
+          elements.apiKeySummary.textContent = "API key：未設定（dialogue fallback 模式）";
+        }
+      }
+      if (elements.apiKeyInput) {
+        elements.apiKeyInput.value = stored;
+      }
+    }
+
+    function bindApiKeyControls() {
+      refreshApiKeyUi();
+      elements.apiKeySaveButton?.addEventListener("click", () => {
+        const value = String(elements.apiKeyInput?.value || "").trim();
+        if (!value) {
+          elements.apiKeyStatus.textContent = "請先輸入 key";
+          elements.apiKeyStatus.classList.add("error");
+          return;
+        }
+        window.localStorage.setItem("npcBrainApiKey", value);
+        elements.apiKeyStatus.textContent = "已儲存，重新載入頁面…";
+        elements.apiKeyStatus.classList.remove("error");
+        setTimeout(() => window.location.reload(), 500);
+      });
+      elements.apiKeyClearButton?.addEventListener("click", () => {
+        window.localStorage.removeItem("npcBrainApiKey");
+        elements.apiKeyStatus.textContent = "已清除，重新載入頁面…";
+        elements.apiKeyStatus.classList.remove("error");
+        setTimeout(() => window.location.reload(), 500);
+      });
+      elements.apiKeyShowButton?.addEventListener("click", () => {
+        if (!elements.apiKeyInput) {
+          return;
+        }
+        const showing = elements.apiKeyInput.type === "text";
+        elements.apiKeyInput.type = showing ? "password" : "text";
+        elements.apiKeyShowButton.textContent = showing ? "顯示" : "隱藏";
+      });
+    }
+
     function bindEvents() {
+      bindApiKeyControls();
       elements.primaryStartButton?.addEventListener("click", () => {
         if (state.autoFetchRunning) {
           return;
