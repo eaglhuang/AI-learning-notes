@@ -3554,6 +3554,66 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
       return result;
     }
 
+    // scene-director 需要 API key，但 /dialogue 是公開的。
+    // 把 5 段（scene / memory / emotion / dialogue / intent）並行呼叫 dialogue 端點，
+    // 把 .text 套進 5 個欄位，作為無 key 環境的可用 fallback。
+    async function renderSceneViaDialogueFallback(bundle, isStaleRun, sceneDirectorResult) {
+      try {
+        const segments = ["scene", "memory", "emotion", "dialogue", "intent"];
+        const results = await Promise.all(segments.map((segment) => requestNarrativeSegment(bundle, segment)));
+        if (isStaleRun()) {
+          return false;
+        }
+        const texts = {};
+        let okCount = 0;
+        segments.forEach((segment, index) => {
+          const payload = results[index];
+          const raw = payload && typeof payload === "object" ? String(payload.text || "").trim() : "";
+          const cleaned = sanitizeDisplayText(raw, { removeActor: segment !== "scene" });
+          texts[segment] = cleaned;
+          if (cleaned) {
+            okCount += 1;
+          }
+        });
+        // 任一段都沒有就視為失敗 → 走原本的 failure render，至少給使用者清楚訊息。
+        if (okCount === 0) {
+          return false;
+        }
+        const fallbackMessage = "暫無資料（dialogue 端點未回傳）";
+        elements.sceneTitle.textContent = bundle.sceneTitle || "未命名場景";
+        elements.sceneNote.textContent = "scene-director 需要 API key，已改用公開 dialogue 端點補齊。";
+        elements.sourceBadge.textContent = "Dialogue Fallback";
+        renderMetaChips([
+          angleDefinitions[bundle?.card?.angle]?.label || "",
+          bundle?.target?.label || "",
+          "dialogue 補幕",
+        ].filter(Boolean));
+        elements.sceneText.textContent = texts.scene || fallbackMessage;
+        elements.memoryText.textContent = texts.memory || fallbackMessage;
+        elements.emotionText.textContent = texts.emotion || fallbackMessage;
+        elements.dialogueText.textContent = texts.dialogue || fallbackMessage;
+        elements.intentText.textContent = texts.intent || fallbackMessage;
+        elements.storyText.textContent = [texts.scene, texts.memory, texts.emotion, texts.dialogue, texts.intent]
+          .filter(Boolean)
+          .join(" ");
+        bundle.runtimeIntentText = texts.intent || texts.scene || "";
+        // 插圖端點同樣需要 key → 直接顯示 prompt，不再嘗試。
+        refreshIllustrationPrompt();
+        elements.illustrationImage.hidden = true;
+        elements.illustrationImage.removeAttribute("src");
+        setIllustrationVisualState("插圖端點需 API key，dialogue fallback 模式下不產生圖像。", { showPlaceholder: true });
+        // 路人對話同樣是 scene-director 範疇 → 清空提示。
+        elements.chorusGrid.innerHTML = "";
+        if (elements.chorusHint) {
+          elements.chorusHint.textContent = "Dialogue fallback 模式下不生成路人台詞。";
+        }
+        return true;
+      } catch (error) {
+        console.warn("dialogue fallback failed:", error);
+        return false;
+      }
+    }
+
     async function playBundle(bundle) {
       state.rendering = true;
       state.revealToken += 1;
@@ -3596,6 +3656,18 @@ ${seedDebug ? `六種子參考：${seedDebug}` : ""}
           }
         }
         if (!sceneDirectorResult.ok) {
+          // scene-director 需要 API key；當回 401（或被 circuit breaker 短時封住）時，
+          // 改用公開的 /dialogue 端點並行補齊 5 段文字，避免畫面卡在 loading。
+          const kind = String(sceneDirectorResult.kind || "").trim();
+          if (kind === "auth" || kind === "circuit_open") {
+            const dialogueOk = await renderSceneViaDialogueFallback(bundle, isStaleRun, sceneDirectorResult);
+            if (isStaleRun()) {
+              return;
+            }
+            if (dialogueOk) {
+              return { ok: true, kind: "dialogue_fallback", status: 200 };
+            }
+          }
           const pairBlocked = blockDirectorPair(bundle.card?.angle, bundle.target?.targetId, sceneDirectorResult);
           if (pairBlocked) {
             ensureLinkedSelection({ prefer: "angle" });
