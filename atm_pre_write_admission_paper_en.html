@@ -328,6 +328,58 @@
       color: var(--ink);
       font-size: 0.96rem;
     }
+    .share-kit {
+      margin-top: 22px;
+    }
+    .share-kit-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .share-preview {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid var(--line);
+    }
+    .share-preview img {
+      width: 100%;
+      display: block;
+      border-radius: 14px;
+      border: 1px solid rgba(25, 36, 47, 0.1);
+      background: white;
+    }
+    .share-note {
+      margin-top: 10px;
+      color: var(--ink-soft);
+      font-size: 0.84rem;
+      line-height: 1.65;
+    }
+    .copy-block {
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid var(--line);
+      padding: 14px 16px;
+    }
+    .copy-block + .copy-block {
+      margin-top: 12px;
+    }
+    .copy-block strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-size: 0.95rem;
+    }
+    .copy-block pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--ink-soft);
+      font-family: "Aptos", "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+      font-size: 0.92rem;
+      line-height: 1.72;
+    }
     .footer {
       margin-top: 24px;
       text-align: center;
@@ -504,6 +556,46 @@
         </div>
       </section>
     </div>
+
+    <section class="panel share-kit">
+      <h2>Share Kit</h2>
+      <p>
+        If you want to post this paper to Hacker News, Reddit, X, Discord, or a project log, this section gives you one reusable visual and a few short copy blocks.
+        The tone is intentionally conservative and paper-first rather than product-marketing-first.
+      </p>
+      <div class="share-kit-grid">
+        <div class="share-preview">
+          <img src="./assets/img/atm-paper-share-kit.png" alt="ATM social share graphic showing multiple agents, CID broker, admission gates, neutral steward, and shared repository flow.">
+          <p class="share-note">
+            Suggested use: HN post preview, Reddit link post, X image attachment, Discord embed image, or GitHub discussion banner.
+          </p>
+        </div>
+        <div>
+          <div class="copy-block">
+            <strong>HN</strong>
+            <pre>We posted a paper on a narrower systems problem in multi-agent coding: before a governed shared write is applied, how should a system decide which concurrently formed write intents may proceed in parallel, which require deterministic composition or serialization, and which must take a fail-closed path?
+
+The paper presents ATM, a single-domain pre-write admission layer with a CID broker, atom-map-guided comparison, virtual atoms for partial coverage, and a neutral steward apply path. The scope is intentionally narrow: this is not a claim about cross-clone governance or universal merge replacement.</pre>
+          </div>
+          <div class="copy-block">
+            <strong>Reddit</strong>
+            <pre>We just released a paper on pre-write admission for multi-agent code co-synthesis.
+
+The core idea is to treat shared code mutation as something that should be governed before it lands, not only after Git merge or validator failure. ATM uses a CID broker, atom maps, virtual atoms, shared-surface checks, and a neutral steward apply path to decide whether concurrent write intents can proceed, must serialize, or must fail closed.
+
+The paper is scoped to a single governance domain and tries to stay conservative about claims.</pre>
+          </div>
+          <div class="copy-block">
+            <strong>X / Discord</strong>
+            <pre>New paper: ATM: CID-Brokered Pre-Write Admission for Multi-Agent Code Co-Synthesis.
+
+It asks a narrower question than “can agents write code?”: before a governed shared write lands, how should a system decide which concurrent write intents can proceed, which must serialize, and which must fail closed?
+
+Single-domain scope, conservative claims, public code + artifacts linked from this page.</pre>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <p class="footer">This page is a stable landing page for the ATM paper. Public paper and artifact links will be updated here after announcement.</p>
   </main>
