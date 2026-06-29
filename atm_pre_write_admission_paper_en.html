@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ATM Paper Landing Page | Pre-Write Admission for Multi-Agent Code Co-Synthesis</title>
+  <meta name="description" content="Landing page for the ATM paper on pre-write admission for multi-agent code co-synthesis, including summary, claim boundary, links to code, and public artifact guidance.">
+  <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/atm_pre_write_admission_paper_en.html">
+  <style>
+    :root {
+      --paper: #f6f1e7;
+      --paper-strong: #fbf8f2;
+      --ink: #19242f;
+      --ink-soft: #4d5c6b;
+      --line: rgba(25, 36, 47, 0.12);
+      --teal: #0d6f68;
+      --teal-deep: #084c47;
+      --amber: #b86f26;
+      --slate: #5d7487;
+      --shadow: 0 24px 80px rgba(26, 40, 55, 0.12);
+      --radius-xl: 28px;
+      --radius-md: 16px;
+      --content-width: 1240px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Aptos", "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(13, 111, 104, 0.15), transparent 28%),
+        radial-gradient(circle at 82% 14%, rgba(184, 111, 38, 0.13), transparent 28%),
+        linear-gradient(180deg, #f8f4eb 0%, #f2ecdf 48%, #ebe5d8 100%);
+      min-height: 100vh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+      background-size: 36px 36px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.22), transparent 78%);
+      opacity: 0.35;
+    }
+    a { color: inherit; }
+    .page {
+      width: min(calc(100% - 40px), var(--content-width));
+      margin: 0 auto;
+      padding: 40px 0 84px;
+      position: relative;
+      z-index: 1;
+    }
+    .topbar, .hero, .panel {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.72));
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    .topbar {
+      border-radius: 18px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 0.66rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: var(--teal-deep);
+      background: rgba(13, 111, 104, 0.08);
+      border: 1px solid rgba(13, 111, 104, 0.16);
+    }
+    .brand-copy strong {
+      display: block;
+      font-size: 0.95rem;
+    }
+    .brand-copy span {
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+    }
+    .top-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .top-links a {
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      text-decoration: none;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.55);
+    }
+    .top-links a:hover {
+      color: var(--teal-deep);
+      border-color: rgba(13, 111, 104, 0.25);
+    }
+    .hero {
+      border-radius: 32px;
+      padding: 34px;
+      overflow: hidden;
+    }
+    .eyebrow {
+      margin: 0 0 12px;
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal);
+      font-weight: 700;
+    }
+    h1, h2, h3 {
+      font-family: "Iowan Old Style", "Georgia", "Times New Roman", serif;
+      letter-spacing: 0.01em;
+      margin: 0;
+    }
+    h1 {
+      font-size: clamp(2rem, 3vw, 3rem);
+      line-height: 1.14;
+      max-width: 980px;
+    }
+    h2 {
+      font-size: clamp(1.45rem, 2.2vw, 2.1rem);
+      margin-bottom: 12px;
+    }
+    h3 {
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+    }
+    .hero-sub {
+      margin-top: 12px;
+      max-width: 920px;
+      color: var(--teal);
+      font-size: 1.15rem;
+      line-height: 1.5;
+      font-family: "Iowan Old Style", "Georgia", serif;
+    }
+    .hero-lede {
+      margin-top: 18px;
+      max-width: 960px;
+      color: var(--ink-soft);
+      font-size: 1.02rem;
+      line-height: 1.82;
+    }
+    .byline {
+      margin-top: 16px;
+      color: var(--ink-soft);
+      font-size: 0.94rem;
+      line-height: 1.6;
+    }
+    .hero-actions {
+      margin-top: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.92rem;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .btn-primary {
+      color: white;
+      background: linear-gradient(180deg, var(--teal), var(--teal-deep));
+      box-shadow: 0 12px 28px rgba(8, 76, 71, 0.22);
+    }
+    .btn-secondary {
+      color: var(--teal-deep);
+      border: 1px solid rgba(13, 111, 104, 0.18);
+      background: rgba(255, 255, 255, 0.72);
+    }
+    .btn-note {
+      color: var(--ink-soft);
+      border: 1px dashed rgba(25, 36, 47, 0.18);
+      background: rgba(255, 255, 255, 0.45);
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .hero-grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .hero-card {
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      padding: 18px;
+    }
+    .hero-image {
+      width: 100%;
+      border-radius: 16px;
+      display: block;
+      border: 1px solid rgba(25, 36, 47, 0.1);
+      background: white;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .metric {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid var(--line);
+    }
+    .metric strong {
+      display: block;
+      color: var(--teal-deep);
+      font-size: 1.18rem;
+      margin-bottom: 4px;
+    }
+    .metric span {
+      color: var(--ink-soft);
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+    .section-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      margin-top: 22px;
+    }
+    .panel {
+      border-radius: 28px;
+      padding: 28px;
+    }
+    .panel p {
+      margin: 0;
+      color: var(--ink-soft);
+      line-height: 1.82;
+    }
+    .panel p + p, .panel ul, .panel ol, .panel .callout, .panel .link-stack, .panel .faq-item, .panel .mini-grid {
+      margin-top: 16px;
+    }
+    .callout {
+      border-radius: 16px;
+      padding: 16px 18px;
+      border: 1px solid rgba(13, 111, 104, 0.16);
+      background: linear-gradient(135deg, rgba(13, 111, 104, 0.08), rgba(184, 111, 38, 0.08));
+      color: var(--ink);
+      line-height: 1.72;
+    }
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .mini-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.66);
+      border: 1px solid var(--line);
+    }
+    .mini-card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+      font-size: 0.95rem;
+    }
+    ul {
+      padding-left: 1.15rem;
+      color: var(--ink-soft);
+      line-height: 1.8;
+    }
+    li + li { margin-top: 8px; }
+    .link-stack {
+      display: grid;
+      gap: 10px;
+    }
+    .resource-link {
+      display: block;
+      padding: 14px 16px;
+      border-radius: 14px;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.62);
+    }
+    .resource-link strong {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .resource-link span {
+      color: var(--ink-soft);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+    .resource-link:hover {
+      border-color: rgba(13, 111, 104, 0.22);
+      background: rgba(255, 255, 255, 0.78);
+    }
+    .faq-item {
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+    .faq-item:first-of-type { border-top: none; padding-top: 0; }
+    .faq-item strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+      font-size: 0.96rem;
+    }
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      color: var(--ink-soft);
+      font-size: 0.84rem;
+    }
+    @media (max-width: 980px) {
+      .hero-grid, .section-grid, .mini-grid {
+        grid-template-columns: 1fr;
+      }
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar">
+      <a class="brand" href="./index.html">
+        <div class="brand-mark">ATM</div>
+        <div class="brand-copy">
+          <strong>AI Learning Notes</strong>
+          <span>Paper landing page</span>
+        </div>
+      </a>
+      <div class="top-links">
+        <a href="./index.html">Home</a>
+        <a href="./articles/">Articles</a>
+        <a href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Research paper</p>
+      <h1>ATM: CID-Brokered Pre-Write Admission for Multi-Agent Code Co-Synthesis</h1>
+      <p class="hero-sub">A specification-grounded governance substrate that decides before a governed shared write is applied.</p>
+      <p class="hero-lede">
+        ATM reframes concurrent AI code writing as a pre-write admission problem. Instead of waiting for Git merge, failing validators,
+        or human review to discover conflicts after the fact, the system compares structured write intents before a governed shared mutation lands.
+      </p>
+      <p class="byline"><strong>Eaglhuang</strong> · Independent researcher · arXiv announcement pending moderation</p>
+
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">View code</a>
+        <a class="btn btn-secondary" href="#summary">Read summary</a>
+        <span class="btn btn-note">arXiv link will be added after announcement</span>
+      </div>
+
+      <div class="hero-grid">
+        <div class="hero-card">
+          <img class="hero-image" src="./assets/img/atm-paper-hero.png" alt="ATM paper hero diagram showing agents, CID broker, seven-gate admission lane, neutral steward, and shared repository flow.">
+        </div>
+        <div class="hero-card">
+          <div class="metric-grid">
+            <div class="metric">
+              <strong>20</strong>
+              <span>unique scenarios in the paper-facing AdmissionBench family</span>
+            </div>
+            <div class="metric">
+              <strong>42</strong>
+              <span>mode-level comparisons in the frozen paper profile</span>
+            </div>
+            <div class="metric">
+              <strong>7 gates</strong>
+              <span>progressive admission layers before governed shared write apply</span>
+            </div>
+            <div class="metric">
+              <strong>40 pages</strong>
+              <span>main manuscript with appendix, figures, and compact research-question summary</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-grid" id="summary">
+      <section class="panel">
+        <h2>What problem does the paper address?</h2>
+        <p>
+          Multi-agent LLM systems can plan, generate, validate, and repair software, but a narrower systems question remains unresolved:
+          before any governed shared mutation is applied, how should a system decide which concurrently formed write intents may proceed in parallel,
+          which require deterministic composition or serialization, and which must take a fail-closed path?
+        </p>
+        <div class="callout">
+          The paper's core claim is narrow by design: ATM addresses <strong>single-domain pre-write admission</strong> for governed shared mutations.
+          It does <strong>not</strong> claim cross-clone governance, cross-PR merge governance, or broad comparative superiority over all adjacent systems.
+        </div>
+        <p>
+          ATM binds task intent, repository scope, write admission, validation, and evidence obligations into a single governance chain.
+          A Content Identifier (CID) broker compares structured write intents with support from atom maps, virtual atoms, ConflictKeys,
+          shared-surface checks, read/write dependency checks, and CAS base-hash revalidation. Governed shared writes are then applied by a neutral steward.
+        </p>
+
+        <div class="mini-grid">
+          <div class="mini-card">
+            <strong>Decide before write</strong>
+            Compare candidate mutations before they land in the shared worktree, rather than relying only on downstream merge and review.
+          </div>
+          <div class="mini-card">
+            <strong>Governed shared mutation</strong>
+            Shared writes are treated as governance events with explicit scope, validation, and evidence boundaries.
+          </div>
+          <div class="mini-card">
+            <strong>Virtual atoms</strong>
+            When persistent atom-map coverage is incomplete, ATM uses temporary auditable units for conservative comparison and routing.
+          </div>
+          <div class="mini-card">
+            <strong>Neutral steward</strong>
+            The final governed apply path is separated from proposal authorship, reducing uncontrolled concurrent writes.
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <h2>Quick links</h2>
+        <div class="link-stack">
+          <a class="resource-link" href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">
+            <strong>AI-Atomic-Framework repository</strong>
+            <span>Reference implementation, CLI surfaces, language adapters, and governance workflow code.</span>
+          </a>
+          <a class="resource-link" href="https://github.com/eaglhuang/AI-learning-notes" target="_blank" rel="noopener">
+            <strong>AI Learning Notes repository</strong>
+            <span>Site source, companion explanations, and public-facing technical writing.</span>
+          </a>
+        </div>
+
+        <h2 style="margin-top: 24px;">Evaluation at a glance</h2>
+        <ul>
+          <li>12-scenario deterministic design matrix for mechanism coverage.</li>
+          <li>Three archived runner cases for benchmark and governance replay.</li>
+          <li>ATM-AdmissionBench with a frozen v0.1 baseline and v0.2 paper-facing profile.</li>
+          <li>Three archived same-file boundary cases: POS2, B-12, and BLOCK.</li>
+          <li>A three-week external-adopter study and an operational recovery-routing benchmark.</li>
+        </ul>
+      </aside>
+    </div>
+
+    <div class="section-grid">
+      <section class="panel">
+        <h2>Claim boundary</h2>
+        <ul>
+          <li>ATM does not replace Git merge.</li>
+          <li>ATM does not claim cross-clone or cross-PR governance.</li>
+          <li>ATM does not claim universal semantic correctness.</li>
+          <li>ATM does claim an implementable and auditable pre-write admission layer within one governance domain.</li>
+        </ul>
+
+        <h2 style="margin-top: 22px;">Why this paper may be useful</h2>
+        <p>
+          If you are building coding-agent systems, agent orchestration layers, or repository-level AI workflows, the paper gives you a concrete framing for
+          one problem that often arrives too late in downstream tooling: deciding when shared writes should be admitted before they mutate the governed surface.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>FAQ</h2>
+        <div class="faq-item">
+          <strong>How is this different from Git merge?</strong>
+          <p>Git merge resolves divergence after versions already exist. ATM intervenes earlier, before a governed shared write is applied inside one controlled domain.</p>
+        </div>
+        <div class="faq-item">
+          <strong>How is this different from CRDT-style convergence?</strong>
+          <p>CRDTs solve text-level convergence. ATM focuses on repository-governance admission using atoms, virtual atoms, shared surfaces, and evidence obligations.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Does the paper claim distributed consensus?</strong>
+          <p>No. The paper explicitly scopes itself to a single authority governance domain.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Where will the paper link go?</strong>
+          <p>Once the arXiv identifier is announced, this page will be updated with the final public paper link and artifact anchors.</p>
+        </div>
+      </section>
+    </div>
+
+    <p class="footer">This page is a stable landing page for the ATM paper. Public paper and artifact links will be updated here after announcement.</p>
+  </main>
+</body>
+</html>
