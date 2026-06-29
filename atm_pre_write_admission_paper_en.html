@@ -404,7 +404,7 @@
         <div class="brand-mark">ATM</div>
         <div class="brand-copy">
           <strong>AI Learning Notes</strong>
-          <span>Paper landing page</span>
+          <span>Framework landing page</span>
         </div>
       </a>
       <div class="top-links">
@@ -415,19 +415,19 @@
     </div>
 
     <section class="hero">
-      <p class="eyebrow">Research paper</p>
+      <p class="eyebrow">Framework + paper</p>
       <h1>ATM: CID-Brokered Pre-Write Admission for Multi-Agent Code Co-Synthesis</h1>
-      <p class="hero-sub">A specification-grounded governance substrate that decides before a governed shared write is applied.</p>
+      <p class="hero-sub">A usable engineering framework first, and a paper-backed governance model second, for deciding before a governed shared write is applied.</p>
       <p class="hero-lede">
         ATM reframes concurrent AI code writing as a pre-write admission problem. Instead of waiting for Git merge, failing validators,
-        or human review to discover conflicts after the fact, the system compares structured write intents before a governed shared mutation lands.
+        or human review to discover conflicts after the fact, the framework compares structured write intents before a governed shared mutation lands.
       </p>
       <p class="byline"><strong>Eaglhuang</strong> · Independent researcher · arXiv announcement pending moderation</p>
 
       <div class="hero-actions">
-        <a class="btn btn-primary" href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">View code</a>
-        <a class="btn btn-secondary" href="#summary">Read summary</a>
-        <span class="btn btn-note">arXiv link will be added after announcement</span>
+        <a class="btn btn-primary" href="https://github.com/eaglhuang/AI-Atomic-Framework" target="_blank" rel="noopener">Use the framework</a>
+        <a class="btn btn-secondary" href="#summary">See how it works</a>
+        <span class="btn btn-note">Paper link will be added after arXiv announcement</span>
       </div>
 
       <div class="hero-grid">
@@ -473,6 +473,10 @@
           ATM binds task intent, repository scope, write admission, validation, and evidence obligations into a single governance chain.
           A Content Identifier (CID) broker compares structured write intents with support from atom maps, virtual atoms, ConflictKeys,
           shared-surface checks, read/write dependency checks, and CAS base-hash revalidation. Governed shared writes are then applied by a neutral steward.
+        </p>
+        <p>
+          In practice, the framework matters as much as the paper: the engineering value is that ATM gives builders a concrete way to route concurrent agent writes,
+          preserve bounded governance, and keep shared-repository coordination from collapsing into ad hoc merge-time cleanup.
         </p>
 
         <div class="mini-grid">
@@ -560,8 +564,8 @@
     <section class="panel share-kit">
       <h2>Share Kit</h2>
       <p>
-        If you want to post this paper to Hacker News, Reddit, X, Discord, or a project log, this section gives you one reusable visual and a few short copy blocks.
-        The tone is intentionally conservative and paper-first rather than product-marketing-first.
+        If you want to post ATM to Hacker News, Reddit, X, Discord, or a project log, this section gives you one reusable visual and two messaging tracks:
+        a framework-first track for engineering communities and a paper-first track for research-facing posts.
       </p>
       <div class="share-kit-grid">
         <div class="share-preview">
@@ -572,21 +576,25 @@
         </div>
         <div>
           <div class="copy-block">
-            <strong>HN</strong>
+            <strong>Framework-first · HN / Reddit</strong>
+            <pre>I built ATM, a governance framework for multi-agent coding, to solve a practical repo problem: before a shared write lands, how should the system decide which concurrent agent changes can proceed in parallel, which must serialize, and which should fail closed?
+
+The framework uses a CID broker, atom-map-guided comparison, virtual atoms for partial coverage, shared-surface checks, and a neutral steward apply path. The paper is there to make the model precise, but the main thing I want people to look at is the engineering workflow and whether this kind of pre-write governance is useful in real multi-agent repos.</pre>
+          </div>
+          <div class="copy-block">
+            <strong>Framework-first · X / Discord</strong>
+            <pre>I built ATM, a multi-agent coding governance framework for deciding before shared writes land which concurrent changes can proceed, which must serialize, and which should fail closed.
+
+The repo is the main thing. The paper just gives the model and claim boundary more structure.</pre>
+          </div>
+          <div class="copy-block">
+            <strong>Paper-first · HN / Reddit</strong>
             <pre>We posted a paper on a narrower systems problem in multi-agent coding: before a governed shared write is applied, how should a system decide which concurrently formed write intents may proceed in parallel, which require deterministic composition or serialization, and which must take a fail-closed path?
 
 The paper presents ATM, a single-domain pre-write admission layer with a CID broker, atom-map-guided comparison, virtual atoms for partial coverage, and a neutral steward apply path. The scope is intentionally narrow: this is not a claim about cross-clone governance or universal merge replacement.</pre>
           </div>
           <div class="copy-block">
-            <strong>Reddit</strong>
-            <pre>We just released a paper on pre-write admission for multi-agent code co-synthesis.
-
-The core idea is to treat shared code mutation as something that should be governed before it lands, not only after Git merge or validator failure. ATM uses a CID broker, atom maps, virtual atoms, shared-surface checks, and a neutral steward apply path to decide whether concurrent write intents can proceed, must serialize, or must fail closed.
-
-The paper is scoped to a single governance domain and tries to stay conservative about claims.</pre>
-          </div>
-          <div class="copy-block">
-            <strong>X / Discord</strong>
+            <strong>Paper-first · X / Discord</strong>
             <pre>New paper: ATM: CID-Brokered Pre-Write Admission for Multi-Agent Code Co-Synthesis.
 
 It asks a narrower question than “can agents write code?”: before a governed shared write lands, how should a system decide which concurrent write intents can proceed, which must serialize, and which must fail closed?
@@ -597,7 +605,7 @@ Single-domain scope, conservative claims, public code + artifacts linked from th
       </div>
     </section>
 
-    <p class="footer">This page is a stable landing page for the ATM paper. Public paper and artifact links will be updated here after announcement.</p>
+    <p class="footer">This page is a stable landing page for the ATM framework and its paper. Public paper and artifact links will be updated here after announcement.</p>
   </main>
 </body>
 </html>
