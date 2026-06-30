@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Understanding ATM Governance for AI Agents in Eight Diagrams | AI Learning Notes</title>
-  <meta name="description" content="A visual technical article explaining how ATM governs AI-agent engineering work through next routing, doctor health checks, scoped locks, pre-commit gates, git-head evidence, taskflow close, and batch checkpointing.">
+  <meta name="description" content="A visual technical article explaining how ATM governs AI-agent engineering work through a governance atlas, an operational card board, next routing, doctor health checks, scoped locks, pre-commit gates, git-head evidence, and batch checkpointing.">
   <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide_en.html">
   <link rel="alternate" hreflang="zh-Hant" href="https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide.html">
   <link rel="stylesheet" href="assets/css/dark-override.css">
@@ -31,7 +31,7 @@
   <script defer src="assets/js/article-base.js"></script>
   <meta property="og:type" content="article">
   <meta property="og:title" content="Understanding ATM Governance for AI Agents in Eight Diagrams">
-  <meta property="og:description" content="A visual guide to ATM's engineering governance chain: next, doctor, lock, hooks, git-head evidence, taskflow close, and batch checkpoint.">
+  <meta property="og:description" content="A visual guide to ATM's engineering governance chain: atlas, card board, next, doctor, lock, hooks, git-head evidence, and batch checkpoint.">
   <meta property="og:url" content="https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide_en.html">
   <meta property="og:site_name" content="AI Learning Notes">
   <meta property="og:locale" content="en_US">
@@ -106,52 +106,68 @@
         <p>If you remember only one thing, remember this: ATM does not try to replace Git, CI, or human review. It sits between AI agents and the repository. An agent wants to act, so it routes first. It wants to edit, so it needs scope. It wants to close, so it needs evidence. It wants to cooperate, so it needs to know which work can happen in parallel.</p>
       </section>
 
-      <section class="panel" id="entry">
-        <h2>2. next is the entry: decide how this request should move</h2>
+      <section class="panel" id="cards">
+        <h2>2. Governance cards batch 1: put the high-frequency surfaces on one board</h2>
         <figure class="figure-card">
           <p class="figure-index">Figure 03</p>
+          <h3>governance cards batch 1</h3>
+          <img src="docs/03-governance-cards-batch-1.png" alt="ATM governance cards batch 1 showing next, doctor, lock claim, and hook as a grouped operational board.">
+          <figcaption>This is not a single path diagram. It is an operational board that places <code>next</code>, <code>doctor</code>, lock / claim, and hook side by side so a human or agent can quickly see which governance card should open first.</figcaption>
+        </figure>
+        <p>For a first-time reader, the full atlas can be too broad while a single flowchart can be too narrow. This card board sits in the middle. It behaves like a governance dashboard home screen and tells you that the most common problem is not "which command exists?" but "which governance surface is relevant right now?"</p>
+        <p>For example, suppose the request is "fix the landing page and check whether GitHub also needs the same update." A mature agent should not edit immediately. It should first decide whether to route through <code>next</code>, whether the repo needs a <code>doctor</code> pass, whether the scope needs a lock, and what the hook will later enforce. This board puts those four questions in one place.</p>
+      </section>
+
+      <section class="panel" id="entry">
+        <h2>3. next is the entry: decide how this request should move</h2>
+        <figure class="figure-card">
+          <p class="figure-index">Figure 04</p>
           <h3>next entry decision</h3>
-          <img src="docs/03-next-entry-decision.png" alt="ATM next entry decision diagram showing how a request is routed before editing.">
+          <img src="docs/04-next-entry-decision.png" alt="ATM next entry decision diagram showing how a request is routed before editing.">
           <figcaption><code>next</code> is the agent's first governance entry. It does not merely answer "what is next?" It converts the user's request into a route, playbook, risk signal, and prerequisites.</figcaption>
         </figure>
         <p>In a CLI-first world, humans must remember the correct command order. In a skill-first ATM workflow, the agent should absorb that habit. The human states the outcome, the agent enters <code>next</code> through the repo-local skill, and the returned playbook keeps it from inventing its own lifecycle.</p>
+        <p>Take a request like "update the paper landing page and see whether GitHub needs matching changes." <code>next</code> should not return only "start editing." It should separate the work into website copy, repo documentation, and possibly publishing follow-up, then indicate which repository should be touched first. That is how the agent avoids treating a cross-repo job like a trivial single-page edit.</p>
       </section>
 
       <section class="panel" id="doctor">
-        <h2>3. doctor is the health check: can this repo safely accept work?</h2>
+        <h2>4. doctor is the health check: can this repo safely accept work?</h2>
         <figure class="figure-card">
-          <p class="figure-index">Figure 04</p>
+          <p class="figure-index">Figure 05</p>
           <h3>doctor health check</h3>
-          <img src="docs/04-doctor-health-check.png" alt="ATM doctor health check diagram showing repository readiness checks.">
+          <img src="docs/05-doctor-health-check.png" alt="ATM doctor health check diagram showing repository readiness checks.">
           <figcaption><code>doctor</code> asks whether the repository is ready for governed agent work. Entry files, integrations, runner state, evidence, policy, and Git state can all become early warning signals.</figcaption>
         </figure>
         <p>The most expensive AI failures are the ones discovered late. Doctor pushes those failures earlier. Before the agent mutates files, it can learn whether the repository is healthy enough to proceed. For a multi-agent team, this is the traffic system before the intersection.</p>
+        <p>A concrete example is a missing repo-local ATM integration, a stale runner build, or a dirty Git tree that already contains someone else's uncommitted work. Those should not wait until pre-commit. Doctor tells the agent whether it must repair entry files, rebuild the runner, or resolve tree state before governed work really begins.</p>
       </section>
 
       <section class="panel" id="boundary">
-        <h2>4. lock / claim is the boundary: shrink the agent to the task</h2>
+        <h2>5. lock / claim is the boundary: shrink the agent to the task</h2>
         <figure class="figure-card">
-          <p class="figure-index">Figure 05</p>
+          <p class="figure-index">Figure 06</p>
           <h3>lock and claim boundary</h3>
-          <img src="docs/05-lock-claim-boundary.png" alt="ATM lock and claim boundary diagram showing scoped work admission before mutation.">
+          <img src="docs/06-lock-claim-boundary.png" alt="ATM lock and claim boundary diagram showing scoped work admission before mutation.">
           <figcaption>Locks and claims are not paperwork. They make the agent admit, before mutation, which part of the repository it is responsible for.</figcaption>
         </figure>
         <p>Without a boundary, an agent can easily turn a small fix into a broad cleanup or a bug fix into a speculative refactor. ATM first places the work inside a bounded frame so mutation, validation, and evidence all describe the same thing.</p>
+        <p>Imagine you asked for a rewrite of [README.md](C:/Users/User/AI-Atomic-Framework/README.md) to improve the 60-second beginner entry. A drifting agent may casually rewrite CLI docs, package metadata, and side documents along the way. Lock / claim says: not this time. This task touches the README and the paired publishing surface, not the whole framework.</p>
       </section>
 
       <section class="panel" id="hooks">
-        <h2>5. hooks are live gates: block invalid work before commit</h2>
+        <h2>6. hooks are live gates: block invalid work before commit</h2>
         <figure class="figure-card">
-          <p class="figure-index">Figure 06</p>
+          <p class="figure-index">Figure 07</p>
           <h3>hook pre-commit gate</h3>
-          <img src="docs/06-hook-pre-commit-gate.png" alt="ATM hook pre-commit gate diagram showing checks before git commit.">
+          <img src="docs/07-hook-pre-commit-gate.png" alt="ATM hook pre-commit gate diagram showing checks before git commit.">
           <figcaption>The pre-commit gate turns governance from a reminder into an interception point. Missing lock, missing evidence, out-of-scope files, or invalid state can be blocked before the commit lands.</figcaption>
         </figure>
         <p>This is where ATM becomes practical engineering rather than advice. It does not depend on agents remembering every rule. It embeds the rule at the moment where the repository is about to change.</p>
+        <p>For instance, the page may already look finished, but the staged set still includes an out-of-scope file, a missing validator, or evidence that no longer matches the working tree. Without hooks, the agent is tempted to report success. With hooks, the repository can answer back: no, this delivery is not yet governable.</p>
       </section>
 
       <section class="panel" id="git-head">
-        <h2>6. git-head evidence: prove which tree the evidence describes</h2>
+        <h2>7. git-head evidence: prove which tree the evidence describes</h2>
         <figure class="figure-card">
           <p class="figure-index">Figure 01</p>
           <h3>git-head evidence flowchart</h3>
@@ -159,17 +175,7 @@
           <figcaption>Git-head evidence answers a concrete question: does this evidence describe the current HEAD? If the evidence and the commit range do not match, the closure should not be trusted.</figcaption>
         </figure>
         <p>Evidence freshness is easy to overlook. A test that passed yesterday does not prove today's tree. By binding evidence back to Git head, ATM makes every closeout answer the same question: exactly which code did this evidence validate?</p>
-      </section>
-
-      <section class="panel" id="close">
-        <h2>7. taskflow close: don't just say done, prove done</h2>
-        <figure class="figure-card">
-          <p class="figure-index">Figure 07</p>
-          <h3>taskflow close flowchart</h3>
-          <img src="docs/07-taskflow-close-flowchart.png" alt="ATM taskflow close flowchart showing evidence-backed task closure.">
-          <figcaption><code>taskflow close</code> turns "I'm done" into a verifiable transition. It looks at scope, delivery, evidence, Git head, and closure packet rather than accepting a chat summary.</figcaption>
-        </figure>
-        <p>This is one of the biggest differences between ATM and ordinary chat-driven collaboration. A chat agent can report completion. ATM asks it to leave a closure trail that another person, agent, or audit can inspect later.</p>
+        <p>Picture agent A running validation in the morning, then editing two more files in the afternoon while still carrying the old "passed" result. Without git-head evidence, stale proof can quietly leak into a new delivery. Once evidence is tied to HEAD, the system can ask the right question: does this proof belong to this exact tree? If not, rerun it.</p>
       </section>
 
       <section class="panel" id="batch">
@@ -181,19 +187,22 @@
           <figcaption>Batch checkpointing is for multi-card or multi-fix work. ATM does not encourage an agent to mix everything into one giant delivery. The queue head must be delivered, validated, and checkpointed first.</figcaption>
         </figure>
         <p>Parallel work still needs rhythm. Batch checkpointing gives large work a cadence and reduces the classic failure mode: many things changed, but nobody knows which unit is actually done.</p>
+        <p>Suppose you are revising multiple articles, rewriting the README, and syncing a landing page at the same time. If all of that lands as one giant commit, it becomes hard to answer which unit is actually stable. Batch checkpointing says: finish the queue head, leave evidence, make it handoff-safe, then advance. It is slower, but much safer for a multi-agent team.</p>
       </section>
 
       <section class="panel" id="one-chain">
-        <h2>The eight diagrams form one engineering production chain</h2>
+        <h2>Put the eight diagrams back into one governance view</h2>
         <ol class="flow-list">
-          <li><strong>Route first:</strong> use <code>next</code> to turn natural language into a governed path.</li>
-          <li><strong>Inspect health:</strong> use <code>doctor</code> to check runner, integration, policy, evidence, and Git readiness.</li>
-          <li><strong>Acquire boundary:</strong> use lock / claim so the agent's work has a declared scope.</li>
-          <li><strong>Gate mutation:</strong> use hooks to block invalid state before commit.</li>
-          <li><strong>Bind evidence:</strong> use git-head evidence to prove which code the validation describes.</li>
-          <li><strong>Close formally:</strong> use taskflow close so completion becomes auditable closure.</li>
-          <li><strong>Move queues deliberately:</strong> use batch checkpoint to make multi-task work resumable.</li>
+          <li><strong>Atlas:</strong> the governance atlas gives the global coordinate system.</li>
+          <li><strong>Board:</strong> cards batch 1 groups the high-frequency governance cards into one dashboard.</li>
+          <li><strong>Route:</strong> <code>next</code> translates natural language into a governed path.</li>
+          <li><strong>Inspect:</strong> <code>doctor</code> checks runner, integration, policy, evidence, and Git readiness.</li>
+          <li><strong>Bound:</strong> lock / claim gives the agent a declared scope.</li>
+          <li><strong>Gate:</strong> hooks block invalid state before commit.</li>
+          <li><strong>Bind proof:</strong> git-head evidence proves which code the validation describes.</li>
+          <li><strong>Advance deliberately:</strong> batch checkpoint keeps multi-task work resumable.</li>
         </ol>
+        <p>If you are looking for <code>taskflow close</code>, it is still important; it just is not included as a standalone visual in this particular eight-image pack. In the real engineering chain, it sits after git-head evidence and turns delivery plus evidence into closure before the next checkpoint or handoff.</p>
         <p>This is how ATM governs AI: it does not assume the model is always right or the prompt is always perfect. It places agent work inside a bounded, validated, recoverable chain. That is the foundation that lets multi-agent collaboration become an engineering practice rather than a pile of impressive but fragile edits.</p>
       </section>
     </main>
@@ -203,16 +212,16 @@
       <ol>
         <li><a href="#summary">Short version</a></li>
         <li><a href="#atlas">Governance atlas</a></li>
+        <li><a href="#cards">Governance card board</a></li>
         <li><a href="#entry">next entry</a></li>
         <li><a href="#doctor">doctor health check</a></li>
         <li><a href="#boundary">lock / claim boundary</a></li>
         <li><a href="#hooks">pre-commit gate</a></li>
         <li><a href="#git-head">git-head evidence</a></li>
-        <li><a href="#close">taskflow close</a></li>
         <li><a href="#batch">batch checkpoint</a></li>
         <li><a href="#one-chain">One engineering chain</a></li>
       </ol>
-      <p class="note">This article uses the eight ATM governance diagrams under <code>docs/</code> as a visual entry point for the knowledge site.</p>
+      <p class="note">This article uses the eight ATM governance diagrams under <code>docs/</code>, including one operational card board, as a visual entry point for the knowledge site.</p>
     </aside>
   </div>
 </body>

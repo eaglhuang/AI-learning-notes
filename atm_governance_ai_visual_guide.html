@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>用八張圖看懂 ATM 如何治理 AI Agent 工程鏈 | AI Learning Notes</title>
-  <meta name="description" content="用八張 ATM 治理圖整理 AI Agent 從任務入口、健康檢查、鎖定邊界、pre-commit gate、證據鏈、任務結案到 batch checkpoint 的完整工程治理流程。">
+  <meta name="description" content="用八張 ATM 治理圖整理 AI Agent 從治理全圖、卡片圖盤、next 入口、健康檢查、鎖定邊界、pre-commit gate、證據鏈到 batch checkpoint 的完整工程治理流程。">
   <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide.html">
   <link rel="alternate" hreflang="en" href="https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide_en.html">
   <link rel="stylesheet" href="assets/css/dark-override.css">
@@ -31,7 +31,7 @@
   <script defer src="assets/js/article-base.js"></script>
   <meta property="og:type" content="article">
   <meta property="og:title" content="用八張圖看懂 ATM 如何治理 AI Agent 工程鏈">
-  <meta property="og:description" content="從 next 入口、doctor、lock、hook、git-head evidence、taskflow close 到 batch checkpoint，整理 ATM 如何讓 AI Agent 工作變成可驗證、可回溯、可接手的工程流程。">
+  <meta property="og:description" content="從治理全圖、卡片圖盤、next 入口、doctor、lock、hook、git-head evidence 到 batch checkpoint，整理 ATM 如何讓 AI Agent 工作變成可驗證、可回溯、可接手的工程流程。">
   <meta property="og:url" content="https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide.html">
   <meta property="og:site_name" content="AI Learning Notes">
   <meta property="og:locale" content="zh_TW">
@@ -82,7 +82,7 @@
       <section class="panel" id="summary">
         <h2>先講結論：ATM 治理的不是 AI，而是 AI 的工程行為</h2>
         <p>很多人談 AI coding，會把注意力放在模型能力：哪個模型比較聰明、哪個 prompt 比較準、哪個 Agent 能一次改更多檔案。但當專案進入長期開發，問題會換一個形狀。你開始在意的是：它有沒有先理解任務？有沒有拿到合法範圍？有沒有跑驗證？失敗時能不能知道卡在哪？下一個 Agent 接手時，是否不需要重新猜前因後果？</p>
-        <div class="callout">ATM 把 AI 工作收斂成一條工程生產鏈：先 route，再檢查健康狀態，取得 lock 或 claim，透過 hook 擋掉不合規變更，最後用 evidence 與 taskflow close 留下可回溯證據。這就是它防止 AI 幻想漂移的方式。</div>
+        <div class="callout">ATM 把 AI 工作收斂成一條工程生產鏈：先看治理全圖與操作圖盤，再 route、檢查健康狀態、取得 lock 或 claim，透過 hook 擋掉不合規變更，最後讓 evidence 與 batch checkpoint 把工作變成可回溯節點。這就是它防止 AI 幻想漂移的方式。</div>
         <div class="summary-grid">
           <div class="mini-card">
             <h3>對人類</h3>
@@ -106,52 +106,68 @@
         <p>如果只記一件事，就是 ATM 不想取代 Git、CI 或人類 review。它比較像是放在 AI Agent 和 repo 之間的治理緩衝層：Agent 想做事，先經過 route；要改檔，先有 scope；要結案，先有 evidence；要多人協作，先知道哪些工作會撞在一起。</p>
       </section>
 
-      <section class="panel" id="entry">
-        <h2>2. next 是入口：先決定「這件事該怎麼走」</h2>
+      <section class="panel" id="cards">
+        <h2>2. 治理卡片圖盤第 1 批：把常用治理面收成操作板</h2>
         <figure class="figure-card">
           <p class="figure-index">Figure 03</p>
+          <h3>governance cards batch 1</h3>
+          <img src="docs/03-governance-cards-batch-1.png" alt="ATM governance cards batch 1 showing next, doctor, lock claim, and hook as a grouped operational board.">
+          <figcaption>這不是單一路徑圖，而是一張操作圖盤。它把 <code>next</code>、<code>doctor</code>、lock / claim、hook 四個最常用的治理面並排，讓人或 Agent 先知道現在應該打開哪一張卡。</figcaption>
+        </figure>
+        <p>對第一次接觸 ATM 的讀者來說，全圖通常太大，單張流程圖又太細，這張圖盤剛好在中間。它像一個治理控制台首頁，告訴你最常需要打開的不是「所有命令」，而是「哪一類治理問題正在發生」。</p>
+        <p>例如使用者說「幫我修 landing page，順便看看 GitHub 那邊要不要同步」，成熟的 Agent 不會立刻改檔，而是先判斷：要不要先走 <code>next</code> 分流？repo 現在健康嗎？這次需不需要先 lock scope？最後 commit 前會被哪些 hook 攔住？這張圖盤就是把這四個高頻問題先攤在眼前。</p>
+      </section>
+
+      <section class="panel" id="entry">
+        <h2>3. next 是入口：先決定「這件事該怎麼走」</h2>
+        <figure class="figure-card">
+          <p class="figure-index">Figure 04</p>
           <h3>next entry decision</h3>
-          <img src="docs/03-next-entry-decision.png" alt="ATM next entry decision diagram showing how a request is routed before editing.">
+          <img src="docs/04-next-entry-decision.png" alt="ATM next entry decision diagram showing how a request is routed before editing.">
           <figcaption><code>next</code> 是 Agent 的第一個治理入口。它不只是問「下一步是什麼」，而是把使用者要求轉成可執行的 route、playbook、風險提示與必要前置條件。</figcaption>
         </figure>
         <p>在 CLI-first 的世界，人類要記得先跑什麼、後跑什麼。在 skill-first 的 ATM 裡，這些應該變成 Agent 的習慣：使用者說出目標，Agent 透過 repo-local skill 進入 <code>next</code>，再依照回傳的 playbook 行動。這是防止 AI 自己腦補流程的第一道門。</p>
+        <p>舉例來說，當請求是「幫我補論文 landing page，並檢查 GitHub 是否也要同步」，<code>next</code> 不該只回一句「開始編輯」。它應該把工作拆成網站內容更新、repo 說明文件同步、是否需要社群公告準備，並指出先在哪一個 repo 動手最合理。這樣 Agent 才不會把一個跨 repo 的工作誤當成單一頁面修補。</p>
       </section>
 
       <section class="panel" id="doctor">
-        <h2>3. doctor 是健康檢查：先知道 repo 能不能承受這次變更</h2>
+        <h2>4. doctor 是健康檢查：先知道 repo 能不能承受這次變更</h2>
         <figure class="figure-card">
-          <p class="figure-index">Figure 04</p>
+          <p class="figure-index">Figure 05</p>
           <h3>doctor health check</h3>
-          <img src="docs/04-doctor-health-check.png" alt="ATM doctor health check diagram showing repository readiness checks.">
+          <img src="docs/05-doctor-health-check.png" alt="ATM doctor health check diagram showing repository readiness checks.">
           <figcaption><code>doctor</code> 不是形式檢查，它是在問：這個 repo 的治理狀態是否足以讓 Agent 安全工作？入口、integrations、runner、evidence、policy、git 狀態都可能成為早期警訊。</figcaption>
         </figure>
         <p>AI 工程最怕的是錯誤太晚才出現。doctor 的價值在於把「等到 commit 才爆」的問題提前，讓 Agent 在修改之前就知道環境是否健康。對多 Agent 團隊來說，這等於把 repo 的交通號誌先亮出來。</p>
+        <p>例如 repo-local ATM integration 遺失、runner 沒同步、或 Git 工作樹裡 already 有別人的未提交變更，這些問題都不該等到 pre-commit 才被發現。doctor 像是進場前的健康站，先告訴 Agent「你現在不是不能工作，而是要先補 entry、先 build runner，或先處理髒樹狀態」。</p>
       </section>
 
       <section class="panel" id="boundary">
-        <h2>4. lock / claim 是邊界：讓 Agent 先被任務收斂</h2>
+        <h2>5. lock / claim 是邊界：讓 Agent 先被任務收斂</h2>
         <figure class="figure-card">
-          <p class="figure-index">Figure 05</p>
+          <p class="figure-index">Figure 06</p>
           <h3>lock and claim boundary</h3>
-          <img src="docs/05-lock-claim-boundary.png" alt="ATM lock and claim boundary diagram showing scoped work admission before mutation.">
+          <img src="docs/06-lock-claim-boundary.png" alt="ATM lock and claim boundary diagram showing scoped work admission before mutation.">
           <figcaption>lock 與 claim 的重點不是增加手續，而是讓 Agent 在修改前先承認「我這次只負責這個範圍」。這一步可以大幅降低 AI 幻想漂移與多 Agent 互踩。</figcaption>
         </figure>
         <p>當 Agent 沒有邊界，它會很自然地把小修補擴成大整理，把 bugfix 寫成順手重構。ATM 的做法是先把任務關進合理的工作框，讓修改、驗證、證據都能對齊同一個範圍。</p>
+        <p>具體例子是：你原本只要它改 [README.md](C:/Users/User/AI-Atomic-Framework/README.md) 的新手入口，但 Agent 很可能順手去動 CLI 說明、docs、甚至 package metadata。lock / claim 的作用，就是在它下手前先講清楚「這次只碰 README 與網站文章，別把 framework 核心一起洗一遍」。</p>
       </section>
 
       <section class="panel" id="hooks">
-        <h2>5. hook 是現場閘門：在 commit 前攔住不合規的工作</h2>
+        <h2>6. hook 是現場閘門：在 commit 前攔住不合規的工作</h2>
         <figure class="figure-card">
-          <p class="figure-index">Figure 06</p>
+          <p class="figure-index">Figure 07</p>
           <h3>hook pre-commit gate</h3>
-          <img src="docs/06-hook-pre-commit-gate.png" alt="ATM hook pre-commit gate diagram showing checks before git commit.">
+          <img src="docs/07-hook-pre-commit-gate.png" alt="ATM hook pre-commit gate diagram showing checks before git commit.">
           <figcaption>pre-commit gate 把治理從「事後提醒」變成「現場攔截」。如果缺少 lock、evidence、scope 或必要檢查，hook 可以在 commit 前擋住。</figcaption>
         </figure>
         <p>這一層是 ATM 很工程化的地方。它不是期待 Agent 自律，而是把規則放進 repo 的日常動作裡。當 AI 變多，靠提醒會累；靠 gate 才能穩。</p>
+        <p>例如 Agent 已經改完頁面，卻忘了補某個 validator、混入 scope 外檔案、或 evidence 還對不上現在的工作內容。沒有 hook 時，它會很自然地說「已完成」；有 hook 時，repo 會直接回它「不，你現在還沒準備好提交」。這種現場攔截，比事後 code review 更能降低治理漂移。</p>
       </section>
 
       <section class="panel" id="git-head">
-        <h2>6. git-head evidence：讓證據對得上真正的 HEAD</h2>
+        <h2>7. git-head evidence：讓證據對得上真正的 HEAD</h2>
         <figure class="figure-card">
           <p class="figure-index">Figure 01</p>
           <h3>git-head evidence flowchart</h3>
@@ -159,17 +175,7 @@
           <figcaption>git-head evidence 解的是一個很實際的問題：你說通過驗證的那份 evidence，究竟是不是對應目前這個 HEAD？如果 evidence 與 commit range 對不上，closure 就不應該被信任。</figcaption>
         </figure>
         <p>AI 協作裡，最容易被忽略的是「證據新鮮度」。測試曾經通過，不代表現在這個 tree 通過。ATM 把 evidence 綁回 git head，是為了讓每次 close 都能回答：這份證據到底證明了哪一份程式碼？</p>
-      </section>
-
-      <section class="panel" id="close">
-        <h2>7. taskflow close：不要只說完成，要能證明完成</h2>
-        <figure class="figure-card">
-          <p class="figure-index">Figure 07</p>
-          <h3>taskflow close flowchart</h3>
-          <img src="docs/07-taskflow-close-flowchart.png" alt="ATM taskflow close flowchart showing evidence-backed task closure.">
-          <figcaption><code>taskflow close</code> 把「我做完了」變成一個可驗證動作。它關心 scope、delivery、evidence、git head、closure packet，而不是只看 Agent 的口頭回報。</figcaption>
-        </figure>
-        <p>這是 ATM 和一般聊天式協作最大的差異之一。一般 Agent 結束時會說「已完成」；ATM 要求它留下足以被檢查、被 audit、被下一個人接手的 closure。這種設計讓 AI 產出從對話變成工程紀錄。</p>
+        <p>想像一個場景：Agent A 上午跑過驗證，下午又多改了兩個檔案，卻還想沿用早上的「已通過」結果。如果沒有 git-head evidence，這種舊證據很容易混進新提交裡。綁回 HEAD 之後，系統可以明確問它：你手上的這份證據，是不是就是現在這棵 tree 的證據？不是的話，就重跑。</p>
       </section>
 
       <section class="panel" id="batch">
@@ -181,19 +187,22 @@
           <figcaption>batch checkpoint 適合處理多張任務卡或一串修補。ATM 不鼓勵 Agent 一口氣把所有任務混在同一包，而是要求 queue head 先交付、先驗證、先 checkpoint。</figcaption>
         </figure>
         <p>這個觀念很重要：多 Agent 並行不等於沒有節奏。batch checkpoint 讓大型工作保有節拍，降低「做很多但不知道哪個真的完成」的混亂，也讓 captain 或下一個 Agent 可以從清楚的 checkpoint 接手。</p>
+        <p>例如你手上有一批文章要修、README 要重寫、還有 landing page 要同步，如果全部混在一個大提交裡，最後很難回答「到底哪一件已經穩了」。batch checkpoint 的節奏是先把 queue head 做完、留證據、確認可交付，再往下一張走。這會慢一點，但對多 Agent 團隊來說穩很多。</p>
       </section>
 
       <section class="panel" id="one-chain">
-        <h2>把八張圖串起來：ATM 的單一流程工程生產鏈</h2>
+        <h2>把八張圖放回同一套治理視角：哪張是地圖，哪張是操作板</h2>
         <ol class="flow-list">
+          <li><strong>治理全圖：</strong>atlas 負責給你全局座標，先知道 ATM 在 repo 裡管的是哪些面。</li>
+          <li><strong>操作圖盤：</strong>cards batch 1 把高頻治理卡收成一個首頁，方便快速進場。</li>
           <li><strong>先 route：</strong>用 <code>next</code> 把自然語言任務轉成治理路徑。</li>
           <li><strong>再檢查：</strong>用 <code>doctor</code> 確認 repo、runner、integration 與 evidence 狀態。</li>
           <li><strong>取得邊界：</strong>用 lock / claim 讓 Agent 的工作範圍明確化。</li>
           <li><strong>現場攔截：</strong>用 hook 在 commit 前擋住缺 scope、缺 evidence 或違規操作。</li>
           <li><strong>綁定證據：</strong>用 git-head evidence 確認驗證結果對得上目前程式碼。</li>
-          <li><strong>正式結案：</strong>用 taskflow close 讓「完成」變成可驗證 closure。</li>
           <li><strong>批次前進：</strong>用 batch checkpoint 把多任務拆成可接手的節點。</li>
         </ol>
+        <p>如果你在找 <code>taskflow close</code>，它不是不重要，而是這一批 8 張圖裡沒有獨立收錄 close 圖。實際工程鏈裡，它會接在 git-head evidence 之後，負責把 delivery 與 evidence 收束成 closure，再交給下一個 batch checkpoint 或下一位接手者。</p>
         <p>這就是 ATM 治理 AI 的方式：不要求 Agent 永遠聰明，也不假設 prompt 永遠完美，而是把它的工程行為放進一條可收斂、可驗證、可回溯的鏈裡。對人類來說，這才是多 Agent 合作真正能走遠的基礎。</p>
       </section>
     </main>
@@ -203,16 +212,16 @@
       <ol>
         <li><a href="#summary">先講結論</a></li>
         <li><a href="#atlas">治理總覽</a></li>
+        <li><a href="#cards">治理卡片圖盤</a></li>
         <li><a href="#entry">next 入口</a></li>
         <li><a href="#doctor">doctor 健康檢查</a></li>
         <li><a href="#boundary">lock / claim 邊界</a></li>
         <li><a href="#hooks">pre-commit gate</a></li>
         <li><a href="#git-head">git-head evidence</a></li>
-        <li><a href="#close">taskflow close</a></li>
         <li><a href="#batch">batch checkpoint</a></li>
         <li><a href="#one-chain">單一工程鏈</a></li>
       </ol>
-      <p class="note">這篇文章使用 <code>docs/</code> 內的 8 張 ATM 治理圖，適合當作知識網站的治理導覽入口。</p>
+      <p class="note">這篇文章使用 <code>docs/</code> 內的 8 張 ATM 治理圖，其中一張是治理卡片圖盤第 1 批，適合當作知識網站的治理導覽入口。</p>
     </aside>
   </div>
 </body>
