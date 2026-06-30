@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用八張圖看懂 ATM 如何治理 AI Agent 工程鏈 | AI Learning Notes</title>
+  <meta name="description" content="用八張 ATM 治理圖整理 AI Agent 從任務入口、健康檢查、鎖定邊界、pre-commit gate、證據鏈、任務結案到 batch checkpoint 的完整工程治理流程。">
+  <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide.html">
+  <link rel="alternate" hreflang="en" href="https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide_en.html">
+  <link rel="stylesheet" href="assets/css/dark-override.css">
+  <link rel="stylesheet" href="assets/css/article-base.css">
+  <style>
+    :root, html, body { --content-width: 1180px !important; }
+    h1 { max-width: none !important; }
+    .page { grid-template-columns: minmax(0, 1fr) 280px; }
+    .summary-grid, .map-grid { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .figure-card img { width: 100%; height: auto; border-radius: var(--r); border: 1px solid var(--line); background: #fff; }
+    .figure-card h3 { margin: 0 0 10px; color: var(--jade-2); }
+    .figure-card p { margin: 12px 0 0; color: var(--muted); }
+    .figure-card .figure-index { font-family: var(--mono); color: var(--cinnabar); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .flow-list { display: grid; gap: 12px; padding-left: 0; list-style: none; }
+    .flow-list li { border-left: 4px solid rgba(31, 109, 92, 0.35); padding: 10px 14px; background: rgba(255,255,255,0.48); border-radius: var(--r-sm); }
+    @media (max-width: 1080px) {
+      .page { grid-template-columns: 1fr; }
+      .toc { position: static; order: -1; }
+    }
+    @media (max-width: 760px) {
+      .summary-grid, .map-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script defer src="assets/js/article-base.js"></script>
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="用八張圖看懂 ATM 如何治理 AI Agent 工程鏈">
+  <meta property="og:description" content="從 next 入口、doctor、lock、hook、git-head evidence、taskflow close 到 batch checkpoint，整理 ATM 如何讓 AI Agent 工作變成可驗證、可回溯、可接手的工程流程。">
+  <meta property="og:url" content="https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide.html">
+  <meta property="og:site_name" content="AI Learning Notes">
+  <meta property="og:locale" content="zh_TW">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="article:author" content="Eagl Huang">
+  <meta property="article:published_time" content="2026-06-30">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="用八張圖看懂 ATM 如何治理 AI Agent 工程鏈">
+  <meta name="twitter:description" content="一篇給工程團隊看的 ATM 治理圖解：讓多 Agent 協作不靠記憶，而靠任務、鎖、驗證、證據與交接。">
+  <link rel="alternate" type="application/rss+xml" title="AI Learning Notes RSS" href="https://eaglhuang.github.io/AI-learning-notes/feed.xml">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "用八張圖看懂 ATM 如何治理 AI Agent 工程鏈",
+    "author": { "@type": "Person", "name": "Eagl Huang", "url": "https://github.com/eaglhuang" },
+    "datePublished": "2026-06-30",
+    "dateModified": "2026-06-30",
+    "url": "https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide.html",
+    "inLanguage": "zh-Hant",
+    "publisher": { "@type": "Organization", "name": "AI Learning Notes", "url": "https://eaglhuang.github.io/AI-learning-notes/" },
+    "keywords": "ATM, AI Agent, AI Governance, Multi-Agent, Git Evidence, Taskflow, Batch Checkpoint, Engineering Workflow"
+  }
+  </script>
+</head>
+<body id="top">
+  <div class="page">
+    <main class="main-column">
+      <p class="back-links">
+        <a href="./">首頁</a> /
+        <a href="articles/">文章列表</a> /
+        <a href="atm_governance_ai_visual_guide_en.html">English version</a>
+      </p>
+
+      <header class="hero">
+        <p class="eyebrow">ATM Governance · Visual Guide</p>
+        <h1>用八張圖看懂 ATM 如何治理 AI Agent 工程鏈</h1>
+        <p class="sub-title">當 AI 開始不只是一個助手，而是一群 Agent 一起改同一個 repo，真正困難的地方不再是「會不會寫程式」，而是「能不能穩定、可驗證、可回溯地交付」。</p>
+        <p class="byline">by <strong><a href="https://github.com/eaglhuang" target="_blank" rel="author noopener">Eagl Huang</a></strong><span class="byline-dot">·</span>2026 年 6 月 30 日<span class="byline-dot">·</span>約 10 分鐘閱讀</p>
+        <p class="lede">ATM 的核心不是叫人類記更多指令，而是讓 AI Agent 進入 repo 後，能自動學會本地 skill、讀懂任務意圖、取得邊界、驗證結果、留下證據，再把工作交接給下一個人或下一個 Agent。這八張圖可以視為 ATM 的治理地圖：從入口、健康檢查、鎖定、hook、git-head evidence，到 close 與 batch checkpoint。</p>
+        <div class="hero-grid">
+          <div class="stat-card"><strong>8 張治理圖</strong><span>把 ATM 的主要操作面從入口到結案串成一條可讀路徑。</span></div>
+          <div class="stat-card"><strong>1 條工程鏈</strong><span>任務意圖、範圍、驗證、證據、交接與 closure 不再散落在對話裡。</span></div>
+          <div class="stat-card"><strong>多 Agent 協同</strong><span>讓並行工作先有邊界，再進入修改、驗證與合併節奏。</span></div>
+        </div>
+      </header>
+
+      <section class="panel" id="summary">
+        <h2>先講結論：ATM 治理的不是 AI，而是 AI 的工程行為</h2>
+        <p>很多人談 AI coding，會把注意力放在模型能力：哪個模型比較聰明、哪個 prompt 比較準、哪個 Agent 能一次改更多檔案。但當專案進入長期開發，問題會換一個形狀。你開始在意的是：它有沒有先理解任務？有沒有拿到合法範圍？有沒有跑驗證？失敗時能不能知道卡在哪？下一個 Agent 接手時，是否不需要重新猜前因後果？</p>
+        <div class="callout">ATM 把 AI 工作收斂成一條工程生產鏈：先 route，再檢查健康狀態，取得 lock 或 claim，透過 hook 擋掉不合規變更，最後用 evidence 與 taskflow close 留下可回溯證據。這就是它防止 AI 幻想漂移的方式。</div>
+        <div class="summary-grid">
+          <div class="mini-card">
+            <h3>對人類</h3>
+            <p>你只描述目標，像是「修一個登入驗證 bug，並留下可 review 的 evidence」。ATM 的理想入口是讓 Agent 透過 skill 自動走治理流程，而不是要求你手背 CLI。</p>
+          </div>
+          <div class="mini-card">
+            <h3>對 Agent</h3>
+            <p>Agent 進 repo 後不應直接動手，而是先讀本地入口規則，透過 ATM next 判斷任務路徑，再按照 playbook、scope 與 validator 做事。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="atlas">
+        <h2>1. 先看全圖：ATM Governance Atlas</h2>
+        <figure class="figure-card">
+          <p class="figure-index">Figure 02</p>
+          <h3>ATM governance atlas</h3>
+          <img src="docs/02-atm-governance-atlas.png" alt="ATM governance atlas showing the major governance surfaces from entry routing to evidence and closure.">
+          <figcaption>這張圖是整篇的地圖。它把 ATM 看成一個 repo 內的治理層：入口不是單一命令，而是一組讓 Agent 能穩定工作的規則、技能、檢查點與證據通道。</figcaption>
+        </figure>
+        <p>如果只記一件事，就是 ATM 不想取代 Git、CI 或人類 review。它比較像是放在 AI Agent 和 repo 之間的治理緩衝層：Agent 想做事，先經過 route；要改檔，先有 scope；要結案，先有 evidence；要多人協作，先知道哪些工作會撞在一起。</p>
+      </section>
+
+      <section class="panel" id="entry">
+        <h2>2. next 是入口：先決定「這件事該怎麼走」</h2>
+        <figure class="figure-card">
+          <p class="figure-index">Figure 03</p>
+          <h3>next entry decision</h3>
+          <img src="docs/03-next-entry-decision.png" alt="ATM next entry decision diagram showing how a request is routed before editing.">
+          <figcaption><code>next</code> 是 Agent 的第一個治理入口。它不只是問「下一步是什麼」，而是把使用者要求轉成可執行的 route、playbook、風險提示與必要前置條件。</figcaption>
+        </figure>
+        <p>在 CLI-first 的世界，人類要記得先跑什麼、後跑什麼。在 skill-first 的 ATM 裡，這些應該變成 Agent 的習慣：使用者說出目標，Agent 透過 repo-local skill 進入 <code>next</code>，再依照回傳的 playbook 行動。這是防止 AI 自己腦補流程的第一道門。</p>
+      </section>
+
+      <section class="panel" id="doctor">
+        <h2>3. doctor 是健康檢查：先知道 repo 能不能承受這次變更</h2>
+        <figure class="figure-card">
+          <p class="figure-index">Figure 04</p>
+          <h3>doctor health check</h3>
+          <img src="docs/04-doctor-health-check.png" alt="ATM doctor health check diagram showing repository readiness checks.">
+          <figcaption><code>doctor</code> 不是形式檢查，它是在問：這個 repo 的治理狀態是否足以讓 Agent 安全工作？入口、integrations、runner、evidence、policy、git 狀態都可能成為早期警訊。</figcaption>
+        </figure>
+        <p>AI 工程最怕的是錯誤太晚才出現。doctor 的價值在於把「等到 commit 才爆」的問題提前，讓 Agent 在修改之前就知道環境是否健康。對多 Agent 團隊來說，這等於把 repo 的交通號誌先亮出來。</p>
+      </section>
+
+      <section class="panel" id="boundary">
+        <h2>4. lock / claim 是邊界：讓 Agent 先被任務收斂</h2>
+        <figure class="figure-card">
+          <p class="figure-index">Figure 05</p>
+          <h3>lock and claim boundary</h3>
+          <img src="docs/05-lock-claim-boundary.png" alt="ATM lock and claim boundary diagram showing scoped work admission before mutation.">
+          <figcaption>lock 與 claim 的重點不是增加手續，而是讓 Agent 在修改前先承認「我這次只負責這個範圍」。這一步可以大幅降低 AI 幻想漂移與多 Agent 互踩。</figcaption>
+        </figure>
+        <p>當 Agent 沒有邊界，它會很自然地把小修補擴成大整理，把 bugfix 寫成順手重構。ATM 的做法是先把任務關進合理的工作框，讓修改、驗證、證據都能對齊同一個範圍。</p>
+      </section>
+
+      <section class="panel" id="hooks">
+        <h2>5. hook 是現場閘門：在 commit 前攔住不合規的工作</h2>
+        <figure class="figure-card">
+          <p class="figure-index">Figure 06</p>
+          <h3>hook pre-commit gate</h3>
+          <img src="docs/06-hook-pre-commit-gate.png" alt="ATM hook pre-commit gate diagram showing checks before git commit.">
+          <figcaption>pre-commit gate 把治理從「事後提醒」變成「現場攔截」。如果缺少 lock、evidence、scope 或必要檢查，hook 可以在 commit 前擋住。</figcaption>
+        </figure>
+        <p>這一層是 ATM 很工程化的地方。它不是期待 Agent 自律，而是把規則放進 repo 的日常動作裡。當 AI 變多，靠提醒會累；靠 gate 才能穩。</p>
+      </section>
+
+      <section class="panel" id="git-head">
+        <h2>6. git-head evidence：讓證據對得上真正的 HEAD</h2>
+        <figure class="figure-card">
+          <p class="figure-index">Figure 01</p>
+          <h3>git-head evidence flowchart</h3>
+          <img src="docs/01-git-head-evidence-flowchart.png" alt="ATM git-head evidence flowchart showing how evidence is bound to current git head.">
+          <figcaption>git-head evidence 解的是一個很實際的問題：你說通過驗證的那份 evidence，究竟是不是對應目前這個 HEAD？如果 evidence 與 commit range 對不上，closure 就不應該被信任。</figcaption>
+        </figure>
+        <p>AI 協作裡，最容易被忽略的是「證據新鮮度」。測試曾經通過，不代表現在這個 tree 通過。ATM 把 evidence 綁回 git head，是為了讓每次 close 都能回答：這份證據到底證明了哪一份程式碼？</p>
+      </section>
+
+      <section class="panel" id="close">
+        <h2>7. taskflow close：不要只說完成，要能證明完成</h2>
+        <figure class="figure-card">
+          <p class="figure-index">Figure 07</p>
+          <h3>taskflow close flowchart</h3>
+          <img src="docs/07-taskflow-close-flowchart.png" alt="ATM taskflow close flowchart showing evidence-backed task closure.">
+          <figcaption><code>taskflow close</code> 把「我做完了」變成一個可驗證動作。它關心 scope、delivery、evidence、git head、closure packet，而不是只看 Agent 的口頭回報。</figcaption>
+        </figure>
+        <p>這是 ATM 和一般聊天式協作最大的差異之一。一般 Agent 結束時會說「已完成」；ATM 要求它留下足以被檢查、被 audit、被下一個人接手的 closure。這種設計讓 AI 產出從對話變成工程紀錄。</p>
+      </section>
+
+      <section class="panel" id="batch">
+        <h2>8. batch checkpoint：多任務不是一次全吞，而是一個一個穩定前進</h2>
+        <figure class="figure-card">
+          <p class="figure-index">Figure 08</p>
+          <h3>batch checkpoint flowchart</h3>
+          <img src="docs/08-batch-checkpoint-flowchart.png" alt="ATM batch checkpoint flowchart showing queue-head delivery and checkpointing.">
+          <figcaption>batch checkpoint 適合處理多張任務卡或一串修補。ATM 不鼓勵 Agent 一口氣把所有任務混在同一包，而是要求 queue head 先交付、先驗證、先 checkpoint。</figcaption>
+        </figure>
+        <p>這個觀念很重要：多 Agent 並行不等於沒有節奏。batch checkpoint 讓大型工作保有節拍，降低「做很多但不知道哪個真的完成」的混亂，也讓 captain 或下一個 Agent 可以從清楚的 checkpoint 接手。</p>
+      </section>
+
+      <section class="panel" id="one-chain">
+        <h2>把八張圖串起來：ATM 的單一流程工程生產鏈</h2>
+        <ol class="flow-list">
+          <li><strong>先 route：</strong>用 <code>next</code> 把自然語言任務轉成治理路徑。</li>
+          <li><strong>再檢查：</strong>用 <code>doctor</code> 確認 repo、runner、integration 與 evidence 狀態。</li>
+          <li><strong>取得邊界：</strong>用 lock / claim 讓 Agent 的工作範圍明確化。</li>
+          <li><strong>現場攔截：</strong>用 hook 在 commit 前擋住缺 scope、缺 evidence 或違規操作。</li>
+          <li><strong>綁定證據：</strong>用 git-head evidence 確認驗證結果對得上目前程式碼。</li>
+          <li><strong>正式結案：</strong>用 taskflow close 讓「完成」變成可驗證 closure。</li>
+          <li><strong>批次前進：</strong>用 batch checkpoint 把多任務拆成可接手的節點。</li>
+        </ol>
+        <p>這就是 ATM 治理 AI 的方式：不要求 Agent 永遠聰明，也不假設 prompt 永遠完美，而是把它的工程行為放進一條可收斂、可驗證、可回溯的鏈裡。對人類來說，這才是多 Agent 合作真正能走遠的基礎。</p>
+      </section>
+    </main>
+
+    <aside class="toc">
+      <h2>目錄</h2>
+      <ol>
+        <li><a href="#summary">先講結論</a></li>
+        <li><a href="#atlas">治理總覽</a></li>
+        <li><a href="#entry">next 入口</a></li>
+        <li><a href="#doctor">doctor 健康檢查</a></li>
+        <li><a href="#boundary">lock / claim 邊界</a></li>
+        <li><a href="#hooks">pre-commit gate</a></li>
+        <li><a href="#git-head">git-head evidence</a></li>
+        <li><a href="#close">taskflow close</a></li>
+        <li><a href="#batch">batch checkpoint</a></li>
+        <li><a href="#one-chain">單一工程鏈</a></li>
+      </ol>
+      <p class="note">這篇文章使用 <code>docs/</code> 內的 8 張 ATM 治理圖，適合當作知識網站的治理導覽入口。</p>
+    </aside>
+  </div>
+</body>
+</html>

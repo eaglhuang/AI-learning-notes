@@ -12,14 +12,47 @@
     <copyright>Copyright (c) Eagl Huang</copyright>
     <managingEditor>noreply@eaglhuang.github.io (Eagl Huang)</managingEditor>
     <webMaster>noreply@eaglhuang.github.io (Eagl Huang)</webMaster>
-    <lastBuildDate>Sat, 06 Jun 2026 15:50:25 +0800</lastBuildDate>
-    <pubDate>Sat, 06 Jun 2026 15:50:25 +0800</pubDate>
+    <lastBuildDate>Tue, 30 Jun 2026 00:00:00 +0800</lastBuildDate>
+    <pubDate>Tue, 30 Jun 2026 00:00:00 +0800</pubDate>
     <ttl>1440</ttl>
     <image>
       <url>https://eaglhuang.github.io/AI-learning-notes/assets/og/atm_atomic_foundry_en.svg</url>
       <title>AI Learning Notes</title>
       <link>https://eaglhuang.github.io/AI-learning-notes/</link>
     </image>
+
+    <item>
+      <title>用八張圖看懂 ATM 如何治理 AI Agent 工程鏈 | AI Learning Notes</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide.html</guid>
+      <pubDate>Tue, 30 Jun 2026 00:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>zh-Hant</dc:language>
+      <description><![CDATA[用八張 ATM 治理圖整理 AI Agent 從任務入口、健康檢查、鎖定邊界、pre-commit gate、證據鏈、任務結案到 batch checkpoint 的完整工程治理流程。]]></description>
+      <category>AI Engineering</category>
+    </item>
+
+    <item>
+      <title>Understanding ATM Governance for AI Agents in Eight Diagrams | AI Learning Notes</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide_en.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide_en.html</guid>
+      <pubDate>Tue, 30 Jun 2026 00:00:00 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>en</dc:language>
+      <description><![CDATA[A visual technical article explaining how ATM governs AI-agent engineering work through next routing, doctor health checks, scoped locks, pre-commit gates, git-head evidence, taskflow close, and batch checkpointing.]]></description>
+      <category>AI Engineering</category>
+    </item>
+
+    <item>
+      <title>ATM Paper Landing Page | Pre-Write Admission for Multi-Agent Code Co-Synthesis</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/atm_pre_write_admission_paper_en.html</link>
+      <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/atm_pre_write_admission_paper_en.html</guid>
+      <pubDate>Mon, 29 Jun 2026 15:59:14 +0800</pubDate>
+      <dc:creator>Eagl Huang</dc:creator>
+      <dc:language>en</dc:language>
+      <description><![CDATA[Landing page for the ATM paper on pre-write admission for multi-agent code co-synthesis, including summary, claim boundary, links to code, and public artifact guidance.]]></description>
+      <category>AI Engineering</category>
+    </item>
 
     <item>
       <title>Why "Same File = Conflict" Is Wrong for Multi-Agent Coding: A CID-Based Parallel Conflict Advisor</title>
