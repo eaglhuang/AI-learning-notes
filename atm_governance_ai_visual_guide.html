@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>用八張圖看懂 ATM 如何治理 AI Agent 工程鏈 | AI Learning Notes</title>
-  <meta name="description" content="用八張 ATM 治理圖整理 AI Agent 從治理全圖、卡片圖盤、next 入口、健康檢查、鎖定邊界、pre-commit gate、證據鏈到 batch checkpoint 的完整工程治理流程。">
+  <title>用九張圖看懂 ATM 如何治理 AI Agent 工程鏈 | AI Learning Notes</title>
+  <meta name="description" content="用九張 ATM 治理圖整理 AI Agent 從治理全圖、卡片圖盤、next 入口、健康檢查、鎖定邊界、pre-commit gate、證據鏈、taskflow close 到 batch checkpoint 的完整工程治理流程。">
   <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide.html">
   <link rel="alternate" hreflang="en" href="https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide_en.html">
   <link rel="stylesheet" href="assets/css/dark-override.css">
@@ -30,8 +30,8 @@
   </style>
   <script defer src="assets/js/article-base.js"></script>
   <meta property="og:type" content="article">
-  <meta property="og:title" content="用八張圖看懂 ATM 如何治理 AI Agent 工程鏈">
-  <meta property="og:description" content="從治理全圖、卡片圖盤、next 入口、doctor、lock、hook、git-head evidence 到 batch checkpoint，整理 ATM 如何讓 AI Agent 工作變成可驗證、可回溯、可接手的工程流程。">
+  <meta property="og:title" content="用九張圖看懂 ATM 如何治理 AI Agent 工程鏈">
+  <meta property="og:description" content="從治理全圖、卡片圖盤、next 入口、doctor、lock、hook、git-head evidence、taskflow close 到 batch checkpoint，整理 ATM 如何讓 AI Agent 工作變成可驗證、可回溯、可接手的工程流程。">
   <meta property="og:url" content="https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide.html">
   <meta property="og:site_name" content="AI Learning Notes">
   <meta property="og:locale" content="zh_TW">
@@ -39,14 +39,14 @@
   <meta property="article:author" content="Eagl Huang">
   <meta property="article:published_time" content="2026-06-30">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="用八張圖看懂 ATM 如何治理 AI Agent 工程鏈">
+  <meta name="twitter:title" content="用九張圖看懂 ATM 如何治理 AI Agent 工程鏈">
   <meta name="twitter:description" content="一篇給工程團隊看的 ATM 治理圖解：讓多 Agent 協作不靠記憶，而靠任務、鎖、驗證、證據與交接。">
   <link rel="alternate" type="application/rss+xml" title="AI Learning Notes RSS" href="https://eaglhuang.github.io/AI-learning-notes/feed.xml">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "TechArticle",
-    "headline": "用八張圖看懂 ATM 如何治理 AI Agent 工程鏈",
+    "headline": "用九張圖看懂 ATM 如何治理 AI Agent 工程鏈",
     "author": { "@type": "Person", "name": "Eagl Huang", "url": "https://github.com/eaglhuang" },
     "datePublished": "2026-06-30",
     "dateModified": "2026-06-30",
@@ -68,12 +68,12 @@
 
       <header class="hero">
         <p class="eyebrow">ATM Governance · Visual Guide</p>
-        <h1>用八張圖看懂 ATM 如何治理 AI Agent 工程鏈</h1>
+        <h1>用九張圖看懂 ATM 如何治理 AI Agent 工程鏈</h1>
         <p class="sub-title">當 AI 開始不只是一個助手，而是一群 Agent 一起改同一個 repo，真正困難的地方不再是「會不會寫程式」，而是「能不能穩定、可驗證、可回溯地交付」。</p>
         <p class="byline">by <strong><a href="https://github.com/eaglhuang" target="_blank" rel="author noopener">Eagl Huang</a></strong><span class="byline-dot">·</span>2026 年 6 月 30 日<span class="byline-dot">·</span>約 10 分鐘閱讀</p>
         <p class="lede">ATM 的核心不是叫人類記更多指令，而是讓 AI Agent 進入 repo 後，能自動學會本地 skill、讀懂任務意圖、取得邊界、驗證結果、留下證據，再把工作交接給下一個人或下一個 Agent。這八張圖可以視為 ATM 的治理地圖：從入口、健康檢查、鎖定、hook、git-head evidence，到 close 與 batch checkpoint。</p>
         <div class="hero-grid">
-          <div class="stat-card"><strong>8 張治理圖</strong><span>把 ATM 的主要操作面從入口到結案串成一條可讀路徑。</span></div>
+          <div class="stat-card"><strong>9 張治理圖</strong><span>把 ATM 的主要操作面從入口到結案串成一條可讀路徑。</span></div>
           <div class="stat-card"><strong>1 條工程鏈</strong><span>任務意圖、範圍、驗證、證據、交接與 closure 不再散落在對話裡。</span></div>
           <div class="stat-card"><strong>多 Agent 協同</strong><span>讓並行工作先有邊界，再進入修改、驗證與合併節奏。</span></div>
         </div>
@@ -178,8 +178,20 @@
         <p>想像一個場景：Agent A 上午跑過驗證，下午又多改了兩個檔案，卻還想沿用早上的「已通過」結果。如果沒有 git-head evidence，這種舊證據很容易混進新提交裡。綁回 HEAD 之後，系統可以明確問它：你手上的這份證據，是不是就是現在這棵 tree 的證據？不是的話，就重跑。</p>
       </section>
 
+      <section class="panel" id="close">
+        <h2>8. taskflow close：不要只說完成，要能證明完成</h2>
+        <figure class="figure-card">
+          <p class="figure-index">Figure 09</p>
+          <h3>taskflow close flowchart</h3>
+          <img src="docs/09-taskflow-close-flowchart.png" alt="ATM taskflow close flowchart showing evidence-backed task closure.">
+          <figcaption><code>taskflow close</code> 把「我做完了」變成治理上的正式結案。它會檢查 scope、delivery、evidence、git-head 新鮮度與 closeout readiness，而不是只接受 Agent 的口頭回報。</figcaption>
+        </figure>
+        <p>這一步的價值，在於把實作結果轉成下一個人、下一個 Agent、或 audit 可以真的信任的 closure。重點不是多跑一個命令，而是讓「完成」從對話句子變成有證據支撐的結案事件。</p>
+        <p>舉例來說，Agent 把 landing page 改完之後，可能會因為畫面看起來正確就說自己完成了。但 ATM 還會追問：這次實際交付的檔案是不是原本宣告的範圍、validator 是否真的對應這份 delivery、git-head evidence 是否足夠新鮮，能不能支持結案。如果這些答案不完整，close 就應該停下來，而不是默默放行。</p>
+      </section>
+
       <section class="panel" id="batch">
-        <h2>8. batch checkpoint：多任務不是一次全吞，而是一個一個穩定前進</h2>
+        <h2>9. batch checkpoint：多任務不是一次全吞，而是一個一個穩定前進</h2>
         <figure class="figure-card">
           <p class="figure-index">Figure 08</p>
           <h3>batch checkpoint flowchart</h3>
@@ -191,7 +203,7 @@
       </section>
 
       <section class="panel" id="one-chain">
-        <h2>把八張圖放回同一套治理視角：哪張是地圖，哪張是操作板</h2>
+        <h2>把九張圖放回同一套治理視角：哪張是地圖，哪張是操作板</h2>
         <ol class="flow-list">
           <li><strong>治理全圖：</strong>atlas 負責給你全局座標，先知道 ATM 在 repo 裡管的是哪些面。</li>
           <li><strong>操作圖盤：</strong>cards batch 1 把高頻治理卡收成一個首頁，方便快速進場。</li>
@@ -200,9 +212,9 @@
           <li><strong>取得邊界：</strong>用 lock / claim 讓 Agent 的工作範圍明確化。</li>
           <li><strong>現場攔截：</strong>用 hook 在 commit 前擋住缺 scope、缺 evidence 或違規操作。</li>
           <li><strong>綁定證據：</strong>用 git-head evidence 確認驗證結果對得上目前程式碼。</li>
+          <li><strong>正式結案：</strong>用 taskflow close 讓 delivery 與 evidence 變成可檢查的 closure。</li>
           <li><strong>批次前進：</strong>用 batch checkpoint 把多任務拆成可接手的節點。</li>
         </ol>
-        <p>如果你在找 <code>taskflow close</code>，它不是不重要，而是這一批 8 張圖裡沒有獨立收錄 close 圖。實際工程鏈裡，它會接在 git-head evidence 之後，負責把 delivery 與 evidence 收束成 closure，再交給下一個 batch checkpoint 或下一位接手者。</p>
         <p>這就是 ATM 治理 AI 的方式：不要求 Agent 永遠聰明，也不假設 prompt 永遠完美，而是把它的工程行為放進一條可收斂、可驗證、可回溯的鏈裡。對人類來說，這才是多 Agent 合作真正能走遠的基礎。</p>
       </section>
     </main>
@@ -218,10 +230,11 @@
         <li><a href="#boundary">lock / claim 邊界</a></li>
         <li><a href="#hooks">pre-commit gate</a></li>
         <li><a href="#git-head">git-head evidence</a></li>
+        <li><a href="#close">taskflow close</a></li>
         <li><a href="#batch">batch checkpoint</a></li>
         <li><a href="#one-chain">單一工程鏈</a></li>
       </ol>
-      <p class="note">這篇文章使用 <code>docs/</code> 內的 8 張 ATM 治理圖，其中一張是治理卡片圖盤第 1 批，適合當作知識網站的治理導覽入口。</p>
+      <p class="note">這篇文章使用 <code>docs/</code> 內的 9 張 ATM 治理圖，其中包含治理卡片圖盤第 1 批與一張獨立的 taskflow close 圖，適合當作知識網站的治理導覽入口。</p>
     </aside>
   </div>
 </body>

@@ -22,24 +22,24 @@
     </image>
 
     <item>
-      <title>用八張圖看懂 ATM 如何治理 AI Agent 工程鏈 | AI Learning Notes</title>
+      <title>用九張圖看懂 ATM 如何治理 AI Agent 工程鏈 | AI Learning Notes</title>
       <link>https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide.html</link>
       <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide.html</guid>
       <pubDate>Tue, 30 Jun 2026 00:00:00 +0800</pubDate>
       <dc:creator>Eagl Huang</dc:creator>
       <dc:language>zh-Hant</dc:language>
-      <description><![CDATA[用八張 ATM 治理圖整理 AI Agent 從治理全圖、卡片圖盤、next 入口、健康檢查、鎖定邊界、pre-commit gate、證據鏈到 batch checkpoint 的完整工程治理流程。]]></description>
+      <description><![CDATA[用九張 ATM 治理圖整理 AI Agent 從治理全圖、卡片圖盤、next 入口、健康檢查、鎖定邊界、pre-commit gate、證據鏈、taskflow close 到 batch checkpoint 的完整工程治理流程。]]></description>
       <category>AI Engineering</category>
     </item>
 
     <item>
-      <title>Understanding ATM Governance for AI Agents in Eight Diagrams | AI Learning Notes</title>
+      <title>Understanding ATM Governance for AI Agents in Nine Diagrams | AI Learning Notes</title>
       <link>https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide_en.html</link>
       <guid isPermaLink="true">https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide_en.html</guid>
       <pubDate>Tue, 30 Jun 2026 00:00:00 +0800</pubDate>
       <dc:creator>Eagl Huang</dc:creator>
       <dc:language>en</dc:language>
-      <description><![CDATA[A visual technical article explaining how ATM governs AI-agent engineering work through a governance atlas, an operational card board, next routing, doctor health checks, scoped locks, pre-commit gates, git-head evidence, and batch checkpointing.]]></description>
+      <description><![CDATA[A visual technical article explaining how ATM governs AI-agent engineering work through a governance atlas, an operational card board, next routing, doctor health checks, scoped locks, pre-commit gates, git-head evidence, taskflow close, and batch checkpointing.]]></description>
       <category>AI Engineering</category>
     </item>
 

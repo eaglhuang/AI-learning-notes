@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Understanding ATM Governance for AI Agents in Eight Diagrams | AI Learning Notes</title>
-  <meta name="description" content="A visual technical article explaining how ATM governs AI-agent engineering work through a governance atlas, an operational card board, next routing, doctor health checks, scoped locks, pre-commit gates, git-head evidence, and batch checkpointing.">
+  <title>Understanding ATM Governance for AI Agents in Nine Diagrams | AI Learning Notes</title>
+  <meta name="description" content="A visual technical article explaining how ATM governs AI-agent engineering work through a governance atlas, an operational card board, next routing, doctor health checks, scoped locks, pre-commit gates, git-head evidence, taskflow close, and batch checkpointing.">
   <link rel="canonical" href="https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide_en.html">
   <link rel="alternate" hreflang="zh-Hant" href="https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide.html">
   <link rel="stylesheet" href="assets/css/dark-override.css">
@@ -30,8 +30,8 @@
   </style>
   <script defer src="assets/js/article-base.js"></script>
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Understanding ATM Governance for AI Agents in Eight Diagrams">
-  <meta property="og:description" content="A visual guide to ATM's engineering governance chain: atlas, card board, next, doctor, lock, hooks, git-head evidence, and batch checkpoint.">
+  <meta property="og:title" content="Understanding ATM Governance for AI Agents in Nine Diagrams">
+  <meta property="og:description" content="A visual guide to ATM's engineering governance chain: atlas, card board, next, doctor, lock, hooks, git-head evidence, taskflow close, and batch checkpoint.">
   <meta property="og:url" content="https://eaglhuang.github.io/AI-learning-notes/atm_governance_ai_visual_guide_en.html">
   <meta property="og:site_name" content="AI Learning Notes">
   <meta property="og:locale" content="en_US">
@@ -39,14 +39,14 @@
   <meta property="article:author" content="Eagl Huang">
   <meta property="article:published_time" content="2026-06-30">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Understanding ATM Governance for AI Agents in Eight Diagrams">
+  <meta name="twitter:title" content="Understanding ATM Governance for AI Agents in Nine Diagrams">
   <meta name="twitter:description" content="How ATM turns AI-agent work into a bounded, validated, auditable engineering chain.">
   <link rel="alternate" type="application/rss+xml" title="AI Learning Notes RSS" href="https://eaglhuang.github.io/AI-learning-notes/feed.xml">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "TechArticle",
-    "headline": "Understanding ATM Governance for AI Agents in Eight Diagrams",
+    "headline": "Understanding ATM Governance for AI Agents in Nine Diagrams",
     "author": { "@type": "Person", "name": "Eagl Huang", "url": "https://github.com/eaglhuang" },
     "datePublished": "2026-06-30",
     "dateModified": "2026-06-30",
@@ -68,12 +68,12 @@
 
       <header class="hero">
         <p class="eyebrow">ATM Governance · Visual Guide</p>
-        <h1>Understanding ATM Governance for AI Agents in Eight Diagrams</h1>
+        <h1>Understanding ATM Governance for AI Agents in Nine Diagrams</h1>
         <p class="sub-title">Once AI becomes a team of agents changing the same repository, the hard question is no longer only "can it write code?" It becomes: can it deliver stable, verifiable, recoverable engineering work?</p>
         <p class="byline">by <strong><a href="https://github.com/eaglhuang" target="_blank" rel="author noopener">Eagl Huang</a></strong><span class="byline-dot">·</span>June 30, 2026<span class="byline-dot">·</span>10 min read</p>
         <p class="lede">ATM is not about making humans memorize more commands. It is about letting an AI agent enter a repository, learn the local ATM skill, understand task intent, obtain a boundary, validate the result, leave evidence, and hand the work to the next human or agent. These eight diagrams form a map of that governance chain: entry routing, health checks, locks, hooks, git-head evidence, closeout, and batch checkpointing.</p>
         <div class="hero-grid">
-          <div class="stat-card"><strong>8 governance diagrams</strong><span>A readable path through ATM's main operational surfaces.</span></div>
+          <div class="stat-card"><strong>9 governance diagrams</strong><span>A readable path through ATM's main operational surfaces.</span></div>
           <div class="stat-card"><strong>1 engineering chain</strong><span>Intent, scope, validation, evidence, handoff, and closure stop living only in chat.</span></div>
           <div class="stat-card"><strong>Multi-agent coordination</strong><span>Parallel work gets a boundary before it becomes mutation.</span></div>
         </div>
@@ -178,8 +178,20 @@
         <p>Picture agent A running validation in the morning, then editing two more files in the afternoon while still carrying the old "passed" result. Without git-head evidence, stale proof can quietly leak into a new delivery. Once evidence is tied to HEAD, the system can ask the right question: does this proof belong to this exact tree? If not, rerun it.</p>
       </section>
 
+      <section class="panel" id="close">
+        <h2>8. taskflow close: don't just say done, prove done</h2>
+        <figure class="figure-card">
+          <p class="figure-index">Figure 09</p>
+          <h3>taskflow close flowchart</h3>
+          <img src="docs/09-taskflow-close-flowchart.png" alt="ATM taskflow close flowchart showing evidence-backed task closure.">
+          <figcaption><code>taskflow close</code> turns "I'm done" into a governed closure transition. It checks scope, delivery, evidence, git-head freshness, and closeout readiness instead of accepting a chat summary.</figcaption>
+        </figure>
+        <p>This is the step that turns implementation into something another human, another agent, or an audit can actually trust. The important shift is that "done" is no longer a conversational claim. It becomes a closure event backed by declared evidence.</p>
+        <p>A practical example is an agent finishing a landing page update and claiming success because the page visually looks correct. ATM still asks harder questions: were the intended files the ones actually delivered, do the validators map to this delivery, and is the git-head evidence fresh enough to close? If those answers are incomplete, close should stop rather than silently bless the task.</p>
+      </section>
+
       <section class="panel" id="batch">
-        <h2>8. batch checkpoint: large queues move one stable head at a time</h2>
+        <h2>9. batch checkpoint: large queues move one stable head at a time</h2>
         <figure class="figure-card">
           <p class="figure-index">Figure 08</p>
           <h3>batch checkpoint flowchart</h3>
@@ -191,7 +203,7 @@
       </section>
 
       <section class="panel" id="one-chain">
-        <h2>Put the eight diagrams back into one governance view</h2>
+        <h2>Put the nine diagrams back into one governance view</h2>
         <ol class="flow-list">
           <li><strong>Atlas:</strong> the governance atlas gives the global coordinate system.</li>
           <li><strong>Board:</strong> cards batch 1 groups the high-frequency governance cards into one dashboard.</li>
@@ -200,9 +212,9 @@
           <li><strong>Bound:</strong> lock / claim gives the agent a declared scope.</li>
           <li><strong>Gate:</strong> hooks block invalid state before commit.</li>
           <li><strong>Bind proof:</strong> git-head evidence proves which code the validation describes.</li>
+          <li><strong>Close formally:</strong> taskflow close turns delivery plus evidence into governed closure.</li>
           <li><strong>Advance deliberately:</strong> batch checkpoint keeps multi-task work resumable.</li>
         </ol>
-        <p>If you are looking for <code>taskflow close</code>, it is still important; it just is not included as a standalone visual in this particular eight-image pack. In the real engineering chain, it sits after git-head evidence and turns delivery plus evidence into closure before the next checkpoint or handoff.</p>
         <p>This is how ATM governs AI: it does not assume the model is always right or the prompt is always perfect. It places agent work inside a bounded, validated, recoverable chain. That is the foundation that lets multi-agent collaboration become an engineering practice rather than a pile of impressive but fragile edits.</p>
       </section>
     </main>
@@ -218,10 +230,11 @@
         <li><a href="#boundary">lock / claim boundary</a></li>
         <li><a href="#hooks">pre-commit gate</a></li>
         <li><a href="#git-head">git-head evidence</a></li>
+        <li><a href="#close">taskflow close</a></li>
         <li><a href="#batch">batch checkpoint</a></li>
         <li><a href="#one-chain">One engineering chain</a></li>
       </ol>
-      <p class="note">This article uses the eight ATM governance diagrams under <code>docs/</code>, including one operational card board, as a visual entry point for the knowledge site.</p>
+      <p class="note">This article uses the nine ATM governance diagrams under <code>docs/</code>, including one operational card board and a dedicated taskflow close diagram, as a visual entry point for the knowledge site.</p>
     </aside>
   </div>
 </body>
