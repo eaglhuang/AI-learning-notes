@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+  <id>https://eaglhuang.github.io/AI-learning-notes/daily/</id>
+  <title>Atomic AI Daily</title>
+  <updated>2026-10-04T12:00:00+08:00</updated>
+  <link href="https://eaglhuang.github.io/AI-learning-notes/daily/atom-en.xml" rel="self" />
+  <link href="https://eaglhuang.github.io/AI-learning-notes/daily/" />
+  <author>
+    <name>Eagl Huang</name>
+  </author>
+  <entry>
+    <id>https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/en/</id>
+    <title>AI Weekly · October 4, 2026</title>
+    <updated>2026-10-04T12:00:00+08:00</updated>
+    <summary>Simon Willison argues for default hard spending limits: Willison argues that agents make paid APIs and cloud services easier to deploy, increasing exposure to runaway usage. He advocates default spending limits that stop service at the budget ceiling, with an explicit choice required to remove them.
+
+Prime Inference opens its model-serving platform: Prime Intellect launched Prime Inference with serverless endpoints, reserved capacity and an OpenAI-compatible interface. Its engineering account explains cross-datacenter failover, caching and scheduling for long-context agent traffic.
+
+BootLoops pairs verifiable calculations with domain judgment: Physicist Matthew Schwartz describes BootLoops, a harness that gives agents checkable computational tools for cross-domain research. His central lesson is that technically correct results can still lack scientific value; domain experts must guide the questions and inspect the conclusions.
+
+OpenAI reports reasoning-extraction activity and mitigations: OpenAI reports disrupting coordinated attempts to extract protected model reasoning and strengthening protections across users and models. The company says the activity did not directly access stored user conversations. This September disclosure concerns activity observed in July.
+
+GPT-6.1 Sol targets lower-cost agent workflows: OpenAI introduced GPT-6.1 Sol for coding, computer use and professional tasks. Standard API prices are $2 per million input tokens, $10 per million output tokens and $0.10 per million cached input tokens; the company reports stronger performance than GPT-6 Sol.
+
+Sonnet 5.5 emphasizes efficiency at unchanged token prices: Anthropic says Sonnet 5.5 generates output over 30% faster and costs up to 30% less per task in its tests. Input and output prices remain $2 and $10 per million tokens; the savings chiefly come from lower token usage.
+
+Holo4 brings screen and tool interactions into one model: H Company released Holo4 in 27B dense and 35B-A3B MoE versions for GUI interaction, code execution, MCP and APIs. The team also publishes public-benchmark trajectories so developers can inspect the actions behind its reported scores.
+
+Codoku offers renewable program-reasoning tests: Codoku asks agents to fill incomplete programs under global static and dynamic constraints, with fresh puzzles generated on demand. The authors evaluated five frontier models on 300 puzzles and report that even proprietary models solved only about half of the large puzzles.
+
+LEGO-Anything separates valid 3D artifacts from accurate scenes: LEGO-Anything has coding agents iteratively write and execute Blender programs from single images. Its benchmark uses 208 images from 104 scenes and separates artifact validity, geometry and appearance, exposing a substantial gap between usable outputs and accurate reconstruction.
+
+GitHub reports 24 Android flaws from staged AI audits: GitHub Security Lab describes staged auditing workflows and reports finding and reporting 24 Android-app vulnerabilities. The account explains why models can misjudge impact or exploitability, and why validation and researcher review remain necessary.</summary>
+    <link href="https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/en/" />
+    <category term="General AI edition" />
+  </entry>
+</feed>

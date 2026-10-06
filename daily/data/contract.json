@@ -1,0 +1,9 @@
+{
+  "schema_version": 2,
+  "locales": ["zh-TW", "en"],
+  "min_items": 6,
+  "max_items": 14,
+  "categories": ["news", "papers", "products", "writing", "tools", "engineering"],
+  "issue_text_fields": ["title", "coverage", "editorial_note"],
+  "item_text_limits": {"title":220,"summary":1600,"takeaway":900,"caveat":900}
+}

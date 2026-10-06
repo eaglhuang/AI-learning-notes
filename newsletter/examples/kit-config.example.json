@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "provider": "kit",
+  "drafts_enabled": false,
+  "subscriptions_enabled": false,
+  "site_url": "https://eaglhuang.github.io/AI-learning-notes",
+  "sender_email": null,
+  "sender_verification": null,
+  "locales": {
+    "zh-TW": {
+      "form_id": null,
+      "hosted_url": null,
+      "segment_id": null,
+      "email_template_id": null,
+      "template_type": "classic",
+      "doi_verification": null,
+      "audience_verification": null,
+      "template_verification": null
+    },
+    "en": {
+      "form_id": null,
+      "hosted_url": null,
+      "segment_id": null,
+      "email_template_id": null,
+      "template_type": "classic",
+      "doi_verification": null,
+      "audience_verification": null,
+      "template_verification": null
+    }
+  }
+}

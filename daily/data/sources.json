@@ -1,0 +1,73 @@
+{
+  "sources": [
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "category": "news",
+      "feed_url": "https://openai.com/news/rss.xml",
+      "allowed_hosts": [
+        "openai.com"
+      ]
+    },
+    {
+      "id": "huggingface",
+      "name": "Hugging Face",
+      "category": "tools",
+      "feed_url": "https://huggingface.co/blog/feed.xml",
+      "allowed_hosts": [
+        "huggingface.co"
+      ]
+    },
+    {
+      "id": "arxiv-ai",
+      "name": "arXiv cs.AI",
+      "category": "papers",
+      "feed_url": "https://rss.arxiv.org/rss/cs.AI",
+      "allowed_hosts": [
+        "rss.arxiv.org",
+        "arxiv.org"
+      ]
+    },
+    {
+      "id": "simon-willison",
+      "name": "Simon Willison",
+      "category": "writing",
+      "feed_url": "https://simonwillison.net/atom/everything/",
+      "allowed_hosts": [
+        "simonwillison.net"
+      ]
+    }
+  ],
+  "ranking": {
+    "method": "recency_then_editorial_review",
+    "window_days": 7,
+    "target_items": 10,
+    "popularity_metrics_available": false
+  },
+  "search": {
+    "providers": [
+      "gdelt",
+      "arxiv"
+    ],
+    "max_results": 100,
+    "allowed_article_hosts": [
+      "reuters.com",
+      "www.reuters.com",
+      "apnews.com",
+      "www.bbc.com",
+      "www.theguardian.com",
+      "arstechnica.com",
+      "www.theverge.com",
+      "techcrunch.com",
+      "www.technologyreview.com",
+      "www.nature.com",
+      "www.science.org",
+      "openai.com",
+      "www.anthropic.com",
+      "blog.google",
+      "huggingface.co",
+      "www.cna.com.tw",
+      "www.ithome.com.tw"
+    ]
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "keywords": [],
+  "english_aliases": {},
+  "match": "any",
+  "exclude_keywords": [],
+  "lookback_days": 7
+}

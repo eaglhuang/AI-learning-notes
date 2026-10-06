@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "keywords": [
+    "具身智能"
+  ],
+  "english_aliases": {
+    "具身智能": [
+      "embodied AI",
+      "embodied intelligence"
+    ]
+  },
+  "match": "any",
+  "exclude_keywords": [
+    "cryptocurrency"
+  ],
+  "lookback_days": 7
+}
