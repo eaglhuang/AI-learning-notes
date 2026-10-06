@@ -157,7 +157,7 @@ class PipelineTests(unittest.TestCase):
         with self.assertRaises(ValueError):prepare(ROOT/'daily/unsafe-run',config=CONFIG,now=NOW)
         self.assertFalse((ROOT/'daily/unsafe-run').exists())
     def test_traversal_confinement_uses_canonical_path(self):
-        disguised=ROOT.parent/'temporary/../source/daily/pipeline-output'
+        disguised=ROOT.parent/'temporary'/'..'/ROOT.name/'daily/pipeline-output'
         with self.assertRaises(ValueError):run_path(disguised)
         legitimate=ROOT/'../pipeline-smoke/outside'
         self.assertEqual(run_path(legitimate),legitimate.resolve())

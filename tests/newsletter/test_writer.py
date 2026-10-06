@@ -252,7 +252,7 @@ class WriterTests(unittest.TestCase):
             self.assertEqual(subprocess.run(apply,capture_output=True).returncode,2)
             # Existing files remain untouched even if a destination looks outside
             # lexically but resolves to the public repository.
-            outside_looking=ROOT.parent/'temporary/../source/writer-output.json'
+            outside_looking=ROOT.parent/'temporary'/'..'/ROOT.name/'writer-output.json'
             bad=prepare[:-1]+[str(outside_looking)]
             self.assertEqual(subprocess.run(bad,capture_output=True).returncode,2)
             self.assertFalse((ROOT/'writer-output.json').exists())
