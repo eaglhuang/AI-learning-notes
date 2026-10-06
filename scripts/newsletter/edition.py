@@ -19,6 +19,22 @@ def valid_date(value):
     return date.fromisoformat(value)
 
 
+def summary_errors(item, issue_date):
+    """Enforce the dated editorial policy without rewriting historical editions."""
+    policy = CONTRACT['summary_policy']
+    if valid_date(issue_date) < valid_date(policy['effective_from']):
+        return []
+    fields = item.get(policy['locale'])
+    value = fields.get('summary') if isinstance(fields, dict) else None
+    if not isinstance(value, str):
+        return ['Traditional Chinese summary is required']
+    # Unicode White_Space, shared explicitly with the JavaScript validator.
+    length = len(re.sub(r'[\u0009-\u000d\u0020\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]', '', value))
+    if not policy['min_characters'] <= length <= policy['max_characters']:
+        return [f"Traditional Chinese summary must contain {policy['min_characters']}–{policy['max_characters']} non-whitespace characters (target {policy['target_characters']}); found {length}"]
+    return []
+
+
 def validate_edition(issue, today=None):
     """Fail closed on unreviewed, synthetic, incomplete, unsafe or future content."""
     errors = []
@@ -120,6 +136,8 @@ def validate_edition(issue, today=None):
                 value = fields.get(field) if isinstance(fields, dict) else None
                 if not isinstance(value, str) or not value.strip() or len(value) > maximum:
                     errors.append(f"{prefix}.{locale}.{field} is missing or too long")
+        if issue_date:
+            errors.extend(f'{prefix}: {error}' for error in summary_errors(item, issue_date.isoformat()))
     return errors
 
 

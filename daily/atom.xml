@@ -2,12 +2,32 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-TW">
   <id>https://eaglhuang.github.io/AI-learning-notes/daily/</id>
   <title>小豆 AI 日報</title>
-  <updated>2026-10-04T12:00:00+08:00</updated>
+  <updated>2026-10-06T12:00:00+08:00</updated>
   <link href="https://eaglhuang.github.io/AI-learning-notes/daily/atom.xml" rel="self" />
   <link href="https://eaglhuang.github.io/AI-learning-notes/daily/" />
   <author>
     <name>Eagl Huang</name>
   </author>
+  <entry>
+    <id>https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/</id>
+    <title>10/06 AI 日報：程式審查、代理執行與語音系統</title>
+    <updated>2026-10-06T12:00:00+08:00</updated>
+    <summary>GitHub 推出 ReviewBench，評估 AI 程式碼審查的取捨: GitHub 在 10 月 5 日公開 ReviewBench，讓 AI 程式碼審查有一套可重複比較的方法。它依真實 PR 的語言、儲存庫及變更規模分布設計評測，結合多來源標準答案與資深工程師驗證，並按問題嚴重度及精確率、召回率觀察表現。對採用多代理審查的團隊，這提供了分別衡量漏報與噪音的起點，也提醒我們不能只比較代理找出多少問題。要注意，這仍是離線評測；是否適合自己的程式庫，仍需用實際案例驗證。
+
+CodeMender v0.12.0 擴大掃描覆蓋，限制修補範圍: Google 在 10 月 5 日更新 CodeMender 至 v0.12.0，新增隱藏檔掃描選項，並把預設檔案探索上限從 500 KB 提高至 2 MiB。修補代理也會限制與漏洞無關的持續整合、建置及設定檔修改；高信心漏洞回報要求具體可行的利用證據，並修正整段工作階段的 token 統計。對 AI 修補流程，重點是同時控制漏掃、越界修改與成本。隱藏檔掃描須主動啟用，公告也未量化誤報改善幅度。
+
+GitHub 加入 Lovable、Pydantic 與 Supabase 憑證偵測: GitHub 於 10 月 5 日擴充秘密掃描，加入 Lovable API 金鑰、Pydantic 的觀測與 AI 閘道憑證，以及兩種 Supabase token。Lovable 同時加入合作計畫，公有儲存庫發現其憑證時，GitHub 會通知發行方處理。對使用 AI 快速搭建應用的團隊，這提醒開發者在原型轉正式服務前，檢查設定檔與程式碼中的憑證。不過，新增偵測不代表能找出所有秘密，也不能視為洩漏已自動修復；通報流程仍有適用範圍。
+
+Snowflake Cortex Agent 程式執行工具正式推出: Snowflake 在 10 月 5 日宣布 Cortex Agent 內建程式執行工具進入正式提供階段。開發者在代理規格中啟用後，代理能依問題決定何時產生及執行腳本，用於資料處理、計算、視覺化，也能執行技能中的 Python。工具預設在隔離沙箱內運作，僅存取當前工作階段資料。對資料型 AI 應用，這是評估受管執行環境與自建沙箱的具體選項；但本次新進展是從預覽走向正式提供，不能當成首次推出，也不代表任何設定下都具有相同隔離條件。
+
+Nova 2.5 Sonic 與 Strands Bidi GA，強化即時語音代理: AWS 於 10 月 5 日在 Bedrock 正式提供 Nova 2.5 Sonic，宣稱改善即時語音代理的推理、指令遵循、工具呼叫與延遲。同期正式推出的 Strands Bidi Agents 支援多家語音模型，記錄工作階段及工具呼叫追蹤，並能在背景重新連線以延長對話。對開發者，值得注意的是模型之外的可觀測性及連線管理，這些都影響長時間任務能否完成。效能改善仍屬供應商敘述，背景重連也不表示底層模型取消工作階段限制。
+
+OpenAI 開放部分 API 模型自選文字浮水印: OpenAI 於 10 月 5 日宣布，全球 API 客戶可對部分模型自選文字浮水印，預設仍關閉；歐盟符合條件的 ChatGPT 與 Codex 文字輸出，則預計未來幾週逐步導入。偵測器開放申請，初期僅供獲核准研究者及專業組織使用。對整合生成式內容的開發者，這讓來源訊號成為產品設計的選項，但應區分已可申請的能力與尚未完成的部署。官方也強調短文及編輯會影響偵測，因此不能把結果當作作者身分，或是否使用 AI 的確定證明。
+
+ChatGPT 預告圖像廣告測試，擴充成效衡量工具: OpenAI 於 10 月 5 日宣布新的 ChatGPT 圖像廣告格式，計畫本月稍後先在美國與少數廣告主測試，廣告會清楚標示，並與正在生成的圖片分開。公司同時擴充轉換資料、歸因與成效衡量合作，並與合作夥伴開發品牌適配評估試點。對打造 AI 產品的團隊，這顯示對話與生成介面正形成新的商業接觸點，評估時應分清曝光、歸因轉換與真正新增的效果。公告中的成效數字來自合作案例，不能推論所有廣告主都會獲得相同結果，新格式也尚未全面上線。</summary>
+    <link href="https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/" />
+    <category term="一般 AI 選讀" />
+  </entry>
   <entry>
     <id>https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/</id>
     <title>AI 週報 · 2026/10/04</title>

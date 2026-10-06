@@ -7,6 +7,19 @@ const origin='https://eaglhuang.github.io';
 const site=origin+'/AI-learning-notes';
 const request=(body,extra={})=>new Request('https://api.test/subscribe',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json',...extra},body:JSON.stringify(body)});
 const valid={email:'reader@example.com',locale:'zh-TW',consent:true,website:''};
+test('new summary length policy preserves old editions and counts Unicode consistently',()=>{
+  assert.deepEqual(validateEmailEdition(issue),[]);
+  const next=structuredClone(issue);next.date='2026-10-06';next.reviewed_on='2026-10-06';
+  assert.ok(validateEmailEdition(next).some(e=>e.includes('180–240')));
+  for(const item of next.items)item['zh-TW'].summary='測'.repeat(200);
+  assert.deepEqual(validateEmailEdition(next),[]);
+  for(const length of [179,241]){next.items[0]['zh-TW'].summary='測'.repeat(length);assert.ok(validateEmailEdition(next).some(e=>e.includes('180–240')));}
+  for(const length of [180,240]){next.items[0]['zh-TW'].summary='測'.repeat(length);assert.deepEqual(validateEmailEdition(next),[]);}
+  next.items[0]['zh-TW'].summary='測'.repeat(179)+' \n\t\u0085\u3000'.repeat(8);
+  assert.ok(validateEmailEdition(next).some(e=>e.includes('180–240')));
+  next.items[0]['zh-TW'].summary='測'.repeat(179)+'𠮷';assert.deepEqual(validateEmailEdition(next),[]);
+  assert.ok(renderEmail(next,'zh-TW',site).html.includes(next.items[0]['zh-TW'].summary));
+});
 test('unconfigured service fails closed',async()=>{const response=await createSubscriptionHandler()(request(valid));assert.equal(response.status,503);});
 test('requires origin, valid email, consent and rate limiter',async()=>{let calls=0;const handler=createSubscriptionHandler({origin,provider:{requestDoubleOptIn:async()=>calls++},rateLimiter:{allow:async()=>true}});for(const body of [{...valid,consent:false},{...valid,email:'bad'},{...valid,locale:'xx'},{...valid,website:'bot'}])assert.equal((await handler(request(body))).status,400);assert.equal((await handler(request(valid,{Origin:'https://evil.test'}))).status,403);assert.equal(calls,0);});
 test('acceptance means confirmation requested, never subscribed',async()=>{let body;const handler=createSubscriptionHandler({origin,provider:{requestDoubleOptIn:async b=>{body=b;}},rateLimiter:{allow:async()=>true}});const response=await handler(request(valid));assert.equal(response.status,202);assert.deepEqual(await response.json(),{status:'confirmation_requested'});assert.deepEqual(body,{email:valid.email,locale:valid.locale});assert.equal(response.headers.get('Access-Control-Allow-Origin'),origin);});

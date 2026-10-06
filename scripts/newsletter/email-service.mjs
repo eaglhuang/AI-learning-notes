@@ -35,6 +35,13 @@ export function validateEmailEdition(issue, today = new Date().toISOString().sli
       url.hash='';const key=url.toString();if(urls.has(key))errors.push('duplicate source URL');urls.add(key);
     } catch { errors.push('safe HTTPS source URL required'); }
     for (const locale of locales) for (const [field,max] of Object.entries(contract.item_text_limits)) if (!nonempty(item[locale]?.[field]) || [...item[locale][field]].length>max) errors.push(`${locale}.${field} missing or too long`);
+    const policy=contract.summary_policy;
+    if (realDate(issue.date) && issue.date>=policy.effective_from) {
+      const value=item[policy.locale]?.summary;
+      // Unicode White_Space, exactly the same set used by edition.py.
+      const length=typeof value==='string'?[...value.replace(/[\u0009-\u000d\u0020\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]/gu,'')].length:0;
+      if (length<policy.min_characters || length>policy.max_characters) errors.push(`Traditional Chinese summary must contain ${policy.min_characters}–${policy.max_characters} non-whitespace characters (target ${policy.target_characters})`);
+    }
   }
   return [...errors,...validateTopicEdition(issue)];
 }

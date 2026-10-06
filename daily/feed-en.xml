@@ -7,6 +7,26 @@
     <language>en</language>
     <item>
       <category>General AI edition</category>
+      <title>October 6 AI Daily: code review, agent execution and voice systems</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/en/</link>
+      <guid>https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/en/</guid>
+      <pubDate>Tue, 06 Oct 2026 12:00:00 +0800</pubDate>
+      <description>ReviewBench: An open benchmark for AI code review: GitHub launched ReviewBench, a reproducible benchmark for AI code reviewers. It models real pull-request distributions and combines multiple sources of reference findings with engineer validation. Severity, precision, and recall help separate missed issues from noisy comments. For teams adopting review agents, it offers an evaluation starting point, but an offline result still needs validation against the team's own repositories.
+
+CodeMender updates (v0.12.0): Google released CodeMender v0.12.0 with optional hidden-file scanning and a larger default discovery limit, from 500 KB to 2 MiB. Fixes are constrained from making unrelated configuration changes, high-confidence findings require viable exploit evidence, and token accounting now covers the whole session. These changes address scan coverage, repair boundaries, and cost visibility; hidden-file scanning is opt-in and no quantified false-positive improvement was supplied.
+
+Secret scanning adds detectors for Lovable, Supabase, and more: GitHub expanded secret scanning to cover Lovable API keys, Pydantic observability and AI Gateway credentials, and two Supabase token types. Lovable also joined the issuer-notification program for public repositories. The update is relevant when moving AI-built prototypes toward production, but additional detectors do not guarantee complete secret coverage or automatic remediation, and partner notifications apply only within their supported scope.
+
+October 5, 2026: Cortex Agent code execution tool (General availability): Snowflake made the Cortex Agent code execution tool generally available. Once enabled in an agent specification, it can execute generated scripts for data processing, calculations, visualizations, and Python-based skills. Default sandbox access is limited to current-session data. This offers a managed execution option for data agents, but the news is its move from preview to GA, and the default isolation description should not be generalized to every configuration.
+
+Announcing Amazon Nova 2.5 Sonic with improved reasoning for voice agents: AWS launched Nova 2.5 Sonic in Bedrock, claiming improvements in reasoning, instruction following, tool use, and latency. The accompanying Strands Bidi Agents GA supports multiple voice-model providers, session and tool-call tracing, and background reconnection. For developers, observability and connection management matter alongside model quality. Performance claims remain vendor-reported, and reconnection does not remove the underlying model's session limit.
+
+Our approach to EU text provenance rules: OpenAI opened optional text watermarking for selected API models, with the API default remaining off. Eligible ChatGPT and Codex text output in the EU is scheduled for rollout over coming weeks, while detector access initially requires approval. Developers should distinguish available opt-in controls from future deployment plans, and treat detection as a limited provenance signal rather than proof of authorship or definitive evidence of AI use.
+
+ChatGPT plans visual-ad testing and expands measurement tools: OpenAI announced a visual ad format for ChatGPT, with a limited US test planned for later this month. Ads will be labeled and remain separate from generated images. The company also expanded conversion-data and attribution integrations and is developing brand-suitability evaluation pilots. For AI product teams, the update illustrates new commercial touchpoints around generation; attributed conversions should be distinguished from incremental impact. Partner case studies are not a guarantee of results for every advertiser, and the new format is not yet broadly available.</description>
+    </item>
+    <item>
+      <category>General AI edition</category>
       <title>AI Weekly · October 4, 2026</title>
       <link>https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/en/</link>
       <guid>https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/en/</guid>

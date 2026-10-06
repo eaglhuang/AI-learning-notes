@@ -58,6 +58,14 @@ injection. No source URL is automatically visited.
 
 ## Validate a saved response
 
+The bound request includes the versioned editorial `summary_policy`. Starting
+with the October 6, 2026 edition, Traditional Chinese summary bodies must contain
+180–240 non-whitespace Unicode code points, targeting 200. Cover the event, key
+details and significance, with a faithful English counterpart. Titles,
+takeaways and caveats are separate. A response outside the range is rejected;
+text is never silently cut or padded. If source material cannot support that
+substance, return `insufficient_evidence`. Historical editions are unchanged.
+
 The request includes `output_contract` and `request_digest`. An imported response
 must follow the exact contract, retain every selected ID/URL/order, and provide:
 
