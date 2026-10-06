@@ -103,6 +103,10 @@ def url_to_local_path(url: str) -> Path | None:
     if not url.startswith(SITE):
         return None
     tail = url[len(SITE):].lstrip("/")
+    # Newsletter editions have their own feed. Keep them out even if someone
+    # later adds their index.html URLs to the site sitemap.
+    if tail.startswith(("daily/", "newsletter/")):
+        return None
     # Skip the homepage and the article-list directory
     if tail in ("", "articles/"):
         return None

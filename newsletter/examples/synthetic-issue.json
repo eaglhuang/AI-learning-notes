@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-03",
+  "synthetic": true,
+  "items": [
+    {
+      "id": "synthetic-01",
+      "source_url": "https://example.org/synthetic-news/1",
+      "zh-TW": {
+        "title": "合成測試項目 1",
+        "summary": "這是虛構的格式測試資料，不是新聞。"
+      },
+      "en": {
+        "title": "Synthetic test item 1",
+        "summary": "Invented format-test data, not a news report."
+      }
+    },
+    {
+      "id": "synthetic-02",
+      "source_url": "https://example.org/synthetic-news/2",
+      "zh-TW": {
+        "title": "合成測試項目 2",
+        "summary": "這是虛構的格式測試資料，不是新聞。"
+      },
+      "en": {
+        "title": "Synthetic test item 2",
+        "summary": "Invented format-test data, not a news report."
+      }
+    },
+    {
+      "id": "synthetic-03",
+      "source_url": "https://example.org/synthetic-news/3",
+      "zh-TW": {
+        "title": "合成測試項目 3",
+        "summary": "這是虛構的格式測試資料，不是新聞。"
+      },
+      "en": {
+        "title": "Synthetic test item 3",
+        "summary": "Invented format-test data, not a news report."
+      }
+    },
+    {
+      "id": "synthetic-04",
+      "source_url": "https://example.org/synthetic-news/4",
+      "zh-TW": {
+        "title": "合成測試項目 4",
+        "summary": "這是虛構的格式測試資料，不是新聞。"
+      },
+      "en": {
+        "title": "Synthetic test item 4",
+        "summary": "Invented format-test data, not a news report."
+      }
+    },
+    {
+      "id": "synthetic-05",
+      "source_url": "https://example.org/synthetic-news/5",
+      "zh-TW": {
+        "title": "合成測試項目 5",
+        "summary": "這是虛構的格式測試資料，不是新聞。"
+      },
+      "en": {
+        "title": "Synthetic test item 5",
+        "summary": "Invented format-test data, not a news report."
+      }
+    },
+    {
+      "id": "synthetic-06",
+      "source_url": "https://example.org/synthetic-news/6",
+      "zh-TW": {
+        "title": "合成測試項目 6",
+        "summary": "這是虛構的格式測試資料，不是新聞。"
+      },
+      "en": {
+        "title": "Synthetic test item 6",
+        "summary": "Invented format-test data, not a news report."
+      }
+    },
+    {
+      "id": "synthetic-07",
+      "source_url": "https://example.org/synthetic-news/7",
+      "zh-TW": {
+        "title": "合成測試項目 7",
+        "summary": "這是虛構的格式測試資料，不是新聞。"
+      },
+      "en": {
+        "title": "Synthetic test item 7",
+        "summary": "Invented format-test data, not a news report."
+      }
+    },
+    {
+      "id": "synthetic-08",
+      "source_url": "https://example.org/synthetic-news/8",
+      "zh-TW": {
+        "title": "合成測試項目 8",
+        "summary": "這是虛構的格式測試資料，不是新聞。"
+      },
+      "en": {
+        "title": "Synthetic test item 8",
+        "summary": "Invented format-test data, not a news report."
+      }
+    },
+    {
+      "id": "synthetic-09",
+      "source_url": "https://example.org/synthetic-news/9",
+      "zh-TW": {
+        "title": "合成測試項目 9",
+        "summary": "這是虛構的格式測試資料，不是新聞。"
+      },
+      "en": {
+        "title": "Synthetic test item 9",
+        "summary": "Invented format-test data, not a news report."
+      }
+    },
+    {
+      "id": "synthetic-10",
+      "source_url": "https://example.org/synthetic-news/10",
+      "zh-TW": {
+        "title": "合成測試項目 10",
+        "summary": "這是虛構的格式測試資料，不是新聞。"
+      },
+      "en": {
+        "title": "Synthetic test item 10",
+        "summary": "Invented format-test data, not a news report."
+      }
+    }
+  ]
+}

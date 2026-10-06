@@ -1,0 +1,18 @@
+[
+  {
+    "date": "2026-10-04",
+    "title": {
+      "zh-TW": "AI 週報 · 2026/10/04",
+      "en": "AI Weekly · October 4, 2026"
+    },
+    "count": 10,
+    "topic": {
+      "schema_version": 1,
+      "keywords": [],
+      "english_aliases": {},
+      "match": "any",
+      "exclude_keywords": [],
+      "lookback_days": 7
+    }
+  }
+]

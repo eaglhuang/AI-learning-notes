@@ -1,0 +1,37 @@
+name: Validate newsletter
+on:
+  pull_request:
+    paths: ["daily/**", "scripts/newsletter/**", "tests/newsletter/**", "scripts/build-feed.py", "index.html", ".github/workflows/validate-newsletter.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify generated pages and feeds are current
+        run: python -B scripts/newsletter/build.py --check
+      - name: Validate content, feed separation, local links and collector
+        run: python -B -m unittest discover -s tests/newsletter -p 'test_*.py' -v
+      - name: Validate browser logic and email safety without network
+        run: node --test tests/newsletter/*.test.mjs
+      - name: Install isolated browser test dependencies
+        run: |
+          python -m pip install playwright==1.62.0
+          python -m playwright install --with-deps chromium
+      - name: Browser regression at GitHub Pages path prefix
+        run: python -B tests/newsletter/browser_check.py --output /tmp/newsletter-browser-evidence
+      - name: Save browser report and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newsletter-browser-evidence
+          path: /tmp/newsletter-browser-evidence
+          if-no-files-found: warn

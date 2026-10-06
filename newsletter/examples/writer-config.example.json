@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "live_enabled": false,
+  "provider": null,
+  "model": null,
+  "max_input_bytes": 120000,
+  "max_input_tokens": 32000,
+  "max_output_tokens": 12000,
+  "max_response_bytes": 150000,
+  "max_cost_usd": "0.00",
+  "pricing": null,
+  "timeout_seconds": 30,
+  "max_attempts": 1
+}

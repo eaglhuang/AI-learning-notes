@@ -1,0 +1,15 @@
+[
+  {"name":"English width and case", "keywords":["ＡＩ"], "title":"New AI research", "excerpt":"", "eligible":true, "matched_terms":["AI"]},
+  {"name":"Chinese literal", "keywords":["具身智能"], "title":"具身智能的新進展", "excerpt":"", "eligible":true,"matched_terms":["具身智能"]},
+  {"name":"Explicit alias", "keywords":["具身智能"],"english_aliases":{"具身智能":["embodied AI"]}, "title":"Embodied AI advances", "excerpt":"", "eligible":true,"matched_terms":["embodied AI"]},
+  {"name":"No invented translation", "keywords":["具身智能"], "title":"Embodied AI advances", "excerpt":"", "eligible":false,"matched_terms":[]},
+  {"name":"OR groups", "keywords":["AI","robot"], "title":"New AI research", "excerpt":"", "eligible":true,"matched_terms":["AI"]},
+  {"name":"AND groups", "keywords":["AI","robot"],"match":"all", "title":"New AI research", "excerpt":"", "eligible":false,"matched_terms":["AI"]},
+  {"name":"AND across fields", "keywords":["AI","robot"],"match":"all", "title":"New AI research", "excerpt":"A robot", "eligible":true,"matched_terms":["AI","robot"]},
+  {"name":"No phrase spanning fields", "keywords":["embodied AI"], "title":"embodied", "excerpt":"AI", "eligible":false,"matched_terms":[]},
+  {"name":"Exclude wins", "keywords":["AI"],"exclude_keywords":["crypto"], "title":"AI crypto update", "excerpt":"", "eligible":false,"matched_terms":["AI"]},
+  {"name":"No AI substring", "keywords":["AI"], "title":"said chain paid", "excerpt":"", "eligible":false,"matched_terms":[]},
+  {"name":"Casefold expansion", "keywords":["STRASSE"], "title":"Straße", "excerpt":"", "eligible":true,"matched_terms":["STRASSE"]},
+  {"name":"Casefold sigma", "keywords":["ΟΣ"], "title":"ος", "excerpt":"", "eligible":true,"matched_terms":["ΟΣ"]},
+  {"name":"Prototype keyword is data", "keywords":["constructor"], "title":"constructor details", "excerpt":"", "eligible":true,"matched_terms":["constructor"]}
+]
