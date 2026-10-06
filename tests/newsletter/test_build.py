@@ -35,6 +35,27 @@ class NewsletterBuildTests(unittest.TestCase):
 
     def test_valid_production_contract(self):self.assertEqual(validate_edition(self.issue),[])
 
+    def test_new_summary_policy_preserves_archive_and_rejects_short_or_padded_text(self):
+        self.assertEqual(validate_edition(self.issue),[])
+        issue=copy.deepcopy(self.issue);issue.update(date='2026-10-06',reviewed_on='2026-10-06')
+        self.assertTrue(any('180–240' in e for e in validate_edition(issue)))
+        for item in issue['items']:item['zh-TW']['summary']='測'*200
+        self.assertEqual(validate_edition(issue),[])
+        for length in (179,241):
+            issue['items'][0]['zh-TW']['summary']='測'*length
+            self.assertTrue(any('180–240' in e for e in validate_edition(issue)))
+        for length in (180,240):
+            issue['items'][0]['zh-TW']['summary']='測'*length
+            self.assertEqual(validate_edition(issue),[])
+        issue['items'][0]['zh-TW']['summary']='測'*179+' \n\t\u0085\u3000'*8
+        self.assertTrue(any('180–240' in e for e in validate_edition(issue)))
+        issue['items'][0]['zh-TW']['summary']='測'*179+'𠮷'
+        self.assertEqual(validate_edition(issue),[])
+        html=render_issue(issue,[issue],self.config,'daily/index.html','zh-TW')
+        self.assertIn(issue['items'][0]['zh-TW']['summary'],html)
+        issue['items'][0]['zh-TW']=None
+        self.assertTrue(validate_edition(issue))
+
     def test_approximately_ten_not_forced_padding(self):
         issue=copy.deepcopy(self.issue);issue['items']=issue['items'][:8]
         self.assertEqual(validate_edition(issue),[])
@@ -65,7 +86,9 @@ class NewsletterBuildTests(unittest.TestCase):
         self.assertIn('daily/archive/en/index.html',self.generated)
         self.assertNotIn('2026-09-30/index.html',''.join(self.generated))
         self.assertIn('lang="en"',self.generated['daily/en/index.html'])
-        self.assertEqual(self.generated['daily/index.html'].count('data-card'),10)
+        latest=load_edition(max((ROOT/'daily/data/issues').glob('*.json')))
+        self.assertEqual(self.generated['daily/index.html'].count('data-card'),len(latest['items']))
+        self.assertEqual(self.generated['daily/2026-10-04/index.html'].count('data-card'),10)
 
     def test_english_static_routes_preserve_locale(self):
         for name,html in self.generated.items():

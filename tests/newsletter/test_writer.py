@@ -59,6 +59,22 @@ def fixtures(partial=False):
 
 
 class WriterTests(unittest.TestCase):
+    def test_new_writer_summary_policy_is_bound_and_fail_closed(self):
+        draft,bundle,_,response=fixtures()
+        draft['date']='2026-10-06'
+        request=prepare_request(draft,bundle,CONFIG)
+        self.assertEqual(request['data']['summary_policy']['target_characters'],200)
+        response['request_digest']=request['request_digest']
+        with self.assertRaisesRegex(ValueError,'180–240'):
+            apply_response(draft,request,response)
+        for item in response['items']:item['zh-TW']['summary']='測'*200
+        written,_=apply_response(draft,request,response)
+        self.assertFalse(written['reviewed'])
+        self.assertEqual(written['items'][0]['en']['summary'],response['items'][0]['en']['summary'])
+        response['items'][0]['zh-TW']['summary']='測'*241
+        with self.assertRaisesRegex(ValueError,'180–240'):
+            apply_response(draft,request,response)
+
     def test_default_is_explicitly_unconnected_and_unpriced(self):
         _,_,request,_ = fixtures()
         self.assertFalse(request['live_dispatch_allowed'])

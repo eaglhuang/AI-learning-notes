@@ -1,5 +1,21 @@
 [
   {
+    "date": "2026-10-06",
+    "title": {
+      "zh-TW": "10/06 AI 日報：程式審查、代理執行與語音系統",
+      "en": "October 6 AI Daily: code review, agent execution and voice systems"
+    },
+    "count": 7,
+    "topic": {
+      "schema_version": 1,
+      "keywords": [],
+      "english_aliases": {},
+      "match": "any",
+      "exclude_keywords": [],
+      "lookback_days": 7
+    }
+  },
+  {
     "date": "2026-10-04",
     "title": {
       "zh-TW": "AI 週報 · 2026/10/04",

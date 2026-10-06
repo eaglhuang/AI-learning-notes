@@ -114,7 +114,7 @@ class PipelineTests(unittest.TestCase):
     def test_topic_end_to_end_preview_keeps_provenance(self):
         self.make(topic=True);issue=self.write_review();state=preview(self.run)
         self.assertEqual(state['state'],'preview_ready')
-        self.assertIn('Topic edition: AI',(self.run/'preview/daily/en/index.html').read_text())
+        self.assertIn('Topic edition: AI',(self.run/'preview/daily/2026-10-05/en/index.html').read_text())
         saved=read_json(self.run/'preview/daily/data/issues/2026-10-05.json')
         self.assertEqual(saved['items'][0]['topic_evidence'],issue['items'][0]['topic_evidence'])
     def test_partial_general_cannot_hide_failures_at_review(self):
