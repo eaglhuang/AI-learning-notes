@@ -82,6 +82,24 @@ class WriterTests(unittest.TestCase):
         self.assertFalse(request['budget']['tokenizer_verified'])
         self.assertFalse(request['budget']['billing_verified'])
 
+    def test_october_7_writer_binds_500_policy_and_keeps_human_review_gate(self):
+        draft,bundle,_,response=fixtures();draft['date']='2026-10-07'
+        request=prepare_request(draft,bundle,CONFIG)
+        self.assertEqual(request['data']['summary_policy']['target_characters'],500)
+        self.assertEqual(request['data']['summary_policy']['effective_from'],'2026-10-07')
+        response['request_digest']=request['request_digest']
+        for item in response['items']:item['zh-TW']['summary']='測'*500
+        written,_=apply_response(draft,request,response)
+        self.assertFalse(written['reviewed']);self.assertEqual(written['reviewed_on'],'')
+        self.assertEqual(written['items'][0]['en']['summary'],response['items'][0]['en']['summary'])
+        for size in (200,449,551):
+            response['items'][0]['zh-TW']['summary']='測'*size
+            with self.subTest(size=size),self.assertRaisesRegex(ValueError,'450–550'):
+                apply_response(draft,request,response)
+        changed=deepcopy(request);changed['data']['summary_policy']['target_characters']=200
+        with self.assertRaisesRegex(ValueError,'request or original draft changed'):
+            apply_response(draft,changed,response)
+
     def test_live_boundary_never_invokes_injected_callable(self):
         called = []
         with self.assertRaisesRegex(ValueError,'Live writer unavailable'):

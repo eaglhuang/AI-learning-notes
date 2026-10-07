@@ -99,13 +99,21 @@ export function topicFromFields({keywords='',aliases='',exclusions='',match='any
   }
   return validateTopic({schema_version:1,keywords:split(keywords),english_aliases:map,match,exclude_keywords:split(exclusions),lookback_days:Number(days)});
 }
-export function bindTopicEditor(document){
+export function bindTopicEditor(document, initialLocale='en'){
   const form=document.querySelector('#topic-settings-form');if(!form)return;
   const preview=document.querySelector('#topic-config-preview'),status=document.querySelector('#topic-settings-status');
   const read=()=>topicFromFields({keywords:form.elements.keywords.value,aliases:form.elements.aliases.value,exclusions:form.elements.exclusions.value,match:form.elements.match.value,days:form.elements.days.value});
-  const show=()=>{try{const topic=read();preview.textContent=JSON.stringify(topic,null,2);status.textContent='Local configuration preview only / 僅在本頁預覽設定';return topic;}catch(error){preview.textContent='';status.textContent=error.message;return null;}};
-  form.addEventListener('submit',event=>{event.preventDefault();const topic=show();if(!topic)return;const url=URL.createObjectURL(new Blob([JSON.stringify(topic,null,2)+'\n'],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='topics.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status.textContent='Configuration exported; run the collector to apply / 已匯出設定，需執行收集程式才會套用';});
+  let locale=initialLocale==='zh-TW'?'zh-TW':'en',state='preview';
+  const messages={
+    preview:{'zh-TW':'僅在本頁預覽設定','en':'Local configuration preview only'},
+    exported:{'zh-TW':'已匯出設定，需執行收集程式才會套用','en':'Configuration exported; run the collector to apply'},
+    invalid:{'zh-TW':'設定無效，請檢查關鍵字、別名與回溯天數。關鍵字只能使用一般文字。','en':'Invalid configuration. Check literal keywords, aliases and lookback days.'}
+  };
+  const renderStatus=()=>{status.textContent=messages[state][locale];};
+  const show=()=>{try{const topic=read();preview.textContent=JSON.stringify(topic,null,2);state='preview';renderStatus();return topic;}catch{preview.textContent='';state='invalid';renderStatus();return null;}};
+  form.addEventListener('submit',event=>{event.preventDefault();const topic=show();if(!topic)return;const url=URL.createObjectURL(new Blob([JSON.stringify(topic,null,2)+'\n'],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='topics.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);state='exported';renderStatus();});
   form.addEventListener('input',show);
   form.addEventListener('reset',()=>setTimeout(show,0));
   show();
+  return {setLocale(next){locale=next==='zh-TW'?'zh-TW':'en';renderStatus();}};
 }

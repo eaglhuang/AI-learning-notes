@@ -1,4 +1,6 @@
 import {bindTopicEditor} from './topic-config.mjs';
+import {createSummaryController, bindIssueUI} from './issue-ui.mjs';
+import {mountArchiveSearch} from './archive-search.mjs';
 /** Progressive enhancement only: all stories and edition links work without JS. */
 export const normalize = value => String(value).normalize('NFKC').toLocaleLowerCase().trim();
 export function matches({text, category, date}, query = '', filter = 'all', selectedDate = '') {
@@ -26,6 +28,10 @@ if (typeof document !== 'undefined') {
   const count = document.querySelector('#result-count');
   const status = document.querySelector('#subscription-status');
   let statusKey = '';
+  let archiveSearch = null;
+  let topicEditor = null;
+  const summaryUI = createSummaryController({document, window, locale, onLocale: next => setLocale(next, true)});
+  bindIssueUI({document, controller: summaryUI});
   const messages = {
     sending: ['正在要求確認信…', 'Requesting a confirmation email…'],
     accepted: ['若此信箱可訂閱，請至收件匣完成確認；尚未確認前不會收到日報。', 'If this address is eligible, check your inbox to confirm. You are not subscribed until confirmation.'],
@@ -50,6 +56,9 @@ if (typeof document !== 'undefined') {
     document.documentElement.lang = locale;
     document.querySelectorAll('[data-zh][data-en]').forEach(el => { el.textContent = el.dataset[locale === 'en' ? 'en' : 'zh']; });
     document.querySelectorAll('[data-placeholder-zh]').forEach(el => { el.placeholder = el.dataset[locale === 'en' ? 'placeholderEn' : 'placeholderZh']; });
+    document.querySelectorAll('[data-alt-zh]').forEach(el => { el.alt = el.dataset[locale === 'en' ? 'altEn' : 'altZh']; });
+    document.querySelectorAll('[data-title-zh]').forEach(el => { el.title = el.dataset[locale === 'en' ? 'titleEn' : 'titleZh']; });
+    document.querySelectorAll('[data-aria-zh]').forEach(el => { el.setAttribute('aria-label', el.dataset[locale === 'en' ? 'ariaEn' : 'ariaZh']); });
     document.querySelectorAll('[data-local-link]').forEach(el => { const link = new URL(el.href, location.href); link.searchParams.set('lang',locale); el.href = link.href; });
     const toggle = document.querySelector('#language');
     if (toggle) { toggle.setAttribute('aria-label', locale === 'en' ? '切換為繁體中文' : 'Switch to English'); toggle.setAttribute('lang', locale === 'en' ? 'zh-TW' : 'en'); }
@@ -58,6 +67,9 @@ if (typeof document !== 'undefined') {
       const nextUrl = new URL(location.href); nextUrl.searchParams.set('lang', locale); history.replaceState(null, '', nextUrl);
     }
     renderFilters();
+    summaryUI.setLocale(locale);
+    archiveSearch?.setLocale(locale);
+    topicEditor?.setLocale(locale);
     if (statusKey) showStatus(statusKey);
   }
   document.querySelector('#language')?.addEventListener('click', event => { event.preventDefault(); setLocale(locale === 'en' ? 'zh-TW' : 'en', true); });
@@ -97,7 +109,21 @@ if (typeof document !== 'undefined') {
       finally { pending = false; button.disabled = false; }
     });
   }
-  bindTopicEditor(document);
+  topicEditor = bindTopicEditor(document, locale);
   setLocale(locale);
+  const archiveRoot = document.querySelector('#all-history-search');
+  if (archiveRoot) {
+    const indexUrl = new URL(archiveRoot.dataset.indexUrl, location.href);
+    if (indexUrl.origin === location.origin) {
+      fetch(indexUrl.href, {credentials: 'omit', signal: AbortSignal.timeout(15000)}).then(async response => {
+        if (!response.ok) throw new Error('Archive unavailable');
+        const raw = await response.text(); if (raw.length > 4000000) throw new Error('Archive too large');
+        archiveSearch = mountArchiveSearch({root: archiveRoot, index: JSON.parse(raw), locale, controller: summaryUI});
+      }).catch(() => {
+        const p = document.createElement('p'); p.dataset.zh = '跨期搜尋暫時無法載入，請使用下方期別連結。'; p.dataset.en = 'Archive search could not load. Use the edition links below.';
+        p.textContent = p.dataset[locale === 'en' ? 'en' : 'zh']; p.setAttribute('role', 'status'); archiveRoot.append(p);
+      });
+    }
+  }
   window.addEventListener('pageshow', renderFilters);
 }

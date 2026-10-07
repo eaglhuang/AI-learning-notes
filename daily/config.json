@@ -2,5 +2,6 @@
   "site_url": "https://eaglhuang.github.io/AI-learning-notes",
   "title": {"zh-TW": "小豆 AI 日報", "en": "Atomic AI Daily"},
   "themes": ["citrus", "electric", "rose"],
+  "enhanced_ui": {"effective_from": "2026-10-07"},
   "subscription": {"enabled": false, "endpoint": "", "provider": "", "privacy_url": ""}
 }

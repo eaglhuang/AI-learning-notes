@@ -6,7 +6,7 @@
   "categories": ["news", "papers", "products", "writing", "tools", "engineering"],
   "issue_text_fields": ["title", "coverage", "editorial_note"],
   "item_text_limits": {"title":220,"summary":1600,"takeaway":900,"caveat":900},
-  "summary_policy": {
+  "summary_policies": [{
     "effective_from": "2026-10-06",
     "locale": "zh-TW",
     "target_characters": 200,
@@ -15,5 +15,14 @@
     "counting": "unicode_codepoints_excluding_whitespace",
     "required_content": ["what happened", "key details", "why it matters"],
     "insufficient_evidence": "skip_story_without_padding"
-  }
+  }, {
+    "effective_from": "2026-10-07",
+    "locale": "zh-TW",
+    "target_characters": 500,
+    "min_characters": 450,
+    "max_characters": 550,
+    "counting": "unicode_codepoints_excluding_whitespace",
+    "required_content": ["what happened", "key details", "why it matters", "limitations"],
+    "insufficient_evidence": "skip_story_without_padding"
+  }]
 }

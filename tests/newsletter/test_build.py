@@ -11,7 +11,7 @@ from xml.etree import ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'scripts/newsletter'))
-from edition import validate_edition, load_edition
+from edition import validate_edition, load_edition, summary_policy_for
 from build import outputs, render_issue
 from collect import collect, parse_feed
 
@@ -60,6 +60,26 @@ class NewsletterBuildTests(unittest.TestCase):
         issue=copy.deepcopy(self.issue);issue['items']=issue['items'][:8]
         self.assertEqual(validate_edition(issue),[])
         issue['items']=issue['items'][:2];self.assertTrue(validate_edition(issue))
+
+    def test_dated_500_policy_shared_fixtures_and_untruncated_output(self):
+        cases=json.loads((ROOT/'tests/newsletter/fixtures/summary-policies.json').read_text())
+        for case in cases:
+            issue=copy.deepcopy(self.issue)
+            issue.update(date=case['date'],reviewed_on=case['date'])
+            for item in issue['items']:
+                item['zh-TW']['summary']='測'*case['characters']+case['tail']
+            with self.subTest(case=case):
+                self.assertEqual(not validate_edition(issue),case['valid'])
+        self.assertIsNone(summary_policy_for('2026-10-04'))
+        self.assertEqual(summary_policy_for('2026-10-06')['target_characters'],200)
+        self.assertEqual(summary_policy_for('2026-10-07')['target_characters'],500)
+        issue=copy.deepcopy(self.issue);issue.update(date='2026-10-07',reviewed_on='2026-10-07')
+        for item in issue['items']:item['zh-TW']['summary']='測'*500
+        # This synthetic policy fixture has no commissioned image set; keep its render legacy.
+        config={k:v for k,v in self.config.items() if k!='enhanced_ui'}
+        html=render_issue(issue,[issue],config,'daily/index.html','zh-TW')
+        self.assertIn('測'*500,html)
+        self.assertEqual(validate_edition(issue),[])
 
     def test_reject_unreviewed_synthetic_and_future(self):
         for field,value in [('reviewed',False),('synthetic',True),('date','2099-01-01'),('date','2026-02-30'),('schema_version',True)]:

@@ -16,6 +16,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Install pinned image validation dependency
+        run: python -m pip install -r scripts/newsletter/requirements.txt
       - name: Verify generated pages and feeds are current
         run: python -B scripts/newsletter/build.py --check
       - name: Validate content, feed separation, local links and collector

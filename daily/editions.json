@@ -1,5 +1,21 @@
 [
   {
+    "date": "2026-10-07",
+    "title": {
+      "zh-TW": "10/07 AI 日報：代理評測、開放模型與工程實作",
+      "en": "October 7 AI Daily: agent evaluation, open models and engineering practice"
+    },
+    "count": 7,
+    "topic": {
+      "schema_version": 1,
+      "keywords": [],
+      "english_aliases": {},
+      "match": "any",
+      "exclude_keywords": [],
+      "lookback_days": 7
+    }
+  },
+  {
     "date": "2026-10-06",
     "title": {
       "zh-TW": "10/06 AI 日報：程式審查、代理執行與語音系統",

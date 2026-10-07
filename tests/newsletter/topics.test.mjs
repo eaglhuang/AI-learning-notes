@@ -27,8 +27,10 @@ test('topic editor uses text-only preview and never performs a server save',asyn
   const form={elements,addEventListener:(name,fn)=>handlers[name]=fn};
   const preview={textContent:''},status={textContent:''};
   const document={querySelector:selector=>({'#topic-settings-form':form,'#topic-config-preview':preview,'#topic-settings-status':status})[selector]};
-  bindTopicEditor(document);assert.match(preview.textContent,/"AI"/);assert.match(status.textContent,/Local configuration/);
+  const editor=bindTopicEditor(document);assert.match(preview.textContent,/"AI"/);assert.match(status.textContent,/Local configuration/);
   elements.keywords.value='<script>bad</script>';handlers.input();assert.equal(preview.textContent,'');assert.match(status.textContent,/literal/);
+  editor.setLocale('zh-TW');assert.match(status.textContent,/設定無效/);assert.doesNotMatch(status.textContent,/Invalid/);assert.equal(elements.keywords.value,'<script>bad</script>');
   elements.keywords.value='具身智能';elements.aliases.value='具身智能=embodied AI';handlers.input();assert.match(preview.textContent,/embodied AI/);
+  assert.equal(status.textContent,'僅在本頁預覽設定');editor.setLocale('en');assert.equal(status.textContent,'Local configuration preview only');
   assert.equal(Object.hasOwn(preview,'innerHTML'),false);assert.equal(Object.hasOwn(status,'innerHTML'),false);
 });

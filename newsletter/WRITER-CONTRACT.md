@@ -58,10 +58,13 @@ injection. No source URL is automatically visited.
 
 ## Validate a saved response
 
-The bound request includes the versioned editorial `summary_policy`. Starting
-with the October 6, 2026 edition, Traditional Chinese summary bodies must contain
-180–240 non-whitespace Unicode code points, targeting 200. Cover the event, key
-details and significance, with a faithful English counterpart. Titles,
+The bound request includes the editorial `summary_policy` selected for the
+edition date from `daily/data/contract.json`. October 6, 2026 retains its
+180–240-character policy. From October 7, Traditional Chinese summary bodies
+must contain 450–550 non-whitespace Unicode code points, targeting 500. Earlier
+editions have no added length target. Cover the event, key details, significance
+and limitations, with a faithful English counterpart and no matching English
+word-count requirement. Titles,
 takeaways and caveats are separate. A response outside the range is rejected;
 text is never silently cut or padded. If source material cannot support that
 substance, return `insufficient_evidence`. Historical editions are unchanged.

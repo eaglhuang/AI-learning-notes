@@ -1,0 +1,15 @@
+[
+  {"date":"2026-10-04","characters":12,"tail":"","valid":true},
+  {"date":"2026-10-06","characters":179,"tail":"","valid":false},
+  {"date":"2026-10-06","characters":180,"tail":"","valid":true},
+  {"date":"2026-10-06","characters":240,"tail":"","valid":true},
+  {"date":"2026-10-06","characters":241,"tail":"","valid":false},
+  {"date":"2026-10-06","characters":500,"tail":"","valid":false},
+  {"date":"2026-10-07","characters":200,"tail":"","valid":false},
+  {"date":"2026-10-07","characters":449,"tail":"","valid":false},
+  {"date":"2026-10-07","characters":450,"tail":"","valid":true},
+  {"date":"2026-10-07","characters":550,"tail":"","valid":true},
+  {"date":"2026-10-07","characters":551,"tail":"","valid":false},
+  {"date":"2026-10-07","characters":449,"tail":"𠮷","valid":true},
+  {"date":"2026-10-07","characters":449,"tail":" \n\t\u0085\u3000","valid":false}
+]

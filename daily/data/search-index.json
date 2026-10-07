@@ -1,0 +1,803 @@
+{
+  "schemaVersion": 1,
+  "scope": "published-newsletter-content",
+  "editions": [
+    "2026-10-07",
+    "2026-10-06",
+    "2026-10-04"
+  ],
+  "records": [
+    {
+      "key": "2026-10-07:openai-ironclad-evaluation-2026-10-06",
+      "storyId": "openai-ironclad-evaluation-2026-10-06",
+      "editionDate": "2026-10-07",
+      "sourcePublishedDate": "2026-10-06",
+      "category": "engineering",
+      "source": "OpenAI",
+      "sourceUrl": "https://openai.com/index/advancing-computer-use-with-ironclad/",
+      "localized": {
+        "zh-TW": {
+          "title": "OpenAI 與 Ironclad 用完整業務流程評估電腦操作代理",
+          "summary": "OpenAI 於 10 月 6 日公布與 Ironclad 的研究合作，把合約設定、採購核准與條款管理整理成 11 項多步驟任務，每項依 8 至 50 個條件評分。GPT-6 Astra（Max 推理）的平均規準分數為 55.0%，GPT-5.6 Sol（High 推理）為 41.6%；每次嘗試的估算時間則為 19.2 與 37 分鐘。這項案例檢查的是最終流程是否遵守業務規則，而非只看代理有沒有完成點擊。分數不是完整任務成功率，時間也是模擬估算，不能當成客戶實測節省。\n\n編輯觀點：這種結果更適合當成設計驗收方法的材料，而不是直接拿來決定是否讓代理獨立處理重要流程。團隊可以先把一項工作拆成輸入、必要條件、例外與最終輸出，再為每個條件留下可重跑的檢查。例如，先安排應該通過與應該停下的兩組測試，觀察代理能否在條件改變時保留原本的限制；這是本刊的測試建議，並非公告已證明的能力。平均分數也可能掩蓋少數關鍵步驟失敗，因此應另外標示哪些條件只要漏掉一次就不能交付。比較模型時，還要一起記錄推理設定、嘗試次數與完整成本，才能判斷改善來自模型、工具或流程。最終值得累積的，是能追溯到原始需求的驗收證據，而不只是一次看起來順利的示範。",
+          "takeaway": "用最終流程與例外條件驗收代理。",
+          "caveat": "僅涵蓋 11 項研究任務，並非所有合約作業。"
+        },
+        "en": {
+          "title": "OpenAI and Ironclad evaluate complete computer-use workflows",
+          "summary": "OpenAI’s October 6 Ironclad study covered 11 workflows, each with 8–50 criteria. Astra with Max reasoning averaged 55.0%, versus 41.6% for Sol with High reasoning; estimated attempt times were 19.2 and 37 minutes. These are rubric scores and simulated timings, not complete-task success rates or measured customer savings.\n\nEditorial interpretation: Use this as an evaluation-design example, rather than automatic authorization for consequential work. Separate inputs, required conditions, exceptions and outputs. Include cases that should proceed and cases that should stop, and identify critical failures that an average score could hide. These are our proposed tests, not demonstrated product capabilities. Record reasoning settings, attempts and total cost so that model, tool and workflow effects can be distinguished. Reusable evidence tied to requirements is more useful than a single smooth demonstration.",
+          "takeaway": "Test final workflows and exception paths.",
+          "caveat": "Results cover only these 11 research tasks."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/07 AI 日報：代理評測、開放模型與工程實作",
+        "en": "October 7 AI Daily: agent evaluation, open models and engineering practice"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/#openai-ironclad-evaluation-2026-10-06",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/en/#openai-ironclad-evaluation-2026-10-06"
+      }
+    },
+    {
+      "key": "2026-10-07:simon-datasette-parseable-tracing-2026-10-06",
+      "storyId": "simon-datasette-parseable-tracing-2026-10-06",
+      "editionDate": "2026-10-07",
+      "sourcePublishedDate": "2026-10-06",
+      "category": "engineering",
+      "source": "Simon Willison",
+      "sourceUrl": "https://til.simonwillison.net/datasette/datasette-parseable-opentelemetry",
+      "localized": {
+        "zh-TW": {
+          "title": "Simon Willison 用 Codex 協助串接 Datasette 追蹤，留下可檢查的實作筆記",
+          "summary": "Simon Willison 於 10 月 6 日分享，把 Datasette 的請求追蹤送入 Parseable 的實作心得。他表示，曾請 Codex 協助摸索兩者的連接方式，再親自寫成操作筆記；這是作者回報的工作流程，並非本報重做實驗，也沒有證明 AI 比人工整合更快。\n\n筆記使用 Parseable 3.2.4 的本機儲存模式，搭配 Datasette 1.0a41。設定追蹤匯出端點、服務名稱與資料串流後，透過 OpenTelemetry 的啟動工具執行 Datasette，即可在介面查看請求及後續 SQL 查詢的追蹤。作者也列出使用其他連接埠的配置，方便讀者定位整合步驟。\n\n版本背景須分開看：Datasette 的追蹤能力在 9 月 24 日已加入；本次新內容是作者的整合紀錄，不是這項功能今天才發布。官方文件也提醒，直接啟動程式不會自動產生追蹤資料，批次匯出可能稍後才出現。\n\n編輯觀點：這類案例的價值，在於把 AI 協助產生的配置變成可以觀察、檢查的系統行為。團隊可先用測試資料驗證請求與資料庫查詢的關聯，再比較修改前後的追蹤；看到漂亮圖表仍不能直接宣稱效能提升。正式部署前還應另查存取控制及資料保留設定，不能把本機示範當成生產環境方案。",
+          "takeaway": "AI 協助寫配置後，以實際請求與 SQL 追蹤檢查整合結果。",
+          "caveat": "作者自述的本機示範；本報未重現，也沒有 AI 效率或生產可用性的比較證據。"
+        },
+        "en": {
+          "title": "Simon Willison documents a Codex-assisted Datasette tracing integration",
+          "summary": "On October 6, Simon Willison described using Codex to help connect Datasette tracing to Parseable, then writing the practical notes himself. This is his account, not our reproduction or evidence that AI integration was faster than manual work.\n\nHis setup pairs Parseable 3.2.4 in local-storage mode with Datasette 1.0a41. It configures an exporter endpoint, service name and stream, and launches Datasette through OpenTelemetry instrumentation to view requests and subsequent SQL queries. The notes also cover alternate ports.\n\nDatasette added this tracing capability on September 24; the new item is Willison’s integration write-up. Official documentation warns that direct startup does not initialize tracing and batched export can delay its appearance.\n\nEditorial interpretation: the useful pattern is turning AI-assisted configuration into observable behavior. Use test data to check the request-to-query relationship, then compare traces before and after changes; attractive charts alone establish no performance improvement. Review access controls and retention separately before production deployment. A local demonstration is not a production design.",
+          "takeaway": "Check AI-assisted configuration against observable request and SQL traces.",
+          "caveat": "An author-reported local demonstration, not our reproduction or comparative evidence of AI productivity or production readiness."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/07 AI 日報：代理評測、開放模型與工程實作",
+        "en": "October 7 AI Daily: agent evaluation, open models and engineering practice"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/#simon-datasette-parseable-tracing-2026-10-06",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/en/#simon-datasette-parseable-tracing-2026-10-06"
+      }
+    },
+    {
+      "key": "2026-10-07:openai-atlassian-partnership-2026-10-06",
+      "storyId": "openai-atlassian-partnership-2026-10-06",
+      "editionDate": "2026-10-07",
+      "sourcePublishedDate": "2026-10-06",
+      "category": "products",
+      "source": "OpenAI",
+      "sourceUrl": "https://openai.com/index/atlassian-partnership/",
+      "localized": {
+        "zh-TW": {
+          "title": "Atlassian 擴大 OpenAI 合作，串接企業脈絡與代理工作",
+          "summary": "Atlassian 與 OpenAI 在 10 月 6 日宣布擴大合作，將前沿模型與 Rovo、Teamwork Graph 的企業脈絡結合。OpenAI 公告稱，超過 3,000 名 Atlassian 開發者已在終端、編輯器及程式碼審查中使用 Codex；這是公司提供的採用數字，並非獨立效率研究，也不能直接推導每位開發者節省多少時間。\n\nAtlassian 自己的說明把目前能力與後續方向分開：團隊已能透過 Atlassian MCP，讓 ChatGPT、Codex 讀取相關工作脈絡；更深入的自主領取工作、執行測試、同步工作階段及多代理協作，則仍是設計與探索方向。作為背景，9 月 29 日的官方外掛更新已介紹在提示中選取 Jira、Confluence 或人員資訊，以及從固定首頁接續工作；這些功能仍受既有權限與組織控制約束，不是讓代理自動取得所有資料。\n\n編輯觀點：對企業團隊，重要的不只是把更多文件塞進模型，而是讓代理知道資料由誰負責、是否仍有效，以及能做哪些操作。評估整合時，可先選一項容易核對的跨工具任務，檢查它引用的來源、權限拒絕與結果回寫是否一致，再考慮擴大範圍。這是導入評估建議，不是這次合作已實證的成效。閱讀公告也要分清現有產品、合作路線圖與使用案例，避免把未來可能提供的能力排進今天的交付承諾。",
+          "takeaway": "分清既有整合與尚在探索的功能。",
+          "caveat": "採用人數來自供應商公告，未獨立查核。"
+        },
+        "en": {
+          "title": "Atlassian expands its OpenAI partnership",
+          "summary": "Atlassian and OpenAI expanded their partnership around Rovo and Teamwork Graph. OpenAI reports that more than 3,000 Atlassian developers use Codex; this is an adoption claim, not an independent productivity measurement.\n\nAtlassian distinguishes available MCP-based enterprise context from deeper autonomous work, testing, session synchronization and multi-agent integration still being designed. Its September 29 plugin update already introduced prompt mentions and a pinned work Home, subject to existing permissions and organizational controls. That background is not a new October 6 launch.\n\nEditorial interpretation: Evaluate ownership, freshness, permitted actions and traceable results, not simply the volume of connected documents. Start with a checkable cross-tool task and inspect citations, permission refusals and writeback consistency. This is a proposed assessment approach, not a proven partnership outcome; distinguish shipped functions from roadmap commitments.",
+          "takeaway": "Separate available integrations from exploratory plans.",
+          "caveat": "Adoption figures are vendor-reported, not independently verified."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/07 AI 日報：代理評測、開放模型與工程實作",
+        "en": "October 7 AI Daily: agent evaluation, open models and engineering practice"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/#openai-atlassian-partnership-2026-10-06",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/en/#openai-atlassian-partnership-2026-10-06"
+      }
+    },
+    {
+      "key": "2026-10-07:anthropic-cvp-three-tiers-2026-10-06",
+      "storyId": "anthropic-cvp-three-tiers-2026-10-06",
+      "editionDate": "2026-10-07",
+      "sourcePublishedDate": "2026-10-06",
+      "category": "news",
+      "source": "Anthropic",
+      "sourceUrl": "https://www.anthropic.com/news/cyber-verification-program",
+      "localized": {
+        "zh-TW": {
+          "title": "Anthropic 將資安驗證計畫擴為三層存取",
+          "summary": "Anthropic 在 10 月 6 日擴大 Cyber Verification Program，將防禦、授權紅隊與特殊高風險測試分成三個存取層級。不同層級有各自的資格與安全控制；紅隊層目前限組織，測試也只能針對已獲授權的系統。這不是把所有模型限制一律解除，而是依工作範圍提供不同能力。\n\n公司使用 Opus 5.5 測試十個攻防情境，每個情境嘗試五次：防禦層的五十次試驗中，有四十六次受到攔阻；紅隊層沒有攔阻，完成了三十四次。攔阻次數與完成次數是不同指標，不能混為同一種成功率，這些數字也仍屬供應商內部評測。官方安全要求另外規定，組織須提供安全聯絡人、保留具名使用者或工作負載的使用歸屬，並禁止共用登入。取得資格以後，安全與追溯要求仍持續存在。\n\n編輯觀點：評估這類方案時，可以把模型能力、測試授權、資料處理與事後追查分成四份清單，逐項確認誰負責，而不是只問哪個層級比較少擋。尤其在代理能連續操作工具的情況下，應保留可區分每個操作者與任務的紀錄，並先驗證超出核准範圍時會如何停止。這些是本刊對導入程序的建議，不代表已替任何讀者完成資格或合規判定。公開評測也不能保證所有合法工作都不被誤攔，或所有濫用都能被阻止。",
+          "takeaway": "把能力、授權範圍與資料要求一起評估。",
+          "caveat": "紅隊層目前限組織，且僅能測試獲授權系統。"
+        },
+        "en": {
+          "title": "Anthropic expands cyber verification into three access tiers",
+          "summary": "Anthropic expanded CVP into Defense, Red Team and Specialized Access. Red Team Access currently requires an organization and authorization for the tested systems. The tiers provide different capabilities, rather than removing every restriction.\n\nIn Anthropic’s 50-trial Opus 5.5 evaluation, Defense Access blocked 46 trials; Red Team Access blocked none and completed 34. Blocking and completion are different metrics, and these are internal results. Separate security requirements call for a security contact, attributable users or workloads, and no shared sign-ins. Verification does not remove ongoing controls.\n\nEditorial interpretation: Assess capability, authorization, data handling and accountability separately. Keep task-level attribution and test out-of-scope stopping behavior before deployment. These are evaluation suggestions, not an eligibility or compliance determination. The reported trials do not guarantee the absence of false blocking or misuse.",
+          "takeaway": "Evaluate capability alongside access and data controls.",
+          "caveat": "Red Team Access currently excludes individual researchers."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/07 AI 日報：代理評測、開放模型與工程實作",
+        "en": "October 7 AI Daily: agent evaluation, open models and engineering practice"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/#anthropic-cvp-three-tiers-2026-10-06",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/en/#anthropic-cvp-three-tiers-2026-10-06"
+      }
+    },
+    {
+      "key": "2026-10-07:google-embeddinggemma-2-2026-10-06",
+      "storyId": "google-embeddinggemma-2-2026-10-06",
+      "editionDate": "2026-10-07",
+      "sourcePublishedDate": "2026-10-06",
+      "category": "tools",
+      "source": "Google DeepMind",
+      "sourceUrl": "https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/",
+      "localized": {
+        "zh-TW": {
+          "title": "EmbeddingGemma 2 把多模態檢索帶到裝置端",
+          "summary": "Google 於 10 月 6 日推出 EmbeddingGemma 2，以 Apache 2.0 授權提供可在裝置端執行的多模態嵌入模型。它把文字、程式碼、圖片、影音轉成共同空間中的向量，用於搜尋、分類或 RAG 的檢索部分；它本身不是生成答案的聊天模型。完整模型有 7.4 億參數，純文字工作可只載入 2.7 億參數的部分，視覺和音訊編碼器則按需求選用。\n\n官方模型卡列出 8K token 上下文，以及原生 768 維向量；開發者能改用 512、256 或128維表示。較小向量可以減少儲存，但不是所有模態都維持同樣品質：模型卡特別指出128維較適合純文字工作，並提供不同維度的評測表。官方部落格另列出本地媒體搜尋、影片片段查找與搭配生成模型的使用方式；其中裝置記憶體數據屬特定硬體與量化條件，不能直接套用到每台電腦。\n\n編輯觀點：這對想建立私有文件或本地程式碼搜尋的人很有吸引力，但應把模型大小、向量維度與實際召回品質分開測試。可先選一批真實查詢，檢查正確資料是否進入前幾名，再比較不同維度及模態的延遲與資源消耗。若檢索漏掉關鍵段落，後面的生成模型即使語氣流暢，也不等於答案有充分依據。這是本刊對RAG流程的評估建議；我們未在讀者裝置上安裝模型或驗證官方效能主張。",
+          "takeaway": "用自己的資料測試各模態與向量尺寸。",
+          "caveat": "不是生成式聊天模型；壓縮會影響檢索品質。"
+        },
+        "en": {
+          "title": "EmbeddingGemma 2 brings multimodal retrieval on-device",
+          "summary": "Google launched the Apache-2.0 EmbeddingGemma 2 for on-device multimodal retrieval. It embeds text, code and media; it does not generate chat answers. The full model has 740M parameters, with a 270M text-only configuration and optional vision and audio encoders.\n\nIts model card specifies 8K context and 768-dimensional output, with smaller 512, 256 and 128-dimensional representations. Storage savings involve quality tradeoffs: 128 dimensions are recommended mainly for text. Published device-memory figures also depend on hardware and quantization.\n\nEditorial interpretation: Compare model footprint, vector dimensions and retrieval quality separately using real queries. Check whether relevant material reaches the top results before evaluating generated prose, then measure latency and resources by modality. Fluent generation does not establish that retrieval supplied adequate evidence. This is proposed evaluation guidance; no reader-device installation or independent performance test was performed.",
+          "takeaway": "Test retrieval quality at each chosen dimension.",
+          "caveat": "Compression is not universally lossless across modalities."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/07 AI 日報：代理評測、開放模型與工程實作",
+        "en": "October 7 AI Daily: agent evaluation, open models and engineering practice"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/#google-embeddinggemma-2-2026-10-06",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/en/#google-embeddinggemma-2-2026-10-06"
+      }
+    },
+    {
+      "key": "2026-10-07:mistral-large-4-preview-2026-10-06",
+      "storyId": "mistral-large-4-preview-2026-10-06",
+      "editionDate": "2026-10-07",
+      "sourcePublishedDate": "2026-10-06",
+      "category": "products",
+      "source": "Mistral AI",
+      "sourceUrl": "https://docs.mistral.ai/models/mistral-large-4-0",
+      "localized": {
+        "zh-TW": {
+          "title": "Mistral Large 4 進入公開預覽，權重仍待釋出",
+          "summary": "Mistral 在 10 月 6 日推出 Large 4 公開預覽。官方模型卡將它描述為多模態混合專家模型，總參數約1.05兆，具有視覺編碼器與100萬token上下文，並列出結構化輸出、函式呼叫及文件問答等介面能力。本次核對時，不同官方頁面回應曾出現不一致的啟用參數值，因此本文不列該數字，避免把尚未釐清的細節當作定論。\n\n正式發布文章表示，預覽API已在Mistral Studio提供，權重則計畫於月底釋出；更新紀錄也寫明權重尚待推出。公司同時稱模型仍在持續訓練，並在權重公開前，與獲准合作方進行實際環境中的紅隊測試。這些訊息說明目前應區分公開預覽、受限合作測試與未來可下載權重，不能因為產品標籤寫著開放權重，就認定一般使用者已經能自行部署。供應商的領先表現敘述，也不是我們完成的獨立比較。\n\n編輯觀點：對準備導入長上下文模型的團隊，先把可用性與能力評測拆開，會比只看參數量更實際。可以列出需要的輸入模態、工具格式、錯誤回應及長文件問題，再檢查模型是否在真正需要的段落找到依據。容納大量token本身不代表長距離檢索、答案正確性或工具動作都可靠；這是我們建議驗證的問題，不是對該模型已觀察到的失敗結論。本刊沒有呼叫預覽API、下載權重或啟用任何付費服務。",
+          "takeaway": "先核對預覽範圍與權重實際可用狀態。",
+          "caveat": "本文未呼叫 API、下載權重或實測模型能力。"
+        },
+        "en": {
+          "title": "Mistral Large 4 enters public preview; weights are still forthcoming",
+          "summary": "Mistral released Large 4 in public preview on October 6. Its model card lists a multimodal mixture-of-experts architecture, approximately 1.05T total parameters, vision support, 1M-token context and structured/tool-calling interfaces. We omit active-parameter counts because official retrievals conflicted.\n\nThe launch article offers a preview API and plans public weights for the month’s end; the changelog also says weights are forthcoming. Mistral describes continuing training and restricted partner red-teaming. Preview access, partner evaluation and public weight availability are distinct, and vendor performance claims are not our independent measurements.\n\nEditorial interpretation: Separate availability from capability testing. Assess required modalities, tool formats, errors and evidence retrieval within long documents. A large context window alone does not prove reliable answers or actions. These are proposed checks, not observed failures. No API, download or paid service was used.",
+          "takeaway": "Verify actual availability, not just the model label.",
+          "caveat": "No API, weight download or independent benchmark was run."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/07 AI 日報：代理評測、開放模型與工程實作",
+        "en": "October 7 AI Daily: agent evaluation, open models and engineering practice"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/#mistral-large-4-preview-2026-10-06",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/en/#mistral-large-4-preview-2026-10-06"
+      }
+    },
+    {
+      "key": "2026-10-07:openai-mathematics-disclosure-2026-10-06",
+      "storyId": "openai-mathematics-disclosure-2026-10-06",
+      "editionDate": "2026-10-07",
+      "sourcePublishedDate": "2026-10-06",
+      "category": "papers",
+      "source": "OpenAI",
+      "sourceUrl": "https://openai.com/index/sharing-ai-progress-in-mathematics/",
+      "localized": {
+        "zh-TW": {
+          "title": "OpenAI 公開數學成果，補上形式化與研究成本說明",
+          "summary": "OpenAI 在10月6日公布內部前沿模型產生的一批數學成果，並宣布提供修訂、引用與研究過程資料。公告包含許多證明的Lean形式化、十份推理摘要，以及嘗試題目數和運算投入估計；平均每項結果約相當於三小時ChatGPT Pro思考的算力。這個數字是計算資源的等值表述，不是讀者一定能在三小時內重現成果的承諾；許多證明形式化，也不代表全部成果已完成驗證。\n\n與OpenAI交流的獨立數學及人工智慧諮詢小組AGMAI，當天另發聲明，強調其諮詢角色不等於替研究影響或產出過程背書。小組認為公開成果只是人類理解與學界評估的開始，而非完成。其9月29日建議還要求，披露應說明問題如何選出、模型嘗試但失敗的相近問題，以及證明的形式化狀態，並支持數學社群自己理解與吸收成果。這提供了供應商公告之外的閱讀角度，不能把有諮詢外部專家直接寫成已通過外部認證。\n\n編輯觀點：讀這類新聞時，可以先分開三個問題：產生了什麼結果、哪些檢查已完成，以及人們是否理解其證明和價值。只列成功案例容易忽略嘗試分母，只列機器可檢查的形式化，也不能替代對研究意義的討論。這是我們建議的判讀框架，不是對任何定理的真假裁決。本刊只核對公告與小組聲明，未查閱儲存庫，亦未獨立重跑證明。",
+          "takeaway": "同時閱讀成果、驗證方式與嘗試分母。",
+          "caveat": "本次只核對公告，未獨立重跑數學證明。"
+        },
+        "en": {
+          "title": "OpenAI shares mathematical results and verification context",
+          "summary": "OpenAI announced mathematical results from an internal model, including many Lean formalizations, ten reasoning summaries and attempted-problem statistics. Its average compute estimate of roughly three ChatGPT Pro thinking-hours per result is not a reproducible elapsed-time promise, nor evidence that every result is verified.\n\nThe independent advisory group AGMAI separately said its consultation was not an endorsement of the results’ impact or production process. Its September recommendations call for problem-selection and unsuccessful-attempt disclosure, explicit formalization status and support for community understanding. That background should not be confused with external certification.\n\nEditorial interpretation: Separate what was produced, what has been checked and what people understand about its significance. Success examples need denominators; formal checking does not settle research value. This is a reading framework, not a judgment on a theorem. We did not inspect the repository or independently rerun the proofs.",
+          "takeaway": "Inspect verification methods and unsuccessful attempts too.",
+          "caveat": "The proofs were not independently rerun for this digest."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/07 AI 日報：代理評測、開放模型與工程實作",
+        "en": "October 7 AI Daily: agent evaluation, open models and engineering practice"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/#openai-mathematics-disclosure-2026-10-06",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/en/#openai-mathematics-disclosure-2026-10-06"
+      }
+    },
+    {
+      "key": "2026-10-06:github-reviewbench-launch-2026-10-05",
+      "storyId": "github-reviewbench-launch-2026-10-05",
+      "editionDate": "2026-10-06",
+      "sourcePublishedDate": "2026-10-05",
+      "category": "engineering",
+      "source": "GitHub",
+      "sourceUrl": "https://github.blog/ai-and-ml/github-copilot/reviewbench-an-open-benchmark-for-ai-code-review/",
+      "localized": {
+        "zh-TW": {
+          "title": "GitHub 推出 ReviewBench，評估 AI 程式碼審查的取捨",
+          "summary": "GitHub 在 10 月 5 日公開 ReviewBench，讓 AI 程式碼審查有一套可重複比較的方法。它依真實 PR 的語言、儲存庫及變更規模分布設計評測，結合多來源標準答案與資深工程師驗證，並按問題嚴重度及精確率、召回率觀察表現。對採用多代理審查的團隊，這提供了分別衡量漏報與噪音的起點，也提醒我們不能只比較代理找出多少問題。要注意，這仍是離線評測；是否適合自己的程式庫，仍需用實際案例驗證。",
+          "takeaway": "比較漏報與噪音；採真實 PR 分布；仍需本地驗證。",
+          "caveat": "超過一億個 PR 指分布建模背景，不是 benchmark 測例數。"
+        },
+        "en": {
+          "title": "ReviewBench: An open benchmark for AI code review",
+          "summary": "GitHub launched ReviewBench, a reproducible benchmark for AI code reviewers. It models real pull-request distributions and combines multiple sources of reference findings with engineer validation. Severity, precision, and recall help separate missed issues from noisy comments. For teams adopting review agents, it offers an evaluation starting point, but an offline result still needs validation against the team's own repositories.",
+          "takeaway": "Measure missed findings and review noise separately.",
+          "caveat": "The pull-request population informs distribution modeling, not the benchmark case count."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/06 AI 日報：程式審查、代理執行與語音系統",
+        "en": "October 6 AI Daily: code review, agent execution and voice systems"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/#github-reviewbench-launch-2026-10-05",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/en/#github-reviewbench-launch-2026-10-05"
+      }
+    },
+    {
+      "key": "2026-10-06:google-codemender-v0-12-0-2026-10-05",
+      "storyId": "google-codemender-v0-12-0-2026-10-05",
+      "editionDate": "2026-10-06",
+      "sourcePublishedDate": "2026-10-05",
+      "category": "tools",
+      "source": "Google Cloud",
+      "sourceUrl": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/release-notes?hl=en",
+      "localized": {
+        "zh-TW": {
+          "title": "CodeMender v0.12.0 擴大掃描覆蓋，限制修補範圍",
+          "summary": "Google 在 10 月 5 日更新 CodeMender 至 v0.12.0，新增隱藏檔掃描選項，並把預設檔案探索上限從 500 KB 提高至 2 MiB。修補代理也會限制與漏洞無關的持續整合、建置及設定檔修改；高信心漏洞回報要求具體可行的利用證據，並修正整段工作階段的 token 統計。對 AI 修補流程，重點是同時控制漏掃、越界修改與成本。隱藏檔掃描須主動啟用，公告也未量化誤報改善幅度。",
+          "takeaway": "提高掃描覆蓋；限制修補越界；修正成本統計。",
+          "caveat": "屬版本更新，並非整個 CodeMender 首次發布。"
+        },
+        "en": {
+          "title": "CodeMender updates (v0.12.0)",
+          "summary": "Google released CodeMender v0.12.0 with optional hidden-file scanning and a larger default discovery limit, from 500 KB to 2 MiB. Fixes are constrained from making unrelated configuration changes, high-confidence findings require viable exploit evidence, and token accounting now covers the whole session. These changes address scan coverage, repair boundaries, and cost visibility; hidden-file scanning is opt-in and no quantified false-positive improvement was supplied.",
+          "takeaway": "Evaluate scan coverage, repair boundaries and cost accounting together.",
+          "caveat": "This is a version update, not the first CodeMender release; hidden-file scanning is opt-in."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/06 AI 日報：程式審查、代理執行與語音系統",
+        "en": "October 6 AI Daily: code review, agent execution and voice systems"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/#google-codemender-v0-12-0-2026-10-05",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/en/#google-codemender-v0-12-0-2026-10-05"
+      }
+    },
+    {
+      "key": "2026-10-06:github-secret-detectors-2026-10-05",
+      "storyId": "github-secret-detectors-2026-10-05",
+      "editionDate": "2026-10-06",
+      "sourcePublishedDate": "2026-10-05",
+      "category": "engineering",
+      "source": "GitHub",
+      "sourceUrl": "https://github.blog/changelog/2026-10-05-secret-scanning-adds-detectors-for-lovable-supabase-and-more/",
+      "localized": {
+        "zh-TW": {
+          "title": "GitHub 加入 Lovable、Pydantic 與 Supabase 憑證偵測",
+          "summary": "GitHub 於 10 月 5 日擴充秘密掃描，加入 Lovable API 金鑰、Pydantic 的觀測與 AI 閘道憑證，以及兩種 Supabase token。Lovable 同時加入合作計畫，公有儲存庫發現其憑證時，GitHub 會通知發行方處理。對使用 AI 快速搭建應用的團隊，這提醒開發者在原型轉正式服務前，檢查設定檔與程式碼中的憑證。不過，新增偵測不代表能找出所有秘密，也不能視為洩漏已自動修復；通報流程仍有適用範圍。",
+          "takeaway": "新增五種憑證型別；Lovable 加入合作通報；仍須處理實際洩漏。",
+          "caveat": "不要把每種新偵測器都描述成有發行方自動撤銷。"
+        },
+        "en": {
+          "title": "Secret scanning adds detectors for Lovable, Supabase, and more",
+          "summary": "GitHub expanded secret scanning to cover Lovable API keys, Pydantic observability and AI Gateway credentials, and two Supabase token types. Lovable also joined the issuer-notification program for public repositories. The update is relevant when moving AI-built prototypes toward production, but additional detectors do not guarantee complete secret coverage or automatic remediation, and partner notifications apply only within their supported scope.",
+          "takeaway": "Check credentials before moving AI-built prototypes into production.",
+          "caveat": "New detection does not imply automatic revocation for every credential type."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/06 AI 日報：程式審查、代理執行與語音系統",
+        "en": "October 6 AI Daily: code review, agent execution and voice systems"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/#github-secret-detectors-2026-10-05",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/en/#github-secret-detectors-2026-10-05"
+      }
+    },
+    {
+      "key": "2026-10-06:snowflake-cortex-code-execution-ga-2026-10-05",
+      "storyId": "snowflake-cortex-code-execution-ga-2026-10-05",
+      "editionDate": "2026-10-06",
+      "sourcePublishedDate": "2026-10-05",
+      "category": "products",
+      "source": "Snowflake",
+      "sourceUrl": "https://docs.snowflake.com/en/release-notes/2026/other/2026-10-05-cortex-agents-code-execution-tool-ga",
+      "localized": {
+        "zh-TW": {
+          "title": "Snowflake Cortex Agent 程式執行工具正式推出",
+          "summary": "Snowflake 在 10 月 5 日宣布 Cortex Agent 內建程式執行工具進入正式提供階段。開發者在代理規格中啟用後，代理能依問題決定何時產生及執行腳本，用於資料處理、計算、視覺化，也能執行技能中的 Python。工具預設在隔離沙箱內運作，僅存取當前工作階段資料。對資料型 AI 應用，這是評估受管執行環境與自建沙箱的具體選項；但本次新進展是從預覽走向正式提供，不能當成首次推出，也不代表任何設定下都具有相同隔離條件。",
+          "takeaway": "從預覽進入正式提供；支援技能腳本；預設工作階段隔離。",
+          "caveat": "與 8 月的 Coding Agent 發布為不同功能事件。"
+        },
+        "en": {
+          "title": "October 5, 2026: Cortex Agent code execution tool (General availability)",
+          "summary": "Snowflake made the Cortex Agent code execution tool generally available. Once enabled in an agent specification, it can execute generated scripts for data processing, calculations, visualizations, and Python-based skills. Default sandbox access is limited to current-session data. This offers a managed execution option for data agents, but the news is its move from preview to GA, and the default isolation description should not be generalized to every configuration.",
+          "takeaway": "Compare managed execution with the isolation requirements of your data agents.",
+          "caveat": "This follows the code-execution preview and is distinct from the August Coding Agent release."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/06 AI 日報：程式審查、代理執行與語音系統",
+        "en": "October 6 AI Daily: code review, agent execution and voice systems"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/#snowflake-cortex-code-execution-ga-2026-10-05",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/en/#snowflake-cortex-code-execution-ga-2026-10-05"
+      }
+    },
+    {
+      "key": "2026-10-06:aws-nova-2-5-sonic-strands-bidi-ga-2026-10-05",
+      "storyId": "aws-nova-2-5-sonic-strands-bidi-ga-2026-10-05",
+      "editionDate": "2026-10-06",
+      "sourcePublishedDate": "2026-10-05",
+      "category": "products",
+      "source": "AWS / Strands Agents",
+      "sourceUrl": "https://aws.amazon.com/about-aws/whats-new/2026/10/amazon-nova-2.5-Sonic/",
+      "localized": {
+        "zh-TW": {
+          "title": "Nova 2.5 Sonic 與 Strands Bidi GA，強化即時語音代理",
+          "summary": "AWS 於 10 月 5 日在 Bedrock 正式提供 Nova 2.5 Sonic，宣稱改善即時語音代理的推理、指令遵循、工具呼叫與延遲。同期正式推出的 Strands Bidi Agents 支援多家語音模型，記錄工作階段及工具呼叫追蹤，並能在背景重新連線以延長對話。對開發者，值得注意的是模型之外的可觀測性及連線管理，這些都影響長時間任務能否完成。效能改善仍屬供應商敘述，背景重連也不表示底層模型取消工作階段限制。",
+          "takeaway": "語音模型與框架同步更新；支援可觀測性；背景管理連線。",
+          "caveat": "AWS 公告未提供改善幅度的量化 benchmark。"
+        },
+        "en": {
+          "title": "Announcing Amazon Nova 2.5 Sonic with improved reasoning for voice agents",
+          "summary": "AWS launched Nova 2.5 Sonic in Bedrock, claiming improvements in reasoning, instruction following, tool use, and latency. The accompanying Strands Bidi Agents GA supports multiple voice-model providers, session and tool-call tracing, and background reconnection. For developers, observability and connection management matter alongside model quality. Performance claims remain vendor-reported, and reconnection does not remove the underlying model's session limit.",
+          "takeaway": "Assess session recovery and observability alongside voice-model quality.",
+          "caveat": "No quantified performance benchmark was supplied in the AWS announcement."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/06 AI 日報：程式審查、代理執行與語音系統",
+        "en": "October 6 AI Daily: code review, agent execution and voice systems"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/#aws-nova-2-5-sonic-strands-bidi-ga-2026-10-05",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/en/#aws-nova-2-5-sonic-strands-bidi-ga-2026-10-05"
+      }
+    },
+    {
+      "key": "2026-10-06:openai-textgrain-provenance-2026-10-05",
+      "storyId": "openai-textgrain-provenance-2026-10-05",
+      "editionDate": "2026-10-06",
+      "sourcePublishedDate": "2026-10-05",
+      "category": "news",
+      "source": "OpenAI",
+      "sourceUrl": "https://openai.com/index/eu-text-provenance/",
+      "localized": {
+        "zh-TW": {
+          "title": "OpenAI 開放部分 API 模型自選文字浮水印",
+          "summary": "OpenAI 於 10 月 5 日宣布，全球 API 客戶可對部分模型自選文字浮水印，預設仍關閉；歐盟符合條件的 ChatGPT 與 Codex 文字輸出，則預計未來幾週逐步導入。偵測器開放申請，初期僅供獲核准研究者及專業組織使用。對整合生成式內容的開發者，這讓來源訊號成為產品設計的選項，但應區分已可申請的能力與尚未完成的部署。官方也強調短文及編輯會影響偵測，因此不能把結果當作作者身分，或是否使用 AI 的確定證明。",
+          "takeaway": "API 自選且預設關閉；歐盟產品分階段部署；偵測具有誤判限制。",
+          "caveat": "產品公告摘要，非獨立法律解讀；也不是全球預設啟用。"
+        },
+        "en": {
+          "title": "Our approach to EU text provenance rules",
+          "summary": "OpenAI opened optional text watermarking for selected API models, with the API default remaining off. Eligible ChatGPT and Codex text output in the EU is scheduled for rollout over coming weeks, while detector access initially requires approval. Developers should distinguish available opt-in controls from future deployment plans, and treat detection as a limited provenance signal rather than proof of authorship or definitive evidence of AI use.",
+          "takeaway": "Separate available opt-in controls, planned rollout and detector limitations.",
+          "caveat": "This is a product announcement, not independent legal advice or a global default-on rollout."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/06 AI 日報：程式審查、代理執行與語音系統",
+        "en": "October 6 AI Daily: code review, agent execution and voice systems"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/#openai-textgrain-provenance-2026-10-05",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/en/#openai-textgrain-provenance-2026-10-05"
+      }
+    },
+    {
+      "key": "2026-10-06:openai-visual-ads-2026-10-05",
+      "storyId": "openai-visual-ads-2026-10-05",
+      "editionDate": "2026-10-06",
+      "sourcePublishedDate": "2026-10-05",
+      "category": "products",
+      "source": "OpenAI",
+      "sourceUrl": "https://openai.com/index/new-chatgpt-ads-format-and-measurement/",
+      "localized": {
+        "zh-TW": {
+          "title": "ChatGPT 預告圖像廣告測試，擴充成效衡量工具",
+          "summary": "OpenAI 於 10 月 5 日宣布新的 ChatGPT 圖像廣告格式，計畫本月稍後先在美國與少數廣告主測試，廣告會清楚標示，並與正在生成的圖片分開。公司同時擴充轉換資料、歸因與成效衡量合作，並與合作夥伴開發品牌適配評估試點。對打造 AI 產品的團隊，這顯示對話與生成介面正形成新的商業接觸點，評估時應分清曝光、歸因轉換與真正新增的效果。公告中的成效數字來自合作案例，不能推論所有廣告主都會獲得相同結果，新格式也尚未全面上線。",
+          "takeaway": "評估 AI 廣告時，分開看歸因數字、增量成效與實際投放範圍。",
+          "caveat": "新格式預計本月稍後在美國小規模測試；廣告主案例不是普遍成效保證。"
+        },
+        "en": {
+          "title": "ChatGPT plans visual-ad testing and expands measurement tools",
+          "summary": "OpenAI announced a visual ad format for ChatGPT, with a limited US test planned for later this month. Ads will be labeled and remain separate from generated images. The company also expanded conversion-data and attribution integrations and is developing brand-suitability evaluation pilots. For AI product teams, the update illustrates new commercial touchpoints around generation; attributed conversions should be distinguished from incremental impact. Partner case studies are not a guarantee of results for every advertiser, and the new format is not yet broadly available.",
+          "takeaway": "Separate attribution, incremental impact and rollout scope when evaluating AI advertising.",
+          "caveat": "The new format is a planned limited US test. Reported partner results do not establish universal performance."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/06 AI 日報：程式審查、代理執行與語音系統",
+        "en": "October 6 AI Daily: code review, agent execution and voice systems"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/#openai-visual-ads-2026-10-05",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/en/#openai-visual-ads-2026-10-05"
+      }
+    },
+    {
+      "key": "2026-10-04:simon-hard-budget-caps",
+      "storyId": "simon-hard-budget-caps",
+      "editionDate": "2026-10-04",
+      "sourcePublishedDate": "2026-10-03",
+      "category": "writing",
+      "source": "Simon Willison",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/3/default-hard-budget-caps/",
+      "localized": {
+        "zh-TW": {
+          "title": "代理更容易花錢，Simon Willison 主張預設硬性預算上限",
+          "summary": "Willison 指出，代理讓付費 API 與雲端程式更容易上線，也放大失控支出的風險。他主張服務應預設在預算用盡時停止運作，並讓使用者明確選擇是否解除限制。",
+          "takeaway": "替代理設定每次任務與每月支出上限，實際驗證超額時會停止，而非只寄通知。",
+          "caveat": "這是實作者的產品設計主張；不代表所有雲端服務都已提供硬性上限。"
+        },
+        "en": {
+          "title": "Simon Willison argues for default hard spending limits",
+          "summary": "Willison argues that agents make paid APIs and cloud services easier to deploy, increasing exposure to runaway usage. He advocates default spending limits that stop service at the budget ceiling, with an explicit choice required to remove them.",
+          "takeaway": "Set per-task and monthly agent budgets, then test that exceeding them stops usage rather than merely sending alerts.",
+          "caveat": "This is a practitioner’s design argument, not evidence that every provider already supports hard caps."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "AI 週報 · 2026/10/04",
+        "en": "AI Weekly · October 4, 2026"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/#simon-hard-budget-caps",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/en/#simon-hard-budget-caps"
+      }
+    },
+    {
+      "key": "2026-10-04:prime-inference",
+      "storyId": "prime-inference",
+      "editionDate": "2026-10-04",
+      "sourcePublishedDate": "2026-10-02",
+      "category": "products",
+      "source": "Prime Intellect",
+      "sourceUrl": "https://www.primeintellect.ai/blog/prime-inference",
+      "localized": {
+        "zh-TW": {
+          "title": "Prime Inference 將開放模型推論服務推向正式應用",
+          "summary": "Prime Intellect 發布 Prime Inference，提供無伺服器端點、預留容量與相容 OpenAI API 的介面。團隊說明跨資料中心故障轉移，以及如何用快取與排程支援長上下文代理流量。",
+          "takeaway": "試用時同時量測冷啟動、長對話延遲、工具呼叫正確率與故障恢復。",
+          "caveat": "速度與可靠度數字來自供應商；相容介面不保證所有既有工作流程可直接遷移。"
+        },
+        "en": {
+          "title": "Prime Inference opens its model-serving platform",
+          "summary": "Prime Intellect launched Prime Inference with serverless endpoints, reserved capacity and an OpenAI-compatible interface. Its engineering account explains cross-datacenter failover, caching and scheduling for long-context agent traffic.",
+          "takeaway": "Evaluate cold starts, long-session latency, tool-call correctness and failure recovery together.",
+          "caveat": "Performance and reliability claims are vendor-reported; API compatibility does not guarantee a drop-in workflow migration."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "AI 週報 · 2026/10/04",
+        "en": "AI Weekly · October 4, 2026"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/#prime-inference",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/en/#prime-inference"
+      }
+    },
+    {
+      "key": "2026-10-04:claude-shaped-science",
+      "storyId": "claude-shaped-science",
+      "editionDate": "2026-10-04",
+      "sourcePublishedDate": "2026-10-01",
+      "category": "writing",
+      "source": "Matthew Schwartz / Anthropic",
+      "sourceUrl": "https://www.anthropic.com/research/claude-shaped-science",
+      "localized": {
+        "zh-TW": {
+          "title": "BootLoops 經驗：先選能驗證的問題，再讓 AI 跨領域探索",
+          "summary": "物理學家 Matthew Schwartz 分享 BootLoops：為代理提供可檢查的計算工具，探索跨領域問題。他強調，技術上正確的結果未必有研究價值，仍需要領域專家選題、檢查與引導。",
+          "takeaway": "把可重現的計算、可查閱的圖表與專家驗收列為不同檢查點。",
+          "caveat": "這是研究者的經驗文章；作者當時在 Anthropic 擔任訪問研究員，BootLoops 由他本人維護。"
+        },
+        "en": {
+          "title": "BootLoops pairs verifiable calculations with domain judgment",
+          "summary": "Physicist Matthew Schwartz describes BootLoops, a harness that gives agents checkable computational tools for cross-domain research. His central lesson is that technically correct results can still lack scientific value; domain experts must guide the questions and inspect the conclusions.",
+          "takeaway": "Separate reproducible calculations, inspectable plots and expert acceptance into distinct checks.",
+          "caveat": "This is a first-person account. Schwartz was an Anthropic visiting researcher; BootLoops is his own project."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "AI 週報 · 2026/10/04",
+        "en": "AI Weekly · October 4, 2026"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/#claude-shaped-science",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/en/#claude-shaped-science"
+      }
+    },
+    {
+      "key": "2026-10-04:openai-distillation-disclosure",
+      "storyId": "openai-distillation-disclosure",
+      "editionDate": "2026-10-04",
+      "sourcePublishedDate": "2026-09-30",
+      "category": "news",
+      "source": "OpenAI",
+      "sourceUrl": "https://openai.com/index/disrupting-a-coordinated-model-distillation-campaign/",
+      "localized": {
+        "zh-TW": {
+          "title": "OpenAI 披露七月推理擷取活動與防護措施",
+          "summary": "OpenAI 表示已阻斷協同擷取模型推理內容的活動，並加強跨使用者與模型的保護。公司稱事件沒有直接存取已儲存的使用者對話；9 月文章披露的是 7 月觀察到的活動。",
+          "takeaway": "檢查可攜式代理狀態的權限與隔離邊界，勿將加密等同於可安全跨環境重用。",
+          "caveat": "事件範圍與防護成效依 OpenAI 披露，未獨立驗證；請勿把嘗試次數當成成功次數。"
+        },
+        "en": {
+          "title": "OpenAI reports reasoning-extraction activity and mitigations",
+          "summary": "OpenAI reports disrupting coordinated attempts to extract protected model reasoning and strengthening protections across users and models. The company says the activity did not directly access stored user conversations. This September disclosure concerns activity observed in July.",
+          "takeaway": "Review authorization and isolation around portable agent state; encryption alone does not establish safe reuse across environments.",
+          "caveat": "Scope and mitigation claims come from OpenAI and were not independently verified; attempts are not successful extractions."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "AI 週報 · 2026/10/04",
+        "en": "AI Weekly · October 4, 2026"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/#openai-distillation-disclosure",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/en/#openai-distillation-disclosure"
+      }
+    },
+    {
+      "key": "2026-10-04:gpt-6-1-sol",
+      "storyId": "gpt-6-1-sol",
+      "editionDate": "2026-10-04",
+      "sourcePublishedDate": "2026-09-29",
+      "category": "products",
+      "source": "OpenAI",
+      "sourceUrl": "https://openai.com/index/introducing-gpt-6-1-sol/",
+      "localized": {
+        "zh-TW": {
+          "title": "GPT-6.1 Sol 降低代理工作流程的模型成本",
+          "summary": "OpenAI 推出 GPT-6.1 Sol，強調程式開發、電腦操作與專業任務的能力／成本平衡。標準 API 每百萬輸入與輸出 token 分別為 2 與 10 美元，快取輸入為 0.10 美元。",
+          "takeaway": "用固定任務集比較成功率、延遲與每次成功成本，再決定模型路由。",
+          "caveat": "能力提升為供應商評測結果；價格與產品可用性以查核當時的官方公告為準。"
+        },
+        "en": {
+          "title": "GPT-6.1 Sol targets lower-cost agent workflows",
+          "summary": "OpenAI introduced GPT-6.1 Sol for coding, computer use and professional tasks. Standard API prices are $2 per million input tokens, $10 per million output tokens and $0.10 per million cached input tokens; the company reports stronger performance than GPT-6 Sol.",
+          "takeaway": "Compare success rates, latency and cost per successful task on a fixed workload before changing model routing.",
+          "caveat": "Capability gains are vendor evaluations; pricing and availability reflect the official announcement checked for this issue."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "AI 週報 · 2026/10/04",
+        "en": "AI Weekly · October 4, 2026"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/#gpt-6-1-sol",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/en/#gpt-6-1-sol"
+      }
+    },
+    {
+      "key": "2026-10-04:claude-sonnet-5-5",
+      "storyId": "claude-sonnet-5-5",
+      "editionDate": "2026-10-04",
+      "sourcePublishedDate": "2026-09-28",
+      "category": "products",
+      "source": "Anthropic",
+      "sourceUrl": "https://www.anthropic.com/claude-sonnet-5-5",
+      "localized": {
+        "zh-TW": {
+          "title": "Sonnet 5.5 以更少 token 降低任務成本",
+          "summary": "Anthropic 推出 Sonnet 5.5，稱輸出速度提升超過 30%，測試中每項任務最多便宜 30%。每百萬輸入／輸出 token 價格仍為 2／10 美元，成本改善主要來自較少 token 用量。",
+          "takeaway": "比較實際完成任務的總花費，並將推理強度與失敗重試算入。",
+          "caveat": "百分比為供應商測試結果，不能保證每種任務都同幅改善。"
+        },
+        "en": {
+          "title": "Sonnet 5.5 emphasizes efficiency at unchanged token prices",
+          "summary": "Anthropic says Sonnet 5.5 generates output over 30% faster and costs up to 30% less per task in its tests. Input and output prices remain $2 and $10 per million tokens; the savings chiefly come from lower token usage.",
+          "takeaway": "Compare total task-completion cost, including reasoning settings and retries.",
+          "caveat": "The percentages are vendor test results, not guaranteed improvements for every workload."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "AI 週報 · 2026/10/04",
+        "en": "AI Weekly · October 4, 2026"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/#claude-sonnet-5-5",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/en/#claude-sonnet-5-5"
+      }
+    },
+    {
+      "key": "2026-10-04:holo4",
+      "storyId": "holo4",
+      "editionDate": "2026-10-04",
+      "sourcePublishedDate": "2026-09-28",
+      "category": "products",
+      "source": "H Company",
+      "sourceUrl": "https://huggingface.co/blog/Hcompany/holo4",
+      "localized": {
+        "zh-TW": {
+          "title": "Holo4 讓同一代理切換畫面、程式碼與 API",
+          "summary": "H Company 發布 27B dense 與 35B-A3B MoE 版 Holo4，可操作 GUI、執行程式碼並呼叫 MCP 或 API。團隊同時公開基準測試的執行軌跡，讓開發者檢視代理的實際步驟。",
+          "takeaway": "選一個需要跨畫面與 API 的流程，連同失敗恢復一起評估。",
+          "caveat": "官方比較使用的執行框架、題目子集與版本不同，不能視為完全同條件排名。"
+        },
+        "en": {
+          "title": "Holo4 brings screen and tool interactions into one model",
+          "summary": "H Company released Holo4 in 27B dense and 35B-A3B MoE versions for GUI interaction, code execution, MCP and APIs. The team also publishes public-benchmark trajectories so developers can inspect the actions behind its reported scores.",
+          "takeaway": "Evaluate a workflow that crosses screens and APIs, including recovery from failures.",
+          "caveat": "The comparison uses differing harnesses, task subsets and releases, so it is not a fully controlled ranking."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "AI 週報 · 2026/10/04",
+        "en": "AI Weekly · October 4, 2026"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/#holo4",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/en/#holo4"
+      }
+    },
+    {
+      "key": "2026-10-04:codoku",
+      "storyId": "codoku",
+      "editionDate": "2026-10-04",
+      "sourcePublishedDate": "2026-09-28",
+      "category": "papers",
+      "source": "Cong Li, Hao Sun, Zenan Li and Zhendong Su / arXiv",
+      "sourceUrl": "https://arxiv.org/abs/2609.34661",
+      "localized": {
+        "zh-TW": {
+          "title": "Codoku 用可再生程式謎題評估代理推理",
+          "summary": "Codoku 要求代理填入不完整程式，滿足整體靜態與動態限制，並可持續生成新題。作者以 300 題測試五個前沿模型，指出大型題目仍讓最強受測模型遭遇明顯困難。",
+          "takeaway": "在固定程式評測之外加入可更新、可驗證題目，降低記憶題庫的影響。",
+          "caveat": "這是預印本與特定程式謎題評測，不能直接代表真實開發產能。"
+        },
+        "en": {
+          "title": "Codoku offers renewable program-reasoning tests",
+          "summary": "Codoku asks agents to fill incomplete programs under global static and dynamic constraints, with fresh puzzles generated on demand. The authors evaluated five frontier models on 300 puzzles and report that even proprietary models solved only about half of the large puzzles.",
+          "takeaway": "Add renewable, verifiable tasks alongside fixed coding benchmarks to reduce dependence on memorized test sets.",
+          "caveat": "This preprint tests specific program puzzles, not general software-development productivity."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "AI 週報 · 2026/10/04",
+        "en": "AI Weekly · October 4, 2026"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/#codoku",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/en/#codoku"
+      }
+    },
+    {
+      "key": "2026-10-04:lego-anything",
+      "storyId": "lego-anything",
+      "editionDate": "2026-10-04",
+      "sourcePublishedDate": "2026-09-28",
+      "category": "papers",
+      "source": "Xirui Li and coauthors / arXiv",
+      "sourceUrl": "https://arxiv.org/abs/2609.36380",
+      "localized": {
+        "zh-TW": {
+          "title": "LEGO-Anything 揭示「能產出 3D 檔案」與「重建正確」的落差",
+          "summary": "LEGO-Anything 讓代理從單張圖片反覆編寫與執行 Blender 程式。研究以 104 個場景的 208 張圖片分別量測檔案有效性、幾何與外觀，發現產出可用檔案仍不代表重建準確。",
+          "takeaway": "驗收生成作品時，分開檢查能否開啟、是否正確，以及是否符合視覺要求。",
+          "caveat": "這是預印本與模擬場景基準；作者也指出真實圖片上的表現仍落後專用視覺模型。"
+        },
+        "en": {
+          "title": "LEGO-Anything separates valid 3D artifacts from accurate scenes",
+          "summary": "LEGO-Anything has coding agents iteratively write and execute Blender programs from single images. Its benchmark uses 208 images from 104 scenes and separates artifact validity, geometry and appearance, exposing a substantial gap between usable outputs and accurate reconstruction.",
+          "takeaway": "Assess whether generated artifacts open, are correct and match visual requirements as separate criteria.",
+          "caveat": "This is a preprint with a simulator-grounded benchmark; its natural-image results still trail specialist vision models."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "AI 週報 · 2026/10/04",
+        "en": "AI Weekly · October 4, 2026"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/#lego-anything",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/en/#lego-anything"
+      }
+    },
+    {
+      "key": "2026-10-04:github-android-audits",
+      "storyId": "github-android-audits",
+      "editionDate": "2026-10-04",
+      "sourcePublishedDate": "2026-09-28",
+      "category": "engineering",
+      "source": "Kevin Stubbings / GitHub Security Lab",
+      "sourceUrl": "https://github.blog/security/how-we-found-24-android-vulnerabilities-using-our-open-source-ai-security-agent/",
+      "localized": {
+        "zh-TW": {
+          "title": "GitHub 分享以分階段 AI 稽核通報 24 個 Android 漏洞",
+          "summary": "GitHub Security Lab 分享把稽核拆成入口辨識、弱點分類與驗證的流程，表示累計找到並通報 24 個 Android 應用程式漏洞。作者也說明模型會誤判影響與可利用性，需要驗證及研究者複核。",
+          "takeaway": "在已獲授權的程式庫測試分階段稽核，為驗證、人工複核與 token 消耗預留預算。",
+          "caveat": "這是團隊經驗報告，沒有證明任意專案都會有相同成果。"
+        },
+        "en": {
+          "title": "GitHub reports 24 Android flaws from staged AI audits",
+          "summary": "GitHub Security Lab describes staged auditing workflows and reports finding and reporting 24 Android-app vulnerabilities. The account explains why models can misjudge impact or exploitability, and why validation and researcher review remain necessary.",
+          "takeaway": "Try staged audits on authorized repositories, budgeting for validation, human review and token consumption.",
+          "caveat": "This team report does not establish that other projects will achieve the same results."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "AI 週報 · 2026/10/04",
+        "en": "AI Weekly · October 4, 2026"
+      },
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/#github-android-audits",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-04/en/#github-android-audits"
+      }
+    }
+  ]
+}
