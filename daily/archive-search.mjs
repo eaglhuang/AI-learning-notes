@@ -1,4 +1,4 @@
-import {LOCALES, validateRecord, weekdayForDate} from './issue-ui.mjs';
+import {LOCALES, validateRecord, weekdayForDate, shortSummaryNote, appendSummarySources} from './issue-ui.mjs';
 export const normalize = value => String(value ?? '').normalize('NFKC').toLowerCase().trim();
 const strings = value => typeof value === 'string' ? [value] : value && typeof value === 'object' ? Object.values(value).flatMap(strings) : [];
 export function validateIndex(index) {
@@ -49,7 +49,10 @@ export function mountArchiveSearch({root, index, locale = 'zh-TW', controller}) 
         const summary = el('button', en ? 'Read summary' : '閱讀摘要'); summary.type = 'button'; summary.setAttribute('aria-haspopup', 'dialog');
         summary.addEventListener('click', () => controller.open(row, summary)); actions.append(summary);
       } else {
-        const details = el('details'); details.append(el('summary', en ? 'Read summary' : '閱讀摘要'), el('p', copy.summary), el('p', copy.takeaway), el('p', copy.caveat)); actions.append(details);
+        const details = el('details'); details.append(el('summary', en ? 'Read summary' : '閱讀摘要'), el('p', copy.summary), el('p', copy.takeaway), el('p', copy.caveat));
+        const shortNote = shortSummaryNote(row, currentLocale); if (shortNote) details.append(el('p', shortNote));
+        if (row.summarySources?.length) { const list = el('ul'); appendSummarySources(doc, list, row.summarySources); details.append(el('strong', en ? 'Summary sources' : '摘要來源'), list); }
+        actions.append(details);
       }
       const translation = el('button', en ? 'AI full translation · Not enabled' : 'AI 全文翻譯・尚未啟用'); translation.type = 'button'; translation.disabled = true;
       translation.title = en ? 'Full-text rights and a translation service must be configured.' : '需要核對全文使用權限並設定翻譯服務。';

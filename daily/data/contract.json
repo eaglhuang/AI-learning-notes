@@ -22,7 +22,9 @@
     "min_characters": 450,
     "max_characters": 550,
     "counting": "unicode_codepoints_excluding_whitespace",
-    "required_content": ["what happened", "key details", "why it matters", "limitations"],
-    "insufficient_evidence": "skip_story_without_padding"
+    "required_content": ["source-supported event", "source-supported details", "attributed author positions", "source-stated limitations"],
+    "source_only_condensation": true,
+    "short_summary_exceptions": ["source_budget", "verified_source_scope"],
+    "insufficient_evidence": "require_content_bound_human_review_for_short_summary_or_skip_without_padding"
   }]
 }

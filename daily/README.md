@@ -9,7 +9,7 @@ A separate, bilingual AI reading room for AI Learning Notes. The existing techni
 - Search across both languages, category filters, empty states, date selection, stable story links, print/PDF and JSON download
 - Seven weekday compositions from October 7, alongside three independent color palettes; earlier editions keep their original layouts. Mobile, keyboard and reduced-motion support
 - Independent RSS and Atom feeds in both languages: `feed.xml`, `feed-en.xml`, `atom.xml`, `atom-en.xml` within this directory
-- Source-checked October 4, October 6 and October 7, 2026 editions, with historical issue text preserved. October 6 has seven announcements with about 200 Traditional Chinese characters each; October 7 has six official reports and one practitioner write-up with about 500 characters and corresponding English. Vendor claims, author experience, editorial interpretation and research limitations are labeled
+- Source-checked October 4, October 6 and October 7, 2026 editions. October 6 keeps its approximately 200-character summaries. The corrected October 7 edition contains faithful source-only condensations in both languages, targeting 500 Traditional Chinese characters; five source-limited entries have reviewed shorter summaries. Source authors' views are attributed; assistant/editor opinions and advice are excluded
 - Dependency-free RSS/Atom collection and reviewed-data validation; deterministic generation with pinned Pillow image checks, HTML/plain-text email previews and a tested optional email adapter
 
 ## Explicitly not activated
@@ -225,7 +225,17 @@ Kit 模組只提供分語言的託管表單轉交與經精確核准的私人草�
 
 For a new enhanced edition, onboard its verified JPEGs and manifest entries before `pipeline prepare`, which snapshots the entire source set. If artwork is added after preparation, preserve the earlier run and start a new run with the saved candidate report. The old run rejects source drift; missing or invalid images leave its preview unwritten. This is a manual editorial/image preparation step, not automatic image generation.
 
-The first two editorial picks are featured; remaining picks are smaller headline links. Titles open the original source. Full bilingual summaries, takeaways and caveats stay closed until requested. The native summary dialog supports Escape, backdrop dismissal, focus return and language changes. Without JavaScript, closed disclosure elements contain the same complete text. AI full translation is visibly disabled until source rights and a translation service are configured.
+The first two editorial picks are featured; remaining picks are smaller headline links. Titles open the original source. Full bilingual summaries, source highlights and caveats stay closed until requested. The native summary dialog supports Escape, backdrop dismissal, focus return and language changes. Without JavaScript, closed disclosure elements contain the same complete text. Supporting summary sources remain visible as links in the reading view, feeds and optional email previews. AI full translation is visibly disabled until source rights and a translation service are configured.
+
+### Source-only summaries and reviewed length exceptions
+
+From October 7, the ordinary target remains 450–550 non-whitespace Unicode code points. Summaries, titles, highlights and caveats must faithfully condense identified sources; source authors' opinions require attribution. Do not add newsletter analysis, suggested tests, reader advice or unsupported implications, even under an editorial label. Keep acquisition limitations in the issue disclosure or review record.
+
+If source-use limits or verified source scope cannot support the target, a human may approve a shorter summary using `summary_length_exception`. Both Python and JavaScript require the supported reason, actual count, review date and SHA-256 binding to the exact issue date, item ID, original URL, ordered `summary_sources` and all eight bilingual text fields. An edited translation, title, highlight, caveat or source list invalidates the exception. Empty, overlong, unreviewed, stale or unnecessary exceptions fail validation. The earlier October 6 policy is unchanged.
+
+This record does not itself prove factual support or copyright permission. Reviewers must read the sources, check every claim in both languages and respect shared source-use limits. The writer adapter cannot mint an exception or mark output reviewed; insufficient material still returns `insufficient_evidence`. The October 7 correction retains its original publication date and IDs, while Git history preserves the earlier wording.
+
+Supplemental summary links use an explicit absolute HTTPS grammar: ASCII DNS labels (or a punycode hostname), at most 63 characters per label and 253 per hostname, with an alphabetic start to the final label. Numeric/IP authorities, malformed or automatically repaired URLs, credentials, nonstandard ports, whitespace and malformed Unicode are rejected. The URL limit is 2,000 Unicode code points, shared by the build, optional email adapter and browser reader.
 
 Seven layouts follow the issue's Taipei calendar date, Monday through Sunday, independently of the three color palettes. The layout selector previews all seven without changing the edition date or editorial order. October 4 and October 6 keep their original presentation.
 
