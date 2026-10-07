@@ -124,6 +124,9 @@ def search_index(issues, config):
                 'category': item['category'], 'source': item['source'], 'sourceUrl': item['source_url'],
                 'localized': {l: {k: item[l][k] for k in ('title', 'summary', 'takeaway', 'caveat')} for l in LOCALES},
                 'editionTitle': issue['title'],
+                'summarySources': item.get('summary_sources', []),
+                'shortSummaryReason': item.get('summary_length_exception', {}).get('reason'),
+                'sourceOnly': item.get('source_check', {}).get('summary_mode') == 'source_only_translated_condensation',
                 'keywords': issue.get('topic', {}).get('keywords', []),
                 'aliases': issue.get('topic', {}).get('english_aliases', {}),
                 'permalink': {l: config['site_url']+'/daily/'+issue['date']+('/en/' if l == 'en' else '/')+'#'+item['id'] for l in LOCALES}
@@ -137,7 +140,7 @@ def summary_dialog(locale, weekday=None):
     if weekday is not None:
         options = ''.join(f'<option value="{n}" {"selected" if n==weekday else ""} data-zh="週{zh}" data-en="{en}">{en if locale=="en" else "週"+zh}</option>' for n,(zh,en) in enumerate(zip('一二三四五六日',('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'))))
         picker = f'<label class="dialog-layout" for="dialog-layout">{t("版型","Layout",locale)} <select id="dialog-layout">{options}</select></label>'
-    return f'''<dialog id="summary-dialog" class="summary-dialog" aria-labelledby="summary-title"><div class="dialog-controls"><button type="button" data-dialog-language>{t('切換為 English','切換為繁體中文',locale)}</button><button type="button" data-dialog-close autofocus>{t('關閉摘要','Close summary',locale)} ✕</button></div>{picker}<p data-dialog-meta></p><h2 id="summary-title"></h2><p class="summary-body" data-dialog-summary></p><h3>{t('實作啟示','Takeaway',locale)}</h3><p data-dialog-takeaway></p><h3>{t('限制與日期說明','Caveats & dates',locale)}</h3><p data-dialog-caveat></p><a data-dialog-source target="_blank" rel="noopener noreferrer">{t('閱讀原文','Original source',locale)} ↗</a></dialog>'''
+    return f'''<dialog id="summary-dialog" class="summary-dialog" aria-labelledby="summary-title"><div class="dialog-controls"><button type="button" data-dialog-language>{t('切換為 English','切換為繁體中文',locale)}</button><button type="button" data-dialog-close autofocus>{t('關閉摘要','Close summary',locale)} ✕</button></div>{picker}<p data-dialog-meta></p><h2 id="summary-title"></h2><p class="summary-body" data-dialog-summary></p><p data-dialog-length-note hidden></p><h3 data-dialog-highlight-label>{t('原文重點','Source highlight',locale)}</h3><p data-dialog-takeaway></p><h3>{t('限制與日期說明','Caveats & dates',locale)}</h3><p data-dialog-caveat></p><h3 data-dialog-sources-label hidden></h3><ul data-dialog-sources></ul><a data-dialog-source target="_blank" rel="noopener noreferrer">{t('閱讀原文','Original source',locale)} ↗</a></dialog>'''
 
 
 def enhanced_card(item, i, config, page, locale, permalink, search):
@@ -148,7 +151,12 @@ def enhanced_card(item, i, config, page, locale, permalink, search):
     alt = image['alt']
     image_url = relative(image['path'], page)
     key = config['_issue_date']+':'+item['id']
-    return f'''<article class="headline-story {'featured-story' if i < 2 else 'compact-story'}" id="{item['id']}" data-card data-category="{item['category']}" data-search="{esc(search)}"><figure><div class="story-image"><img src="{image_url}" width="{image['width']}" height="{image['height']}" loading="{'eager' if i < 2 else 'lazy'}" decoding="async" alt="{esc(alt[locale])}" data-alt-zh="{esc(alt['zh-TW'])}" data-alt-en="{esc(alt['en'])}"><span class="image-fallback" hidden>{tr('示意圖暫時無法顯示','Illustration unavailable')}</span></div><figcaption>{caption}</figcaption></figure><div class="headline-copy"><div class="story-top"><span class="category">{tr(*CATEGORIES[item['category']])}</span><span class="number">{i+1:02d}</span></div><h3><a href="{esc(item['source_url'])}" target="_blank" rel="noopener noreferrer">{field('title')} ↗</a></h3><p class="headline-meta">{esc(item['source'])} · <time datetime="{item['published_date']}">{item['published_date']}</time></p><div class="story-actions"><button class="dialog-trigger" type="button" data-summary-key="{esc(key)}" aria-haspopup="dialog">{tr('閱讀摘要','Read summary')}</button><button type="button" disabled title="{esc('尚未啟用：需要核對全文使用權限並設定翻譯服務' if locale=='zh-TW' else 'Not enabled: full-text rights and a translation service must be configured')}" data-title-zh="尚未啟用：需要核對全文使用權限並設定翻譯服務" data-title-en="Not enabled: full-text rights and a translation service must be configured">{tr('AI 全文翻譯・尚未啟用','AI full translation · Not enabled')}</button></div><details class="summary-fallback"><summary>{tr('閱讀完整摘要','Read the full summary')}</summary><p>{field('summary')}</p><strong>{tr('實作啟示','Takeaway')}</strong><p>{field('takeaway')}</p><strong>{tr('限制與日期說明','Caveats & dates')}</strong><p>{field('caveat')}</p></details><a class="permalink" href="{esc(permalink)}" data-local-link>{tr('這則的固定連結','Link to this pick')} ↗</a></div></article>'''
+    source_only = item.get('source_check', {}).get('summary_mode') == 'source_only_translated_condensation'
+    highlight = tr('原文重點','Source highlight') if source_only else tr('實作啟示','Takeaway')
+    length_note = ('<p>'+tr('本則採較短摘要：以已核對的原文內容與摘要使用範圍為限。','Shorter summary: limited to verified source material and permitted condensation.')+'</p>') if item.get('summary_length_exception') else ''
+    source_links = ''.join(f'<li><a href="{esc(url)}" target="_blank" rel="noopener noreferrer">{esc(url)}</a></li>' for url in item.get('summary_sources', []))
+    sources = ('<strong>'+tr('摘要來源','Summary sources')+'</strong><ul>'+source_links+'</ul>') if source_links else ''
+    return f'''<article class="headline-story {'featured-story' if i < 2 else 'compact-story'}" id="{item['id']}" data-card data-category="{item['category']}" data-search="{esc(search)}"><figure><div class="story-image"><img src="{image_url}" width="{image['width']}" height="{image['height']}" loading="{'eager' if i < 2 else 'lazy'}" decoding="async" alt="{esc(alt[locale])}" data-alt-zh="{esc(alt['zh-TW'])}" data-alt-en="{esc(alt['en'])}"><span class="image-fallback" hidden>{tr('示意圖暫時無法顯示','Illustration unavailable')}</span></div><figcaption>{caption}</figcaption></figure><div class="headline-copy"><div class="story-top"><span class="category">{tr(*CATEGORIES[item['category']])}</span><span class="number">{i+1:02d}</span></div><h3><a href="{esc(item['source_url'])}" target="_blank" rel="noopener noreferrer">{field('title')} ↗</a></h3><p class="headline-meta">{esc(item['source'])} · <time datetime="{item['published_date']}">{item['published_date']}</time></p><div class="story-actions"><button class="dialog-trigger" type="button" data-summary-key="{esc(key)}" aria-haspopup="dialog">{tr('閱讀摘要','Read summary')}</button><button type="button" disabled title="{esc('尚未啟用：需要核對全文使用權限並設定翻譯服務' if locale=='zh-TW' else 'Not enabled: full-text rights and a translation service must be configured')}" data-title-zh="尚未啟用：需要核對全文使用權限並設定翻譯服務" data-title-en="Not enabled: full-text rights and a translation service must be configured">{tr('AI 全文翻譯・尚未啟用','AI full translation · Not enabled')}</button></div><details class="summary-fallback"><summary>{tr('閱讀完整摘要','Read the full summary')}</summary><p>{field('summary')}</p>{length_note}<strong>{highlight}</strong><p>{field('takeaway')}</p><strong>{tr('限制與日期說明','Caveats & dates')}</strong><p>{field('caveat')}</p>{sources}</details><a class="permalink" href="{esc(permalink)}" data-local-link>{tr('這則的固定連結','Link to this pick')} ↗</a></div></article>'''
 
 
 def render_issue(issue, issues, config, page, locale):
@@ -219,6 +227,13 @@ def render_archive(issues, config, page, locale):
 def feeds(issues,config,locale,atom=False):
     site=config['site_url']+'/daily/'
     suffix='-en' if locale=='en' else ''
+    def story_text(item):
+        text = item[locale]['title']+': '+item[locale]['summary']
+        if item.get('summary_length_exception'):
+            text += '\n'+('Shorter source-limited summary.' if locale=='en' else '本則依來源範圍採較短摘要。')
+        if item.get('summary_sources'):
+            text += '\n'+('Summary sources: ' if locale=='en' else '摘要來源：')+' '.join(item['summary_sources'])
+        return text
     def url(issue): return site+issue['date']+('/en/' if locale=='en' else '/')
     if atom:
         ns='http://www.w3.org/2005/Atom'; ET.register_namespace('',ns)
@@ -230,7 +245,7 @@ def feeds(issues,config,locale,atom=False):
         author=ET.SubElement(root,tag('author'));ET.SubElement(author,tag('name')).text='Eagl Huang'
         for issue in issues:
             entry=ET.SubElement(root,tag('entry'))
-            for key,val in [('id',url(issue)),('title',issue['title'][locale]),('updated',issue['date']+'T12:00:00+08:00'),('summary','\n\n'.join(i[locale]['title']+': '+i[locale]['summary'] for i in issue['items']))]:ET.SubElement(entry,tag(key)).text=val
+            for key,val in [('id',url(issue)),('title',issue['title'][locale]),('updated',issue['date']+'T12:00:00+08:00'),('summary','\n\n'.join(story_text(i) for i in issue['items']))]:ET.SubElement(entry,tag(key)).text=val
             ET.SubElement(entry,tag('link'),href=url(issue))
             ET.SubElement(entry,tag('category'),term=topic_label(issue,locale))
     else:
@@ -240,7 +255,7 @@ def feeds(issues,config,locale,atom=False):
             item=ET.SubElement(channel,'item')
             ET.SubElement(item,'category').text=topic_label(issue,locale)
             dt=datetime.fromisoformat(issue['date']+'T12:00:00+08:00')
-            for key,val in [('title',issue['title'][locale]),('link',url(issue)),('guid',url(issue)),('pubDate',format_datetime(dt)),('description','\n\n'.join(i[locale]['title']+': '+i[locale]['summary'] for i in issue['items']))]:ET.SubElement(item,key).text=val
+            for key,val in [('title',issue['title'][locale]),('link',url(issue)),('guid',url(issue)),('pubDate',format_datetime(dt)),('description','\n\n'.join(story_text(i) for i in issue['items']))]:ET.SubElement(item,key).text=val
     ET.indent(root,space='  ')
     return '<?xml version="1.0" encoding="utf-8"?>\n'+ET.tostring(root,encoding='unicode')+'\n'
 

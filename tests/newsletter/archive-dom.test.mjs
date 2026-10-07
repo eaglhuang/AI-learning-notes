@@ -38,4 +38,8 @@ test('unsupported dialog uses closed details with full saved text',()=>{
   const {root}=dom();mountArchiveSearch({root,index,locale:'en',controller:{supported:false}});
   const details=flatten(root).filter(n=>n.tag==='details');assert.equal(details.length,index.records.length);
   assert.equal(details[0].children[1].textContent,index.records[0].localized.en.summary);assert.equal(details[0].attrs.open,undefined);
+  const expected=index.records.flatMap(row=>row.summarySources||[]);
+  const actual=details.flatMap(flatten).filter(n=>n.tag==='a').map(n=>n.href);
+  assert.deepEqual(actual,expected);
+  assert.equal(details.flatMap(flatten).filter(n=>n.textContent.startsWith('Shorter summary:')).length,index.records.filter(row=>row.shortSummaryReason).length);
 });

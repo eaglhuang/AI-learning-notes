@@ -5,6 +5,17 @@ export function safeHttps(value) {
   try { const u = new URL(value); return u.protocol === 'https:' && !u.username && !u.password ? u.href : ''; }
   catch { return ''; }
 }
+export function safeSummarySource(value) {
+  if (typeof value !== 'string' || [...value].length > 2000 || !value.isWellFormed()
+      || /\s|[\u0085]/.test(value)) return '';
+  const match = /^https:\/\/([a-z0-9](?:[a-z0-9.-]*[a-z0-9])?)(?::443)?(?=[/?#]|$)/i.exec(value);
+  if (!match) return '';
+  const host = match[1], labels = host.split('.');
+  if (host.length > 253 || !/^[a-z]/i.test(labels.at(-1))
+      || labels.some(label => !/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(label))) return '';
+  const url = safeHttps(value);
+  return url;
+}
 export function weekdayForDate(value) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) throw new TypeError('Expected an edition calendar date');
   const d = new Date(`${value}T12:00:00Z`);
@@ -20,7 +31,26 @@ export function validateRecord(row) {
     for (const field of ['title', 'summary', 'takeaway', 'caveat']) if (typeof row.localized?.[lang]?.[field] !== 'string' || !row.localized[lang][field].trim()) throw new TypeError('Missing bilingual content');
     if (!safeHttps(row.permalink?.[lang])) throw new TypeError('Invalid permalink');
   }
+  if (row.summarySources !== undefined && (!Array.isArray(row.summarySources) || row.summarySources.length > 8 || row.summarySources.some(url => !safeSummarySource(url)) || new Set(row.summarySources).size !== row.summarySources.length)) throw new TypeError('Invalid summary sources');
+  if (row.shortSummaryReason != null && !['source_budget','verified_source_scope'].includes(row.shortSummaryReason)) throw new TypeError('Invalid short-summary reason');
+  if (row.sourceOnly !== undefined && typeof row.sourceOnly !== 'boolean') throw new TypeError('Invalid summary mode');
   return row;
+}
+
+export function shortSummaryNote(row, locale) {
+  if (!row.shortSummaryReason) return '';
+  return locale === 'en' ? 'Shorter summary: limited to verified source material and permitted condensation.' : '本則採較短摘要：以已核對的原文內容與摘要使用範圍為限。';
+}
+
+export function appendSummarySources(doc, root, sources = []) {
+  root.replaceChildren();
+  for (const [index, url] of sources.entries()) {
+    const safe = safeSummarySource(url);
+    if (!safe) throw new TypeError('Invalid summary source URL');
+    const li = doc.createElement('li'), link = doc.createElement('a');
+    link.href = safe; link.target = '_blank'; link.rel = 'noopener noreferrer';
+    link.textContent = `${index + 1} · ${new URL(safe).hostname}`; li.append(link); root.append(li);
+  }
 }
 
 export function createSummaryController({document: doc, window: win, locale = 'zh-TW', onLocale}) {
@@ -35,6 +65,13 @@ export function createSummaryController({document: doc, window: win, locale = 'z
     const text = current.localized[currentLocale], en = currentLocale === 'en';
     put('#summary-title', text.title); put('[data-dialog-summary]', text.summary);
     put('[data-dialog-takeaway]', text.takeaway); put('[data-dialog-caveat]', text.caveat);
+    put('[data-dialog-highlight-label]', current.sourceOnly ? (en ? 'Source highlight' : '原文重點') : (en ? 'Takeaway' : '實作啟示'));
+    const note = dialog.querySelector('[data-dialog-length-note]');
+    note.textContent = shortSummaryNote(current, currentLocale); note.hidden = !note.textContent;
+    const sources = dialog.querySelector('[data-dialog-sources]');
+    appendSummarySources(doc, sources, current.summarySources || []);
+    const label = dialog.querySelector('[data-dialog-sources-label]');
+    label.textContent = en ? 'Summary sources' : '摘要來源'; label.hidden = !current.summarySources?.length;
     put('[data-dialog-meta]', `${en ? 'Edition' : '期別'} ${current.editionDate} · ${current.source} · ${current.sourcePublishedDate}`);
     dialog.querySelector('[data-dialog-source]').href = safeHttps(current.sourceUrl);
     dialog.setAttribute('lang', currentLocale);

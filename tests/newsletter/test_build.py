@@ -8,11 +8,12 @@ import sys
 import unittest
 from urllib.parse import unquote, urlsplit
 from html.parser import HTMLParser
+from html import escape as escape_for_test
 from xml.etree import ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'scripts/newsletter'))
-from edition import validate_edition, load_edition, summary_policy_for
+from edition import validate_edition, load_edition, summary_policy_for, summary_errors, summary_content_digest
 from build import outputs, render_issue
 from collect import collect, parse_feed
 
@@ -35,6 +36,52 @@ class NewsletterBuildTests(unittest.TestCase):
         cls.generated=outputs()
 
     def test_valid_production_contract(self):self.assertEqual(validate_edition(self.issue),[])
+
+    def test_reviewed_short_summary_exceptions_are_bound_and_match_shared_cases(self):
+        fixture=json.loads((ROOT/'tests/newsletter/fixtures/summary-exceptions.json').read_text())
+        self.assertEqual(summary_content_digest(fixture['base_item'],fixture['date']),fixture['expected_digest'])
+        for case in fixture['cases']:
+            item=copy.deepcopy(fixture['base_item']);day=case.get('date',fixture['date'])
+            for path,value in case['set'].items():
+                keys=path.split('.');target=item
+                for key in keys[:-1]:target=target[key]
+                target[keys[-1]]=value
+            if case.get('rebind'):item['summary_length_exception']['content_sha256']=summary_content_digest(item,day)
+            with self.subTest(case=case['name']):
+                self.assertEqual(not summary_errors(item,day,date.fromisoformat(fixture['today'])),case['valid'])
+
+    def test_supporting_source_urls_are_checked_even_before_length_policies(self):
+        issue=copy.deepcopy(self.issue)
+        for value in [['javascript:alert(1)'],None,[{}]]:
+            issue['items'][0]['summary_sources']=value
+            self.assertTrue(any('summary_sources' in e for e in validate_edition(issue)))
+        issue['items'][0]['summary_sources']=['https://source.test/verified']
+        self.assertEqual(validate_edition(issue),[])
+        issue['items'][0]['summary_length_exception']={'reviewed':True}
+        self.assertTrue(any('exceptions are unavailable' in e for e in validate_edition(issue)))
+
+    def test_source_only_correction_is_complete_in_pages_search_and_feeds(self):
+        issue=load_edition(ROOT/'daily/data/issues/2026-10-07.json')
+        self.assertEqual(validate_edition(issue),[])
+        self.assertEqual(sum('summary_length_exception' in i for i in issue['items']),5)
+        rows=json.loads(self.generated['daily/data/search-index.json'])['records']
+        for item in issue['items']:
+            row=next(r for r in rows if r['storyId']==item['id'])
+            self.assertEqual(row['summarySources'],item['summary_sources'])
+            for locale in ('zh-TW','en'):
+                self.assertEqual(row['localized'][locale],item[locale])
+                page='daily/2026-10-07/'+('en/' if locale=='en' else '')+'index.html'
+                html=self.generated[page]
+                self.assertIn(escape_for_test(item[locale]['summary']),html)
+                for url in item['summary_sources']:self.assertIn(escape_for_test(url),html)
+                for format_name in ('feed','atom'):
+                    xml=self.generated['daily/'+format_name+('-en' if locale=='en' else '')+'.xml']
+                    root=ET.fromstring(xml)
+                    text=''.join(root.itertext())
+                    self.assertIn(item[locale]['summary'],text)
+                    for url in item['summary_sources']:self.assertIn(url,text)
+            self.assertNotIn('編輯觀點',item['zh-TW']['summary'])
+            self.assertNotIn('Editorial interpretation',item['en']['summary'])
 
     def test_new_summary_policy_preserves_archive_and_rejects_short_or_padded_text(self):
         self.assertEqual(validate_edition(self.issue),[])

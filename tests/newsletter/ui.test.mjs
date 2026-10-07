@@ -7,8 +7,9 @@ const rows = read('../../daily/data/search-index.json').records.filter(r => r.ed
 
 function fixture() {
   const doc = {body:{style:{overflow:'auto'}},documentElement:{classList:{add(){}}},activeElement:null};
-  const make = () => ({textContent:'',dataset:{},attrs:{},hidden:false,isConnected:true,events:{},setAttribute(k,v){this.attrs[k]=v;},addEventListener(k,f){this.events[k]=f;},focus(){doc.activeElement=this;}});
-  const selectors = ['#summary-title','[data-dialog-summary]','[data-dialog-takeaway]','[data-dialog-caveat]','[data-dialog-meta]','[data-dialog-source]','[data-dialog-close]','[data-dialog-language]'];
+  const make = () => ({textContent:'',dataset:{},attrs:{},hidden:false,isConnected:true,events:{},children:[],append(...nodes){this.children.push(...nodes);},replaceChildren(...nodes){this.children=nodes;},setAttribute(k,v){this.attrs[k]=v;},addEventListener(k,f){this.events[k]=f;},focus(){doc.activeElement=this;}});
+  doc.createElement=()=>make();
+  const selectors = ['#summary-title','[data-dialog-summary]','[data-dialog-takeaway]','[data-dialog-caveat]','[data-dialog-meta]','[data-dialog-source]','[data-dialog-close]','[data-dialog-language]','[data-dialog-highlight-label]','[data-dialog-length-note]','[data-dialog-sources]','[data-dialog-sources-label]'];
   const nodes = Object.fromEntries(selectors.map(s => [s,make()]));
   const controls = [nodes['[data-dialog-language]'],nodes['[data-dialog-close]'],nodes['[data-dialog-source]']];
   const dialog = Object.assign(make(), {open:false,showModal(){this.open=true;},close(){this.open=false;this.events.close?.();},querySelector(s){return nodes[s];},querySelectorAll(){return controls;},getBoundingClientRect(){return {left:10,top:10,right:700,bottom:600};}});
@@ -58,6 +59,21 @@ test('Esc, backdrop, focus trap and disconnected opener have bounded behavior', 
 test('missing native dialog retains the progressive disclosure fallback', () => {
   const f=fixture();delete f.dialog.showModal;
   const ui=createSummaryController({document:f.doc,window:f.win});assert.equal(ui.supported,false);assert.equal(ui.open(rows[0]),false);
+});
+test('source-only summaries expose reviewed source links and localized short notices without markup', () => {
+  const f=fixture(),ui=createSummaryController({document:f.doc,window:f.win});
+  const row=structuredClone(rows[0]);row.sourceOnly=true;row.shortSummaryReason='source_budget';row.summarySources=['https://source.test/verified'];
+  ui.open(row,f.make());
+  assert.equal(f.nodes['[data-dialog-highlight-label]'].textContent,'原文重點');
+  assert.equal(f.nodes['[data-dialog-length-note]'].hidden,false);
+  assert.equal(f.nodes['[data-dialog-sources]'].children[0].children[0].href,'https://source.test/verified');
+  ui.setLocale('en');assert.match(f.nodes['[data-dialog-length-note]'].textContent,/Shorter summary/);
+  const normal=structuredClone(row);normal.shortSummaryReason=null;normal.summarySources=[];
+  ui.open(normal,f.make());assert.equal(f.nodes['[data-dialog-length-note]'].hidden,true);assert.equal(f.nodes['[data-dialog-sources]'].children.length,0);
+  for(const sources of [['javascript:alert(1)'],['https:/source.test/a'],['https://%73ource.test/a'],['https://source.test/a\u0085b'],['https://source.test/a\ufeffb'],['https://source.test/a','https://source.test/a'],Array(9).fill('https://source.test/a'),{}]){
+    const unsafe=structuredClone(row);unsafe.summarySources=sources;assert.throws(()=>validateRecord(unsafe));
+  }
+  const astral=structuredClone(row);astral.summarySources=['https://source.test/'+'🐟'.repeat(1100)];assert.doesNotThrow(()=>validateRecord(astral));
 });
 test('layout selectors synchronize without closing a summary; repeated image failure keeps its frame', () => {
   const wrapper={dataset:{editionDate:'2026-10-07'}};

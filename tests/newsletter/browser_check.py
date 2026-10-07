@@ -161,6 +161,14 @@ def main():
                                 expect(page.locator('[data-dialog-summary]')).to_have_text(item[locale]['summary'])
                                 expect(page.locator('[data-dialog-takeaway]')).to_have_text(item[locale]['takeaway'])
                                 expect(page.locator('[data-dialog-caveat]')).to_have_text(item[locale]['caveat'])
+                                if item.get('summary_sources'):
+                                    assert page.locator('[data-dialog-sources] a').evaluate_all('(nodes)=>nodes.map(n=>n.href)')==item['summary_sources']
+                                    expect(page.locator('[data-dialog-highlight-label]')).to_have_text('Source highlight' if locale=='en' else '原文重點')
+                                if item.get('summary_length_exception'):
+                                    expect(page.locator('[data-dialog-length-note]')).to_be_visible()
+                                    expect(page.locator('[data-dialog-length-note]')).to_contain_text('Shorter summary' if locale=='en' else '較短摘要')
+                                else:
+                                    expect(page.locator('[data-dialog-length-note]')).not_to_be_visible()
                                 page.locator('[data-dialog-close]').click();expect(page.locator('#summary-dialog')).not_to_be_visible()
                                 expect(trigger).to_be_focused();restored(page,before);report['summary_scenarios']+=1
             assert len(report['layout_scenarios'])==56 and report['summary_scenarios']==7*2*story_count
@@ -237,6 +245,15 @@ def main():
                 expect(np.locator('.summary-fallback').first).not_to_have_attribute('open','')
                 np.locator('.summary-fallback summary').first.click();expect(np.locator('.summary-fallback').first).to_contain_text(latest['items'][0][locale]['summary'])
             passed('no-JavaScript bilingual closed disclosures and English navigation')
+            np.set_viewport_size({'width':320,'height':844})
+            for locale in ['zh-TW','en']:
+                np.goto(base+'/daily/'+('en/' if locale=='en' else ''))
+                for card in np.locator('.compact-story').all():
+                    card.locator('.summary-fallback summary').click()
+                    if card.locator('.summary-fallback a').count():
+                        assert card.evaluate('''(card)=>{const box=card.getBoundingClientRect();return card.scrollWidth<=card.clientWidth+1&&[...card.querySelectorAll('.summary-fallback a')].every(a=>[...a.getClientRects()].every(r=>r.left>=box.left-1&&r.right<=box.right+1));}'''), 'Opened no-JavaScript source links must not clip'
+                assert np.evaluate('document.documentElement.scrollWidth <= innerWidth'), 'No-JavaScript source links must not cause horizontal overflow'
+            passed('320px no-JavaScript compact summaries keep full source links within their cards in both languages')
             for filename in ['wide.svg','portrait.svg','large-dimensions.svg','broken.jpg']:
                 fixture_context=browser.new_context(viewport={'width':320,'height':844})
                 fp=fixture_context.new_page()

@@ -1,6 +1,7 @@
 """Production editorial contract, distinct from the preserved v1 pilot fixture."""
 from datetime import date, datetime, timedelta
 import json
+import hashlib
 from pathlib import Path
 import re
 from validate_issue import _url_key, _unique_object
@@ -27,17 +28,74 @@ def summary_policy_for(issue_date):
     return max(eligible, key=lambda p: p['effective_from']) if eligible else None
 
 
-def summary_errors(item, issue_date):
+def summary_content_digest(item, issue_date):
+    """Bind a human length exception to the exact bilingual text and sources."""
+    values = [issue_date, item.get('id'), item.get('source_url'), item.get('summary_sources', [])]
+    values.extend((item.get(locale) if isinstance(item.get(locale), dict) else {}).get(field) for locale in LOCALES
+                  for field in ('title', 'summary', 'takeaway', 'caveat'))
+    return hashlib.sha256(json.dumps(values, ensure_ascii=False, separators=(',', ':')).encode()).hexdigest()
+
+
+def valid_summary_source_url(value):
+    """Use a shared raw URL grammar; do not silently repair malformed authorities."""
+    try:
+        if not isinstance(value, str) or len(value) > 2000 or re.search(r'[\s\ufeff]', value):
+            return False
+        match = re.match(r'https://([a-z0-9](?:[a-z0-9.-]*[a-z0-9])?)(?::443)?(?=[/?#]|$)', value, re.ASCII | re.I)
+        if not match:
+            return False
+        host = match.group(1)
+        labels = host.split('.')
+        if (len(host) > 253 or not re.match(r'[a-z]', labels[-1], re.ASCII | re.I)
+                or any(not re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?', label, re.ASCII | re.I) for label in labels)):
+            return False
+        value.encode('utf-8')
+        safe_url(value)
+        return True
+    except (ValueError, TypeError, UnicodeError):
+        return False
+
+
+def summary_errors(item, issue_date, today=None):
     """Enforce the dated editorial policy without rewriting historical editions."""
+    sources = item.get('summary_sources')
+    if 'summary_sources' in item:
+        try:
+            if (not isinstance(sources, list) or not 1 <= len(sources) <= 8
+                    or any(not valid_summary_source_url(url) for url in sources)
+                    or len(set(sources)) != len(sources)):
+                raise ValueError('invalid sources')
+        except (ValueError, TypeError, AttributeError):
+            return ['summary_sources must contain 1–8 unique safe HTTPS source URLs']
     policy = summary_policy_for(issue_date)
     if policy is None:
-        return []
+        return ['short summary exceptions are unavailable for this edition date'] if item.get('summary_length_exception') is not None else []
     fields = item.get(policy['locale'])
     value = fields.get('summary') if isinstance(fields, dict) else None
     if not isinstance(value, str):
         return ['Traditional Chinese summary is required']
     # Unicode White_Space, shared explicitly with the JavaScript validator.
     length = len(re.sub(r'[\u0009-\u000d\u0020\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]', '', value))
+    exception = item.get('summary_length_exception')
+    if exception is not None:
+        keys = {'schema_version', 'reason', 'reviewed', 'reviewed_on', 'actual_characters', 'content_sha256'}
+        valid = (isinstance(exception, dict) and set(exception) == keys
+                 and type(exception.get('schema_version')) in (int, float) and exception['schema_version'] == 1
+                 and exception.get('reason') in policy.get('short_summary_exceptions', [])
+                 and exception.get('reviewed') is True
+                 and type(exception.get('actual_characters')) in (int, float) and exception['actual_characters'] == length
+                 and 0 < length < policy['min_characters'] and bool(sources))
+        try:
+            valid = valid and valid_date(issue_date) <= valid_date(exception['reviewed_on']) <= (today or date.today())
+        except (ValueError, TypeError, KeyError):
+            valid = False
+        try:
+            bound = valid and exception.get('content_sha256') == summary_content_digest(item, issue_date)
+        except (TypeError, ValueError, UnicodeError):
+            bound = False
+        if not bound:
+            return ['short summary exception requires a current, content-bound source review']
+        return []
     if not policy['min_characters'] <= length <= policy['max_characters']:
         return [f"Traditional Chinese summary must contain {policy['min_characters']}–{policy['max_characters']} non-whitespace characters (target {policy['target_characters']}); found {length}"]
     return []
@@ -118,6 +176,7 @@ def validate_edition(issue, today=None):
             errors.append(f"{prefix}.source is required")
         try:
             url = safe_url(item.get("source_url"))
+            url.encode('utf-8')
             if url in urls:
                 errors.append(f"{prefix}.source_url is duplicated")
             urls.add(url)
@@ -145,7 +204,7 @@ def validate_edition(issue, today=None):
                 if not isinstance(value, str) or not value.strip() or len(value) > maximum:
                     errors.append(f"{prefix}.{locale}.{field} is missing or too long")
         if issue_date:
-            errors.extend(f'{prefix}: {error}' for error in summary_errors(item, issue_date.isoformat()))
+            errors.extend(f'{prefix}: {error}' for error in summary_errors(item, issue_date.isoformat(), today))
     return errors
 
 
