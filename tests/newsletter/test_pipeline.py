@@ -2,6 +2,7 @@ import copy
 from datetime import datetime, timezone
 import hashlib
 import json
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -13,7 +14,7 @@ ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'scripts/newsletter'))
 from collect import collect
 from create_draft import create_draft
-from pipeline import prepare, preview, status, read_json, reviewed_errors, source_digest, run_path, write_file
+from pipeline import prepare, preview, status, read_json, reviewed_errors, source_digest, source_files, run_path, write_file
 from topics import validate_topic
 
 NOW=datetime(2026,10,5,12,tzinfo=timezone.utc)
@@ -111,6 +112,55 @@ class PipelineTests(unittest.TestCase):
         self.assertIn('General AI edition',html);self.assertNotIn('id="subscription"',html)
         self.assertEqual(preview(self.run),state);self.assertEqual(status(self.run)['state'],'preview_ready')
         self.assertFalse((self.run/'preview/.atm').exists());self.assertFalse((self.run/'preview/scripts').exists())
+        image='daily/assets/stories/codex-local-tracing.jpg'
+        self.assertEqual((self.run/'preview'/image).read_bytes(),(ROOT/image).read_bytes())
+        self.assertTrue((self.run/'preview/daily/data/search-index.json').is_file())
+    def test_image_bytes_and_validation_logic_are_bound_to_source_digest(self):
+        files=source_files(ROOT)
+        self.assertIn('scripts/newsletter/image_policy.py',files)
+        manifest=json.loads((ROOT/'daily/data/image-manifest.json').read_text())
+        self.assertTrue({image['path'] for image in manifest['images']}.issubset(files))
+        with patch('pipeline.source_files',return_value={**files,'daily/assets/stories/ironclad.jpg':'0'*64}):
+            altered=source_digest(ROOT)
+        self.assertNotEqual(source_digest(ROOT),altered)
+    def test_enhanced_edition_requires_image_onboarding_then_new_immutable_run(self):
+        root=Path(self.temp.name)/'fixture-source';root.mkdir()
+        shutil.copytree(ROOT/'daily',root/'daily')
+        shutil.copytree(ROOT/'scripts/newsletter',root/'scripts/newsletter',ignore=shutil.ignore_patterns('__pycache__'))
+        (root/'daily/data/issues/2026-10-07.json').unlink()  # Disposable pre-publication fixture only.
+        now=datetime(2026,10,7,12,tzinfo=timezone.utc)
+        xml=feed().replace(b'Sun, 04 Oct 2026',b'Tue, 06 Oct 2026')
+        r=collect(CONFIG,now,lambda url:xml)
+        def prepare_and_review(target):
+            state=prepare(target,root=root,config=CONFIG,topic=r['topic'],issue_date='2026-10-07',candidate_report=r,now=now)
+            self.assertEqual(state['state'],'awaiting_editorial_review')
+            self.assertEqual(preview(target,root=root)['state'],'blocked_review')
+            issue=approved(read_json(target/'draft.json'));issue['reviewed_on']='2026-10-07'
+            for item in issue['items']:item['zh-TW']['summary']='測'*500
+            (target/'draft.json').write_text(json.dumps(issue))
+            return issue
+        first=Path(self.temp.name)/'before-images';issue=prepare_and_review(first)
+        with self.assertRaisesRegex(ValueError,'requires a verified image'):preview(first,root=root)
+        self.assertFalse((first/'preview').exists())
+        manifest_path=root/'daily/data/image-manifest.json';manifest=read_json(manifest_path)
+        originals=copy.deepcopy(manifest['images'])
+        for n,item in enumerate(issue['items']):
+            image=copy.deepcopy(originals[n%len(originals)]);source=root/image['path']
+            image.update(story_id=item['id'],source_url=item['source_url'],path=f'daily/assets/stories/offline-fixture-{n}.jpg')
+            (root/image['path']).write_bytes(source.read_bytes());manifest['images'].append(image)
+        manifest_path.write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(ValueError,'source changed'):preview(first,root=root)
+        target=Path(self.temp.name)/'with-images';prepare_and_review(target)
+        state=preview(target,root=root);self.assertEqual(state['state'],'preview_ready');self.assertFalse(state['published'])
+        html=(target/'preview/daily/2026-10-07/index.html').read_text()
+        self.assertEqual(html.count('class="headline-story featured-story"'),2)
+        self.assertEqual(html.count('class="headline-story compact-story"'),len(issue['items'])-2)
+        self.assertIn('測'*500,html)
+        for n in range(len(issue['items'])):
+            image=f'daily/assets/stories/offline-fixture-{n}.jpg'
+            self.assertEqual((target/'preview'/image).read_bytes(),(root/image).read_bytes())
+        self.assertEqual(preview(target,root=root),state)
+        self.assertFalse((ROOT/'daily/assets/stories/offline-fixture-0.jpg').exists())
     def test_topic_end_to_end_preview_keeps_provenance(self):
         self.make(topic=True);issue=self.write_review();state=preview(self.run)
         self.assertEqual(state['state'],'preview_ready')

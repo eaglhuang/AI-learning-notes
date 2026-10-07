@@ -1,6 +1,7 @@
 import copy
 from datetime import datetime, timezone, date
 import importlib.util
+import inspect
 import json
 from pathlib import Path
 import sys
@@ -11,7 +12,7 @@ from xml.etree import ElementTree as ET
 
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'scripts/newsletter'))
-from edition import validate_edition, load_edition
+from edition import validate_edition, load_edition, summary_policy_for
 from build import outputs, render_issue
 from collect import collect, parse_feed
 
@@ -60,6 +61,26 @@ class NewsletterBuildTests(unittest.TestCase):
         issue=copy.deepcopy(self.issue);issue['items']=issue['items'][:8]
         self.assertEqual(validate_edition(issue),[])
         issue['items']=issue['items'][:2];self.assertTrue(validate_edition(issue))
+
+    def test_dated_500_policy_shared_fixtures_and_untruncated_output(self):
+        cases=json.loads((ROOT/'tests/newsletter/fixtures/summary-policies.json').read_text())
+        for case in cases:
+            issue=copy.deepcopy(self.issue)
+            issue.update(date=case['date'],reviewed_on=case['date'])
+            for item in issue['items']:
+                item['zh-TW']['summary']='測'*case['characters']+case['tail']
+            with self.subTest(case=case):
+                self.assertEqual(not validate_edition(issue),case['valid'])
+        self.assertIsNone(summary_policy_for('2026-10-04'))
+        self.assertEqual(summary_policy_for('2026-10-06')['target_characters'],200)
+        self.assertEqual(summary_policy_for('2026-10-07')['target_characters'],500)
+        issue=copy.deepcopy(self.issue);issue.update(date='2026-10-07',reviewed_on='2026-10-07')
+        for item in issue['items']:item['zh-TW']['summary']='測'*500
+        # This synthetic policy fixture has no commissioned image set; keep its render legacy.
+        config={k:v for k,v in self.config.items() if k!='enhanced_ui'}
+        html=render_issue(issue,[issue],config,'daily/index.html','zh-TW')
+        self.assertIn('測'*500,html)
+        self.assertEqual(validate_edition(issue),[])
 
     def test_reject_unreviewed_synthetic_and_future(self):
         for field,value in [('reviewed',False),('synthetic',True),('date','2099-01-01'),('date','2026-02-30'),('schema_version',True)]:
@@ -163,6 +184,37 @@ class CollectorTests(unittest.TestCase):
         report=collect(config,self.now,lambda url:self.xml);self.assertEqual(len(report['candidates']),1)
         atom=b'<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Atom</title><link href="https://source.test/atom"/><published>2026-10-03T10:00:00Z</published></entry></feed>'
         self.assertEqual(len(parse_feed(atom,self.source,self.now)),1)
+
+
+class BrowserFixtureCallbackTests(unittest.TestCase):
+    """Only exercise route callback arguments; no browser or image rendering."""
+    @classmethod
+    def setUpClass(cls):
+        spec=importlib.util.spec_from_file_location('newsletter_browser_fixtures',ROOT/'tests/newsletter/browser_check.py')
+        cls.module=importlib.util.module_from_spec(spec);spec.loader.exec_module(cls.module)
+    class Route:
+        def __init__(self):self.calls=[]
+        def fulfill(self,**kwargs):self.calls.append(('fulfill',kwargs))
+        def abort(self):self.calls.append(('abort',None))
+    def test_image_handlers_have_one_argument_and_capture_their_own_filename(self):
+        names=['wide.svg','portrait.svg','large-dimensions.svg','broken.jpg']
+        handlers=[self.module.image_fixture_handler(name) for name in names]
+        for name,handler in zip(names,handlers):
+            self.assertEqual(list(inspect.signature(handler).parameters),['route'])
+            route=self.Route();handler(route)
+            self.assertEqual(route.calls,[('fulfill',{'path':str(ROOT/'tests/newsletter/fixtures/images'/name),'content_type':'image/svg+xml' if name.endswith('.svg') else 'image/jpeg'})])
+    def test_failure_handlers_capture_each_case_without_a_request_default_parameter(self):
+        invalid={'records':[{'sourceUrl':'javascript:alert(1)'}]}
+        cases=['abort','malformed','oversized','unsafe-index']
+        handlers=[self.module.archive_failure_handler(case,invalid) for case in cases]
+        for case,handler in zip(cases,handlers):
+            self.assertEqual(list(inspect.signature(handler).parameters),['route'])
+            route=self.Route();handler(route)
+            if case=='abort':self.assertEqual(route.calls,[('abort',None)]);continue
+            action,body=route.calls[0];self.assertEqual(action,'fulfill');self.assertEqual(body['status'],200)
+            if case=='malformed':self.assertEqual(body['body'],'{broken')
+            if case=='oversized':self.assertEqual(len(body['body']),4000001)
+            if case=='unsafe-index':self.assertEqual(json.loads(body['body']),invalid)
 
 
 if __name__=='__main__':unittest.main()

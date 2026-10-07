@@ -24,7 +24,7 @@ from discovery import search_plan
 ROOT = Path(__file__).resolve().parents[2]
 MAX_JSON = 4_000_000
 IMMUTABLE = ('sources.json', 'topic.json', 'candidates.json', 'selection.json')
-PUBLIC_SUFFIXES = {'.html', '.css', '.mjs', '.json', '.xml', '.md'}
+PUBLIC_SUFFIXES = {'.html', '.css', '.mjs', '.json', '.xml', '.md', '.jpg'}
 CHECKLIST = '''EDITORIAL REVIEW / 編輯審核
 
 This is an unreviewed draft, not a published newsletter.
@@ -109,7 +109,7 @@ def locked(run):
 
 def source_files(root):
     files = [p for p in (root/'daily').rglob('*') if p.is_file() and p.suffix in PUBLIC_SUFFIXES]
-    files += [root/'scripts/newsletter'/name for name in ('build.py','edition.py','topics.py','validate_issue.py','pipeline.py','create_draft.py','collect.py','discovery.py')]
+    files += [root/'scripts/newsletter'/name for name in ('build.py','image_policy.py','edition.py','topics.py','validate_issue.py','pipeline.py','create_draft.py','collect.py','discovery.py')]
     result = {}
     for path in files:
         path = checked_path(path)

@@ -7,6 +7,54 @@
     <language>en</language>
     <item>
       <category>General AI edition</category>
+      <title>October 7 AI Daily: agent evaluation, open models and engineering practice</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/en/</link>
+      <guid>https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-07/en/</guid>
+      <pubDate>Wed, 07 Oct 2026 12:00:00 +0800</pubDate>
+      <description>OpenAI and Ironclad evaluate complete computer-use workflows: OpenAI’s October 6 Ironclad study covered 11 workflows, each with 8–50 criteria. Astra with Max reasoning averaged 55.0%, versus 41.6% for Sol with High reasoning; estimated attempt times were 19.2 and 37 minutes. These are rubric scores and simulated timings, not complete-task success rates or measured customer savings.
+
+Editorial interpretation: Use this as an evaluation-design example, rather than automatic authorization for consequential work. Separate inputs, required conditions, exceptions and outputs. Include cases that should proceed and cases that should stop, and identify critical failures that an average score could hide. These are our proposed tests, not demonstrated product capabilities. Record reasoning settings, attempts and total cost so that model, tool and workflow effects can be distinguished. Reusable evidence tied to requirements is more useful than a single smooth demonstration.
+
+Simon Willison documents a Codex-assisted Datasette tracing integration: On October 6, Simon Willison described using Codex to help connect Datasette tracing to Parseable, then writing the practical notes himself. This is his account, not our reproduction or evidence that AI integration was faster than manual work.
+
+His setup pairs Parseable 3.2.4 in local-storage mode with Datasette 1.0a41. It configures an exporter endpoint, service name and stream, and launches Datasette through OpenTelemetry instrumentation to view requests and subsequent SQL queries. The notes also cover alternate ports.
+
+Datasette added this tracing capability on September 24; the new item is Willison’s integration write-up. Official documentation warns that direct startup does not initialize tracing and batched export can delay its appearance.
+
+Editorial interpretation: the useful pattern is turning AI-assisted configuration into observable behavior. Use test data to check the request-to-query relationship, then compare traces before and after changes; attractive charts alone establish no performance improvement. Review access controls and retention separately before production deployment. A local demonstration is not a production design.
+
+Atlassian expands its OpenAI partnership: Atlassian and OpenAI expanded their partnership around Rovo and Teamwork Graph. OpenAI reports that more than 3,000 Atlassian developers use Codex; this is an adoption claim, not an independent productivity measurement.
+
+Atlassian distinguishes available MCP-based enterprise context from deeper autonomous work, testing, session synchronization and multi-agent integration still being designed. Its September 29 plugin update already introduced prompt mentions and a pinned work Home, subject to existing permissions and organizational controls. That background is not a new October 6 launch.
+
+Editorial interpretation: Evaluate ownership, freshness, permitted actions and traceable results, not simply the volume of connected documents. Start with a checkable cross-tool task and inspect citations, permission refusals and writeback consistency. This is a proposed assessment approach, not a proven partnership outcome; distinguish shipped functions from roadmap commitments.
+
+Anthropic expands cyber verification into three access tiers: Anthropic expanded CVP into Defense, Red Team and Specialized Access. Red Team Access currently requires an organization and authorization for the tested systems. The tiers provide different capabilities, rather than removing every restriction.
+
+In Anthropic’s 50-trial Opus 5.5 evaluation, Defense Access blocked 46 trials; Red Team Access blocked none and completed 34. Blocking and completion are different metrics, and these are internal results. Separate security requirements call for a security contact, attributable users or workloads, and no shared sign-ins. Verification does not remove ongoing controls.
+
+Editorial interpretation: Assess capability, authorization, data handling and accountability separately. Keep task-level attribution and test out-of-scope stopping behavior before deployment. These are evaluation suggestions, not an eligibility or compliance determination. The reported trials do not guarantee the absence of false blocking or misuse.
+
+EmbeddingGemma 2 brings multimodal retrieval on-device: Google launched the Apache-2.0 EmbeddingGemma 2 for on-device multimodal retrieval. It embeds text, code and media; it does not generate chat answers. The full model has 740M parameters, with a 270M text-only configuration and optional vision and audio encoders.
+
+Its model card specifies 8K context and 768-dimensional output, with smaller 512, 256 and 128-dimensional representations. Storage savings involve quality tradeoffs: 128 dimensions are recommended mainly for text. Published device-memory figures also depend on hardware and quantization.
+
+Editorial interpretation: Compare model footprint, vector dimensions and retrieval quality separately using real queries. Check whether relevant material reaches the top results before evaluating generated prose, then measure latency and resources by modality. Fluent generation does not establish that retrieval supplied adequate evidence. This is proposed evaluation guidance; no reader-device installation or independent performance test was performed.
+
+Mistral Large 4 enters public preview; weights are still forthcoming: Mistral released Large 4 in public preview on October 6. Its model card lists a multimodal mixture-of-experts architecture, approximately 1.05T total parameters, vision support, 1M-token context and structured/tool-calling interfaces. We omit active-parameter counts because official retrievals conflicted.
+
+The launch article offers a preview API and plans public weights for the month’s end; the changelog also says weights are forthcoming. Mistral describes continuing training and restricted partner red-teaming. Preview access, partner evaluation and public weight availability are distinct, and vendor performance claims are not our independent measurements.
+
+Editorial interpretation: Separate availability from capability testing. Assess required modalities, tool formats, errors and evidence retrieval within long documents. A large context window alone does not prove reliable answers or actions. These are proposed checks, not observed failures. No API, download or paid service was used.
+
+OpenAI shares mathematical results and verification context: OpenAI announced mathematical results from an internal model, including many Lean formalizations, ten reasoning summaries and attempted-problem statistics. Its average compute estimate of roughly three ChatGPT Pro thinking-hours per result is not a reproducible elapsed-time promise, nor evidence that every result is verified.
+
+The independent advisory group AGMAI separately said its consultation was not an endorsement of the results’ impact or production process. Its September recommendations call for problem-selection and unsuccessful-attempt disclosure, explicit formalization status and support for community understanding. That background should not be confused with external certification.
+
+Editorial interpretation: Separate what was produced, what has been checked and what people understand about its significance. Success examples need denominators; formal checking does not settle research value. This is a reading framework, not a judgment on a theorem. We did not inspect the repository or independently rerun the proofs.</description>
+    </item>
+    <item>
+      <category>General AI edition</category>
       <title>October 6 AI Daily: code review, agent execution and voice systems</title>
       <link>https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/en/</link>
       <guid>https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-06/en/</guid>

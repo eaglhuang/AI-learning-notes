@@ -19,10 +19,18 @@ def valid_date(value):
     return date.fromisoformat(value)
 
 
+def summary_policy_for(issue_date):
+    """Use the latest policy effective on this edition, independent of list order."""
+    day = valid_date(issue_date)
+    eligible = [p for p in CONTRACT['summary_policies']
+                if valid_date(p['effective_from']) <= day]
+    return max(eligible, key=lambda p: p['effective_from']) if eligible else None
+
+
 def summary_errors(item, issue_date):
     """Enforce the dated editorial policy without rewriting historical editions."""
-    policy = CONTRACT['summary_policy']
-    if valid_date(issue_date) < valid_date(policy['effective_from']):
+    policy = summary_policy_for(issue_date)
+    if policy is None:
         return []
     fields = item.get(policy['locale'])
     value = fields.get('summary') if isinstance(fields, dict) else None

@@ -1,0 +1,362 @@
+{
+  "schema_version": 2,
+  "date": "2026-10-07",
+  "synthetic": false,
+  "reviewed": true,
+  "reviewed_on": "2026-10-07",
+  "topic": {
+    "schema_version": 1,
+    "keywords": [],
+    "english_aliases": {},
+    "match": "any",
+    "exclude_keywords": [],
+    "lookback_days": 7
+  },
+  "collection_window_days": 2,
+  "title": {
+    "zh-TW": "10/07 AI 日報：代理評測、開放模型與工程實作",
+    "en": "October 7 AI Daily: agent evaluation, open models and engineering practice"
+  },
+  "coverage": {
+    "zh-TW": "選讀六則官方消息與一篇工程師實作，原文日期均為 10/6，涵蓋代理評測、企業整合、模型與研究驗證。採近 48 小時可核對來源，已比對前兩期 17 則新聞；這是人工來源選讀，並非完整新聞排名。",
+    "en": "Six official reports and one practitioner write-up, all dated October 6, cover agent evaluation, enterprise integration, models and research verification. Selection uses verifiable sources within 48 hours and was checked against 17 stories in the prior two editions. This is editorial source selection, not a comprehensive news ranking."
+  },
+  "editorial_note": {
+    "zh-TW": "每則繁中摘要約 500 字，附對應英文。供應商自評、作者經驗與編輯觀點分開標示；效能、成本與研究結論只限原文支持的條件。固定 RSS 收集未完成，本期改由直接閱讀原始來源選稿，未宣稱搜尋完整涵蓋。",
+    "en": "Each story has about 500 Traditional Chinese characters and a corresponding English summary. Vendor assessments, author experience and editorial interpretation are labeled separately; performance, cost and research claims retain their source limitations. Configured RSS collection was incomplete, so this edition was selected through direct primary-source reading without claiming exhaustive search coverage."
+  },
+  "discovery": {
+    "collected_at": "2026-10-07T01:44:45.694781+00:00",
+    "search_status": "not_requested",
+    "limitations_acknowledged": true,
+    "searches": [],
+    "failures": [
+      {
+        "source_id": "configured_feed_collection",
+        "error": "collection_not_completed"
+      }
+    ],
+    "coverage_warnings": [
+      {
+        "code": "manual_source_selection",
+        "message": "Primary-source editorial selection; not a successful full RSS run or a complete popularity ranking."
+      }
+    ],
+    "coverage_note": "Direct primary-source reading and independent editorial review; no keyword query was requested by the current empty topic configuration."
+  },
+  "editorial_selection": {
+    "timezone": "Asia/Taipei",
+    "method": "primary_source_web_research",
+    "source_dates": [
+      "2026-10-06"
+    ],
+    "historical_source_ids_compared": 17,
+    "remote_history_commit": "bbfed44a654fa4b65faa096fd9c8890bc2db4c8a",
+    "remote_history_checked_at": "2026-10-07T02:47:08Z",
+    "duplicate_source_ids": 0,
+    "duplicate_source_urls": 0,
+    "same_event_duplicates": 0,
+    "lead_order_reason": "Agent evaluation and an observable engineering workflow lead this edition; no measured popularity ranking is asserted.",
+    "date_precision_note": "Six sources provide publication dates; the practitioner TIL also supplies an exact timestamp. Dates were not changed to create freshness."
+  },
+  "items": [
+    {
+      "id": "openai-ironclad-evaluation-2026-10-06",
+      "source": "OpenAI",
+      "source_url": "https://openai.com/index/advancing-computer-use-with-ironclad/",
+      "category": "engineering",
+      "published_date": "2026-10-06",
+      "zh-TW": {
+        "title": "OpenAI 與 Ironclad 用完整業務流程評估電腦操作代理",
+        "summary": "OpenAI 於 10 月 6 日公布與 Ironclad 的研究合作，把合約設定、採購核准與條款管理整理成 11 項多步驟任務，每項依 8 至 50 個條件評分。GPT-6 Astra（Max 推理）的平均規準分數為 55.0%，GPT-5.6 Sol（High 推理）為 41.6%；每次嘗試的估算時間則為 19.2 與 37 分鐘。這項案例檢查的是最終流程是否遵守業務規則，而非只看代理有沒有完成點擊。分數不是完整任務成功率，時間也是模擬估算，不能當成客戶實測節省。\n\n編輯觀點：這種結果更適合當成設計驗收方法的材料，而不是直接拿來決定是否讓代理獨立處理重要流程。團隊可以先把一項工作拆成輸入、必要條件、例外與最終輸出，再為每個條件留下可重跑的檢查。例如，先安排應該通過與應該停下的兩組測試，觀察代理能否在條件改變時保留原本的限制；這是本刊的測試建議，並非公告已證明的能力。平均分數也可能掩蓋少數關鍵步驟失敗，因此應另外標示哪些條件只要漏掉一次就不能交付。比較模型時，還要一起記錄推理設定、嘗試次數與完整成本，才能判斷改善來自模型、工具或流程。最終值得累積的，是能追溯到原始需求的驗收證據，而不只是一次看起來順利的示範。",
+        "takeaway": "用最終流程與例外條件驗收代理。",
+        "caveat": "僅涵蓋 11 項研究任務，並非所有合約作業。"
+      },
+      "en": {
+        "title": "OpenAI and Ironclad evaluate complete computer-use workflows",
+        "summary": "OpenAI’s October 6 Ironclad study covered 11 workflows, each with 8–50 criteria. Astra with Max reasoning averaged 55.0%, versus 41.6% for Sol with High reasoning; estimated attempt times were 19.2 and 37 minutes. These are rubric scores and simulated timings, not complete-task success rates or measured customer savings.\n\nEditorial interpretation: Use this as an evaluation-design example, rather than automatic authorization for consequential work. Separate inputs, required conditions, exceptions and outputs. Include cases that should proceed and cases that should stop, and identify critical failures that an average score could hide. These are our proposed tests, not demonstrated product capabilities. Record reasoning settings, attempts and total cost so that model, tool and workflow effects can be distinguished. Reusable evidence tied to requirements is more useful than a single smooth demonstration.",
+        "takeaway": "Test final workflows and exception paths.",
+        "caveat": "Results cover only these 11 research tasks."
+      },
+      "source_check": {
+        "date_precision": "day",
+        "primary_body_read": true,
+        "sections": "Turning contracting workflows into training tasks; How Astra performed; footnote 1",
+        "checked_at": "2026-10-07T00:16:32.952414+00:00",
+        "published_date_basis": "date printed in official announcement or model card",
+        "expanded_at": "2026-10-07T00:33:40.596540+00:00",
+        "paragraph_sources": [
+          "primary announcement; retained compact factual summary",
+          "original editorial analysis and proposed testing approach; not a reported research finding"
+        ],
+        "editorial_analysis_labeled": true
+      },
+      "date_verification_required": false
+    },
+    {
+      "id": "simon-datasette-parseable-tracing-2026-10-06",
+      "source": "Simon Willison",
+      "source_url": "https://til.simonwillison.net/datasette/datasette-parseable-opentelemetry",
+      "category": "engineering",
+      "published_date": "2026-10-06",
+      "published_at": "2026-10-06T19:07:31+00:00",
+      "date_verification_required": false,
+      "zh-TW": {
+        "title": "Simon Willison 用 Codex 協助串接 Datasette 追蹤，留下可檢查的實作筆記",
+        "summary": "Simon Willison 於 10 月 6 日分享，把 Datasette 的請求追蹤送入 Parseable 的實作心得。他表示，曾請 Codex 協助摸索兩者的連接方式，再親自寫成操作筆記；這是作者回報的工作流程，並非本報重做實驗，也沒有證明 AI 比人工整合更快。\n\n筆記使用 Parseable 3.2.4 的本機儲存模式，搭配 Datasette 1.0a41。設定追蹤匯出端點、服務名稱與資料串流後，透過 OpenTelemetry 的啟動工具執行 Datasette，即可在介面查看請求及後續 SQL 查詢的追蹤。作者也列出使用其他連接埠的配置，方便讀者定位整合步驟。\n\n版本背景須分開看：Datasette 的追蹤能力在 9 月 24 日已加入；本次新內容是作者的整合紀錄，不是這項功能今天才發布。官方文件也提醒，直接啟動程式不會自動產生追蹤資料，批次匯出可能稍後才出現。\n\n編輯觀點：這類案例的價值，在於把 AI 協助產生的配置變成可以觀察、檢查的系統行為。團隊可先用測試資料驗證請求與資料庫查詢的關聯，再比較修改前後的追蹤；看到漂亮圖表仍不能直接宣稱效能提升。正式部署前還應另查存取控制及資料保留設定，不能把本機示範當成生產環境方案。",
+        "takeaway": "AI 協助寫配置後，以實際請求與 SQL 追蹤檢查整合結果。",
+        "caveat": "作者自述的本機示範；本報未重現，也沒有 AI 效率或生產可用性的比較證據。"
+      },
+      "en": {
+        "title": "Simon Willison documents a Codex-assisted Datasette tracing integration",
+        "summary": "On October 6, Simon Willison described using Codex to help connect Datasette tracing to Parseable, then writing the practical notes himself. This is his account, not our reproduction or evidence that AI integration was faster than manual work.\n\nHis setup pairs Parseable 3.2.4 in local-storage mode with Datasette 1.0a41. It configures an exporter endpoint, service name and stream, and launches Datasette through OpenTelemetry instrumentation to view requests and subsequent SQL queries. The notes also cover alternate ports.\n\nDatasette added this tracing capability on September 24; the new item is Willison’s integration write-up. Official documentation warns that direct startup does not initialize tracing and batched export can delay its appearance.\n\nEditorial interpretation: the useful pattern is turning AI-assisted configuration into observable behavior. Use test data to check the request-to-query relationship, then compare traces before and after changes; attractive charts alone establish no performance improvement. Review access controls and retention separately before production deployment. A local demonstration is not a production design.",
+        "takeaway": "Check AI-assisted configuration against observable request and SQL traces.",
+        "caveat": "An author-reported local demonstration, not our reproduction or comparative evidence of AI productivity or production readiness."
+      },
+      "source_check": {
+        "checked_at": "2026-10-07T01:44:45.694781+00:00",
+        "primary_body_read": true,
+        "date_precision": "second_with_offset",
+        "published_date_basis": "Original TIL footer: Created 2026-10-06T12:07:31-07:00",
+        "author_identity_url": "https://simonwillison.net/about/",
+        "content_type": "firsthand_engineering_experience",
+        "reproduced_by_newsletter": false,
+        "supporting_urls": [
+          "https://simonwillison.net/2026/Oct/6/datasette-parseable-opentelemetry/",
+          "https://docs.datasette.io/en/latest/changelog.html#opentelemetry",
+          "https://docs.datasette.io/en/latest/internals.html#turning-tracing-on"
+        ],
+        "background_release_date": "2026-09-24",
+        "paragraph_sources": [
+          {
+            "paragraph": 1,
+            "urls": [
+              "https://simonwillison.net/2026/Oct/6/datasette-parseable-opentelemetry/"
+            ],
+            "note": "Author describes Codex assistance and human-written notes; no productivity benchmark."
+          },
+          {
+            "paragraph": 2,
+            "urls": [
+              "https://til.simonwillison.net/datasette/datasette-parseable-opentelemetry"
+            ],
+            "note": "Versioned local setup, instrumentation, traces and alternate ports."
+          },
+          {
+            "paragraph": 3,
+            "urls": [
+              "https://docs.datasette.io/en/latest/changelog.html#opentelemetry",
+              "https://docs.datasette.io/en/latest/internals.html#turning-tracing-on"
+            ],
+            "note": "Older release date and instrumentation/batch-export requirements."
+          },
+          {
+            "paragraph": 4,
+            "urls": [],
+            "note": "Labeled original editorial interpretation, not a claimed source result."
+          }
+        ],
+        "editorial_analysis_labeled": true
+      },
+      "rights": {
+        "full_translation_available": false,
+        "translation_eligibility": "no_article_specific_permission_verified",
+        "original_summary": true,
+        "direct_quotations": false
+      }
+    },
+    {
+      "id": "openai-atlassian-partnership-2026-10-06",
+      "source": "OpenAI",
+      "source_url": "https://openai.com/index/atlassian-partnership/",
+      "category": "products",
+      "published_date": "2026-10-06",
+      "zh-TW": {
+        "title": "Atlassian 擴大 OpenAI 合作，串接企業脈絡與代理工作",
+        "summary": "Atlassian 與 OpenAI 在 10 月 6 日宣布擴大合作，將前沿模型與 Rovo、Teamwork Graph 的企業脈絡結合。OpenAI 公告稱，超過 3,000 名 Atlassian 開發者已在終端、編輯器及程式碼審查中使用 Codex；這是公司提供的採用數字，並非獨立效率研究，也不能直接推導每位開發者節省多少時間。\n\nAtlassian 自己的說明把目前能力與後續方向分開：團隊已能透過 Atlassian MCP，讓 ChatGPT、Codex 讀取相關工作脈絡；更深入的自主領取工作、執行測試、同步工作階段及多代理協作，則仍是設計與探索方向。作為背景，9 月 29 日的官方外掛更新已介紹在提示中選取 Jira、Confluence 或人員資訊，以及從固定首頁接續工作；這些功能仍受既有權限與組織控制約束，不是讓代理自動取得所有資料。\n\n編輯觀點：對企業團隊，重要的不只是把更多文件塞進模型，而是讓代理知道資料由誰負責、是否仍有效，以及能做哪些操作。評估整合時，可先選一項容易核對的跨工具任務，檢查它引用的來源、權限拒絕與結果回寫是否一致，再考慮擴大範圍。這是導入評估建議，不是這次合作已實證的成效。閱讀公告也要分清現有產品、合作路線圖與使用案例，避免把未來可能提供的能力排進今天的交付承諾。",
+        "takeaway": "分清既有整合與尚在探索的功能。",
+        "caveat": "採用人數來自供應商公告，未獨立查核。"
+      },
+      "en": {
+        "title": "Atlassian expands its OpenAI partnership",
+        "summary": "Atlassian and OpenAI expanded their partnership around Rovo and Teamwork Graph. OpenAI reports that more than 3,000 Atlassian developers use Codex; this is an adoption claim, not an independent productivity measurement.\n\nAtlassian distinguishes available MCP-based enterprise context from deeper autonomous work, testing, session synchronization and multi-agent integration still being designed. Its September 29 plugin update already introduced prompt mentions and a pinned work Home, subject to existing permissions and organizational controls. That background is not a new October 6 launch.\n\nEditorial interpretation: Evaluate ownership, freshness, permitted actions and traceable results, not simply the volume of connected documents. Start with a checkable cross-tool task and inspect citations, permission refusals and writeback consistency. This is a proposed assessment approach, not a proven partnership outcome; distinguish shipped functions from roadmap commitments.",
+        "takeaway": "Separate available integrations from exploratory plans.",
+        "caveat": "Adoption figures are vendor-reported, not independently verified."
+      },
+      "source_check": {
+        "date_precision": "day",
+        "primary_body_read": true,
+        "sections": "Opening announcement; Connecting OpenAI models with enterprise knowledge; Building toward the next generation of AI-powered teamwork",
+        "checked_at": "2026-10-07T00:16:32.952414+00:00",
+        "published_date_basis": "date printed in official announcement or model card",
+        "expanded_at": "2026-10-07T00:33:40.596540+00:00",
+        "paragraph_sources": [
+          "OpenAI October 6 announcement",
+          "Atlassian October 6 partnership announcement and September 29 plugin background",
+          "original editorial interpretation and proposed evaluation approach"
+        ],
+        "editorial_analysis_labeled": true,
+        "additional_sources": [
+          "https://www.atlassian.com/blog/company-news/atlassian-openai-strategic-partnership",
+          "https://community.atlassian.com/forums/discussion/3288784/bring-your-atlassian-work-into-chatgpt-and-codex"
+        ]
+      },
+      "date_verification_required": false
+    },
+    {
+      "id": "anthropic-cvp-three-tiers-2026-10-06",
+      "source": "Anthropic",
+      "source_url": "https://www.anthropic.com/news/cyber-verification-program",
+      "category": "news",
+      "published_date": "2026-10-06",
+      "zh-TW": {
+        "title": "Anthropic 將資安驗證計畫擴為三層存取",
+        "summary": "Anthropic 在 10 月 6 日擴大 Cyber Verification Program，將防禦、授權紅隊與特殊高風險測試分成三個存取層級。不同層級有各自的資格與安全控制；紅隊層目前限組織，測試也只能針對已獲授權的系統。這不是把所有模型限制一律解除，而是依工作範圍提供不同能力。\n\n公司使用 Opus 5.5 測試十個攻防情境，每個情境嘗試五次：防禦層的五十次試驗中，有四十六次受到攔阻；紅隊層沒有攔阻，完成了三十四次。攔阻次數與完成次數是不同指標，不能混為同一種成功率，這些數字也仍屬供應商內部評測。官方安全要求另外規定，組織須提供安全聯絡人、保留具名使用者或工作負載的使用歸屬，並禁止共用登入。取得資格以後，安全與追溯要求仍持續存在。\n\n編輯觀點：評估這類方案時，可以把模型能力、測試授權、資料處理與事後追查分成四份清單，逐項確認誰負責，而不是只問哪個層級比較少擋。尤其在代理能連續操作工具的情況下，應保留可區分每個操作者與任務的紀錄，並先驗證超出核准範圍時會如何停止。這些是本刊對導入程序的建議，不代表已替任何讀者完成資格或合規判定。公開評測也不能保證所有合法工作都不被誤攔，或所有濫用都能被阻止。",
+        "takeaway": "把能力、授權範圍與資料要求一起評估。",
+        "caveat": "紅隊層目前限組織，且僅能測試獲授權系統。"
+      },
+      "en": {
+        "title": "Anthropic expands cyber verification into three access tiers",
+        "summary": "Anthropic expanded CVP into Defense, Red Team and Specialized Access. Red Team Access currently requires an organization and authorization for the tested systems. The tiers provide different capabilities, rather than removing every restriction.\n\nIn Anthropic’s 50-trial Opus 5.5 evaluation, Defense Access blocked 46 trials; Red Team Access blocked none and completed 34. Blocking and completion are different metrics, and these are internal results. Separate security requirements call for a security contact, attributable users or workloads, and no shared sign-ins. Verification does not remove ongoing controls.\n\nEditorial interpretation: Assess capability, authorization, data handling and accountability separately. Keep task-level attribution and test out-of-scope stopping behavior before deployment. These are evaluation suggestions, not an eligibility or compliance determination. The reported trials do not guarantee the absence of false blocking or misuse.",
+        "takeaway": "Evaluate capability alongside access and data controls.",
+        "caveat": "Red Team Access currently excludes individual researchers."
+      },
+      "source_check": {
+        "date_precision": "day",
+        "primary_body_read": true,
+        "sections": "New access tiers; Testing the efficacy of our tiers",
+        "access_note": "The official announcement text was inspected.",
+        "checked_at": "2026-10-07T00:16:32.952414+00:00",
+        "published_date_basis": "date printed in official announcement or model card",
+        "expanded_at": "2026-10-07T00:33:40.596540+00:00",
+        "paragraph_sources": [
+          "Anthropic CVP announcement: tiers and authorized scope",
+          "Anthropic internal evaluation plus Help Center all-access-level requirements",
+          "original editorial interpretation; no compliance determination"
+        ],
+        "editorial_analysis_labeled": true,
+        "additional_sources": [
+          "https://support.claude.com/en/articles/17202708-cyber-verification-program-security-requirements"
+        ]
+      },
+      "date_verification_required": false
+    },
+    {
+      "id": "google-embeddinggemma-2-2026-10-06",
+      "source": "Google DeepMind",
+      "source_url": "https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/",
+      "category": "tools",
+      "published_date": "2026-10-06",
+      "zh-TW": {
+        "title": "EmbeddingGemma 2 把多模態檢索帶到裝置端",
+        "summary": "Google 於 10 月 6 日推出 EmbeddingGemma 2，以 Apache 2.0 授權提供可在裝置端執行的多模態嵌入模型。它把文字、程式碼、圖片、影音轉成共同空間中的向量，用於搜尋、分類或 RAG 的檢索部分；它本身不是生成答案的聊天模型。完整模型有 7.4 億參數，純文字工作可只載入 2.7 億參數的部分，視覺和音訊編碼器則按需求選用。\n\n官方模型卡列出 8K token 上下文，以及原生 768 維向量；開發者能改用 512、256 或128維表示。較小向量可以減少儲存，但不是所有模態都維持同樣品質：模型卡特別指出128維較適合純文字工作，並提供不同維度的評測表。官方部落格另列出本地媒體搜尋、影片片段查找與搭配生成模型的使用方式；其中裝置記憶體數據屬特定硬體與量化條件，不能直接套用到每台電腦。\n\n編輯觀點：這對想建立私有文件或本地程式碼搜尋的人很有吸引力，但應把模型大小、向量維度與實際召回品質分開測試。可先選一批真實查詢，檢查正確資料是否進入前幾名，再比較不同維度及模態的延遲與資源消耗。若檢索漏掉關鍵段落，後面的生成模型即使語氣流暢，也不等於答案有充分依據。這是本刊對RAG流程的評估建議；我們未在讀者裝置上安裝模型或驗證官方效能主張。",
+        "takeaway": "用自己的資料測試各模態與向量尺寸。",
+        "caveat": "不是生成式聊天模型；壓縮會影響檢索品質。"
+      },
+      "en": {
+        "title": "EmbeddingGemma 2 brings multimodal retrieval on-device",
+        "summary": "Google launched the Apache-2.0 EmbeddingGemma 2 for on-device multimodal retrieval. It embeds text, code and media; it does not generate chat answers. The full model has 740M parameters, with a 270M text-only configuration and optional vision and audio encoders.\n\nIts model card specifies 8K context and 768-dimensional output, with smaller 512, 256 and 128-dimensional representations. Storage savings involve quality tradeoffs: 128 dimensions are recommended mainly for text. Published device-memory figures also depend on hardware and quantization.\n\nEditorial interpretation: Compare model footprint, vector dimensions and retrieval quality separately using real queries. Check whether relevant material reaches the top results before evaluating generated prose, then measure latency and resources by modality. Fluent generation does not establish that retrieval supplied adequate evidence. This is proposed evaluation guidance; no reader-device installation or independent performance test was performed.",
+        "takeaway": "Test retrieval quality at each chosen dimension.",
+        "caveat": "Compression is not universally lossless across modalities."
+      },
+      "source_check": {
+        "date_precision": "day",
+        "primary_body_read": true,
+        "sections": "Launch announcement; modular/storage/context bullets; model card vector-truncation section",
+        "additional_sources": [
+          "https://ai.google.dev/gemma/docs/embeddinggemma/model_card_2",
+          "https://deepmind.google/models/gemma/embeddinggemma/"
+        ],
+        "checked_at": "2026-10-07T00:16:32.952414+00:00",
+        "published_date_basis": "date printed in official announcement or model card",
+        "expanded_at": "2026-10-07T00:33:40.596540+00:00",
+        "paragraph_sources": [
+          "Google launch announcement: license, modalities and modular sizes",
+          "Google model card: context, dimensions and compression limits; launch hardware caveat",
+          "original editorial interpretation and retrieval evaluation advice"
+        ],
+        "editorial_analysis_labeled": true
+      },
+      "date_verification_required": false
+    },
+    {
+      "id": "mistral-large-4-preview-2026-10-06",
+      "source": "Mistral AI",
+      "source_url": "https://docs.mistral.ai/models/mistral-large-4-0",
+      "category": "products",
+      "published_date": "2026-10-06",
+      "zh-TW": {
+        "title": "Mistral Large 4 進入公開預覽，權重仍待釋出",
+        "summary": "Mistral 在 10 月 6 日推出 Large 4 公開預覽。官方模型卡將它描述為多模態混合專家模型，總參數約1.05兆，具有視覺編碼器與100萬token上下文，並列出結構化輸出、函式呼叫及文件問答等介面能力。本次核對時，不同官方頁面回應曾出現不一致的啟用參數值，因此本文不列該數字，避免把尚未釐清的細節當作定論。\n\n正式發布文章表示，預覽API已在Mistral Studio提供，權重則計畫於月底釋出；更新紀錄也寫明權重尚待推出。公司同時稱模型仍在持續訓練，並在權重公開前，與獲准合作方進行實際環境中的紅隊測試。這些訊息說明目前應區分公開預覽、受限合作測試與未來可下載權重，不能因為產品標籤寫著開放權重，就認定一般使用者已經能自行部署。供應商的領先表現敘述，也不是我們完成的獨立比較。\n\n編輯觀點：對準備導入長上下文模型的團隊，先把可用性與能力評測拆開，會比只看參數量更實際。可以列出需要的輸入模態、工具格式、錯誤回應及長文件問題，再檢查模型是否在真正需要的段落找到依據。容納大量token本身不代表長距離檢索、答案正確性或工具動作都可靠；這是我們建議驗證的問題，不是對該模型已觀察到的失敗結論。本刊沒有呼叫預覽API、下載權重或啟用任何付費服務。",
+        "takeaway": "先核對預覽範圍與權重實際可用狀態。",
+        "caveat": "本文未呼叫 API、下載權重或實測模型能力。"
+      },
+      "en": {
+        "title": "Mistral Large 4 enters public preview; weights are still forthcoming",
+        "summary": "Mistral released Large 4 in public preview on October 6. Its model card lists a multimodal mixture-of-experts architecture, approximately 1.05T total parameters, vision support, 1M-token context and structured/tool-calling interfaces. We omit active-parameter counts because official retrievals conflicted.\n\nThe launch article offers a preview API and plans public weights for the month’s end; the changelog also says weights are forthcoming. Mistral describes continuing training and restricted partner red-teaming. Preview access, partner evaluation and public weight availability are distinct, and vendor performance claims are not our independent measurements.\n\nEditorial interpretation: Separate availability from capability testing. Assess required modalities, tool formats, errors and evidence retrieval within long documents. A large context window alone does not prove reliable answers or actions. These are proposed checks, not observed failures. No API, download or paid service was used.",
+        "takeaway": "Verify actual availability, not just the model label.",
+        "caveat": "No API, weight download or independent benchmark was run."
+      },
+      "source_check": {
+        "date_precision": "day",
+        "primary_body_read": true,
+        "sections": "October 6 changelog; model-card date, architecture and features",
+        "additional_sources": [
+          "https://docs.mistral.ai/resources/changelogs",
+          "https://mistral.ai/news/mistral-large-4/"
+        ],
+        "conflict_resolution": "Official October 6 release labels take precedence over inconsistent secondary reports; weights-coming-soon wording is retained.",
+        "checked_at": "2026-10-07T00:16:32.952414+00:00",
+        "published_date_basis": "date printed in official announcement or model card",
+        "omitted_disputed_detail": "The author and independent reviewer received conflicting active-parameter counts from official-page retrievals; the count is omitted rather than resolved by assumption.",
+        "expanded_at": "2026-10-07T00:33:40.596540+00:00",
+        "paragraph_sources": [
+          "Official model card; observed conflict explicitly retained",
+          "Mistral launch article and changelog: preview versus planned weights",
+          "original editorial interpretation and proposed capability tests"
+        ],
+        "editorial_analysis_labeled": true
+      },
+      "date_verification_required": false
+    },
+    {
+      "id": "openai-mathematics-disclosure-2026-10-06",
+      "source": "OpenAI",
+      "source_url": "https://openai.com/index/sharing-ai-progress-in-mathematics/",
+      "category": "papers",
+      "published_date": "2026-10-06",
+      "zh-TW": {
+        "title": "OpenAI 公開數學成果，補上形式化與研究成本說明",
+        "summary": "OpenAI 在10月6日公布內部前沿模型產生的一批數學成果，並宣布提供修訂、引用與研究過程資料。公告包含許多證明的Lean形式化、十份推理摘要，以及嘗試題目數和運算投入估計；平均每項結果約相當於三小時ChatGPT Pro思考的算力。這個數字是計算資源的等值表述，不是讀者一定能在三小時內重現成果的承諾；許多證明形式化，也不代表全部成果已完成驗證。\n\n與OpenAI交流的獨立數學及人工智慧諮詢小組AGMAI，當天另發聲明，強調其諮詢角色不等於替研究影響或產出過程背書。小組認為公開成果只是人類理解與學界評估的開始，而非完成。其9月29日建議還要求，披露應說明問題如何選出、模型嘗試但失敗的相近問題，以及證明的形式化狀態，並支持數學社群自己理解與吸收成果。這提供了供應商公告之外的閱讀角度，不能把有諮詢外部專家直接寫成已通過外部認證。\n\n編輯觀點：讀這類新聞時，可以先分開三個問題：產生了什麼結果、哪些檢查已完成，以及人們是否理解其證明和價值。只列成功案例容易忽略嘗試分母，只列機器可檢查的形式化，也不能替代對研究意義的討論。這是我們建議的判讀框架，不是對任何定理的真假裁決。本刊只核對公告與小組聲明，未查閱儲存庫，亦未獨立重跑證明。",
+        "takeaway": "同時閱讀成果、驗證方式與嘗試分母。",
+        "caveat": "本次只核對公告，未獨立重跑數學證明。"
+      },
+      "en": {
+        "title": "OpenAI shares mathematical results and verification context",
+        "summary": "OpenAI announced mathematical results from an internal model, including many Lean formalizations, ten reasoning summaries and attempted-problem statistics. Its average compute estimate of roughly three ChatGPT Pro thinking-hours per result is not a reproducible elapsed-time promise, nor evidence that every result is verified.\n\nThe independent advisory group AGMAI separately said its consultation was not an endorsement of the results’ impact or production process. Its September recommendations call for problem-selection and unsuccessful-attempt disclosure, explicit formalization status and support for community understanding. That background should not be confused with external certification.\n\nEditorial interpretation: Separate what was produced, what has been checked and what people understand about its significance. Success examples need denominators; formal checking does not settle research value. This is a reading framework, not a judgment on a theorem. We did not inspect the repository or independently rerun the proofs.",
+        "takeaway": "Inspect verification methods and unsuccessful attempts too.",
+        "caveat": "The proofs were not independently rerun for this digest."
+      },
+      "source_check": {
+        "date_precision": "day",
+        "primary_body_read": true,
+        "sections": "Announcement paragraphs on revisions, Lean and compute disclosure",
+        "access_note": "Repository content was not inspected; mathematical proofs were not independently rerun.",
+        "checked_at": "2026-10-07T00:16:32.952414+00:00",
+        "published_date_basis": "date printed in official announcement or model card",
+        "expanded_at": "2026-10-07T00:33:40.596540+00:00",
+        "paragraph_sources": [
+          "OpenAI October 6 disclosure",
+          "AGMAI October 6 statement and September 29 recommendations",
+          "original editorial interpretation and limits of this digest"
+        ],
+        "editorial_analysis_labeled": true,
+        "additional_sources": [
+          "https://agmai.org/",
+          "https://agmai.org/general-sep29/"
+        ]
+      },
+      "date_verification_required": false
+    }
+  ]
+}

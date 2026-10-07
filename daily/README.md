@@ -7,10 +7,10 @@ A separate, bilingual AI reading room for AI Learning Notes. The existing techni
 - A homepage newsletter panel, latest issue, permanent dated editions and independent searchable archive
 - Traditional Chinese and English, one-click switching and optional local language preference; actual English HTML is available without JavaScript
 - Search across both languages, category filters, empty states, date selection, stable story links, print/PDF and JSON download
-- Three date-selected layouts in the site's cream/jade atomic-cell visual language; mobile, keyboard and reduced-motion support
+- Seven weekday compositions from October 7, alongside three independent color palettes; earlier editions keep their original layouts. Mobile, keyboard and reduced-motion support
 - Independent RSS and Atom feeds in both languages: `feed.xml`, `feed-en.xml`, `atom.xml`, `atom-en.xml` within this directory
-- Source-checked October 4 and October 6, 2026 editions, with the original earlier issue preserved. The October 6 issue contains seven fresh official announcements, each with about 200 Traditional Chinese characters and an English counterpart. Vendor claims, opinions and research limitations are labeled
-- Dependency-free RSS/Atom collection, reviewed-data validation, deterministic page/feed generation, HTML/plain-text email previews and a tested optional email adapter
+- Source-checked October 4, October 6 and October 7, 2026 editions, with historical issue text preserved. October 6 has seven announcements with about 200 Traditional Chinese characters each; October 7 has six official reports and one practitioner write-up with about 500 characters and corresponding English. Vendor claims, author experience, editorial interpretation and research limitations are labeled
+- Dependency-free RSS/Atom collection and reviewed-data validation; deterministic generation with pinned Pillow image checks, HTML/plain-text email previews and a tested optional email adapter
 
 ## Explicitly not activated
 
@@ -34,12 +34,13 @@ Open `http://127.0.0.1:4173/daily/`. Local preview works at `/` and under the re
 
 ## Daily editorial workflow
 
-For editions dated October 6, 2026 onward, each Traditional Chinese summary is
-about 200 characters (180–240 non-whitespace Unicode code points, including
-punctuation and Latin product names). It should explain what happened, the key
-details, and why it matters. The title, takeaway and caveat do not count toward
-this body length. English must convey the same supported substance; it does not
-have a 200-word requirement. Short evidence is a reason to omit a story, never
+For editions dated October 7, 2026 onward, each Traditional Chinese summary is
+about 500 characters (450–550 non-whitespace Unicode code points, including
+punctuation and Latin product names). October 6 keeps its earlier 180–240-character
+policy, and October 4 remains unchanged. Each summary explains what happened,
+key details, significance and limitations. The title, takeaway and caveat do not
+count toward this body length. English conveys the same supported substance;
+it has no corresponding 500-word requirement. Short evidence is a reason to omit a story, never
 to pad a paragraph. Length checks cannot establish factual accuracy or good
 Traditional Chinese. The policy lives in `data/contract.json` and is enforced
 by the static builder, email validator and offline writer. Historical editions
@@ -220,3 +221,16 @@ Kit 模組只提供分語言的託管表單轉交與經精確核准的私人草�
 新增 `scripts/newsletter/writer.py prepare/apply`，可把原始待審選取與逐則原文／摘要整理成私人請求，並驗證另外提供的雙語 JSON 回覆。每一則需保留 ID、網址與來源證據，且雙語欄位必須附原文中的支持引句；引句本身不代表敘述已獲證實。產物仍是 `reviewed: false`，日期查證與來源限制確認完全保留人工閘門。
 
 詳見 [離線 writer 操作與限制](../newsletter/WRITER-CONTRACT.md)。這不是已連線的 LLM：沒有實際模型呼叫或費用，provider/model/pricing 尚未選定；字數／回覆報告的 token 與自填價格上限不冒充真實帳單保證。所有 live 呼叫固定拒絕。請求與支持引句檔案只能放在 repo 外，並以僅擁有者可讀寫的權限建立；不要公開整個撰稿工作目錄。
+# Headline-first daily reading (from 2026-10-07)
+
+For a new enhanced edition, onboard its verified JPEGs and manifest entries before `pipeline prepare`, which snapshots the entire source set. If artwork is added after preparation, preserve the earlier run and start a new run with the saved candidate report. The old run rejects source drift; missing or invalid images leave its preview unwritten. This is a manual editorial/image preparation step, not automatic image generation.
+
+The first two editorial picks are featured; remaining picks are smaller headline links. Titles open the original source. Full bilingual summaries, takeaways and caveats stay closed until requested. The native summary dialog supports Escape, backdrop dismissal, focus return and language changes. Without JavaScript, closed disclosure elements contain the same complete text. AI full translation is visibly disabled until source rights and a translation service are configured.
+
+Seven layouts follow the issue's Taipei calendar date, Monday through Sunday, independently of the three color palettes. The layout selector previews all seven without changing the edition date or editorial order. October 4 and October 6 keep their original presentation.
+
+The archive has a separate all-history content search. Its generated index contains all validated release editions, including both languages, summaries, takeaways, caveats, sources and topic keywords. It has no date window and is independent of the date-based edition browser. It does not fetch or imply access to external full articles. Index loading failures remain visible.
+
+Before building, install the pinned image validator with `python -m pip install -r scripts/newsletter/requirements.txt`. Each enhanced pick must have a story-ID-bound entry in `daily/data/image-manifest.json`, bilingual alt/caption/credit, matching source URL and SHA-256, and a local JPEG. The builder decodes and checks the files before writing any output: at most 300 KiB per image, 2048 pixels per side, and 2 MiB per edition. Image URLs and symlinks are rejected. The browser keeps a 16:9 frame for images and failures. Archived original generation files are not served.
+
+`python -B tests/newsletter/browser_check.py --output /tmp/newsletter-browser-evidence` is the portable CI suite. It checks all 7 layouts × 2 languages × 4 widths, every summary, keyboard controls, historical search, no-JavaScript reading and image failures. Unit/mock-DOM tests do not count as browser evidence. The existing isolated pipeline snapshots JPEGs and the image validator as well as page sources; it never publishes them.

@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "image_policy": "Original AI-generated concept illustrations; source URLs identify the stories, not image licenses.",
+  "images": [
+    {
+      "story_id": "openai-ironclad-evaluation-2026-10-06",
+      "width": 1599,
+      "height": 900,
+      "bytes": 192264,
+      "sha256": "a477c58ad8232cc1f72213cdff37ccefd7deb616a0052fca0a1b3ccb7756b431",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：電腦螢幕上的合約審批流程、游標與檢查清單放大鏡",
+        "en": "AI-generated concept illustration: A computer displays a contract approval workflow beside a cursor and checklist magnifier"
+      },
+      "caption": {
+        "zh-TW": "AI-generated 示意圖｜電腦螢幕上的合約審批流程、游標與檢查清單放大鏡；非產品實際畫面或新聞現場照片",
+        "en": "AI-generated concept illustration | A computer displays a contract approval workflow beside a cursor and checklist magnifier. Not an actual product screenshot or event photograph."
+      },
+      "source_url": "https://openai.com/index/advancing-computer-use-with-ironclad/",
+      "ai_generated": true,
+      "path": "daily/assets/stories/ironclad.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成",
+        "en": "Originally generated with the built-in image generation tool"
+      }
+    },
+    {
+      "story_id": "openai-atlassian-partnership-2026-10-06",
+      "width": 1599,
+      "height": 900,
+      "bytes": 210449,
+      "sha256": "d4e8bf9bf0f2208710f18f07b8e39f9818cea24cebdb27fcb47c47f480867ff8",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：文件連接知識核心，三位抽象人物共同移動專案卡片",
+        "en": "AI-generated concept illustration: Documents connect to a knowledge hub as three abstract people move a project card together"
+      },
+      "caption": {
+        "zh-TW": "AI-generated 示意圖｜文件連接知識核心，三位抽象人物共同移動專案卡片；非產品實際畫面或新聞現場照片",
+        "en": "AI-generated concept illustration | Documents connect to a knowledge hub as three abstract people move a project card together. Not an actual product screenshot or event photograph."
+      },
+      "source_url": "https://openai.com/index/atlassian-partnership/",
+      "ai_generated": true,
+      "path": "daily/assets/stories/atlassian.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成",
+        "en": "Originally generated with the built-in image generation tool"
+      }
+    },
+    {
+      "story_id": "anthropic-cvp-three-tiers-2026-10-06",
+      "width": 1599,
+      "height": 900,
+      "bytes": 179945,
+      "sha256": "c09b4d57b9f300621a536eb24ac9982f95f45396c220b768f2d32381ec88ebd7",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：三層驗證入口、鑰匙與放大鏡守護伺服器",
+        "en": "AI-generated concept illustration: Three verification gates, a key and an inspection lens protect a server"
+      },
+      "caption": {
+        "zh-TW": "AI-generated 示意圖｜三層驗證入口、鑰匙與放大鏡守護伺服器；非產品實際畫面或新聞現場照片",
+        "en": "AI-generated concept illustration | Three verification gates, a key and an inspection lens protect a server. Not an actual product screenshot or event photograph."
+      },
+      "source_url": "https://www.anthropic.com/news/cyber-verification-program",
+      "ai_generated": true,
+      "path": "daily/assets/stories/cvp.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成",
+        "en": "Originally generated with the built-in image generation tool"
+      }
+    },
+    {
+      "story_id": "google-embeddinggemma-2-2026-10-06",
+      "width": 1599,
+      "height": 900,
+      "bytes": 193671,
+      "sha256": "64b9bdc5c7085adb9dee41de52ad8f6a1cffd6647e28d263a9b0cf4b1890b726",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：手機串連圖片、聲音、文字與影片，匯入共同幾何空間",
+        "en": "AI-generated concept illustration: A phone connects image, audio, text and video cards to a shared geometric space"
+      },
+      "caption": {
+        "zh-TW": "AI-generated 示意圖｜手機串連圖片、聲音、文字與影片，匯入共同幾何空間；非產品實際畫面或新聞現場照片",
+        "en": "AI-generated concept illustration | A phone connects image, audio, text and video cards to a shared geometric space. Not an actual product screenshot or event photograph."
+      },
+      "source_url": "https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/",
+      "ai_generated": true,
+      "path": "daily/assets/stories/embeddinggemma.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成",
+        "en": "Originally generated with the built-in image generation tool"
+      }
+    },
+    {
+      "story_id": "mistral-large-4-preview-2026-10-06",
+      "width": 1599,
+      "height": 900,
+      "bytes": 216561,
+      "sha256": "5260fb62e11f0a68bb67f871e64913d304e60eb3d7d175066e77a87477cf9615",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：測試平台上的模組方塊，搭配程式碼、幾何零件與比較鏡",
+        "en": "AI-generated concept illustration: A modular cube on a test platform with abstract code, a CAD shape and a comparison lens"
+      },
+      "caption": {
+        "zh-TW": "AI-generated 示意圖｜測試平台上的模組方塊，搭配程式碼、幾何零件與比較鏡；非產品實際畫面或新聞現場照片",
+        "en": "AI-generated concept illustration | A modular cube on a test platform with abstract code, a CAD shape and a comparison lens. Not an actual product screenshot or event photograph."
+      },
+      "source_url": "https://docs.mistral.ai/models/mistral-large-4-0",
+      "ai_generated": true,
+      "path": "daily/assets/stories/mistral.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成",
+        "en": "Originally generated with the built-in image generation tool"
+      }
+    },
+    {
+      "story_id": "openai-mathematics-disclosure-2026-10-06",
+      "width": 1599,
+      "height": 900,
+      "bytes": 228041,
+      "sha256": "af950edc7eafa9fd0483ff2d64b48bc03119d24c53ee18460cd0e859cc17e0e4",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：數學圖稿流經透明驗證框架，連向推理節點",
+        "en": "AI-generated concept illustration: Mathematical sketches pass through a transparent verification frame into reasoning nodes"
+      },
+      "caption": {
+        "zh-TW": "AI-generated 示意圖｜數學圖稿流經透明驗證框架，連向推理節點；非產品實際畫面或新聞現場照片",
+        "en": "AI-generated concept illustration | Mathematical sketches pass through a transparent verification frame into reasoning nodes. Not an actual product screenshot or event photograph."
+      },
+      "source_url": "https://openai.com/index/sharing-ai-progress-in-mathematics/",
+      "ai_generated": true,
+      "path": "daily/assets/stories/math.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成",
+        "en": "Originally generated with the built-in image generation tool"
+      }
+    },
+    {
+      "story_id": "simon-datasette-parseable-tracing-2026-10-06",
+      "width": 1672,
+      "height": 941,
+      "bytes": 153563,
+      "sha256": "66cd9ff1287b0f88784cbbb64d00b3278d95ed2fd940396bfd3151b9515eb4ce",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：資料庫經由珊瑚色與鼠尾草綠追蹤區段，連接抽象筆記型電腦",
+        "en": "AI-generated concept illustration: A database connects to an abstract laptop through coral and sage trace spans"
+      },
+      "caption": {
+        "zh-TW": "AI 生成概念示意圖｜抽象筆記型電腦、資料庫與相連追蹤區段；非產品實際畫面或新聞現場照片",
+        "en": "AI-generated concept illustration | An abstract laptop, database and linked trace spans. Not an actual product screenshot or event photograph."
+      },
+      "source_url": "https://til.simonwillison.net/datasette/datasette-parseable-opentelemetry",
+      "ai_generated": true,
+      "path": "daily/assets/stories/codex-local-tracing.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成",
+        "en": "Originally generated with the built-in image generation tool"
+      }
+    }
+  ]
+}
