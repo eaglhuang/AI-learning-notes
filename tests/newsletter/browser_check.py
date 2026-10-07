@@ -9,9 +9,29 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
 import threading
-from playwright.sync_api import sync_playwright, expect
 
 ROOT=Path(__file__).resolve().parents[2]
+
+
+def image_fixture_handler(filename):
+    """Capture fixture state outside the callback's Route/Request parameter slots."""
+    path=ROOT/'tests/newsletter/fixtures/images'/filename
+    content_type='image/svg+xml' if filename.endswith('.svg') else 'image/jpeg'
+    def handle(route):
+        route.fulfill(path=str(path),content_type=content_type)
+    return handle
+
+
+def archive_failure_handler(case,invalid):
+    if case=='abort':body=None
+    elif case=='malformed':body='{broken'
+    elif case=='oversized':body='x'*4000001
+    elif case=='unsafe-index':body=json.dumps(invalid)
+    else:raise ValueError('Unknown archive failure fixture')
+    def handle(route):
+        if body is None:route.abort()
+        else:route.fulfill(status=200,content_type='application/json',body=body)
+    return handle
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -23,6 +43,7 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 def main():
+    from playwright.sync_api import sync_playwright, expect
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--base');parser.add_argument('--output',type=Path,required=True);args=parser.parse_args()
     args.output.mkdir(parents=True,exist_ok=True)
     server=None
@@ -54,6 +75,11 @@ def main():
         diagnostic=page.evaluate('''() => ({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,gridGap:getComputedStyle(document.querySelector('.headline-grid')).columnGap,overflow:[...document.querySelectorAll('.headline-grid,.headline-story,.headline-copy,.story-actions')].map(e=>({tag:e.tagName,id:e.id,className:e.className,x:e.getBoundingClientRect().x,width:e.getBoundingClientRect().width})).filter(e=>e.x<0||e.x+e.width>innerWidth)})''')
         (args.output/(name+'.json')).write_text(json.dumps(diagnostic,indent=2)+'\n')
         raise AssertionError(('horizontal overflow',label,diagnostic))
+    def decoded_image(img):
+        img.scroll_into_view_if_needed(timeout=5000)
+        img.evaluate('''image => new Promise((resolve,reject) => {const timer=setTimeout(()=>reject(new Error('Image decode timed out')),5000);image.decode().then(()=>{clearTimeout(timer);resolve();},error=>{clearTimeout(timer);reject(error);});})''')
+        expect(img).to_be_visible(timeout=5000)
+        assert img.evaluate('image => image.complete && image.naturalWidth > 0')
     try:
         with sync_playwright() as p:
             browser=p.chromium.launch()
@@ -96,8 +122,7 @@ def main():
             expect(page.locator('[data-dialog-summary]')).to_have_text(latest['items'][0]['en']['summary'])
             screenshot(page,'desktop-en-summary.png');page.locator('[data-dialog-close]').click();passed('English full summary disclosure and close')
             for img in page.locator('.story-image img').all():
-                img.scroll_into_view_if_needed()
-                img.evaluate('(image)=>image.decode()')
+                decoded_image(img)
             # Real browser coverage, not mocked DOM: 7 layouts × 2 locales × 4 widths.
             report['layout_scenarios']=[];report['summary_scenarios']=0;report['desktop_topology']={}
             ids=[i['id'] for i in latest['items']]
@@ -194,6 +219,11 @@ def main():
                 assert mp.evaluate('document.documentElement.scrollWidth <= window.innerWidth'),f'{width}px overflow'
                 mp.locator('#language').click();expect(mp.locator('html')).to_have_attribute('lang','en')
                 assert mp.evaluate('document.documentElement.scrollWidth <= window.innerWidth'),f'{width}px English overflow'
+                expect(mp.locator('.story-image img')).to_have_count(story_count)
+                for img in mp.locator('.story-image img').all():
+                    decoded_image(img)
+                mp.evaluate('scrollTo({top:0,left:0,behavior:"instant"})')
+                mp.evaluate("() => new Promise((resolve,reject) => {const timer=setTimeout(()=>reject(new Error('Image paint timed out')),5000);requestAnimationFrame(()=>requestAnimationFrame(()=>{clearTimeout(timer);resolve();}));})")
                 if width==390:screenshot(mp,'mobile-en.png')
                 passed(f'{width}px mobile both languages without overflow');mobile.close()
             nojs=browser.new_context(java_script_enabled=False,viewport={'width':1280,'height':900})
@@ -210,7 +240,7 @@ def main():
             for filename in ['wide.svg','portrait.svg','large-dimensions.svg','broken.jpg']:
                 fixture_context=browser.new_context(viewport={'width':320,'height':844})
                 fp=fixture_context.new_page()
-                fp.route('**/'+first_image['path'],lambda route,f=filename:route.fulfill(path=str(ROOT/'tests/newsletter/fixtures/images'/f),content_type='image/svg+xml' if f.endswith('.svg') else 'image/jpeg'))
+                fp.route('**/'+first_image['path'],image_fixture_handler(filename))
                 fp.goto(base+'/daily/')
                 image=fp.locator('.story-image').first
                 if filename=='broken.jpg':expect(image.locator('.image-fallback')).to_be_visible();expect(image.locator('img')).not_to_be_visible()
@@ -234,11 +264,7 @@ def main():
             invalid=json.loads(json.dumps(archive_index));invalid['records'][0]['sourceUrl']='javascript:alert(1)'
             for failure in ['abort','malformed','oversized','unsafe-index']:
                 failure_context=browser.new_context();failed_page=failure_context.new_page()
-                def fail_index(route,case=failure):
-                    if case=='abort':route.abort();return
-                    body={'malformed':'{broken','oversized':'x'*4000001,'unsafe-index':json.dumps(invalid)}[case]
-                    route.fulfill(status=200,content_type='application/json',body=body)
-                failed_page.route('**/data/search-index.json',fail_index)
+                failed_page.route('**/data/search-index.json',archive_failure_handler(failure,invalid))
                 failed_page.goto(base+'/daily/archive/')
                 expect(failed_page.locator('#all-history-search [role=status]')).to_contain_text('暫時無法載入')
                 expect(failed_page.locator('.archive-card')).to_have_count(edition_count)

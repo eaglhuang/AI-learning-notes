@@ -1,6 +1,7 @@
 import copy
 from datetime import datetime, timezone, date
 import importlib.util
+import inspect
 import json
 from pathlib import Path
 import sys
@@ -183,6 +184,37 @@ class CollectorTests(unittest.TestCase):
         report=collect(config,self.now,lambda url:self.xml);self.assertEqual(len(report['candidates']),1)
         atom=b'<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Atom</title><link href="https://source.test/atom"/><published>2026-10-03T10:00:00Z</published></entry></feed>'
         self.assertEqual(len(parse_feed(atom,self.source,self.now)),1)
+
+
+class BrowserFixtureCallbackTests(unittest.TestCase):
+    """Only exercise route callback arguments; no browser or image rendering."""
+    @classmethod
+    def setUpClass(cls):
+        spec=importlib.util.spec_from_file_location('newsletter_browser_fixtures',ROOT/'tests/newsletter/browser_check.py')
+        cls.module=importlib.util.module_from_spec(spec);spec.loader.exec_module(cls.module)
+    class Route:
+        def __init__(self):self.calls=[]
+        def fulfill(self,**kwargs):self.calls.append(('fulfill',kwargs))
+        def abort(self):self.calls.append(('abort',None))
+    def test_image_handlers_have_one_argument_and_capture_their_own_filename(self):
+        names=['wide.svg','portrait.svg','large-dimensions.svg','broken.jpg']
+        handlers=[self.module.image_fixture_handler(name) for name in names]
+        for name,handler in zip(names,handlers):
+            self.assertEqual(list(inspect.signature(handler).parameters),['route'])
+            route=self.Route();handler(route)
+            self.assertEqual(route.calls,[('fulfill',{'path':str(ROOT/'tests/newsletter/fixtures/images'/name),'content_type':'image/svg+xml' if name.endswith('.svg') else 'image/jpeg'})])
+    def test_failure_handlers_capture_each_case_without_a_request_default_parameter(self):
+        invalid={'records':[{'sourceUrl':'javascript:alert(1)'}]}
+        cases=['abort','malformed','oversized','unsafe-index']
+        handlers=[self.module.archive_failure_handler(case,invalid) for case in cases]
+        for case,handler in zip(cases,handlers):
+            self.assertEqual(list(inspect.signature(handler).parameters),['route'])
+            route=self.Route();handler(route)
+            if case=='abort':self.assertEqual(route.calls,[('abort',None)]);continue
+            action,body=route.calls[0];self.assertEqual(action,'fulfill');self.assertEqual(body['status'],200)
+            if case=='malformed':self.assertEqual(body['body'],'{broken')
+            if case=='oversized':self.assertEqual(len(body['body']),4000001)
+            if case=='unsafe-index':self.assertEqual(json.loads(body['body']),invalid)
 
 
 if __name__=='__main__':unittest.main()
