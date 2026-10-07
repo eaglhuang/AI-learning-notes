@@ -5,42 +5,209 @@
       "name": "OpenAI",
       "category": "news",
       "feed_url": "https://openai.com/news/rss.xml",
-      "allowed_hosts": [
+      "enabled": true,
+      "feed_hosts": [
         "openai.com"
-      ]
+      ],
+      "article_hosts": [
+        "openai.com"
+      ],
+      "metadata": {
+        "source_family": "vendor_primary",
+        "region": "global",
+        "language": "en",
+        "attribution": "Verify the article byline and original author; a feed name is not an author credit.",
+        "full_translation_eligibility": "unknown_requires_item_review",
+        "documentation_urls": [
+          "https://openai.com/news/rss.xml"
+        ],
+        "license_evidence_urls": []
+      }
     },
     {
       "id": "huggingface",
       "name": "Hugging Face",
       "category": "tools",
       "feed_url": "https://huggingface.co/blog/feed.xml",
-      "allowed_hosts": [
+      "enabled": true,
+      "feed_hosts": [
         "huggingface.co"
-      ]
+      ],
+      "article_hosts": [
+        "huggingface.co"
+      ],
+      "metadata": {
+        "source_family": "platform_blog",
+        "region": "global",
+        "language": "en",
+        "attribution": "Verify the article byline and original author; a feed name is not an author credit.",
+        "full_translation_eligibility": "unknown_requires_item_review",
+        "documentation_urls": [
+          "https://huggingface.co/blog/feed.xml"
+        ],
+        "license_evidence_urls": []
+      }
     },
     {
       "id": "arxiv-ai",
       "name": "arXiv cs.AI",
       "category": "papers",
       "feed_url": "https://rss.arxiv.org/rss/cs.AI",
-      "allowed_hosts": [
-        "rss.arxiv.org",
+      "enabled": true,
+      "feed_hosts": [
+        "rss.arxiv.org"
+      ],
+      "article_hosts": [
         "arxiv.org"
-      ]
+      ],
+      "metadata": {
+        "source_family": "research_papers",
+        "region": "global",
+        "language": "en",
+        "attribution": "Verify the article byline and original author; a feed name is not an author credit.",
+        "full_translation_eligibility": "conditional_per_item_license",
+        "documentation_urls": [
+          "https://info.arxiv.org/help/rss.html"
+        ],
+        "license_evidence_urls": [
+          "https://info.arxiv.org/help/license/reuse.html"
+        ]
+      }
     },
     {
       "id": "simon-willison",
       "name": "Simon Willison",
       "category": "writing",
       "feed_url": "https://simonwillison.net/atom/everything/",
-      "allowed_hosts": [
+      "enabled": true,
+      "feed_hosts": [
         "simonwillison.net"
-      ]
+      ],
+      "article_hosts": [
+        "simonwillison.net"
+      ],
+      "metadata": {
+        "source_family": "practitioner_author",
+        "region": "global",
+        "language": "en",
+        "attribution": "The combined feed includes original writing, links and quotations. Verify the actual work and byline.",
+        "full_translation_eligibility": "unknown_requires_item_review",
+        "documentation_urls": [
+          "https://simonwillison.net/about/"
+        ],
+        "license_evidence_urls": []
+      }
+    },
+    {
+      "id": "arxiv-lg",
+      "name": "arXiv cs.LG",
+      "category": "papers",
+      "feed_url": "https://rss.arxiv.org/rss/cs.LG",
+      "enabled": false,
+      "feed_hosts": [
+        "rss.arxiv.org"
+      ],
+      "article_hosts": [
+        "arxiv.org"
+      ],
+      "metadata": {
+        "source_family": "research_papers",
+        "region": "global",
+        "language": "en",
+        "attribution": "Verify each original byline, opinion attribution and article-specific rights before selection.",
+        "full_translation_eligibility": "conditional_per_item_license",
+        "documentation_urls": [
+          "https://info.arxiv.org/help/rss.html",
+          "https://arxiv.org/category_taxonomy"
+        ],
+        "license_evidence_urls": [
+          "https://info.arxiv.org/help/license/reuse.html"
+        ]
+      }
+    },
+    {
+      "id": "arxiv-cl",
+      "name": "arXiv cs.CL",
+      "category": "papers",
+      "feed_url": "https://rss.arxiv.org/rss/cs.CL",
+      "enabled": false,
+      "feed_hosts": [
+        "rss.arxiv.org"
+      ],
+      "article_hosts": [
+        "arxiv.org"
+      ],
+      "metadata": {
+        "source_family": "research_papers",
+        "region": "global",
+        "language": "en",
+        "attribution": "Verify each original byline, opinion attribution and article-specific rights before selection.",
+        "full_translation_eligibility": "conditional_per_item_license",
+        "documentation_urls": [
+          "https://info.arxiv.org/help/rss.html",
+          "https://arxiv.org/category_taxonomy"
+        ],
+        "license_evidence_urls": [
+          "https://info.arxiv.org/help/license/reuse.html"
+        ]
+      }
+    },
+    {
+      "id": "cna-tech",
+      "name": "中央通訊社科技",
+      "category": "news",
+      "feed_url": "https://feeds.feedburner.com/rsscna/technology",
+      "enabled": false,
+      "feed_hosts": [
+        "feeds.feedburner.com"
+      ],
+      "article_hosts": [
+        "www.cna.com.tw"
+      ],
+      "metadata": {
+        "source_family": "news_agency",
+        "region": "Taiwan/Asia",
+        "language": "zh-TW",
+        "attribution": "Verify each original byline, opinion attribution and article-specific rights before selection.",
+        "full_translation_eligibility": "permission_required",
+        "documentation_urls": [
+          "https://www.cna.com.tw/about/rss.aspx"
+        ],
+        "license_evidence_urls": [
+          "https://www.cna.com.tw/about/rss.aspx"
+        ]
+      }
+    },
+    {
+      "id": "martin-fowler",
+      "name": "Martin Fowler and guest authors",
+      "category": "writing",
+      "feed_url": "https://martinfowler.com/feed.atom",
+      "enabled": false,
+      "feed_hosts": [
+        "martinfowler.com"
+      ],
+      "article_hosts": [
+        "martinfowler.com"
+      ],
+      "metadata": {
+        "source_family": "practitioner_author",
+        "region": "global",
+        "language": "en",
+        "attribution": "Verify each original byline, opinion attribution and article-specific rights before selection.",
+        "full_translation_eligibility": "conditional_author_permission",
+        "documentation_urls": [
+          "https://martinfowler.com/faq.html"
+        ],
+        "license_evidence_urls": [
+          "https://martinfowler.com/faq.html"
+        ]
+      }
     }
   ],
   "ranking": {
     "method": "recency_then_editorial_review",
-    "window_days": 7,
+    "window_days": 2,
     "target_items": 10,
     "popularity_metrics_available": false
   },
@@ -67,7 +234,10 @@
       "blog.google",
       "huggingface.co",
       "www.cna.com.tw",
-      "www.ithome.com.tw"
+      "www.ithome.com.tw",
+      "simonwillison.net",
+      "martinfowler.com"
     ]
-  }
+  },
+  "schema_version": 2
 }

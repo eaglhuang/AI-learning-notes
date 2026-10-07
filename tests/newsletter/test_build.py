@@ -227,8 +227,9 @@ class CollectorTests(unittest.TestCase):
         def fail(url):raise TimeoutError('timed out')
         report=collect(config,self.now,fail);self.assertEqual(report['candidates'],[]);self.assertEqual(report['status'],'partial');self.assertEqual(len(report['failures']),1)
     def test_atom_and_deduplication(self):
-        config={'sources':[self.source,self.source],'ranking':{'window_days':7}}
+        config={'sources':[self.source,{**self.source,'id':'second-feed'}],'ranking':{'window_days':7}}
         report=collect(config,self.now,lambda url:self.xml);self.assertEqual(len(report['candidates']),1)
+        self.assertEqual(len(report['candidates'][0]['provenance']),2)
         atom=b'<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Atom</title><link href="https://source.test/atom"/><published>2026-10-03T10:00:00Z</published></entry></feed>'
         self.assertEqual(len(parse_feed(atom,self.source,self.now)),1)
 

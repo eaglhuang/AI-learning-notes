@@ -1,5 +1,6 @@
 """Production editorial contract, distinct from the preserved v1 pilot fixture."""
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 import json
 import hashlib
 from pathlib import Path
@@ -12,6 +13,11 @@ CATEGORIES = {"news": ("新聞", "News"), "papers": ("論文", "Papers"),
               "tools": ("工程工具", "Tools"), "engineering": ("工程實戰", "Practice")}
 CONTRACT = json.loads((Path(__file__).resolve().parents[2]/'daily/data/contract.json').read_text(encoding='utf-8'))
 LOCALES = tuple(CONTRACT['locales'])
+
+
+def edition_today():
+    """Publication and review dates use the newsletter's Taipei calendar."""
+    return datetime.now(timezone.utc).astimezone(ZoneInfo('Asia/Taipei')).date()
 
 
 def valid_date(value):
@@ -86,7 +92,7 @@ def summary_errors(item, issue_date, today=None):
                  and type(exception.get('actual_characters')) in (int, float) and exception['actual_characters'] == length
                  and 0 < length < policy['min_characters'] and bool(sources))
         try:
-            valid = valid and valid_date(issue_date) <= valid_date(exception['reviewed_on']) <= (today or date.today())
+            valid = valid and valid_date(issue_date) <= valid_date(exception['reviewed_on']) <= (today or edition_today())
         except (ValueError, TypeError, KeyError):
             valid = False
         try:
@@ -112,9 +118,9 @@ def validate_edition(issue, today=None):
         errors.append("only non-synthetic, editorially reviewed editions may be published")
     try:
         issue_date = valid_date(issue.get("date"))
-        if issue_date > (today or date.today()):
+        if issue_date > (today or edition_today()):
             errors.append("edition date must not be in the future")
-        if valid_date(issue.get("reviewed_on")) > (today or date.today()):
+        if valid_date(issue.get("reviewed_on")) > (today or edition_today()):
             errors.append("review date must not be in the future")
     except ValueError:
         issue_date = None

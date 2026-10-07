@@ -18,7 +18,13 @@ export const summaryContentDigest = (item,date) => createHash('sha256').update(J
 const validSummarySources = sources => Array.isArray(sources) && sources.length>=1 && sources.length<=8
   && new Set(sources).size===sources.length && sources.every(value=>Boolean(safeSummarySource(value)));
 
-export function validateEmailEdition(issue, today = new Date().toISOString().slice(0,10)) {
+export function editionToday(now = new Date()) {
+  const parts = new Intl.DateTimeFormat('en', {timeZone:'Asia/Taipei', year:'numeric', month:'2-digit', day:'2-digit'}).formatToParts(now);
+  const part = name => parts.find(p=>p.type===name).value;
+  return `${part('year')}-${part('month')}-${part('day')}`;
+}
+
+export function validateEmailEdition(issue, today = editionToday()) {
   const errors=[];
   const realDate=value => typeof value==='string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value+'T00:00:00Z')) && new Date(value+'T00:00:00Z').toISOString().slice(0,10)===value;
   const nonempty=value => typeof value==='string' && Boolean(value.trim());

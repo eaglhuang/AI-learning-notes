@@ -1,0 +1,401 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-10-07",
+  "status": "discovery_catalog_not_runtime_feed_activation",
+  "window_hours": 48,
+  "priority_channels": [
+    "google-news-tw",
+    "google-news-en",
+    "simon-willison",
+    "martin-fowler"
+  ],
+  "google_news_access": "Use the documented public-page headline view through permitted editorial browsing. No RSS/API adapter is asserted. Record region, language and observed section; personalized placement is not general headline placement.",
+  "channels": [
+    {
+      "id": "mit-ai",
+      "name": "MIT News AI",
+      "source_family": "research_institution",
+      "region": "US/global",
+      "language": "verify_per_work",
+      "discovery_url": "https://news.mit.edu/topic/artificial-intelligence2",
+      "feed_url": null,
+      "feed_documentation_status": "advertised_rss_target_unresolved",
+      "documentation_urls": [
+        "https://news.mit.edu/rss"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "Institutional research reporting; verify linked paper, author, event date and limitations.",
+      "reuse_license_status": "Web republication has attribution conditions; translation permission was not explicit. The image-only CC BY-NC-ND rule must not be applied to article text.",
+      "license_evidence_urls": [
+        "https://news.mit.edu/terms-of-use"
+      ],
+      "full_translation_eligibility": "unknown_requires_item_review"
+    },
+    {
+      "id": "bair",
+      "name": "Berkeley AI Research Blog",
+      "source_family": "research_institution",
+      "region": "US/global",
+      "language": "verify_per_work",
+      "discovery_url": "https://bair.berkeley.edu/blog/archive/",
+      "feed_url": null,
+      "feed_documentation_status": "no_rss_verified",
+      "documentation_urls": [
+        "https://bair.berkeley.edu/blog/about/",
+        "https://bair.berkeley.edu/blog/archive/"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "Researcher-written explanations; occasional publication, not a daily freshness guarantee.",
+      "reuse_license_status": "Authors retain copyright. The blog explicitly asks would-be translators to contact authors. No request was sent.",
+      "license_evidence_urls": [
+        "https://bair.berkeley.edu/blog/about/"
+      ],
+      "full_translation_eligibility": "permission_required"
+    },
+    {
+      "id": "acl-anthology",
+      "name": "ACL Anthology",
+      "source_family": "research_papers",
+      "region": "global",
+      "language": "verify_per_work",
+      "discovery_url": "https://aclanthology.org/",
+      "feed_url": null,
+      "feed_documentation_status": "html_or_documented_api_needed",
+      "documentation_urls": [
+        "https://aclanthology.org/"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "NLP papers and proceedings; preserve paper identifier and actual first-publication/version dates.",
+      "reuse_license_status": "Site states ACL material from 2016 onward uses CC BY 4.0; older material uses CC BY-NC-SA 3.0. Confirm the exact paper and third-party exclusions.",
+      "license_evidence_urls": [
+        "https://aclanthology.org/",
+        "https://creativecommons.org/licenses/by/4.0/"
+      ],
+      "full_translation_eligibility": "conditional_per_paper_license"
+    },
+    {
+      "id": "arxiv-lg",
+      "name": "arXiv cs.LG",
+      "source_family": "research_papers",
+      "region": "global",
+      "language": "verify_per_work",
+      "discovery_url": "https://arxiv.org/category_taxonomy",
+      "feed_url": "https://rss.arxiv.org/rss/cs.LG",
+      "feed_documentation_status": "derived_from_official_feed_template",
+      "documentation_urls": [
+        "https://info.arxiv.org/help/rss.html",
+        "https://arxiv.org/category_taxonomy"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "Expand beyond cs.AI; deduplicate cross-listed paper IDs and record version changes. Preprints are not peer-review certification.",
+      "reuse_license_status": "Each paper/version has its own license. arXiv hosting or a default nonexclusive license does not grant full-translation rights.",
+      "license_evidence_urls": [
+        "https://info.arxiv.org/help/license/reuse.html"
+      ],
+      "full_translation_eligibility": "conditional_per_paper_license"
+    },
+    {
+      "id": "arxiv-cl",
+      "name": "arXiv cs.CL",
+      "source_family": "research_papers",
+      "region": "global",
+      "language": "verify_per_work",
+      "discovery_url": "https://arxiv.org/category_taxonomy",
+      "feed_url": "https://rss.arxiv.org/rss/cs.CL",
+      "feed_documentation_status": "derived_from_official_feed_template",
+      "documentation_urls": [
+        "https://info.arxiv.org/help/rss.html",
+        "https://arxiv.org/category_taxonomy"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "NLP and multilingual research; share deduplication with cs.AI/cs.LG.",
+      "reuse_license_status": "Each paper/version has its own license; inspect it before translation.",
+      "license_evidence_urls": [
+        "https://info.arxiv.org/help/license/reuse.html"
+      ],
+      "full_translation_eligibility": "conditional_per_paper_license"
+    },
+    {
+      "id": "pytorch-blog",
+      "name": "PyTorch Blog",
+      "source_family": "open_source_project",
+      "region": "global",
+      "language": "verify_per_work",
+      "discovery_url": "https://pytorch.org/blog/",
+      "feed_url": null,
+      "feed_documentation_status": "no_rss_verified",
+      "documentation_urls": [
+        "https://pytorch.org/blog/"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "Open-source implementation and release explanations. Separate author benchmarks, case studies and press releases. Confirm exact version/release state.",
+      "reuse_license_status": "Software licenses do not automatically cover the blog text; article-level reuse permission unverified.",
+      "license_evidence_urls": [],
+      "full_translation_eligibility": "unknown_requires_item_review"
+    },
+    {
+      "id": "ars-tech",
+      "name": "Ars Technica",
+      "source_family": "independent_technology",
+      "region": "US/global",
+      "language": "verify_per_work",
+      "discovery_url": "https://arstechnica.com/rss-feeds/",
+      "feed_url": null,
+      "feed_documentation_status": "advertised_rss_target_unresolved",
+      "documentation_urls": [
+        "https://arstechnica.com/rss-feeds/"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "Independent reporting for discovery and context; verify technical claims with primary sources.",
+      "reuse_license_status": "The page reserves reproduction rights; no full-translation permission verified.",
+      "license_evidence_urls": [
+        "https://arstechnica.com/rss-feeds/"
+      ],
+      "full_translation_eligibility": "permission_required"
+    },
+    {
+      "id": "ithome",
+      "name": "iThome",
+      "source_family": "independent_technology",
+      "region": "Taiwan",
+      "language": "verify_per_work",
+      "discovery_url": "https://www.ithome.com.tw/",
+      "feed_url": null,
+      "feed_documentation_status": "advertised_rss_target_unresolved",
+      "documentation_urls": [
+        "https://www.ithome.com.tw/"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "Traditional Chinese enterprise, security and local adoption reporting. Distinguish newsroom stories from sponsored/industry posts and community blogs.",
+      "reuse_license_status": "No article-level translation license verified; do not infer one from public access.",
+      "license_evidence_urls": [
+        "https://www.ithome.com.tw/"
+      ],
+      "full_translation_eligibility": "unknown_requires_item_review"
+    },
+    {
+      "id": "cna-tech",
+      "name": "中央通訊社科技",
+      "source_family": "news_agency",
+      "region": "Taiwan/Asia",
+      "language": "verify_per_work",
+      "discovery_url": "https://www.cna.com.tw/about/rss.aspx",
+      "feed_url": "https://feeds.feedburner.com/rsscna/technology",
+      "feed_documentation_status": "exact_url_in_official_rss_directory",
+      "documentation_urls": [
+        "https://www.cna.com.tw/about/rss.aspx"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "Taiwan/Asia reporting; retain byline and origin. FeedBurner delivery and final article host need separate validation.",
+      "reuse_license_status": "RSS terms restrict use to personal/nonprofit noncommercial purposes with credit and byline; the feed is not a full-text reuse license.",
+      "license_evidence_urls": [
+        "https://www.cna.com.tw/about/rss.aspx"
+      ],
+      "full_translation_eligibility": "permission_required"
+    },
+    {
+      "id": "ai-singapore",
+      "name": "AI Singapore News",
+      "source_family": "research_institution",
+      "region": "Singapore/SE Asia",
+      "language": "verify_per_work",
+      "discovery_url": "https://ai4e.aisingapore.org/news-page/",
+      "feed_url": null,
+      "feed_documentation_status": "no_rss_verified",
+      "documentation_urls": [
+        "https://aisingapore.org/",
+        "https://ai4e.aisingapore.org/news/"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "Regional language and deployment perspectives. Latest observed listing was July 2026; use only when a genuinely fresh event exists.",
+      "reuse_license_status": "No article-text adaptation license verified; tool/software licenses do not establish article rights.",
+      "license_evidence_urls": [],
+      "full_translation_eligibility": "unknown_requires_item_review"
+    },
+    {
+      "id": "google-news-tw",
+      "name": "Google News Taiwan / 繁中",
+      "source_family": "aggregator_discovery",
+      "region": "Taiwan",
+      "language": "zh-Hant",
+      "discovery_url": "https://news.google.com/home?ceid=TW:zh-Hant&gl=TW&hl=zh-TW",
+      "feed_url": null,
+      "feed_documentation_status": "no_current_official_rss_or_api_contract_verified",
+      "documentation_urls": [
+        "https://news.google.com/home?ceid=TW:zh-Hant&gl=TW&hl=zh-TW",
+        "https://support.google.com/googlenews/answer/9005749?hl=en",
+        "https://support.google.com/googlenews/answer/9005601?co=GENIE.Platform%3DDesktop&hl=en"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "Discover important AI-related events, then attribute and verify the original publisher. The aggregator does not count as an additional independent reporting outlet.",
+      "reuse_license_status": "Discovery does not establish rights to the original publisher article.",
+      "license_evidence_urls": [],
+      "full_translation_eligibility": "must_verify_each_original_article"
+    },
+    {
+      "id": "google-news-en",
+      "name": "Google News English / US edition",
+      "source_family": "aggregator_discovery",
+      "region": "US (global AI coverage sought; not an all-world ranking)",
+      "language": "en",
+      "discovery_url": "https://news.google.com/home?ceid=US:en&gl=US&hl=en-US",
+      "feed_url": null,
+      "feed_documentation_status": "no_current_official_rss_or_api_contract_verified",
+      "documentation_urls": [
+        "https://support.google.com/googlenews/answer/9005749?hl=en",
+        "https://support.google.com/googlenews/answer/9005601?co=GENIE.Platform%3DDesktop&hl=en"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "Discover important AI-related events, then attribute and verify the original publisher. The aggregator does not count as an additional independent reporting outlet.",
+      "reuse_license_status": "Discovery does not establish rights to the original publisher article.",
+      "license_evidence_urls": [],
+      "full_translation_eligibility": "must_verify_each_original_article"
+    },
+    {
+      "id": "martin-fowler",
+      "name": "Martin Fowler / authored and edited engineering articles",
+      "source_family": "practitioner_author",
+      "region": "global",
+      "language": "verify_per_work",
+      "discovery_url": "https://martinfowler.com/tags/generative%20AI.html",
+      "feed_url": "https://martinfowler.com/feed.atom",
+      "feed_documentation_status": "exact_url_in_author_faq",
+      "documentation_urls": [
+        "https://martinfowler.com/"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "AI software design, development practices and architecture; preserve each article byline because the site includes guest authors.",
+      "reuse_license_status": "Author FAQ allows online translations with an original-article link. Confirm exact authorship and article exceptions; this is not blanket authority over guest writing.",
+      "license_evidence_urls": [
+        "https://martinfowler.com/faq.html"
+      ],
+      "full_translation_eligibility": "conditional_author_permission"
+    },
+    {
+      "id": "kent-beck",
+      "name": "Kent Beck / Software Design: Tidy First?",
+      "source_family": "practitioner_author",
+      "region": "global",
+      "language": "verify_per_work",
+      "discovery_url": "https://newsletter.kentbeck.com/archive",
+      "feed_url": null,
+      "feed_documentation_status": "no_feed_verified",
+      "documentation_urls": [
+        "https://newsletter.kentbeck.com/about"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "AI and software-design practice, TDD and developer experience. Distinguish an argued perspective from a measured result.",
+      "reuse_license_status": "Copyright notice observed; no blanket translation permission verified. Use only readable public text, not unseen paid content.",
+      "license_evidence_urls": [
+        "https://newsletter.kentbeck.com/about"
+      ],
+      "full_translation_eligibility": "unknown_requires_item_review"
+    },
+    {
+      "id": "charity-majors",
+      "name": "Charity Majors / charity.wtf",
+      "source_family": "practitioner_author",
+      "region": "global",
+      "language": "verify_per_work",
+      "discovery_url": "https://charity.wtf/",
+      "feed_url": null,
+      "feed_documentation_status": "no_feed_verified",
+      "documentation_urls": [
+        "https://charity.wtf/about"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "Operational engineering, observability and AI-assisted software delivery, when a specific dated public post supports it.",
+      "reuse_license_status": "No article-specific adaptation license verified.",
+      "license_evidence_urls": [
+        "https://charity.wtf/about"
+      ],
+      "full_translation_eligibility": "unknown_requires_item_review"
+    },
+    {
+      "id": "andrej-karpathy",
+      "name": "Andrej Karpathy / writing and talks",
+      "source_family": "practitioner_author",
+      "region": "global",
+      "language": "verify_per_work",
+      "discovery_url": "https://karpathy.bearblog.dev/blog/",
+      "feed_url": null,
+      "feed_documentation_status": "no_feed_verified",
+      "documentation_urls": [
+        "https://karpathy.ai/"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "AI tools, programming workflows and technical explanations. Use the blog/channel linked from his own site; confirm each post or talk date.",
+      "reuse_license_status": "No blog or talk translation license verified; model/code licenses do not license narrative or video.",
+      "license_evidence_urls": [
+        "https://karpathy.ai/"
+      ],
+      "full_translation_eligibility": "unknown_requires_item_review"
+    },
+    {
+      "id": "paul-graham",
+      "name": "Paul Graham / essays",
+      "source_family": "practitioner_author",
+      "region": "global",
+      "language": "verify_per_work",
+      "discovery_url": "https://paulgraham.com/",
+      "feed_url": null,
+      "feed_documentation_status": "no_feed_verified",
+      "documentation_urls": [
+        "https://paulgraham.com/",
+        "https://paulgraham.com/gfaq.html"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "Software, AI and building technology companies when an essay is relevant; the name alone is not a selection reason.",
+      "reuse_license_status": "Official FAQ permits online translations, asks for the original link and for the translation URL to be sent to the author. No contact was made.",
+      "license_evidence_urls": [
+        "https://paulgraham.com/gfaq.html"
+      ],
+      "full_translation_eligibility": "conditional_author_permission_and_requested_notice"
+    },
+    {
+      "id": "simon-willison",
+      "name": "Simon Willison and linked authors",
+      "source_family": "practitioner_author",
+      "region": "global",
+      "language": "en",
+      "discovery_url": "https://simonwillison.net/about/",
+      "feed_url": "https://simonwillison.net/atom/everything/",
+      "feed_documentation_status": "exact_url_in_author_about_page",
+      "documentation_urls": [
+        "https://simonwillison.net/about/"
+      ],
+      "automatic_fetch_enabled": false,
+      "live_collector_tested": false,
+      "editorial_use": "The existing collector feed mixes original writing, links and quotes; retain the actual byline and classify the work before selection.",
+      "reuse_license_status": "Check the individual work; feed visibility does not grant whole-translation rights.",
+      "license_evidence_urls": [],
+      "full_translation_eligibility": "unknown_requires_item_review"
+    }
+  ],
+  "selection_rules": [
+    "Verify the original publisher, byline, body and publication/event time before selecting.",
+    "Use a rolling 48-hour window. A repost or aggregator appearance does not reset the original publication time.",
+    "Deduplicate original article URLs and verified event keys against published history; syndication is not independent corroboration.",
+    "Use AI/topic relevance and source evidence for the two featured positions; never invent popularity scores or an observed rank.",
+    "Preserve author opinions as attributed views, not established facts or assistant advice.",
+    "Check rights per work; public access, RSS, software licenses and aggregator inclusion do not grant blanket translation permission.",
+    "If a required channel cannot be checked, disclose incomplete coverage rather than report successful empty results."
+  ]
+}
