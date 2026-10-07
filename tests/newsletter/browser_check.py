@@ -46,6 +46,14 @@ def main():
         after=position(page)
         assert abs(after['x']-before['x'])<=2 and abs(after['y']-before['y'])<=2,(before,after)
         assert after['overflow']==before['overflow'],(before,after)
+    def no_overflow(page,label):
+        if page.evaluate('document.documentElement.scrollWidth <= innerWidth'):return
+        # Preserve the actual failing browser state; never mask overflow with clipping.
+        name='overflow-'+str(label).replace(' ','').replace("'",'').replace('(','').replace(')','').replace(',','-')
+        screenshot(page,name+'.png',False)
+        diagnostic=page.evaluate('''() => ({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,gridGap:getComputedStyle(document.querySelector('.headline-grid')).columnGap,overflow:[...document.querySelectorAll('.headline-grid,.headline-story,.headline-copy,.story-actions')].map(e=>({tag:e.tagName,id:e.id,className:e.className,x:e.getBoundingClientRect().x,width:e.getBoundingClientRect().width})).filter(e=>e.x<0||e.x+e.width>innerWidth)})''')
+        (args.output/(name+'.json')).write_text(json.dumps(diagnostic,indent=2)+'\n')
+        raise AssertionError(('horizontal overflow',label,diagnostic))
     try:
         with sync_playwright() as p:
             browser=p.chromium.launch()
@@ -103,7 +111,7 @@ def main():
                         expect(page.locator('.compact-story')).to_have_count(story_count-2)
                         assert page.locator('.headline-story').evaluate_all('(els)=>els.map(e=>e.id)')==ids
                         assert page.locator('.enhanced-issue').get_attribute('data-edition-date')==latest['date']
-                        assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'),(width,locale,weekday)
+                        no_overflow(page,(width,locale,weekday))
                         assert page.locator('.story-image').evaluate_all('(els)=>els.every(e=>{const r=e.getBoundingClientRect();return r.width>0&&Math.abs(r.width/r.height-16/9)<0.08})')
                         assert page.locator('.story-image img').evaluate_all('(els)=>els.every(e=>e.complete&&e.naturalWidth>0)')
                         expect(page.locator('.summary-fallback').first).not_to_be_visible()
