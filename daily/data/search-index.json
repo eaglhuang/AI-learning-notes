@@ -2,11 +2,374 @@
   "schemaVersion": 1,
   "scope": "published-newsletter-content",
   "editions": [
+    "2026-10-08",
     "2026-10-07",
     "2026-10-06",
     "2026-10-04"
   ],
   "records": [
+    {
+      "key": "2026-10-08:openai-gpt6-intelligent-ui-2026-10-07",
+      "storyId": "openai-gpt6-intelligent-ui-2026-10-07",
+      "editionDate": "2026-10-08",
+      "sourcePublishedDate": "2026-10-07",
+      "category": "products",
+      "source": "OpenAI",
+      "sourceUrl": "https://openai.com/index/gpt-6-for-everyone/",
+      "localized": {
+        "zh-TW": {
+          "title": "GPT-6 在 ChatGPT 推出互動式回答介面",
+          "summary": "OpenAI 宣布在 ChatGPT 的 Chat 分頁推出 GPT-6 與 Intelligent UI，回答可結合文字、圖表、按鈕、表單及互動工具，也可維持純文字。介面會隨生成逐步顯示，模型也能在繼續思考時開始回答。10 月 7 日起向 Plus、Pro、Business 與 Enterprise 逐步推出，Free 與 Go 從 10 月 8 日開始；企業仍受管理員設定限制。Plus、Pro、Business 與 Enterprise 使用 GPT-6 Sol，Free 與 Go 使用 GPT-6 Luna。這次更新不更動 Work 與 Codex 的模型。官方說明另指出，Intelligent UI 適用於 Instant 至 Extra High 推理層級；Pro 推理選項仍由 GPT-6 Astra 提供，並不支援這套介面。功能正在網頁與受支援的新版應用程式推出，舊版 macOS 與 Windows 桌面應用程式不支援。使用者可在網頁設定關閉 Layout and visuals，以減少視覺元素，但部分元素仍可能出現；此設定不會把所有回答改成純文字模式。Intelligent UI 沒有另設使用配額，原有模型、工具與方案額度仍然適用。",
+          "takeaway": "Chat 分頁逐步推出",
+          "caveat": "Pro 推理不支援此介面"
+        },
+        "en": {
+          "title": "GPT-6 brings interactive answers to ChatGPT",
+          "summary": "OpenAI is rolling out GPT-6 with Intelligent UI in ChatGPT's Chat tab. Answers can combine text, charts, buttons, forms and interactive tools, appearing progressively while the model continues thinking. Rollout starts October 7 for Plus, Pro, Business and Enterprise, and October 8 for Free and Go, subject to enterprise settings. Plus, Pro, Business and Enterprise use GPT-6 Sol; Free and Go use GPT-6 Luna. Work and Codex models are unchanged. Official help limits Intelligent UI to Instant through Extra High reasoning: Pro effort still uses GPT-6 Astra and does not support it. It is rolling out on the web and supported updated apps; older macOS and Windows desktop apps are unsupported. On the web, turning off Layout and visuals reduces visual elements but does not guarantee text-only answers. Intelligent UI has no separate quota; existing model, tool and plan allowances apply.",
+          "takeaway": "Rolling out in the Chat tab",
+          "caveat": "Pro effort does not support this UI"
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/08 AI 日報：互動介面、端側模型與代理隔離",
+        "en": "October 8 AI Daily: interactive answers, edge models and agent containment"
+      },
+      "summarySources": [
+        "https://openai.com/index/gpt-6-for-everyone/",
+        "https://help.openai.com/en/articles/20001354-gpt-6-and-other-models-in-chatgpt",
+        "https://help.openai.com/en/articles/6825453-chatgpt-release-notes"
+      ],
+      "shortSummaryReason": null,
+      "sourceOnly": true,
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/#openai-gpt6-intelligent-ui-2026-10-07",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/en/#openai-gpt6-intelligent-ui-2026-10-07"
+      }
+    },
+    {
+      "key": "2026-10-08:openai-teen-college-planner-2026-10-07",
+      "storyId": "openai-teen-college-planner-2026-10-07",
+      "editionDate": "2026-10-08",
+      "sourcePublishedDate": "2026-10-07",
+      "category": "products",
+      "source": "OpenAI",
+      "sourceUrl": "https://openai.com/index/teens-learn-and-plan/",
+      "localized": {
+        "zh-TW": {
+          "title": "ChatGPT 預告青少年升學規劃工具",
+          "summary": "OpenAI 預告為 ChatGPT for Teens 加入 College Planner，初期面向美國十至十二年級、準備申請四年制大學的學生，整合申請要求、期限、待辦與助學金步驟，其他地區與學制仍待擴展。學生也能追蹤各校助學金期限，查詢獎學金與申請費減免。公告也介紹以筆記製作測驗，以及 iOS 連拍多頁筆記並合成 PDF 的功能；Android 支援仍在開發。OpenAI 另宣布支持波士頓兒童醫院的獨立學生諮詢計畫。官方字卡說明補充，學生可用指定主題或上傳的筆記建立卡片，翻面核對答案，標記已會與仍需練習的內容，也能打亂順序複習。卡組會自動儲存在 Library，可重新開啟或請 ChatGPT 叫出；新增卡片、簡化定義與修正錯誤均可在對話中提出。說明提醒，考前應對照原始筆記或讀書指南檢查內容。該諮詢計畫的官方頁面列出兩條路線：十四至十八歲高中生針對社區數位健康問題設計個人專案；十六至二十歲學生則合作測試新興 AI 工具，撰寫供產業參考的建議。參與者可向研究人員與臨床專家學習，活動橫跨二〇二六年十月至二〇二七年五月，例行會議採線上進行且計畫免費。該學年度申請目前已截止。",
+          "takeaway": "升學申請步驟整合",
+          "caveat": "College Planner 尚未推出"
+        },
+        "en": {
+          "title": "ChatGPT previews College Planner for teens",
+          "summary": "OpenAI previewed College Planner for ChatGPT for Teens. Initially aimed at US grades 10–12 applying to four-year colleges, it will collect requirements, deadlines, tasks and financial-aid steps in one plan; broader coverage is planned. It also helps track aid deadlines and explore scholarships and fee waivers. The announcement also describes quizzes from notes and multi-photo capture that combines pages into a PDF on iOS, with Android forthcoming. OpenAI is also supporting an independent student advisory council at Boston Children’s Hospital. The flashcard help page explains that students can build cards from a topic or uploaded notes, flip them, mark answers they know or need to practice, and shuffle the deck. Decks save automatically in Library and can be reopened or recalled in chat. Students can request additions, simpler definitions or corrections in the conversation. The guidance recommends checking cards against original notes or study guides, especially before an exam. The council’s own page describes two tracks: high-school students aged 14–18 develop individual community digital-wellbeing projects, while students aged 16–20 test emerging AI tools together and coauthor industry recommendations. Participants learn from researchers and clinicians from October 2026 through May 2027. Regular meetings are virtual, participation is free, and applications for that school year have closed.",
+          "takeaway": "Combines college application steps",
+          "caveat": "College Planner is forthcoming"
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/08 AI 日報：互動介面、端側模型與代理隔離",
+        "en": "October 8 AI Daily: interactive answers, edge models and agent containment"
+      },
+      "summarySources": [
+        "https://openai.com/index/teens-learn-and-plan/",
+        "https://help.openai.com/en/articles/20001533-flashcards-in-chatgpt",
+        "https://digitalwellnesslab.org/student-advisory-council/"
+      ],
+      "shortSummaryReason": null,
+      "sourceOnly": true,
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/#openai-teen-college-planner-2026-10-07",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/en/#openai-teen-college-planner-2026-10-07"
+      }
+    },
+    {
+      "key": "2026-10-08:google-playground-2026-10-07",
+      "storyId": "google-playground-2026-10-07",
+      "editionDate": "2026-10-08",
+      "sourcePublishedDate": "2026-10-07",
+      "category": "products",
+      "source": "Google",
+      "sourceUrl": "https://blog.google/innovation-and-ai/technology/ai/playground-experimental-gaming-platform/",
+      "localized": {
+        "zh-TW": {
+          "title": "Google Playground 以文字建立、試玩與分享遊戲",
+          "summary": "Google 推出實驗性瀏覽器遊戲平台 Playground，使用者可透過文字調整規則、物理效果、角色與環境。作品可保留私人狀態、以連結分享或發布至經安全檢查的社群作品庫，部分類型支援多人遊玩。服務先向美國十八歲以上使用者開放，創作權限依 Google AI 會員層級逐步提供。Unity Spark 整合仍在測試，封閉測試尚未開始。官方說明進一步區分試玩與創作：作品庫可免費遊玩；免費創作額度每週補充，但使用者需加入候補名單，訂閱方案可取得立即創作權限。創作工作室能匯出包含 HTML、JavaScript、CSS 與生成素材的 ZIP。已發布遊戲仍可修改，新版本先維持草稿，直到再次發布；原本公開版本在編修期間繼續供人遊玩。額度在遊戲成功編譯且能遊玩後才正式扣除；生成失敗或逾時會自動退還額度。附加條款指出，不公開列出的作品仍可由持有連結者開啟，公開作品也可能出現在其他 Google 產品。Google 不主張擁有使用者製作的遊戲，但保留其提供的功能、服務與素材權利。創作者仍須確保使用人物影像與第三方智慧財產有必要許可，且不得移除標示內容由 AI 生成的浮水印、標籤或中繼資料。",
+          "takeaway": "文字建立瀏覽器遊戲",
+          "caveat": "初期僅美國18歲以上"
+        },
+        "en": {
+          "title": "Google Playground turns prompts into playable games",
+          "summary": "Google introduced Playground, an experimental browser platform where prompts control game rules, physics, characters and environments. Creations can stay private, be shared by link or enter a screened public gallery; selected genres support multiplayer. Launch is for US adults, with creation access rolling out by Google AI membership tier. Unity Spark integration remains in testing, with a closed beta still forthcoming. Official help separates playing from creating: the catalog is free to play; free creation tokens refresh weekly, with access via a waitlist, while subscriptions unlock immediate creation access. Creation Studio can export a ZIP containing HTML, JavaScript, CSS and generated assets. Published games remain editable, with changes kept as drafts until republished and the existing public version remaining playable. Credits are deducted only after successful compilation into a playable game; failed or timed-out generation automatically refunds them. Additional terms state that unlisted games remain accessible to link holders, and public games may be discovered on other Google products. Google does not claim ownership of users’ games but retains rights to its supplied features, services and assets. Creators must secure required permission for people’s images and third-party intellectual property and must not remove AI-origin watermarks, labels or metadata.",
+          "takeaway": "Create browser games with prompts",
+          "caveat": "Initially for US adults"
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/08 AI 日報：互動介面、端側模型與代理隔離",
+        "en": "October 8 AI Daily: interactive answers, edge models and agent containment"
+      },
+      "summarySources": [
+        "https://blog.google/innovation-and-ai/technology/ai/playground-experimental-gaming-platform/",
+        "https://playground.google/helpcenter",
+        "https://playground.google/terms"
+      ],
+      "shortSummaryReason": null,
+      "sourceOnly": true,
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/#google-playground-2026-10-07",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/en/#google-playground-2026-10-07"
+      }
+    },
+    {
+      "key": "2026-10-08:google-synthid-detector-global-2026-10-07",
+      "storyId": "google-synthid-detector-global-2026-10-07",
+      "editionDate": "2026-10-08",
+      "sourcePublishedDate": "2026-10-07",
+      "category": "tools",
+      "source": "Google DeepMind",
+      "sourceUrl": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/synth-id-ai-content/",
+      "localized": {
+        "zh-TW": {
+          "title": "SynthID Detector 向全球使用者開放英文版",
+          "summary": "Google 將原先供媒體專業人士試用的 SynthID Detector 擴大至全球使用者，首先提供英文版。工具可檢查圖片、影片與音訊是否來自 Google 或合作夥伴的 AI；公告列出 OpenAI、NVIDIA、Kakao，Apple 則將加入。這次開放補充 Search、Gemini 與 Chrome 既有的驗證功能。官方技術頁說明，SynthID 在內容生成時嵌入人類難以察覺的數位浮水印，影像與影片標記的設計可承受裁切、濾鏡、影格率變動與有損壓縮，並維持內容品質。音訊標記則用於 Lyria 及 NotebookLM 播客等生成內容，設計上可承受加噪、MP3 壓縮與速度變動。它依靠嵌入的標記協助辨識來源，並非對所有 AI 產物都能判定的通用偵測器。2025 年的原始公告說明其流程：上傳內容後掃描浮水印，再標示較可能含有標記的部分，例如音軌片段或影像區域；當時先向記者、媒體專業人士與研究者開放申請。Google 的 Gemini 說明另提醒，多次修改後仍可能無法驗出浮水印；簡單或抽象內容、幅度很小的編輯，也可能無法明確判讀。Gemini 內的 SynthID 驗證目前僅辨識 Google AI 內容，與此次 Detector 公告所列合作夥伴範圍不同。沒有偵出 Google 浮水印，也不能排除內容來自其他 AI 系統。",
+          "takeaway": "全球英文版開放",
+          "caveat": "Apple 支援即將加入"
+        },
+        "en": {
+          "title": "SynthID Detector opens globally in English",
+          "summary": "Google expanded SynthID Detector from a media-professional trial to global public access in English. It checks images, video and audio for AI generation by Google and partners including OpenAI, NVIDIA and Kakao, with Apple forthcoming. The expansion complements existing verification in Search, Gemini and Chrome. The technical overview explains that SynthID embeds imperceptible watermarks when content is generated. Image and video marks are designed to survive cropping, filters, frame-rate changes and lossy compression while preserving quality. Audio marks cover content such as Lyria output and NotebookLM podcasts and are designed to withstand added noise, MP3 compression and speed changes. Identification relies on embedded marks, rather than universal detection of every AI-generated item. The original 2025 announcement described uploading content, scanning for watermarks and highlighting likely marked portions, such as audio segments or image areas. Applications initially opened to journalists, media professionals and researchers. Google’s Gemini help cautions that repeated alterations can prevent watermark detection, while simple or abstract content and small edits can be inconclusive. SynthID verification inside Gemini currently recognizes Google AI content only, unlike the partner coverage announced for Detector. Failure to find a Google watermark does not rule out generation by another AI system.",
+          "takeaway": "Global access in English",
+          "caveat": "Apple support is forthcoming"
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/08 AI 日報：互動介面、端側模型與代理隔離",
+        "en": "October 8 AI Daily: interactive answers, edge models and agent containment"
+      },
+      "summarySources": [
+        "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/synth-id-ai-content/",
+        "https://deepmind.google/models/synthid/",
+        "https://blog.google/innovation-and-ai/products/google-synthid-ai-content-detector/",
+        "https://support.google.com/gemini/answer/16722517"
+      ],
+      "shortSummaryReason": null,
+      "sourceOnly": true,
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/#google-synthid-detector-global-2026-10-07",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/en/#google-synthid-detector-global-2026-10-07"
+      }
+    },
+    {
+      "key": "2026-10-08:liquid-open-d1-2026-10-07",
+      "storyId": "liquid-open-d1-2026-10-07",
+      "editionDate": "2026-10-08",
+      "sourcePublishedDate": "2026-10-07",
+      "category": "products",
+      "source": "Liquid AI",
+      "sourceUrl": "https://www.liquid.ai/blog/d1-open",
+      "localized": {
+        "zh-TW": {
+          "title": "Liquid AI 釋出兩款開放權重 d1 決策模型",
+          "summary": "Liquid AI 釋出 d1-3B 與 d1-omni-600M 開放權重模型，可從 Hugging Face 取得。決策模型直接產生結構化判斷，不以逐字生成輸出文字的方式運作，因此公告以輸入到輸出的端到端延遲衡量速度。d1-3B 支援文字與影像，d1-omni-600M 是仍在開發的實驗性版本，可處理文字搭配影像或音訊。公司公布不同硬體與工作負載的測量，並提供 llama.cpp 支援。公告中的推論延遲數據針對 d1-3B；d1-omni-600M 仍屬早期研究版本。兩款模型卡補充，輸入是一份狀態與一組具名問題，回答可採是否成立、指定選項或分級評分。d1-3B 以 LFM2.5-VL-3B 為基礎，約有31.2億參數，支援32,768個token上下文；它不是聊天模型，也不生成文字。較小的omni版本約有5.87億參數，文字、影像或語音共用同一組主幹權重。單一請求可附影像或一段音訊，不能同時包含兩者。音訊訓練來自英語說話者與助理間的請求，片段會截短至 30 秒；含圖片時，狀態與問題文字依訓練設定截取至 896 個 token。兩張模型卡均列出 LFM 1.0 授權。",
+          "takeaway": "單次前向運算回答決策題",
+          "caveat": "omni 是早期研究版本"
+        },
+        "en": {
+          "title": "Liquid AI releases two open-weight d1 decision models",
+          "summary": "Liquid AI released open-weight d1-3B and d1-omni-600M on Hugging Face. These decision models return structured judgments without generating output tokens, so the announcement reports end-to-end latency. d1-3B supports text and vision; d1-omni-600M is an experimental checkpoint handling text with images or audio. The release includes llama.cpp support and vendor measurements across hardware and workloads. Reported inference latency is for d1-3B; d1-omni-600M remains an early research release. The model cards describe a state plus named questions, returning yes/no probabilities, named choices or ratings. d1-3B is based on LFM2.5-VL-3B, with about 3.12 billion parameters and 32,768-token context; it is not a chat model and does not write text. The approximately 587-million-parameter omni checkpoint shares its trunk across modalities. A request may carry images or one audio clip, not both. Audio training used English-speaker/assistant requests and clips are cut at 30 seconds. With images, state and question text is limited to 896 tokens. Both cards list the LFM 1.0 license.",
+          "takeaway": "Single-pass structured decisions",
+          "caveat": "omni is an early research release"
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/08 AI 日報：互動介面、端側模型與代理隔離",
+        "en": "October 8 AI Daily: interactive answers, edge models and agent containment"
+      },
+      "summarySources": [
+        "https://www.liquid.ai/blog/d1-open",
+        "https://huggingface.co/LiquidAI/d1-3B",
+        "https://huggingface.co/LiquidAI/d1-omni-600M"
+      ],
+      "shortSummaryReason": null,
+      "sourceOnly": true,
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/#liquid-open-d1-2026-10-07",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/en/#liquid-open-d1-2026-10-07"
+      }
+    },
+    {
+      "key": "2026-10-08:mxc-copilot-local-sandbox-ga-2026-10-07",
+      "storyId": "mxc-copilot-local-sandbox-ga-2026-10-07",
+      "editionDate": "2026-10-08",
+      "sourcePublishedDate": "2026-10-07",
+      "category": "engineering",
+      "source": "GitHub / Microsoft",
+      "sourceUrl": "https://github.blog/changelog/2026-10-07-local-sandboxing-for-github-copilot-now-generally-available/",
+      "localized": {
+        "zh-TW": {
+          "title": "Copilot 本機沙箱正式推出，由 MXC 執行存取政策",
+          "summary": "GitHub 宣布 Copilot CLI、Copilot app 與使用 Agent Host 的 VS Code 工作階段正式提供本機沙箱。工具與指令依開發者或組織政策，限制檔案、網路、憑證與其他系統能力的存取，並由 Microsoft Execution Containers 對應至 Windows、macOS 與 Linux 的原生隔離機制。企業可要求沙箱並強制執行使用者不能放寬的政策。工具隔離與模型選擇彼此分開；更換模型不會讓沙箱政策失效。功能包含在 Copilot 中，不另收沙箱費用，各作業系統支援的隔離層級仍不同。Microsoft 的原公告進一步區分隔離方式：程序容器支援 Windows 11、macOS 與 Linux；獨立桌面工作階段及 WSL 容器只支援 Windows 11；MicroVM 在 Windows 11 與 Linux 仍屬實驗性功能。政策可指定程序、檔案系統、網路及介面資源，且不由代理自行放寬。Windows 程序容器還可產生活動報告：Learning 模式會阻擋並記錄未授權存取；Permissive 模式則允許並記錄。Intune 的程序容器管理與 Entra、Agent 365 延伸功能仍標示即將提供。",
+          "takeaway": "政策限制本機工具權限",
+          "caveat": "MicroVM 仍屬實驗性"
+        },
+        "en": {
+          "title": "Copilot local sandboxing reaches general availability with MXC",
+          "summary": "GitHub made local sandboxing generally available in Copilot CLI, the Copilot app and VS Code Agent Host sessions. Microsoft Execution Containers maps policies to native controls on Windows, macOS and Linux, restricting tool access to files, networks, credentials and other capabilities. Enterprise policies can require boundaries developers cannot weaken. Tool isolation is separate from model choice. Local sandboxing is included with Copilot at no additional charge, while containment options differ by operating system. Microsoft distinguishes process containers on Windows 11, macOS and Linux; session and WSL containers on Windows 11 only; and experimental MicroVMs on Windows 11/Linux. Policies cover processes, files, networks and UI resources, outside the agent’s control. Windows process containers can report activity: Learning mode blocks and records ungranted access, while Permissive mode allows and records it. Intune process-container management and Entra/Agent 365 extensions are still forthcoming.",
+          "takeaway": "Policies constrain local tools",
+          "caveat": "MicroVM remains experimental"
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/08 AI 日報：互動介面、端側模型與代理隔離",
+        "en": "October 8 AI Daily: interactive answers, edge models and agent containment"
+      },
+      "summarySources": [
+        "https://github.blog/changelog/2026-10-07-local-sandboxing-for-github-copilot-now-generally-available/",
+        "https://blogs.windows.com/windowsdeveloper/2026/10/07/microsoft-execution-containers-policy-driven-containment-for-ai-agents/"
+      ],
+      "shortSummaryReason": null,
+      "sourceOnly": true,
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/#mxc-copilot-local-sandbox-ga-2026-10-07",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/en/#mxc-copilot-local-sandbox-ga-2026-10-07"
+      }
+    },
+    {
+      "key": "2026-10-08:copilot-cli-local-model-discovery-2026-10-07",
+      "storyId": "copilot-cli-local-model-discovery-2026-10-07",
+      "editionDate": "2026-10-08",
+      "sourcePublishedDate": "2026-10-07",
+      "category": "tools",
+      "source": "GitHub",
+      "sourceUrl": "https://github.blog/changelog/2026-10-07-discover-local-models-in-github-copilot-cli/",
+      "localized": {
+        "zh-TW": {
+          "title": "Copilot CLI 可探索正在執行的 Ollama 本機模型",
+          "summary": "GitHub Copilot CLI 自 1.0.94-0 版起，可用 /model 探索正在執行的 Ollama 模型。使用者檢查供應商與端點後，須確認加入，可立即切換或只新增；探索不會自動加入模型。Ollama 與模型須先安裝，模型須支援工具呼叫與串流。選取本機模型不會自動離線或停用 GitHub 遙測。官方 CLI 文件補充，自訂供應商支援 OpenAI 相容端點、Azure OpenAI 與 Anthropic，可用環境變數指定端點及模型；未要求驗證的本機 Ollama 不必提供 API key。COPILOT_OFFLINE=true 須另行設定，只阻止 CLI 連至 GitHub 伺服器；若供應商端點在遠端，提示與程式碼仍會傳往該處。文件建議至少 128k token 上下文；缺少工具呼叫或串流能力時，CLI 會回報錯誤。另據 Copilot app 文件，該應用程式的自訂供應商支援仍為公開預覽。使用者須登入 GitHub，但只用自備供應商時不需 Copilot 方案。可在設定的 Model providers 加入供應商，完成後模型會與 GitHub 託管模型並列；供應商憑證存於系統憑證儲存區，不會顯示於介面。",
+          "takeaway": "探索已安裝的本機模型",
+          "caveat": "不會自動啟用離線模式"
+        },
+        "en": {
+          "title": "Copilot CLI can discover running Ollama models",
+          "summary": "Copilot CLI 1.0.94-0 adds /model discovery for running Ollama models. Users review the provider and endpoint, then explicitly add a model with or without switching. Ollama and models must already be installed; tool calling and streaming are required. Local selection neither enables offline mode nor disables GitHub telemetry. The CLI reference supports OpenAI-compatible endpoints, Azure OpenAI and Anthropic, configured through environment variables for the endpoint and model. Unauthenticated local Ollama needs no API key. Separately setting COPILOT_OFFLINE=true prevents GitHub-server connections; a remote provider still receives prompts and code over the network. The reference recommends at least 128k-token context; missing tool calling or streaming produces an error. Separately, the app documentation marks custom providers as public preview. GitHub sign-in is required, but using only an external provider needs no Copilot plan. Providers are added under Model providers in settings; their models appear alongside GitHub-hosted options. Credentials stay in the system credential store and are not shown in the UI.",
+          "takeaway": "Discover installed local models",
+          "caveat": "Does not automatically enable offline mode"
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/08 AI 日報：互動介面、端側模型與代理隔離",
+        "en": "October 8 AI Daily: interactive answers, edge models and agent containment"
+      },
+      "summarySources": [
+        "https://github.blog/changelog/2026-10-07-discover-local-models-in-github-copilot-cli/",
+        "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/use-byok-models",
+        "https://docs.github.com/en/copilot/how-tos/github-copilot-app/use-byok-models"
+      ],
+      "shortSummaryReason": null,
+      "sourceOnly": true,
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/#copilot-cli-local-model-discovery-2026-10-07",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/en/#copilot-cli-local-model-discovery-2026-10-07"
+      }
+    },
+    {
+      "key": "2026-10-08:github-ai-secret-classifier-2026-10-07",
+      "storyId": "github-ai-secret-classifier-2026-10-07",
+      "editionDate": "2026-10-08",
+      "sourcePublishedDate": "2026-10-07",
+      "category": "tools",
+      "source": "GitHub",
+      "sourceUrl": "https://github.blog/changelog/2026-10-07-purpose-built-model-for-leaked-secret-detection/",
+      "localized": {
+        "zh-TW": {
+          "title": "GitHub 秘密偵測模型擴充，新增檢查將採 AI Credits",
+          "summary": "GitHub 以專用微調模型從程式碼脈絡辨識憑證。既有 AI 密碼警示自動升級，GHSP／GHAS 警示掃描不加價。AI push protection 已私人預覽，Copilot /security-review 分類器檢查則即將私人預覽；兩者將耗用 AI Credits。後者預設關閉，執行審查不會自動啟用。官方警示文件指出，AI 偵測結果與私鑰等通用模式列在 Generic 清單，可能包含較多誤報或測試用秘密。此類警示每個儲存庫合計上限為五千筆，包含已關閉項目；AI 偵測的秘密只顯示第一個發現位置，且不列入安全總覽的摘要檢視。計費文件另區分單一產品、個別 SKU 與跨功能 AI credits 預算。一般預算只設通知不會停止超額使用，須啟用支援的到達上限即停止選項；使用者層級預算則一律硬性停止。同一筆使用可能同時計入多個適用預算，任何已啟用停止功能的預算耗盡，都可能擋下使用。官方責任使用說明也提醒，AI 秘密偵測仍可能漏掉憑證，測試程式碼中的秘密也可能未被偵測。該說明描述的輸入為已提交至儲存庫的文字，使用者不直接與模型互動；系統會核對回傳的秘密字串確實存在於輸入中，再以帶有 AI 標示的警示呈現。",
+          "takeaway": "以程式碼脈絡辨識憑證",
+          "caveat": "新選擇性檢查將使用 AI Credits"
+        },
+        "en": {
+          "title": "GitHub expands AI secret detection",
+          "summary": "GitHub’s fine-tuned classifier detects credentials from code context. Existing AI password alerts upgrade automatically and remain included with GHSP/GHAS. AI push protection is in private preview; Copilot /security-review classifier checks are coming to private preview. Both will consume AI Credits. The latter stay off by default; running a review does not enable them. The alert reference places AI findings with generic patterns such as private keys in the Generic list, which can include more false positives or test secrets. Its 5,000-alert repository cap includes closed alerts. AI-detected secrets show only their first location, and generic alerts are excluded from security-overview summary views. Billing documentation distinguishes product, SKU and bundled AI-credit budgets. Ordinary budget notifications alone do not halt overspending; an available stop-at-limit control must be enabled. User-level budgets always enforce a hard stop. Usage can count toward multiple applicable budgets, and exhaustion of any budget with stopping enabled can block further use. The application card also warns that AI secret detection can miss credentials, including secrets in test code. It describes analysis of repository-committed text without direct user interaction with the model. The system verifies that returned secret strings exist in the input before presenting AI-marked alerts.",
+          "takeaway": "Detect credentials from code context",
+          "caveat": "New opt-in checks will consume AI Credits"
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/08 AI 日報：互動介面、端側模型與代理隔離",
+        "en": "October 8 AI Daily: interactive answers, edge models and agent containment"
+      },
+      "summarySources": [
+        "https://github.blog/changelog/2026-10-07-purpose-built-model-for-leaked-secret-detection/",
+        "https://docs.github.com/en/code-security/concepts/secret-security/about-alerts",
+        "https://docs.github.com/en/billing/how-tos/set-up-budgets",
+        "https://docs.github.com/en/enterprise-cloud@latest/code-security/responsible-use/security-and-quality-ai-features"
+      ],
+      "shortSummaryReason": null,
+      "sourceOnly": true,
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/#github-ai-secret-classifier-2026-10-07",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/en/#github-ai-secret-classifier-2026-10-07"
+      }
+    },
+    {
+      "key": "2026-10-08:nvidia-dsx-governed-validation-2026-10-07",
+      "storyId": "nvidia-dsx-governed-validation-2026-10-07",
+      "editionDate": "2026-10-08",
+      "sourcePublishedDate": "2026-10-07",
+      "category": "engineering",
+      "source": "NVIDIA",
+      "sourceUrl": "https://developer.nvidia.com/blog/validate-ai-factory-changes-with-digital-twins-and-ai-agents/",
+      "localized": {
+        "zh-TW": {
+          "title": "NVIDIA 示範以數位分身與代理驗證 AI 基礎設施變更",
+          "summary": "NVIDIA 技術文章示範以 DSX Air 數位分身，在硬體到貨前驗證受支援組態與軟體整合。代理提出證據及建議，正式環境變更仍受政策與人工關卡控管。範例模型在模擬環境外的 Brev GPU 執行；效能與功耗預估仍需合適模型或量測。官方拓樸文件補充，團隊可用拖放編輯器建立網路，或匯入 JSON、DOT 檔定義節點、屬性與連線；既有拓樸亦可匯出 JSON，API 支援 JSON 匯入與匯出。建立模擬時可附零接觸佈建腳本，讓節點透過啟用的頻外管理網路取得設定。模擬管理文件說明，停止時預設儲存所有節點的檢查點，可從選定狀態重新啟動；若要重新編輯已有檢查點的拓樸，還原操作會刪除全部檢查點。歷史紀錄則保存事件時間、觸發者、類別與說明，涵蓋狀態切換、組態變更及錯誤。停止後會釋放運算資源；重要檢查點可標為收藏，避免自動刪除。文章連結的影片搜尋與摘要實作，會先由人工提供場景、關注事件與物件，再結合組織文件檢索。報告工具把影片分析和文件脈絡整合為附時間戳與引用的結構化報告，並可讓使用者在產生前確認或修改提示。文件檢索由 RAG Blueprint 處理嵌入、重新排序及向量搜尋。",
+          "takeaway": "正式部署前驗證組態",
+          "caveat": "效能預測仍需適合的模型"
+        },
+        "en": {
+          "title": "NVIDIA describes governed agent validation with AI-factory digital twins",
+          "summary": "NVIDIA describes validating supported configurations and software integrations in DSX Air before hardware arrives. Agents return evidence and recommendations; production changes remain subject to policy and human gates. The example’s models run on Brev GPUs outside the simulation. Performance and power estimates still require suitable models or measurements. The topology reference supports a drag-and-drop network editor or JSON/DOT imports defining nodes, attributes and links. Existing topologies export as JSON; the API also imports and exports JSON. A simulation can include a zero-touch provisioning script accessible to nodes over its enabled out-of-band management network. Simulation management saves all-node checkpoints by default when stopping and can restart from a chosen state. Reverting a topology that already has checkpoints deletes them all before re-enabling editing. History records timestamps, actors, categories and descriptions for state transitions, configuration changes and errors. Stopping releases compute resources; favorited checkpoints are protected from automatic deletion. The linked video-search implementation first collects the scenario, events and objects from a person, then incorporates organizational-document retrieval. Its reporting tool combines video analysis and retrieved context into structured reports with timestamps and citations, optionally letting users confirm or edit the prompt beforehand. The RAG Blueprint handles embedding, reranking and vector search for document retrieval.",
+          "takeaway": "Validate configurations before production",
+          "caveat": "Performance estimates need appropriate models"
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/08 AI 日報：互動介面、端側模型與代理隔離",
+        "en": "October 8 AI Daily: interactive answers, edge models and agent containment"
+      },
+      "summarySources": [
+        "https://developer.nvidia.com/blog/validate-ai-factory-changes-with-digital-twins-and-ai-agents/",
+        "https://docs.nvidia.com/dsx-air/custom-topology/",
+        "https://docs.nvidia.com/dsx-air/simulation-management/",
+        "https://developer.nvidia.com/blog/integrating-context-aware-video-ai-agents-into-enterprise-workflows/"
+      ],
+      "shortSummaryReason": null,
+      "sourceOnly": true,
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/#nvidia-dsx-governed-validation-2026-10-07",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/en/#nvidia-dsx-governed-validation-2026-10-07"
+      }
+    },
     {
       "key": "2026-10-07:openai-ironclad-evaluation-2026-10-06",
       "storyId": "openai-ironclad-evaluation-2026-10-06",

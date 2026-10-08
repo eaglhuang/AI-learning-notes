@@ -155,6 +155,204 @@
         "zh-TW": "以內建影像工具原創生成",
         "en": "Originally generated with the built-in image generation tool"
       }
+    },
+    {
+      "story_id": "openai-gpt6-intelligent-ui-2026-10-07",
+      "width": 1600,
+      "height": 900,
+      "bytes": 120759,
+      "sha256": "51f89c410e2398ae104dcc24600b280fbb94d58ae0522964273d21eb8f3df263",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：抽象對話框連向圖表與互動卡片",
+        "en": "AI-generated illustration: An abstract conversation connects to charts and interactive cards"
+      },
+      "caption": {
+        "zh-TW": "AI 生成概念示意圖：抽象對話框連向圖表與互動卡片；非產品實際畫面或新聞現場照片。",
+        "en": "AI-generated concept illustration: An abstract conversation connects to charts and interactive cards. Not an actual product screenshot or event photograph."
+      },
+      "source_url": "https://openai.com/index/gpt-6-for-everyone/",
+      "ai_generated": true,
+      "path": "daily/assets/stories/gpt6-ui-concept-20261008.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成",
+        "en": "Originally generated with the built-in image generation tool"
+      }
+    },
+    {
+      "story_id": "openai-teen-college-planner-2026-10-07",
+      "width": 1600,
+      "height": 900,
+      "bytes": 162370,
+      "sha256": "18a7f1ab72fe9d08ff60903dda6011608279e7c857b2204f4ba4e80980ad18ae",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：日曆、檢查清單與通往校園的路徑",
+        "en": "AI-generated illustration: A calendar, checklist and path toward a campus"
+      },
+      "caption": {
+        "zh-TW": "AI 生成概念示意圖：日曆、檢查清單與通往校園的路徑；非產品實際畫面或新聞現場照片。",
+        "en": "AI-generated concept illustration: A calendar, checklist and path toward a campus. Not an actual product screenshot or event photograph."
+      },
+      "source_url": "https://openai.com/index/teens-learn-and-plan/",
+      "ai_generated": true,
+      "path": "daily/assets/stories/college-planner-concept-20261008.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成",
+        "en": "Originally generated with the built-in image generation tool"
+      }
+    },
+    {
+      "story_id": "google-playground-2026-10-07",
+      "width": 1600,
+      "height": 900,
+      "bytes": 117614,
+      "sha256": "2232c1d889503ec5ca6279d5739f37f9b4714827616545a6f76cd63af5917b9b",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：提示卡片化成平台方塊與遊戲世界",
+        "en": "AI-generated illustration: A prompt card becomes platforms and a playful game world"
+      },
+      "caption": {
+        "zh-TW": "AI 生成概念示意圖：提示卡片化成平台方塊與遊戲世界；非產品實際畫面或新聞現場照片。",
+        "en": "AI-generated concept illustration: A prompt card becomes platforms and a playful game world. Not an actual product screenshot or event photograph."
+      },
+      "source_url": "https://blog.google/innovation-and-ai/technology/ai/playground-experimental-gaming-platform/",
+      "ai_generated": true,
+      "path": "daily/assets/stories/google-playground-concept-20261008.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成",
+        "en": "Originally generated with the built-in image generation tool"
+      }
+    },
+    {
+      "story_id": "google-synthid-detector-global-2026-10-07",
+      "width": 1600,
+      "height": 900,
+      "bytes": 155390,
+      "sha256": "a22dc468443acaebde4a10e55ed609c50b4635dc61914567a3cbf9f0f269873d",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：放大鏡檢視圖片、聲音與影片卡片上的抽象標記",
+        "en": "AI-generated illustration: A magnifier examines abstract marks on image, audio and video cards"
+      },
+      "caption": {
+        "zh-TW": "AI 生成概念示意圖：放大鏡檢視圖片、聲音與影片卡片上的抽象標記；非產品實際畫面或新聞現場照片。",
+        "en": "AI-generated concept illustration: A magnifier examines abstract marks on image, audio and video cards. Not an actual product screenshot or event photograph."
+      },
+      "source_url": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/synth-id-ai-content/",
+      "ai_generated": true,
+      "path": "daily/assets/stories/synthid-concept-20261008.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成",
+        "en": "Originally generated with the built-in image generation tool"
+      }
+    },
+    {
+      "story_id": "liquid-open-d1-2026-10-07",
+      "width": 1600,
+      "height": 900,
+      "bytes": 108226,
+      "sha256": "d31137b9d51c74e78807f358c7f54a4d2b19354238e17d2f975a88865a31a2e9",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：小型晶片接收多模態訊號並選擇分支選項",
+        "en": "AI-generated illustration: A compact chip receives multimodal cues and selects branching options"
+      },
+      "caption": {
+        "zh-TW": "AI 生成概念示意圖：小型晶片接收多模態訊號並選擇分支選項；非產品實際畫面或新聞現場照片。",
+        "en": "AI-generated concept illustration: A compact chip receives multimodal cues and selects branching options. Not an actual product screenshot or event photograph."
+      },
+      "source_url": "https://www.liquid.ai/blog/d1-open",
+      "ai_generated": true,
+      "path": "daily/assets/stories/liquid-d1-concept-20261008.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成",
+        "en": "Originally generated with the built-in image generation tool"
+      }
+    },
+    {
+      "story_id": "mxc-copilot-local-sandbox-ga-2026-10-07",
+      "width": 1599,
+      "height": 900,
+      "bytes": 179945,
+      "sha256": "c09b4d57b9f300621a536eb24ac9982f95f45396c220b768f2d32381ec88ebd7",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：安全閘門、鑰匙與檢查鏡環繞伺服器",
+        "en": "AI-generated illustration: Security gates, a key and an inspection lens around a server"
+      },
+      "caption": {
+        "zh-TW": "AI 生成概念示意圖：安全閘門、鑰匙與檢查鏡環繞伺服器；非產品實際畫面或新聞現場照片。沿用先前插畫，非為本則新聞新製。",
+        "en": "AI-generated concept illustration: Security gates, a key and an inspection lens around a server. Not an actual product screenshot or event photograph. Reused illustration, not newly created for this story."
+      },
+      "source_url": "https://github.blog/changelog/2026-10-07-local-sandboxing-for-github-copilot-now-generally-available/",
+      "ai_generated": true,
+      "path": "daily/assets/stories/copilot-sandbox-concept-20261008.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成；原始文章脈絡：https://www.anthropic.com/news/cyber-verification-program",
+        "en": "Originally generated with the built-in image generation tool; original article context: https://www.anthropic.com/news/cyber-verification-program"
+      }
+    },
+    {
+      "story_id": "copilot-cli-local-model-discovery-2026-10-07",
+      "width": 1600,
+      "height": 900,
+      "bytes": 126468,
+      "sha256": "fc4a64d11848c3f9e1e77745720344156bc66d8b09a9ff367a4068a2e1f89054",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：桌上型電腦旁排列可選擇的抽象模型方塊",
+        "en": "AI-generated illustration: A desktop computer beside selectable abstract model blocks"
+      },
+      "caption": {
+        "zh-TW": "AI 生成概念示意圖：桌上型電腦旁排列可選擇的抽象模型方塊；非產品實際畫面或新聞現場照片。",
+        "en": "AI-generated concept illustration: A desktop computer beside selectable abstract model blocks. Not an actual product screenshot or event photograph."
+      },
+      "source_url": "https://github.blog/changelog/2026-10-07-discover-local-models-in-github-copilot-cli/",
+      "ai_generated": true,
+      "path": "daily/assets/stories/local-models-concept-20261008.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成",
+        "en": "Originally generated with the built-in image generation tool"
+      }
+    },
+    {
+      "story_id": "github-ai-secret-classifier-2026-10-07",
+      "width": 1599,
+      "height": 900,
+      "bytes": 179945,
+      "sha256": "c09b4d57b9f300621a536eb24ac9982f95f45396c220b768f2d32381ec88ebd7",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：安全閘門、鑰匙與檢查鏡環繞伺服器",
+        "en": "AI-generated illustration: Security gates, a key and an inspection lens around a server"
+      },
+      "caption": {
+        "zh-TW": "AI 生成概念示意圖：安全閘門、鑰匙與檢查鏡環繞伺服器；非產品實際畫面或新聞現場照片。沿用先前插畫，非為本則新聞新製。",
+        "en": "AI-generated concept illustration: Security gates, a key and an inspection lens around a server. Not an actual product screenshot or event photograph. Reused illustration, not newly created for this story."
+      },
+      "source_url": "https://github.blog/changelog/2026-10-07-purpose-built-model-for-leaked-secret-detection/",
+      "ai_generated": true,
+      "path": "daily/assets/stories/github-secret-concept-20261008.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成；原始文章脈絡：https://www.anthropic.com/news/cyber-verification-program",
+        "en": "Originally generated with the built-in image generation tool; original article context: https://www.anthropic.com/news/cyber-verification-program"
+      }
+    },
+    {
+      "story_id": "nvidia-dsx-governed-validation-2026-10-07",
+      "width": 1599,
+      "height": 900,
+      "bytes": 192264,
+      "sha256": "a477c58ad8232cc1f72213cdff37ccefd7deb616a0052fca0a1b3ccb7756b431",
+      "alt": {
+        "zh-TW": "AI 生成示意圖：螢幕上的核准流程、游標與檢查清單放大鏡",
+        "en": "AI-generated illustration: An approval flow on a monitor with a cursor and checklist magnifier"
+      },
+      "caption": {
+        "zh-TW": "AI 生成概念示意圖：螢幕上的核准流程、游標與檢查清單放大鏡；非產品實際畫面或新聞現場照片。沿用先前插畫，非為本則新聞新製。",
+        "en": "AI-generated concept illustration: An approval flow on a monitor with a cursor and checklist magnifier. Not an actual product screenshot or event photograph. Reused illustration, not newly created for this story."
+      },
+      "source_url": "https://developer.nvidia.com/blog/validate-ai-factory-changes-with-digital-twins-and-ai-agents/",
+      "ai_generated": true,
+      "path": "daily/assets/stories/nvidia-validation-concept-20261008.jpg",
+      "credit": {
+        "zh-TW": "以內建影像工具原創生成；原始文章脈絡：https://openai.com/index/advancing-computer-use-with-ironclad/",
+        "en": "Originally generated with the built-in image generation tool; original article context: https://openai.com/index/advancing-computer-use-with-ironclad/"
+      }
     }
   ]
 }

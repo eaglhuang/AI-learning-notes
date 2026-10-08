@@ -1,5 +1,21 @@
 [
   {
+    "date": "2026-10-08",
+    "title": {
+      "zh-TW": "10/08 AI 日報：互動介面、端側模型與代理隔離",
+      "en": "October 8 AI Daily: interactive answers, edge models and agent containment"
+    },
+    "count": 9,
+    "topic": {
+      "schema_version": 1,
+      "keywords": [],
+      "english_aliases": {},
+      "match": "any",
+      "exclude_keywords": [],
+      "lookback_days": 2
+    }
+  },
+  {
     "date": "2026-10-07",
     "title": {
       "zh-TW": "10/07 AI 日報：代理評測、開放模型與工程實作",
