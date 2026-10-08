@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "now": "2026-10-07T00:00:00Z",
+  "window_days": 2,
+  "calendar_cases": [
+    {"instant":"2026-10-04T15:59:59Z","date":"2026-10-04"},
+    {"instant":"2026-10-04T16:00:00Z","date":"2026-10-05"},
+    {"instant":"2026-10-04T16:30:00Z","date":"2026-10-05"},
+    {"instant":"2026-10-05T00:00:00Z","date":"2026-10-05"},
+    {"instant":"2026-12-31T16:00:00Z","date":"2027-01-01"}
+  ],
+  "timestamp_cases": [
+    {"name":"inclusive 48-hour boundary","stamp":"2026-10-05T00:00:00Z","eligible":true},
+    {"name":"one second outside","stamp":"2026-10-04T23:59:59Z","eligible":false},
+    {"name":"equivalent Taipei offset","stamp":"2026-10-05T08:00:00+08:00","eligible":true},
+    {"name":"one second in the future","stamp":"2026-10-07T00:00:01Z","eligible":false},
+    {"name":"no inferred timezone","stamp":"2026-10-06T12:00:00","eligible":false},
+    {"name":"no inferred time of day","stamp":"2026-10-06","eligible":false},
+    {"name":"timezone conversion overflow","stamp":"0001-01-01T00:00:00+23:59","eligible":false}
+  ],
+  "rss": "<rss><channel><item><title>Offline source story</title><link>https://article.test/story</link><pubDate>2026-10-06T12:00:00Z</pubDate><description>Fixture only.</description><author>Guest Engineer</author></item></channel></rss>",
+  "atom": "<feed xmlns=\"http://www.w3.org/2005/Atom\"><entry><title>Offline source story</title><link href=\"https://article.test/story\"/><published>2026-10-06T12:00:00Z</published><summary>Fixture only.</summary><author><name>Guest Engineer</name></author></entry></feed>",
+  "rdf": "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns=\"http://purl.org/rss/1.0/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><item><title>Offline source story</title><link>https://article.test/story</link><dc:date>2026-10-06T12:00:00Z</dc:date><description>Fixture only.</description><dc:creator>Guest Engineer</dc:creator></item></rdf:RDF>",
+  "invalid_html": "<html><body>Service temporarily unavailable</body></html>"
+}

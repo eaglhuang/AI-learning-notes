@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Fetch bounded primary-source RSS/Atom candidates, never publish or translate."""
 import argparse
+from copy import deepcopy
 from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
 from html.parser import HTMLParser
@@ -15,6 +16,7 @@ from xml.etree import ElementTree as ET
 from validate_issue import _url_key, _unique_object
 from topics import validate_topic, load_topic, match_topic, safe_url, normalized
 from discovery import search_plan, parse_gdelt, dedup_key
+from source_config import validate_source_config, window_bounds, utc_time
 
 ROOT=Path(__file__).resolve().parents[2]
 MAX_BYTES=2_000_000
@@ -34,11 +36,12 @@ def parse_date(value):
     try:
         try: result=datetime.fromisoformat(value.replace('Z','+00:00'))
         except ValueError:result=parsedate_to_datetime(value)
-        return (result if result.tzinfo else result.replace(tzinfo=timezone.utc)).astimezone(timezone.utc)
-    except (ValueError,TypeError,AttributeError):return None
+        return utc_time(result)
+    except (ValueError,TypeError,AttributeError,OverflowError):return None
 
 
 def parse_feed(content, source, now, days=7):
+    cutoff, now = window_bounds(now, days)
     if len(content)>MAX_BYTES:raise ValueError('oversized XML')
     # Decode before inspection. Byte substring checks alone miss UTF-16 entities.
     text=content.decode('utf-8-sig')
@@ -59,22 +62,26 @@ def parse_feed(content, source, now, days=7):
     if source.get('max_entries') is not None and len(entries) > source['max_entries']:
         raise ValueError('provider result exceeds requested limit')
     for item in entries:
-        fields={};link=None
+        fields={};link=None;byline=''
         for child in item:
             key=child.tag.split('}')[-1]
             if key=='link' and child.attrib.get('rel','alternate')=='alternate':link=child.attrib.get('href') or child.text
+            if key=='creator':byline=child.text or ''
+            elif key=='author' and not byline:
+                name=next((x for x in child if x.tag.split('}')[-1]=='name'),None)
+                byline=(name.text if name is not None else child.text) or ''
             fields.setdefault(key,child.text or '')
         published=parse_date(fields.get('pubDate') or fields.get('published') or fields.get('date'))
         updated=parse_date(fields.get('updated'))
         freshness=published or updated
-        if not freshness or freshness>now or freshness<now-timedelta(days=days):continue
+        if not freshness or freshness>now or freshness<cutoff:continue
         if source.get('arxiv_https_links') and isinstance(link,str) and link.startswith('http://arxiv.org/abs/'):
             link = 'https://' + link[len('http://'):]
-        try:canonical=safe_url(link,source['allowed_hosts'])
+        try:canonical=safe_url(link,source.get('article_hosts',source.get('allowed_hosts')))
         except (ValueError,UnicodeError):continue
         title=strip_markup(fields.get('title'))
         if not title:continue
-        candidates.append({'source_id':source['id'],'source':source['name'],'category':source['category'],'title':title,'source_url':canonical,'published_at':published.isoformat() if published else None,'updated_at':updated.isoformat() if updated else None,'date_basis':'source_published' if published else 'source_updated_not_publication','fetched_at':now.isoformat(),'source_excerpt':strip_markup(fields.get('description') or fields.get('summary') or fields.get('content')),'reviewed':False,'popularity_score':None})
+        candidates.append({'source_id':source['id'],'source':source['name'],'category':source['category'],'title':title,'source_url':canonical,'published_at':published.isoformat() if published else None,'updated_at':updated.isoformat() if updated else None,'date_basis':'source_published' if published else 'source_updated_not_publication','fetched_at':now.isoformat(),'source_excerpt':strip_markup(fields.get('description') or fields.get('summary') or fields.get('content')),'byline':strip_markup(byline)[:300],'byline_verification_required':True,'content_kind':'unclassified_feed_entry','source_context':deepcopy(source.get('metadata',{})),'reviewed':False,'popularity_score':None})
     return candidates
 
 
@@ -98,12 +105,14 @@ class Fetcher:
 
 
 def collect(config, now=None, fetch=None, topic=None):
-    now = now or datetime.now(timezone.utc)
+    config = validate_source_config(config)
+    now = utc_time(now or datetime.now(timezone.utc))
     topic = validate_topic() if topic is None else validate_topic(topic)
     is_topic = bool(topic['keywords'])
     days = topic['lookback_days'] if is_topic else config['ranking']['window_days']
+    cutoff, now = window_bounds(now, days)
     fetch = fetch or Fetcher()
-    all_items, failures, queries, warnings = {}, [], [], []
+    all_items, failures, queries, warnings, feed_receipts = {}, [], [], [], []
     plans = []
     if is_topic:
         plans, warnings = search_plan(topic, config.get('search', {}), now)
@@ -114,7 +123,7 @@ def collect(config, now=None, fetch=None, topic=None):
         item['provenance'] = [provenance]
         item['matched_keywords'] = match['matched_keywords']
         item['matched_terms'] = match['matched_terms']
-        key = dedup_key(item['source_url']) if is_topic else item['source_url']
+        key = dedup_key(item['source_url'])
         if key in all_items:
             prior = all_items[key]
             if provenance not in prior['provenance']:
@@ -122,14 +131,20 @@ def collect(config, now=None, fetch=None, topic=None):
             return
         all_items[key] = item
     for source in config['sources']:
+        if not source['enabled']:
+            continue
         try:
-            url = safe_url(source['feed_url'], source['allowed_hosts'])
+            url = safe_url(source['feed_url'], source['feed_hosts'])
             content = fetch(url)
             provenance = {'provider': 'rss', 'source_id': source['id'], 'query': '',
-                          'request_url': url, 'retrieved_at': now.isoformat()}
-            for item in parse_feed(content, source, now, days):
+                          'request_url': url, 'retrieved_at': now.isoformat(),
+                          'source_context': deepcopy(source['metadata'])}
+            parsed = parse_feed(content, source, now, days)
+            feed_receipts.append({'source_id':source['id'],'status':'ok','eligible_candidates':len(parsed)})
+            for item in parsed:
                 retain(item, provenance)
         except Exception as error:
+            feed_receipts.append({'source_id':source['id'],'status':'failed'})
             failures.append({'source_id': source['id'], 'error': type(error).__name__, 'message': str(error)[:160]})
     for plan in plans:
         record = {k:plan[k] for k in ('provider','query','request_url','limit')}
@@ -183,6 +198,10 @@ def collect(config, now=None, fetch=None, topic=None):
             'status': 'partial' if failures or warnings else 'collected',
             'mode': 'topic' if is_topic else 'general', 'topic': topic,
             'ranking': {**config['ranking'], 'window_days': days}, 'review_required': True,
+            'collection_window': {'start_at':cutoff.isoformat(),'end_at':now.isoformat(),
+                                  'duration_hours':days*24,'inclusive':True},
+            'disabled_sources': [s['id'] for s in config['sources'] if not s['enabled']],
+            'feed_receipts': feed_receipts,
             'candidates': items, 'failures': failures, 'search_status': search_status,
             'searches': queries, 'coverage_warnings': warnings,
             'coverage_note': 'Bounded configured sources only. GDELT matches original titles; arXiv/feed matching also uses excerpts. Not a full-web or popularity ranking.'}

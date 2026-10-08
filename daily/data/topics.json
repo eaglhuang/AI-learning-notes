@@ -4,5 +4,5 @@
   "english_aliases": {},
   "match": "any",
   "exclude_keywords": [],
-  "lookback_days": 7
+  "lookback_days": 2
 }

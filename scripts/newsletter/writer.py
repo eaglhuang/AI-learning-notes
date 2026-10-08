@@ -11,7 +11,7 @@ import re
 import sys
 import uuid
 
-from edition import CONTRACT, valid_date, summary_errors, summary_policy_for
+from edition import CONTRACT, valid_date, summary_errors, summary_policy_for, edition_today
 from pipeline import checked_path, digest, read_json, run_path
 from topics import parse_timestamp, safe_url, validate_topic
 
@@ -122,7 +122,7 @@ def check_draft(draft):
         raise WriterContractError('production draft schema 2 required')
     if draft.get('synthetic') is not False or draft.get('reviewed') is not False or draft.get('reviewed_on') != '':
         raise WriterContractError('only unreviewed, nonsynthetic drafts can enter the writer')
-    if valid_date(draft.get('date')) > datetime.now(timezone.utc).date():
+    if valid_date(draft.get('date')) > edition_today():
         raise WriterContractError('future draft date is not accepted')
     validate_topic(draft.get('topic'))
     if not isinstance(draft.get('discovery'),dict) or draft['discovery'].get('limitations_acknowledged') is not False:
