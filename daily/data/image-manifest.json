@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "image_policy": "Original AI-generated concept illustrations; source URLs identify the stories, not image licenses.",
+  "image_policy": "AI concept illustrations are explicitly labeled. Licensed source images have per-image source, license and modification notice records; article URLs alone do not grant image rights.",
   "images": [
     {
       "story_id": "openai-ironclad-evaluation-2026-10-06",
@@ -136,24 +136,34 @@
     },
     {
       "story_id": "simon-datasette-parseable-tracing-2026-10-06",
-      "width": 1672,
-      "height": 941,
-      "bytes": 153563,
-      "sha256": "66cd9ff1287b0f88784cbbb64d00b3278d95ed2fd940396bfd3151b9515eb4ce",
+      "width": 2048,
+      "height": 1306,
+      "bytes": 108544,
+      "sha256": "19ce02d80753087340a24da2ec2d1a71c0d356821f26e97054db1d28f8349bcd",
       "alt": {
-        "zh-TW": "AI 生成示意圖：資料庫經由珊瑚色與鼠尾草綠追蹤區段，連接抽象筆記型電腦",
-        "en": "AI-generated concept illustration: A database connects to an abstract laptop through coral and sage trace spans"
+        "zh-TW": "原文截圖：Parseable 顯示 Datasette 請求與 SQL 查詢的追蹤瀑布圖",
+        "en": "Source screenshot: Parseable displays a trace waterfall for a Datasette request and its SQL queries"
       },
       "caption": {
-        "zh-TW": "AI 生成概念示意圖｜抽象筆記型電腦、資料庫與相連追蹤區段；非產品實際畫面或新聞現場照片",
-        "en": "AI-generated concept illustration | An abstract laptop, database and linked trace spans. Not an actual product screenshot or event photograph."
+        "zh-TW": "原文截圖：Parseable 中的 Datasette 追蹤介面｜Simon Willison｜等比例縮小，未裁切或更動畫面內容",
+        "en": "Source screenshot: Datasette traces in Parseable | Simon Willison | Proportionally resized; no cropping or changes to depicted content"
       },
       "source_url": "https://til.simonwillison.net/datasette/datasette-parseable-opentelemetry",
-      "ai_generated": true,
-      "path": "daily/assets/stories/codex-local-tracing.jpg",
+      "ai_generated": false,
+      "path": "daily/assets/stories/simon-datasette-parsable-2048.webp",
       "credit": {
-        "zh-TW": "以內建影像工具原創生成",
-        "en": "Originally generated with the built-in image generation tool"
+        "zh-TW": "原文截圖：Simon Willison｜Apache-2.0",
+        "en": "Source screenshot: Simon Willison | Apache-2.0"
+      },
+      "license": {
+        "spdx": "Apache-2.0",
+        "source_url": "https://github.com/simonw/til/blob/main/LICENSE",
+        "image_url": "https://github.com/simonw/til/blob/main/datasette/datasette-parsable.webp",
+        "image_git_blob_sha": "5f42173d6d1afd013acf82c834586c9edfc30566",
+        "license_path": "daily/assets/licenses/LICENSE-APACHE-2.0.txt",
+        "license_sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+        "notice_path": "daily/assets/licenses/SIMON-IMAGE-NOTICE.txt",
+        "notice_sha256": "6a4f4a1a6a742faf4f8f9ceb96138233ace90f01f9a6faf1fa00cdb85e9c5d21"
       }
     },
     {

@@ -25,7 +25,7 @@ from source_config import validate_source_config, window_bounds, utc_time, taipe
 ROOT = Path(__file__).resolve().parents[2]
 MAX_JSON = 4_000_000
 IMMUTABLE = ('sources.json', 'topic.json', 'candidates.json', 'selection.json')
-PUBLIC_SUFFIXES = {'.html', '.css', '.mjs', '.json', '.xml', '.md', '.jpg'}
+PUBLIC_SUFFIXES = {'.html', '.css', '.mjs', '.json', '.xml', '.md', '.jpg', '.webp', '.txt'}
 CHECKLIST = '''EDITORIAL REVIEW / 編輯審核
 
 This is an unreviewed draft, not a published newsletter.

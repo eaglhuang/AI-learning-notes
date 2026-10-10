@@ -114,6 +114,8 @@ class PipelineTests(unittest.TestCase):
         self.assertFalse((self.run/'preview/.atm').exists());self.assertFalse((self.run/'preview/scripts').exists())
         image='daily/assets/stories/codex-local-tracing.jpg'
         self.assertEqual((self.run/'preview'/image).read_bytes(),(ROOT/image).read_bytes())
+        for image in ['daily/assets/stories/simon-datasette-parsable-2048.webp','daily/assets/licenses/LICENSE-APACHE-2.0.txt','daily/assets/licenses/SIMON-IMAGE-NOTICE.txt']:
+            self.assertEqual((self.run/'preview'/image).read_bytes(),(ROOT/image).read_bytes())
         self.assertTrue((self.run/'preview/daily/data/search-index.json').is_file())
     def test_image_bytes_and_validation_logic_are_bound_to_source_digest(self):
         files=source_files(ROOT)
@@ -146,7 +148,7 @@ class PipelineTests(unittest.TestCase):
         originals=copy.deepcopy(manifest['images'])
         for n,item in enumerate(issue['items']):
             image=copy.deepcopy(originals[n%len(originals)]);source=root/image['path']
-            image.update(story_id=item['id'],source_url=item['source_url'],path=f'daily/assets/stories/offline-fixture-{n}.jpg')
+            image.update(story_id=item['id'],source_url=item['source_url'],path=f'daily/assets/stories/offline-fixture-{n}{source.suffix}')
             (root/image['path']).write_bytes(source.read_bytes());manifest['images'].append(image)
         manifest_path.write_text(json.dumps(manifest))
         with self.assertRaisesRegex(ValueError,'source changed'):preview(first,root=root)
@@ -157,7 +159,7 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(html.count('class="headline-story compact-story"'),len(issue['items'])-2)
         self.assertIn('測'*500,html)
         for n in range(len(issue['items'])):
-            image=f'daily/assets/stories/offline-fixture-{n}.jpg'
+            image=f"daily/assets/stories/offline-fixture-{n}{Path(originals[n%len(originals)]['path']).suffix}"
             self.assertEqual((target/'preview'/image).read_bytes(),(root/image).read_bytes())
         self.assertEqual(preview(target,root=root),state)
         self.assertFalse((ROOT/'daily/assets/stories/offline-fixture-0.jpg').exists())

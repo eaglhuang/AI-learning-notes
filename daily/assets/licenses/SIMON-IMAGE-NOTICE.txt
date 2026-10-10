@@ -1,0 +1,13 @@
+Third-party image attribution and modification notice
+
+Image: Simon Willison, screenshot of Parseable displaying Datasette OpenTelemetry traces.
+Article: Using Parseable with Datasette for OpenTelemetry traces
+Article URL: https://til.simonwillison.net/datasette/datasette-parseable-opentelemetry
+Image source: https://github.com/simonw/til/blob/main/datasette/datasette-parsable.webp
+Original Git blob SHA: 5f42173d6d1afd013acf82c834586c9edfc30566
+License: Apache License, Version 2.0. See LICENSE-APACHE-2.0.txt.
+Source license: https://github.com/simonw/til/blob/main/LICENSE
+
+Modification on 2026-10-07: Proportionally resized from 2917 x 1860 to 2048 x 1306 using ImageMagick Lanczos resampling and WebP quality 95 encoding. No cropping, content replacement, retouching, or AI generation. The one-pixel dimension rounding retains the source aspect ratio within 0.00846%.
+
+This is the source author's published screenshot, not a screenshot of an experiment performed by this newsletter. No affiliation, sponsorship, or endorsement by Simon Willison or Parseable is implied. Product names and marks remain the property of their respective owners.
