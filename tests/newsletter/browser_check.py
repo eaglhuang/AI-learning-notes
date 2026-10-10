@@ -266,6 +266,30 @@ def main():
                 assert fp.evaluate('document.documentElement.scrollWidth <= innerWidth')
                 fixture_context.close()
             passed('wide/portrait/extreme intrinsic dimensions and corrupt-image fixed-frame fallback')
+            # Inspect licensed source images in their own dated edition so future issues remain valid.
+            for source_image in [image for image in image_manifest['images'] if image['ai_generated'] is False]:
+                source_issue=next(issue for issue in editions if any(item['id']==source_image['story_id'] for item in issue['items']))
+                source_context=browser.new_context(viewport={'width':320,'height':844})
+                sp=source_context.new_page()
+                for locale in ['zh-TW','en']:
+                    sp.goto(base+'/daily/'+source_issue['date']+'/'+('en/' if locale=='en' else ''))
+                    card=sp.locator('#'+source_image['story_id']);img=card.locator('.story-image img');decoded_image(img)
+                    expect(img).to_have_attribute('alt',source_image['alt'][locale])
+                    caption=card.locator('figcaption');expect(caption).to_have_attribute('data-image-kind','licensed-source')
+                    expect(caption).to_contain_text(source_image['caption'][locale]);expect(caption).to_contain_text(source_image['credit'][locale])
+                    assert img.evaluate('(image)=>getComputedStyle(image).objectFit')=='contain'
+                    assert card.evaluate('(card)=>card.scrollWidth<=card.clientWidth+1')
+                    for key in ['image_url','source_url']:
+                        expect(caption.locator('a[href="'+source_image['license'][key]+'"]')).to_have_count(1)
+                    for key in ['license_path','notice_path']:
+                        link=caption.locator('a[href$="'+Path(source_image['license'][key]).name+'"]');expect(link).to_be_visible()
+                        response=sp.request.get(base+'/'+source_image['license'][key]);assert response.ok
+                        assert response.body()==(ROOT/source_image['license'][key]).read_bytes()
+                    no_overflow(sp,'source-image-'+locale);screenshot(sp,'source-image-'+locale+'.png',False)
+                    sp.locator('#language').click()
+                    other='en' if locale=='zh-TW' else 'zh-TW';expect(img).to_have_attribute('alt',source_image['alt'][other]);expect(caption).to_contain_text(source_image['credit'][other])
+                source_context.close()
+            passed('licensed source screenshot retains full frame, bilingual credit and reachable license/notice at 320px')
             blocked=browser.new_context();blocked.add_init_script("Object.defineProperty(window, 'localStorage', {get(){throw new DOMException('Disabled','SecurityError')}})")
             bp=blocked.new_page();bp.goto(base+'/daily/');bp.locator('#language').click();expect(bp.locator('html')).to_have_attribute('lang','en')
             expect(bp.locator('#topic-match option[value=any]')).to_have_text('OR / Any keyword')

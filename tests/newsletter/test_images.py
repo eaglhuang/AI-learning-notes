@@ -7,6 +7,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -25,8 +26,117 @@ class ImageAndUITests(unittest.TestCase):
         images = load_images(ROOT, issue['items'])
         selected = [images[item['id']] for item in issue['items']]
         self.assertEqual(len(selected), 7)
-        self.assertEqual(sum(i['bytes'] for i in selected), 1374494)
-        self.assertEqual(images[issue['items'][1]['id']]['path'], 'daily/assets/stories/codex-local-tracing.jpg')
+        self.assertEqual(sum(i['bytes'] for i in selected), 1329475)
+        source=images[issue['items'][1]['id']]
+        self.assertEqual(source['path'], 'daily/assets/stories/simon-datasette-parsable-2048.webp')
+        self.assertFalse(source['ai_generated']);self.assertEqual(source['license']['spdx'],'Apache-2.0')
+        self.assertEqual(sum(i['ai_generated'] for i in selected),6)
+        self.assertTrue((ROOT/'daily/assets/stories/codex-local-tracing.jpg').is_file())
+
+    def test_webp_is_static_and_extension_matches_decoded_format(self):
+        path=self.root/'static.webp';Image.new('RGB',(128,81),'red').save(path,format='WEBP')
+        self.assertEqual(validate_image(path)['width'],128)
+        lossless=self.root/'lossless.webp';Image.new('RGBA',(128,81),(20,40,60,128)).save(lossless,format='WEBP',lossless=True)
+        self.assertEqual(validate_image(lossless)['height'],81)
+        wrong=self.root/'wrong.jpg';wrong.write_bytes(path.read_bytes())
+        with self.assertRaisesRegex(ValueError,'matching extensions'):validate_image(wrong)
+        animated=self.root/'animated.webp'
+        Image.new('RGB',(20,20),'red').save(animated,format='WEBP',save_all=True,
+            append_images=[Image.new('RGB',(20,20),'blue')],duration=100,loop=0)
+        with self.assertRaisesRegex(ValueError,'static'):validate_image(animated)
+
+    def test_webp_preflight_rejects_large_animated_and_malformed_headers_before_decoder(self):
+        def riff(kind,payload):
+            chunk=kind+len(payload).to_bytes(4,'little')+payload+(b'\0'if len(payload)%2 else b'')
+            return b'RIFF'+(len(chunk)+4).to_bytes(4,'little')+b'WEBP'+chunk
+        vp8=lambda width,height:b'\x10\x00\x00\x9d\x01\x2a'+width.to_bytes(2,'little')+height.to_bytes(2,'little')
+        vp8l=lambda width,height:b'\x2f'+((width-1)|((height-1)<<14)).to_bytes(4,'little')
+        cases=[riff(b'VP8 ',vp8(4096,4096)),riff(b'VP8L',vp8l(16384,16384)),
+               riff(b'VP8X',b'\x02'+b'\0'*9),riff(b'VP8X',b'\0'*10),
+               riff(b'ANIM',b'\0'*6),riff(b'ANMF',b'\0'*16),
+               riff(b'VP8 ',vp8(0,1)),riff(b'VP8L',b'\x2f\0\0\0\xe0'),
+               riff(b'VP8 ',b'short'),riff(b'VP8 ',vp8(8,8))+b'trailing',
+               b'RIFF'+(4).to_bytes(4,'little')+b'WEBP']
+        for n,raw in enumerate(cases):
+            for suffix in ['.webp','.jpg']:
+                path=self.root/(str(n)+suffix);path.write_bytes(raw)
+                with self.subTest(case=n,suffix=suffix),patch('image_policy.Image.open')as decoder:
+                    with self.assertRaises(ValueError):validate_image(path)
+                    decoder.assert_not_called()
+        # A valid-looking small header still requires full compressed-pixel validation.
+        fake=self.root/'header-only.webp';fake.write_bytes(riff(b'VP8 ',vp8(8,8)))
+        with self.assertRaises(ValueError):validate_image(fake)
+
+    def test_source_image_requires_bound_license_notice_and_safe_links(self):
+        shutil.copytree(ROOT/'daily',self.root/'daily');path=self.root/'daily/data/image-manifest.json'
+        baseline=json.loads(path.read_text());issue=json.loads((self.root/'daily/data/issues/2026-10-07.json').read_text())
+        index=next(n for n,e in enumerate(baseline['images'])if not e['ai_generated'])
+        for change in [lambda e:e.pop('license'),lambda e:e['license'].update(spdx='unknown'),
+                       lambda e:e['license'].update(image_url='javascript:alert(1)'),
+                       lambda e:e['license'].update(license_path='../private.txt'),
+                       lambda e:e['license'].update(notice_sha256='0'*64),
+                       lambda e:e['license'].update(image_git_blob_sha='invented'),
+                       lambda e:e.update(ai_generated=True),lambda e:e.update(ai_generated=0)]:
+            value=copy.deepcopy(baseline);change(value['images'][index]);path.write_text(json.dumps(value))
+            with self.assertRaises(ValueError):load_images(self.root,issue['items'])
+        path.write_text(json.dumps(baseline));notice=self.root/baseline['images'][index]['license']['notice_path']
+        notice.write_text('changed notice')
+        with self.assertRaisesRegex(ValueError,'hash'):load_images(self.root,issue['items'])
+
+    def test_source_credit_is_visible_localized_and_linked(self):
+        generated=outputs();manifest=json.loads((ROOT/'daily/data/image-manifest.json').read_text())
+        source=next(e for e in manifest['images']if not e['ai_generated'])
+        # The permanent Oct7 edition must retain its original image and license
+        # even after the homepage advances to another reviewed edition.
+        for name in ['daily/2026-10-07/index.html','daily/2026-10-07/en/index.html']:
+            html=generated[name]
+            self.assertEqual(html.count('data-image-kind="licensed-source"'),1)
+            self.assert_source_credit(html,source)
+
+    def assert_source_credit(self,html,source):
+        for locale in ['zh-TW','en']:
+            self.assertIn(source['credit'][locale],html)
+        self.assertIn(source['license']['image_url'],html)
+        self.assertIn(source['license']['source_url'],html)
+        self.assertIn('LICENSE-APACHE-2.0.txt',html)
+        self.assertIn('SIMON-IMAGE-NOTICE.txt',html)
+        self.assertIn(Path(source['path']).name,html)
+
+    def assert_edition_image_policy(self,html,issue):
+        images=load_images(ROOT,issue['items'])
+        selected=[images[item['id']] for item in issue['items']]
+        sources=[image for image in selected if not image['ai_generated']]
+        self.assertEqual(html.count('data-image-kind="licensed-source"'),len(sources))
+        self.assertEqual(html.count('data-image-kind="ai-illustration"'),len(selected)-len(sources))
+        for source in sources:self.assert_source_credit(html,source)
+        selected_ids={item['id'] for item in issue['items']}
+        manifest=json.loads((ROOT/'daily/data/image-manifest.json').read_text())
+        for source in manifest['images']:
+            if not source['ai_generated'] and source['story_id'] not in selected_ids:
+                self.assertNotIn(Path(source['path']).name,html)
+                self.assertNotIn(source['license']['image_url'],html)
+
+    def test_homepage_images_follow_latest_reviewed_edition(self):
+        latest=max((json.loads(p.read_text()) for p in (ROOT/'daily/data/issues').glob('*.json')),key=lambda issue:issue['date'])
+        generated=outputs()
+        for name in ['daily/index.html','daily/en/index.html']:
+            self.assert_edition_image_policy(generated[name],latest)
+
+    def test_homepage_date_switch_keeps_source_credit_bound_to_selected_stories(self):
+        config=json.loads((ROOT/'daily/config.json').read_text())
+        historical=[json.loads(p.read_text()) for p in sorted((ROOT/'daily/data/issues').glob('*.json'),reverse=True)]
+        # Rendering-only fixtures: these do not create or approve Oct9/10 news.
+        # Exercise both a source-image edition and an all-AI-image edition.
+        for fixture_date in ['2026-10-09','2026-10-10']:
+            for content_date in ['2026-10-07','2026-10-08']:
+                issue=copy.deepcopy(next(i for i in historical if i['date']==content_date))
+                issue['date']=fixture_date
+                issues=[issue]+[i for i in historical if i['date']!=fixture_date]
+                for locale,page in [('zh-TW','daily/index.html'),('en','daily/en/index.html')]:
+                    with self.subTest(date=fixture_date,content=content_date,locale=locale):
+                        html=render_issue(issue,issues,copy.deepcopy(config),page,locale)
+                        self.assert_edition_image_policy(html,issue)
+                        self.assertIn(config['site_url']+'/daily/'+fixture_date+'/',html)
 
     def test_corrupt_svg_oversize_and_extreme_dimensions_refused(self):
         for fixture in (ROOT/'tests/newsletter/fixtures/images').iterdir():
