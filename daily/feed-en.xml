@@ -7,6 +7,54 @@
     <language>en</language>
     <item>
       <category>General AI edition</category>
+      <title>October 11 AI Daily: platform transitions, conversation updates and agent tools</title>
+      <link>https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-11/en/</link>
+      <guid>https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-11/en/</guid>
+      <pubDate>Sun, 11 Oct 2026 12:00:00 +0800</pubDate>
+      <description>Deno team joins Cloudflare and outlines runtime and Deploy transition: Ryan Dahl announced that the entire Deno team is joining Cloudflare, focusing future development on a shared platform rather than a separate runtime and hosting service.
+
+The team will combine celld work with Workers and Durable Objects, aiming to make this programming model the default for servers on Cloudflare or users’ own infrastructure.
+
+celld builds scaling into the programming model instead of requiring each application to assemble its infrastructure.
+
+The Deno runtime will receive another year of support, with monthly bug fixes and security updates; the team will then end development, while Deno remains open source for others to continue.
+
+Deno Deploy will operate for six more months before closing, with migration support for paying customers moving to Cloudflare Workers.
+
+JSR will continue, moving its infrastructure to Cloudflare; rusty_v8 support will continue, with work toward integration into workerd.
+
+Dahl says AI particularly needs better abstractions: Durable Objects combine inexpensive serverless execution, persistent state, WebSockets and a high-level JavaScript interface useful for agent harnesses, explaining celld’s focus.
+Summary sources: https://deno.com/blog/cloudflare
+
+Open WebUI 0.12.0 adds realtime voice, shared replies and skill history: Open WebUI released 0.12.0 with a Realtime voice-call mode administrators can enable. An OpenAI realtime voice model handles small talk and passes substantive questions and tasks to the selected chat model with its history and tools. Tool approvals and questions still require answers in chat. Calls require Allow Call permission and end after one hour. Realtime calls can use rigged VRM avatars with idle, listening and speaking animations and up to sixteen named gestures; mouth movement follows the spoken response. Shared chats and folders gain an Allow replies mode so recipients can continue the same conversation with live messages and typing indicators. People can edit, rate, regenerate or stop only their own messages. With context compaction and native function calling enabled, long tool runs can compact between tool rounds while keeping calls paired with results and including tool names and arguments in the summary. Skills can include scripts, references and templates, with a saved version history that supports comparison and restoration, plus ZIP or JSON export. The release also adds authenticator-app two-factor sign-in that administrators can require for all users, with ten single-use recovery codes and separately configurable bypasses for OAuth and trusted-header sign-ins.
+Summary sources: https://github.com/open-webui/open-webui/releases/tag/v0.12.0
+
+Claude Code 2.1.296 adds subagent compaction settings and fixes permission checks: Anthropic released Claude Code 2.1.296 with autoCompactWindow for subagents, allowing them to compact earlier than the main conversation. An environment variable can select one model for all workflow agents while other subagents retain their own models. The Read tool gains allow_large to read an entire text file beyond the usual size limits when the full file is needed and context capacity permits. The Claude apps gateway gains a code field in managed policies to apply CLI settings to Claude Desktop's Code tab. The release also fixes a regression introduced in 2.1.295 that ignored saved gateway sign-ins under specific managed settings. Fixes cover missed secret redaction in shared transcripts and debug logs, and Bash permission checks that automatically approved some commands assigning and then using BASH_ARGV0. Those commands now require approval. Edit and NotebookEdit now refuse edits to files that are not valid UTF-8, addressing a bug that could replace every non-ASCII character. In VS Code, Claude in Chrome now asks before browser actions in every session, including sessions connected with @browser. Allowing a site for that session stops repeat prompts. The default limit for upfront MCP tool descriptions and server instructions rises from 2,048 to 4,096 characters.
+Summary sources: https://github.com/anthropics/claude-code/releases/tag/v2.1.296
+
+Pydantic AI 2.55.0 adds persistent conversations and unified prompt caching: Pydantic AI released 2.55.0 with a Conversation object for carrying and storing a conversation between runs, accepted through the conversation argument at every entry point. A unified cache setting and Caching capability support prompt caching across providers. With Anthropic automatic caching, cache=True also caches instructions and tool definitions; the Coder harness enables prompt caching by default. The release adds an OpenAIDecisionsModel backend with image input and records prompt-cache diagnostics in provider_details. Diagnostics are enabled by default for OpenAI Responses and are opt-in for Anthropic. Under durable execution, re-execution preserves default run_id and conversation_id values. Planning records plan-store calls so recovery does not repeat writes; Memory records tool calls so forked DBOS workflows do not repeat writes. Each failed FallbackModel attempt records its model, timing, error and usage, while RunUsage counts rejected responses. On gpt-realtime and GPT-Live, hang_up() can end a WebRTC call from the server. The retain_audio_max_seconds setting bounds retained audio. All packages now require Python 3.11 or newer; Python 3.10 installations resolve to 2.54.0 or earlier. Relevant extras raise the minimum openai package version to 3.26.0 for Decisions support.
+Summary sources: https://github.com/pydantic/pydantic-ai/releases/tag/v2.55.0
+
+CrewAI 1.15.27 adds per-run evaluation cost and time tracking: CrewAI released 1.15.27 with per-run cost and time tracking in crewai eval --models, without repeating progress lines. Evaluations now record why a run stopped before reaching a verdict. The release adds DeepInfra as an OpenAI-compatible provider and XPU to the OpenCLIP provider's device options. It fixes stopSequences being sent to OpenAI GPT-6, GPT-5.6 and gpt-oss. The GitHub loader preserves source attribution, and SQLite flow initialization contention is fixed.
+Shorter source-limited summary.
+Summary sources: https://github.com/crewAIInc/crewAI/releases/tag/1.15.27
+
+ttok 1.0 changes its default tokenizer; Willison notes missing GPT-6 confirmation: Simon Willison released ttok 1.0, a tool for counting and truncating text by token count.
+
+After upgrading to 0.4 and feeding it a file, he noticed it still defaulted to the GPT-4 tokenizer, prompting a new default and a 1.0 release.
+
+The release switches to o200k_base; ttok --list-models also shows how tiktoken handles model-name prefixes such as gpt-5*.
+
+Willison cautions that OpenAI has not officially confirmed that GPT-6 and the GPT-5 family share a tokenizer.
+
+He cites William Liu’s September 26 experiment, in which seven GPT models each reported 44,794 input tokens across the same 31 fixtures, matching on every fixture.
+
+Liu explicitly limits these observations to raw-text count endpoints, without generation or billed-usage validation; equal counts do not establish that the underlying tokenizers are identical.
+Shorter source-limited summary.
+Summary sources: https://simonwillison.net/2026/Oct/9/ttok/ https://github.com/simonw/ttok/releases/tag/1.0 https://github.com/williamliu-ai/token-count-compare/commit/8d8a2178538bb37beb548fc37378135e4ff4b0c8</description>
+    </item>
+    <item>
+      <category>General AI edition</category>
       <title>October 8 AI Daily: interactive answers, edge models and agent containment</title>
       <link>https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/en/</link>
       <guid>https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-08/en/</guid>

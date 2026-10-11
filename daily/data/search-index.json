@@ -2,12 +2,243 @@
   "schemaVersion": 1,
   "scope": "published-newsletter-content",
   "editions": [
+    "2026-10-11",
     "2026-10-08",
     "2026-10-07",
     "2026-10-06",
     "2026-10-04"
   ],
   "records": [
+    {
+      "key": "2026-10-11:deno-cloudflare-team-transition-2026-10-09",
+      "storyId": "deno-cloudflare-team-transition-2026-10-09",
+      "editionDate": "2026-10-11",
+      "sourcePublishedDate": "2026-10-09",
+      "category": "engineering",
+      "source": "Deno / Ryan Dahl",
+      "sourceUrl": "https://deno.com/blog/cloudflare",
+      "localized": {
+        "zh-TW": {
+          "title": "Deno 團隊加入 Cloudflare，公布執行環境與 Deploy 過渡安排",
+          "summary": "Ryan Dahl 宣布 Deno 全體團隊加入 Cloudflare，未來開發將集中於共同平台，不再繼續發展獨立的執行環境與代管服務。\n\n團隊將結合 celld 與 Workers、Durable Objects 團隊的工作，希望讓這套程式設計模型成為建置伺服器的預設方式，無論應用執行於 Cloudflare 網路或自己的基礎設施。\n\ncelld 將擴充能力內建於程式設計模型，減少每個應用另行組裝基礎設施的需求。\n\nDeno 執行環境將再獲支援一年，每月發布錯誤修正與安全更新；一年後，團隊將結束其開發，但 Deno 仍維持開源，並歡迎他人接續。\n\nDeno Deploy 將繼續營運六個月後關閉，付費客戶轉往 Cloudflare Workers 可獲遷移支援。\n\nJSR 將持續營運，基礎設施移至 Cloudflare；團隊也會繼續支援 rusty_v8，並推進與 workerd 的整合。\n\nDahl 表示，AI 特別需要更好的抽象設計，而 Durable Objects 結合低成本無伺服器執行、持久狀態、WebSockets 與高階 JavaScript 介面，這些能力對代理執行框架尤其有用，也正是 celld 聚焦於此的原因。",
+          "takeaway": "Deno 團隊將未來開發集中於與 Cloudflare 共建的平台。",
+          "caveat": "Deno 團隊將於再支援一年後結束執行環境開發；Deno Deploy 將於繼續營運六個月後關閉。"
+        },
+        "en": {
+          "title": "Deno team joins Cloudflare and outlines runtime and Deploy transition",
+          "summary": "Ryan Dahl announced that the entire Deno team is joining Cloudflare, focusing future development on a shared platform rather than a separate runtime and hosting service.\n\nThe team will combine celld work with Workers and Durable Objects, aiming to make this programming model the default for servers on Cloudflare or users’ own infrastructure.\n\ncelld builds scaling into the programming model instead of requiring each application to assemble its infrastructure.\n\nThe Deno runtime will receive another year of support, with monthly bug fixes and security updates; the team will then end development, while Deno remains open source for others to continue.\n\nDeno Deploy will operate for six more months before closing, with migration support for paying customers moving to Cloudflare Workers.\n\nJSR will continue, moving its infrastructure to Cloudflare; rusty_v8 support will continue, with work toward integration into workerd.\n\nDahl says AI particularly needs better abstractions: Durable Objects combine inexpensive serverless execution, persistent state, WebSockets and a high-level JavaScript interface useful for agent harnesses, explaining celld’s focus.",
+          "takeaway": "The Deno team will focus future development on its shared platform with Cloudflare.",
+          "caveat": "The Deno team will end runtime development after another year of support; Deno Deploy will close after six more months of operation."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/11 AI 日報：平台轉型、對話更新與代理工具",
+        "en": "October 11 AI Daily: platform transitions, conversation updates and agent tools"
+      },
+      "summarySources": [
+        "https://deno.com/blog/cloudflare"
+      ],
+      "shortSummaryReason": null,
+      "sourceOnly": true,
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-11/#deno-cloudflare-team-transition-2026-10-09",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-11/en/#deno-cloudflare-team-transition-2026-10-09"
+      }
+    },
+    {
+      "key": "2026-10-11:open-webui-0120-2026-10-10",
+      "storyId": "open-webui-0120-2026-10-10",
+      "editionDate": "2026-10-11",
+      "sourcePublishedDate": "2026-10-10",
+      "category": "products",
+      "source": "Open WebUI",
+      "sourceUrl": "https://github.com/open-webui/open-webui/releases/tag/v0.12.0",
+      "localized": {
+        "zh-TW": {
+          "title": "Open WebUI 0.12.0 加入即時語音、共享回覆與技能版本歷史",
+          "summary": "Open WebUI發布0.12.0，管理員可把語音通話模式切換為Realtime，透過OpenAI即時語音模型處理閒聊，再把實際問題與任務交給聊天選定的模型，連同對話歷史和工具一起處理。工具要求核准或提問時，使用者仍須在聊天中回答；通話需有Allow Call權限，最長一小時。即時通話可使用綁定骨架的VRM角色，加入待機、聆聽、說話動畫及最多十六種具名手勢，角色嘴型會跟隨語音。共享聊天或資料夾新增Allow replies模式，讓獲分享的人在同一對話接續回覆，並即時顯示訊息與輸入狀態；使用者只能編輯、評分、重新產生或停止自己的訊息。啟用上下文壓縮與原生函式呼叫後，長時間工具執行可在工具回合之間壓縮內容，保留工具呼叫與結果配對，摘要亦包含工具名稱和參數。技能現在可附帶腳本、參考資料與範本，每次儲存留下可比較與還原的版本，並支援ZIP或JSON匯出。版本另加入驗證器應用程式雙因素登入，可由管理員要求所有使用者啟用，並提供十組單次復原碼；OAuth與trusted-header登入可分別設定略過。",
+          "takeaway": "Open WebUI發布0.12.0，管理員可把語音通話模式切換為Realtime，透過OpenAI即時語音模型處理閒聊，再把實際問題與任務交給聊天選定的模型，連同對話歷史和工具一起處理。",
+          "caveat": "內容依官方發布紀錄濃縮；未另行實測。"
+        },
+        "en": {
+          "title": "Open WebUI 0.12.0 adds realtime voice, shared replies and skill history",
+          "summary": "Open WebUI released 0.12.0 with a Realtime voice-call mode administrators can enable. An OpenAI realtime voice model handles small talk and passes substantive questions and tasks to the selected chat model with its history and tools. Tool approvals and questions still require answers in chat. Calls require Allow Call permission and end after one hour. Realtime calls can use rigged VRM avatars with idle, listening and speaking animations and up to sixteen named gestures; mouth movement follows the spoken response. Shared chats and folders gain an Allow replies mode so recipients can continue the same conversation with live messages and typing indicators. People can edit, rate, regenerate or stop only their own messages. With context compaction and native function calling enabled, long tool runs can compact between tool rounds while keeping calls paired with results and including tool names and arguments in the summary. Skills can include scripts, references and templates, with a saved version history that supports comparison and restoration, plus ZIP or JSON export. The release also adds authenticator-app two-factor sign-in that administrators can require for all users, with ten single-use recovery codes and separately configurable bypasses for OAuth and trusted-header sign-ins.",
+          "takeaway": "Open WebUI released 0.12.0 with a Realtime voice-call mode administrators can enable. An OpenAI realtime voice model handles small talk and passes substantive questions and tasks to the selected chat model with its history and tools.",
+          "caveat": "Condensed from official release notes; not independently tested."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/11 AI 日報：平台轉型、對話更新與代理工具",
+        "en": "October 11 AI Daily: platform transitions, conversation updates and agent tools"
+      },
+      "summarySources": [
+        "https://github.com/open-webui/open-webui/releases/tag/v0.12.0"
+      ],
+      "shortSummaryReason": null,
+      "sourceOnly": true,
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-11/#open-webui-0120-2026-10-10",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-11/en/#open-webui-0120-2026-10-10"
+      }
+    },
+    {
+      "key": "2026-10-11:claude-code-21296-2026-10-09",
+      "storyId": "claude-code-21296-2026-10-09",
+      "editionDate": "2026-10-11",
+      "sourcePublishedDate": "2026-10-09",
+      "category": "tools",
+      "source": "Anthropic",
+      "sourceUrl": "https://github.com/anthropics/claude-code/releases/tag/v2.1.296",
+      "localized": {
+        "zh-TW": {
+          "title": "Claude Code 2.1.296 新增子代理壓縮設定並修正權限檢查",
+          "summary": "Anthropic發布Claude Code 2.1.296，新增子代理的autoCompactWindow設定，讓子代理可比主對話提早壓縮上下文，並可用環境變數統一workflow代理採用的模型，其他子代理則維持各自設定。Read工具加入allow_large選項，在需要整份文字檔且上下文容量足夠時，允許單次讀取超過通常大小限制的檔案。Claude apps gateway的管理政策新增code欄位，可將CLI設定套用至Claude Desktop的Code分頁；同時修正2.1.295引入的回歸問題，讓特定管理設定下已儲存的gateway登入能被採用。修正項目還包括共用逐字稿與除錯紀錄遺漏部分秘密值遮蔽，以及Bash權限檢查自動核准某些先設定再使用BASH_ARGV0的命令，後者現在會要求核准。對非有效UTF-8檔案，Edit與NotebookEdit先前可能把所有非ASCII字元替換掉，現在會拒絕這類編輯。VS Code中的Claude in Chrome改為每個工作階段執行瀏覽器動作前都先詢問，包含以@browser連線的階段；當階段已允許某網站後，不再反覆詢問。版本也把預先傳送的MCP工具描述與伺服器指令預設上限，從2,048字元提高至4,096字元。",
+          "takeaway": "Anthropic發布Claude Code 2.1.296，新增子代理的autoCompactWindow設定，讓子代理可比主對話提早壓縮上下文，並可用環境變數統一workflow代理採用的模型，其他子代理則維持各自設定。",
+          "caveat": "內容依官方發布紀錄濃縮；未另行實測。"
+        },
+        "en": {
+          "title": "Claude Code 2.1.296 adds subagent compaction settings and fixes permission checks",
+          "summary": "Anthropic released Claude Code 2.1.296 with autoCompactWindow for subagents, allowing them to compact earlier than the main conversation. An environment variable can select one model for all workflow agents while other subagents retain their own models. The Read tool gains allow_large to read an entire text file beyond the usual size limits when the full file is needed and context capacity permits. The Claude apps gateway gains a code field in managed policies to apply CLI settings to Claude Desktop's Code tab. The release also fixes a regression introduced in 2.1.295 that ignored saved gateway sign-ins under specific managed settings. Fixes cover missed secret redaction in shared transcripts and debug logs, and Bash permission checks that automatically approved some commands assigning and then using BASH_ARGV0. Those commands now require approval. Edit and NotebookEdit now refuse edits to files that are not valid UTF-8, addressing a bug that could replace every non-ASCII character. In VS Code, Claude in Chrome now asks before browser actions in every session, including sessions connected with @browser. Allowing a site for that session stops repeat prompts. The default limit for upfront MCP tool descriptions and server instructions rises from 2,048 to 4,096 characters.",
+          "takeaway": "Anthropic released Claude Code 2.1.296 with autoCompactWindow for subagents, allowing them to compact earlier than the main conversation. An environment variable can select one model for all workflow agents while other subagents retain their own models.",
+          "caveat": "Condensed from official release notes; not independently tested."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/11 AI 日報：平台轉型、對話更新與代理工具",
+        "en": "October 11 AI Daily: platform transitions, conversation updates and agent tools"
+      },
+      "summarySources": [
+        "https://github.com/anthropics/claude-code/releases/tag/v2.1.296"
+      ],
+      "shortSummaryReason": null,
+      "sourceOnly": true,
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-11/#claude-code-21296-2026-10-09",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-11/en/#claude-code-21296-2026-10-09"
+      }
+    },
+    {
+      "key": "2026-10-11:pydantic-ai-2550-2026-10-09",
+      "storyId": "pydantic-ai-2550-2026-10-09",
+      "editionDate": "2026-10-11",
+      "sourcePublishedDate": "2026-10-09",
+      "category": "tools",
+      "source": "Pydantic",
+      "sourceUrl": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.55.0",
+      "localized": {
+        "zh-TW": {
+          "title": "Pydantic AI 2.55.0 加入跨次執行對話與統一提示快取",
+          "summary": "Pydantic AI發布2.55.0，新增Conversation物件，跨次執行攜帶並儲存對話，各入口接受conversation參數。新增統一cache設定與Caching能力，支援跨供應商提示快取；Anthropic自動快取下，cache=True也快取指令和工具定義，Coder預設啟用提示快取。新增支援影像輸入的OpenAIDecisionsModel，提示快取診斷寫入provider_details；OpenAI Responses預設開啟，Anthropic須另行啟用。耐久執行重新執行時，預設run_id與conversation_id不變；Planning紀錄計畫儲存呼叫，防止復原時重複寫入；Memory紀錄工具呼叫，防止分支DBOS流程重複寫入。FallbackModel記錄每次失敗嘗試的模型、時間、錯誤與用量，被拒回應用量亦列入RunUsage。gpt-realtime與GPT-Live新增hang_up()，由伺服器結束WebRTC通話；retain_audio_max_seconds限制保留音訊。套件要求Python 3.11以上，Python 3.10安裝解析至2.54.0或更早版本；支援Decisions的相關extras將openai最低版本提高至3.26.0。",
+          "takeaway": "Pydantic AI發布2.55.0，新增Conversation物件，跨次執行攜帶並儲存對話，各入口接受conversation參數。",
+          "caveat": "內容依官方發布紀錄濃縮；未另行實測。"
+        },
+        "en": {
+          "title": "Pydantic AI 2.55.0 adds persistent conversations and unified prompt caching",
+          "summary": "Pydantic AI released 2.55.0 with a Conversation object for carrying and storing a conversation between runs, accepted through the conversation argument at every entry point. A unified cache setting and Caching capability support prompt caching across providers. With Anthropic automatic caching, cache=True also caches instructions and tool definitions; the Coder harness enables prompt caching by default. The release adds an OpenAIDecisionsModel backend with image input and records prompt-cache diagnostics in provider_details. Diagnostics are enabled by default for OpenAI Responses and are opt-in for Anthropic. Under durable execution, re-execution preserves default run_id and conversation_id values. Planning records plan-store calls so recovery does not repeat writes; Memory records tool calls so forked DBOS workflows do not repeat writes. Each failed FallbackModel attempt records its model, timing, error and usage, while RunUsage counts rejected responses. On gpt-realtime and GPT-Live, hang_up() can end a WebRTC call from the server. The retain_audio_max_seconds setting bounds retained audio. All packages now require Python 3.11 or newer; Python 3.10 installations resolve to 2.54.0 or earlier. Relevant extras raise the minimum openai package version to 3.26.0 for Decisions support.",
+          "takeaway": "Pydantic AI released 2.55.0 with a Conversation object for carrying and storing a conversation between runs, accepted through the conversation argument at every entry point.",
+          "caveat": "Condensed from official release notes; not independently tested."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/11 AI 日報：平台轉型、對話更新與代理工具",
+        "en": "October 11 AI Daily: platform transitions, conversation updates and agent tools"
+      },
+      "summarySources": [
+        "https://github.com/pydantic/pydantic-ai/releases/tag/v2.55.0"
+      ],
+      "shortSummaryReason": null,
+      "sourceOnly": true,
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-11/#pydantic-ai-2550-2026-10-09",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-11/en/#pydantic-ai-2550-2026-10-09"
+      }
+    },
+    {
+      "key": "2026-10-11:crewai-11527-2026-10-09",
+      "storyId": "crewai-11527-2026-10-09",
+      "editionDate": "2026-10-11",
+      "sourcePublishedDate": "2026-10-09",
+      "category": "tools",
+      "source": "CrewAI",
+      "sourceUrl": "https://github.com/crewAIInc/crewAI/releases/tag/1.15.27",
+      "localized": {
+        "zh-TW": {
+          "title": "CrewAI 1.15.27 加入評估成本與時間追蹤",
+          "summary": "CrewAI發布1.15.27，讓crewai eval --models按每次執行追蹤成本與時間，並避免反覆輸出進度列。評估流程新增紀錄，在尚未產生判定就停止時保留停止原因。模型整合新增以OpenAI相容方式使用DeepInfra，OpenCLIP供應商的裝置選項則加入XPU。此版本修正向OpenAI GPT-6、GPT-5.6與gpt-oss傳送stopSequences的問題。GitHub載入器會保留來源歸屬，另修正SQLite流程初始化時的資源競爭。",
+          "takeaway": "CrewAI發布1.15.27，讓crewai eval --models按每次執行追蹤成本與時間，並避免反覆輸出進度列。",
+          "caveat": "原始發布紀錄較短，摘要僅涵蓋可核對的更新項目。"
+        },
+        "en": {
+          "title": "CrewAI 1.15.27 adds per-run evaluation cost and time tracking",
+          "summary": "CrewAI released 1.15.27 with per-run cost and time tracking in crewai eval --models, without repeating progress lines. Evaluations now record why a run stopped before reaching a verdict. The release adds DeepInfra as an OpenAI-compatible provider and XPU to the OpenCLIP provider's device options. It fixes stopSequences being sent to OpenAI GPT-6, GPT-5.6 and gpt-oss. The GitHub loader preserves source attribution, and SQLite flow initialization contention is fixed.",
+          "takeaway": "CrewAI released 1.15.27 with per-run cost and time tracking in crewai eval --models, without repeating progress lines.",
+          "caveat": "The source release notes are brief; this summary covers only verifiable update items."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/11 AI 日報：平台轉型、對話更新與代理工具",
+        "en": "October 11 AI Daily: platform transitions, conversation updates and agent tools"
+      },
+      "summarySources": [
+        "https://github.com/crewAIInc/crewAI/releases/tag/1.15.27"
+      ],
+      "shortSummaryReason": "verified_source_scope",
+      "sourceOnly": true,
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-11/#crewai-11527-2026-10-09",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-11/en/#crewai-11527-2026-10-09"
+      }
+    },
+    {
+      "key": "2026-10-11:simon-ttok-1-0-2026-10-09",
+      "storyId": "simon-ttok-1-0-2026-10-09",
+      "editionDate": "2026-10-11",
+      "sourcePublishedDate": "2026-10-09",
+      "category": "tools",
+      "source": "Simon Willison",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/9/ttok/",
+      "localized": {
+        "zh-TW": {
+          "title": "ttok 1.0 更換預設分詞器，Simon Willison 提醒 GPT-6 尚缺官方確認",
+          "summary": "Simon Willison 發布 ttok 1.0，這項工具可依詞元數量計算及截斷文字。\n\n他表示，升級到先前的 0.4 版並輸入檔案後，發現工具仍預設使用 GPT-4 的分詞器，因此決定更換預設值，並以此推出 1.0。\n\n新版改用 o200k_base 分詞器；ttok --list-models 也會顯示底層 tiktoken 如何處理 gpt-5* 等模型名稱前綴。\n\nWillison 同時提醒，OpenAI 尚未正式確認 GPT-6 與 GPT-5 家族使用相同分詞器。\n\n他引用 William Liu 9 月 26 日的實驗：七個 GPT 模型在同一組 31 個測試樣本上，各自回報合計 44,794 個輸入詞元，且每個樣本的計數均相符。\n\nLiu 的實驗說明明確指出，這是文字輸入計數端點的觀察，未驗證生成或計費用量；計數一致並不能證明底層分詞器完全相同。",
+          "takeaway": "ttok 1.0 預設改用 o200k_base，模型列表也會顯示前綴處理方式。",
+          "caveat": "Willison 指出，OpenAI 尚未確認 GPT-6 與 GPT-5 使用相同分詞器；Liu 指出計數相同不代表分詞器相同。"
+        },
+        "en": {
+          "title": "ttok 1.0 changes its default tokenizer; Willison notes missing GPT-6 confirmation",
+          "summary": "Simon Willison released ttok 1.0, a tool for counting and truncating text by token count.\n\nAfter upgrading to 0.4 and feeding it a file, he noticed it still defaulted to the GPT-4 tokenizer, prompting a new default and a 1.0 release.\n\nThe release switches to o200k_base; ttok --list-models also shows how tiktoken handles model-name prefixes such as gpt-5*.\n\nWillison cautions that OpenAI has not officially confirmed that GPT-6 and the GPT-5 family share a tokenizer.\n\nHe cites William Liu’s September 26 experiment, in which seven GPT models each reported 44,794 input tokens across the same 31 fixtures, matching on every fixture.\n\nLiu explicitly limits these observations to raw-text count endpoints, without generation or billed-usage validation; equal counts do not establish that the underlying tokenizers are identical.",
+          "takeaway": "ttok 1.0 defaults to o200k_base and shows prefix handling in its model list.",
+          "caveat": "Willison notes that OpenAI has not confirmed that GPT-6 and GPT-5 share a tokenizer; Liu notes that equal counts do not establish tokenizer identity."
+        }
+      },
+      "editionTitle": {
+        "zh-TW": "10/11 AI 日報：平台轉型、對話更新與代理工具",
+        "en": "October 11 AI Daily: platform transitions, conversation updates and agent tools"
+      },
+      "summarySources": [
+        "https://simonwillison.net/2026/Oct/9/ttok/",
+        "https://github.com/simonw/ttok/releases/tag/1.0",
+        "https://github.com/williamliu-ai/token-count-compare/commit/8d8a2178538bb37beb548fc37378135e4ff4b0c8"
+      ],
+      "shortSummaryReason": "verified_source_scope",
+      "sourceOnly": true,
+      "keywords": [],
+      "aliases": {},
+      "permalink": {
+        "zh-TW": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-11/#simon-ttok-1-0-2026-10-09",
+        "en": "https://eaglhuang.github.io/AI-learning-notes/daily/2026-10-11/en/#simon-ttok-1-0-2026-10-09"
+      }
+    },
     {
       "key": "2026-10-08:openai-gpt6-intelligent-ui-2026-10-07",
       "storyId": "openai-gpt6-intelligent-ui-2026-10-07",

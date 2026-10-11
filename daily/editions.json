@@ -1,5 +1,21 @@
 [
   {
+    "date": "2026-10-11",
+    "title": {
+      "zh-TW": "10/11 AI 日報：平台轉型、對話更新與代理工具",
+      "en": "October 11 AI Daily: platform transitions, conversation updates and agent tools"
+    },
+    "count": 6,
+    "topic": {
+      "schema_version": 1,
+      "keywords": [],
+      "english_aliases": {},
+      "match": "any",
+      "exclude_keywords": [],
+      "lookback_days": 2
+    }
+  },
+  {
     "date": "2026-10-08",
     "title": {
       "zh-TW": "10/08 AI 日報：互動介面、端側模型與代理隔離",
