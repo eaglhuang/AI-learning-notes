@@ -363,6 +363,138 @@
         "zh-TW": "以內建影像工具原創生成；原始文章脈絡：https://openai.com/index/advancing-computer-use-with-ironclad/",
         "en": "Originally generated with the built-in image generation tool; original article context: https://openai.com/index/advancing-computer-use-with-ironclad/"
       }
+    },
+    {
+      "story_id": "deno-cloudflare-team-transition-2026-10-09",
+      "width": 1672,
+      "height": 941,
+      "bytes": 285882,
+      "sha256": "76a38a7d86f273c1b43c04ee1868aba37ca086775a52b2709f991c6422844dee",
+      "alt": {
+        "zh-TW": "抽象團隊在中央平台堆疊模組，周圍以曲線連接分散的工作節點。",
+        "en": "An abstract team assembles a central modular platform surrounded by connected distributed worker nodes."
+      },
+      "caption": {
+        "zh-TW": "AI 示意圖：團隊投入代理平台與分散式網路工作節點。",
+        "en": "AI concept illustration: a team building an agent platform with distributed network workers."
+      },
+      "source_url": "https://deno.com/blog/cloudflare",
+      "ai_generated": true,
+      "path": "daily/assets/stories/deno-platform-concept-20261011.jpg",
+      "credit": {
+        "zh-TW": "原創 AI 示意圖，使用內建 image_gen 生成。",
+        "en": "Original AI concept illustration generated with built-in image_gen."
+      }
+    },
+    {
+      "story_id": "open-webui-0120-2026-10-10",
+      "width": 1672,
+      "height": 941,
+      "bytes": 230389,
+      "sha256": "1fb2c2a8773c67fea393cef51b0572a841e1e239fa1b1422bbe0679fb554ad92",
+      "alt": {
+        "zh-TW": "山景圖磚、聲波形狀與空白紙張沿曲線匯入一個對話造型容器。",
+        "en": "A landscape tile, audio-wave sculpture, and blank paper tiles flow into a speech-shaped vessel."
+      },
+      "caption": {
+        "zh-TW": "AI 示意圖：文字、影像與聲音匯聚於對話的概念。",
+        "en": "AI concept illustration: text, images, and audio converging in a conversation."
+      },
+      "source_url": "https://github.com/open-webui/open-webui/releases/tag/v0.12.0",
+      "ai_generated": true,
+      "path": "daily/assets/stories/open-webui-concept-20261011.jpg",
+      "credit": {
+        "zh-TW": "原創 AI 示意圖，使用內建 image_gen 生成。",
+        "en": "Original AI concept illustration generated with built-in image_gen."
+      }
+    },
+    {
+      "story_id": "claude-code-21296-2026-10-09",
+      "width": 1672,
+      "height": 941,
+      "bytes": 302964,
+      "sha256": "07661ef9c8899536307f990f21b1e654f9f51020af457052680841f506664940",
+      "alt": {
+        "zh-TW": "深藍色模組沿輸送帶排列，搭配扳手、放大鏡與返回前一階段的路徑。",
+        "en": "Dark blue modules along a conveyor, with a wrench, magnifying lens, and a return path for iteration."
+      },
+      "caption": {
+        "zh-TW": "AI 示意圖：程式開發流程中的檢查、修復與反覆改進。",
+        "en": "AI concept illustration: inspection, repair, and iteration in coding workflows."
+      },
+      "source_url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.296",
+      "ai_generated": true,
+      "path": "daily/assets/stories/claude-code-concept-20261011.jpg",
+      "credit": {
+        "zh-TW": "原創 AI 示意圖，使用內建 image_gen 生成。",
+        "en": "Original AI concept illustration generated with built-in image_gen."
+      }
+    },
+    {
+      "story_id": "pydantic-ai-2550-2026-10-09",
+      "width": 1672,
+      "height": 941,
+      "bytes": 250586,
+      "sha256": "a2bb58352fea51cccfdefa696af34843b55dd07c262c5aa778c64a39c47d3422",
+      "alt": {
+        "zh-TW": "空白對話框通往中央控制節點，再分別連至三個幾何站點，各站點旁有獨立快取圖磚。",
+        "en": "Blank conversation shapes lead to a central control hub and three separate geometric stations, each with its own cache tiles."
+      },
+      "caption": {
+        "zh-TW": "AI 示意圖：持久化對話與適用不同供應商的統一提示快取設定。",
+        "en": "AI concept illustration: persistent conversations and unified prompt-cache settings across separate providers."
+      },
+      "source_url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.55.0",
+      "ai_generated": true,
+      "path": "daily/assets/stories/pydantic-cache-concept-20261011.jpg",
+      "credit": {
+        "zh-TW": "原創 AI 示意圖，使用內建 image_gen 生成。",
+        "en": "Original AI concept illustration generated with built-in image_gen."
+      }
+    },
+    {
+      "story_id": "crewai-11527-2026-10-09",
+      "width": 1672,
+      "height": 941,
+      "bytes": 278421,
+      "sha256": "e2881210c3193ede1b2dd5f6bb69540627e95ca7621137a009c3f502b02002d5",
+      "alt": {
+        "zh-TW": "四個無臉幾何角色分別搬運不同物件，中央成果由放大鏡檢視。",
+        "en": "Four faceless geometric figures carry different components toward a central result examined with a magnifying lens."
+      },
+      "caption": {
+        "zh-TW": "AI 示意圖：多代理分工與任務成果評估。",
+        "en": "AI concept illustration: multiple agents contributing to a result under evaluation."
+      },
+      "source_url": "https://github.com/crewAIInc/crewAI/releases/tag/1.15.27",
+      "ai_generated": true,
+      "path": "daily/assets/stories/crewai-evaluation-concept-20261011.jpg",
+      "credit": {
+        "zh-TW": "原創 AI 示意圖，使用內建 image_gen 生成。",
+        "en": "Original AI concept illustration generated with built-in image_gen."
+      }
+    },
+    {
+      "story_id": "simon-ttok-1-0-2026-10-09",
+      "width": 1672,
+      "height": 941,
+      "bytes": 195752,
+      "sha256": "60d8c6f43394c8d595c5d66312357558dc52ea22768558ffdedcb2251ed82c25",
+      "alt": {
+        "zh-TW": "一條空白紙帶逐漸轉成沿單一路徑依序排列的彩色方塊。",
+        "en": "A blank paper ribbon resolves into colored blocks arranged in order along a single path."
+      },
+      "caption": {
+        "zh-TW": "AI 示意圖：文字切分為依序排列的 token。",
+        "en": "AI concept illustration: text divided into an ordered sequence of tokens."
+      },
+      "source_url": "https://simonwillison.net/2026/Oct/9/ttok/",
+      "ai_generated": true,
+      "path": "daily/assets/stories/ttok-concept-20261011.jpg",
+      "credit": {
+        "zh-TW": "原創 AI 示意圖，使用內建 image_gen 生成。",
+        "en": "Original AI concept illustration generated with built-in image_gen."
+      }
     }
   ]
 }
