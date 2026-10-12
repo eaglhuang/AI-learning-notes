@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 學習筆記 — 個人技術部落格</title>
+  <style>
+    :root {
+      --primary: #4f6ef7;
+      --primary-dark: #3a56d4;
+      --bg: #f8f9fc;
+      --card-bg: #ffffff;
+      --text: #1e2235;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #4f6ef7 0%, #7c3aed 100%);
+      color: #fff;
+      padding: 40px 24px 48px;
+      text-align: center;
+    }
+    header h1 { font-size: 2.2rem; letter-spacing: -0.5px; }
+    header p  { margin-top: 8px; opacity: .85; font-size: 1.05rem; }
+    .header-actions { margin-top: 24px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity .2s, transform .1s;
+      border: none;
+    }
+    .btn:hover { opacity: .9; transform: translateY(-1px); }
+    .btn-white { background: #fff; color: var(--primary); }
+    .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,.6); }
+
+    /* ── Main ── */
+    main { max-width: 900px; margin: -24px auto 0; padding: 0 24px 60px; }
+
+    /* ── Search ── */
+    .search-bar {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 16px rgba(0,0,0,.08);
+      padding: 16px 20px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .search-bar input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      color: var(--text);
+      background: transparent;
+    }
+    .search-bar svg { color: var(--muted); flex-shrink: 0; }
+
+    /* ── Article grid ── */
+    #article-list { display: grid; gap: 20px; }
+
+    .article-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      border: 1px solid var(--border);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: box-shadow .2s, transform .2s;
+    }
+    .article-card:hover {
+      box-shadow: 0 6px 20px rgba(79,110,247,.15);
+      transform: translateY(-2px);
+    }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .article-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+      line-height: 1.4;
+    }
+    .article-title:hover { text-decoration: underline; }
+    .card-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: .82rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: opacity .2s;
+    }
+    .btn-sm:hover { opacity: .8; }
+    .btn-read  { background: var(--primary); color: #fff; text-decoration: none; display: inline-flex; align-items: center; }
+    .btn-delete { background: #fee2e2; color: #b91c1c; }
+    .article-desc { color: var(--muted); font-size: .93rem; line-height: 1.6; }
+    .article-meta { display: flex; gap: 16px; font-size: .82rem; color: var(--muted); }
+    .meta-chip {
+      background: #f1f5f9;
+      border-radius: 20px;
+      padding: 2px 10px;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--muted);
+    }
+    .empty-state svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: .5; }
+    .empty-state h2 { font-size: 1.2rem; margin-bottom: 8px; color: var(--text); }
+
+    /* ── Loading ── */
+    .spinner {
+      display: flex;
+      justify-content: center;
+      padding: 48px;
+    }
+    .spinner::after {
+      content: '';
+      width: 36px; height: 36px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e2235;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: .92rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,.2);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: transform .3s, opacity .3s;
+      z-index: 999;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.error { background: #b91c1c; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>📝 AI 學習筆記</h1>
+  <p>分享 AI 技術文章與個人學習心得</p>
+  <div class="header-actions">
+    <a href="upload.html" class="btn btn-white">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12l7-7 7 7"/>
+      </svg>
+      上傳文章
+    </a>
+  </div>
+</header>
+
+<main>
+  <div class="search-bar">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input id="search" type="text" placeholder="搜尋文章標題或描述..." />
+  </div>
+
+  <div id="article-list">
+    <div class="spinner"></div>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+  let allArticles = []
+
+  async function loadArticles () {
+    try {
+      const res = await fetch('/api/articles')
+      if (!res.ok) throw new Error('Failed to fetch')
+      allArticles = await res.json()
+      renderArticles(allArticles)
+    } catch {
+      showToast('載入文章失敗，請重新整理頁面', true)
+      renderArticles([])
+    }
+  }
+
+  function formatDate (iso) {
+    const d = new Date(iso)
+    return d.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' })
+  }
+
+  function formatSize (bytes) {
+    if (bytes < 1024) return bytes + ' B'
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
+  }
+
+  function renderArticles (articles) {
+    const list = document.getElementById('article-list')
+    if (articles.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="8" y="4" width="48" height="56" rx="4"/>
+            <line x1="20" y1="20" x2="44" y2="20"/>
+            <line x1="20" y1="30" x2="44" y2="30"/>
+            <line x1="20" y1="40" x2="34" y2="40"/>
+          </svg>
+          <h2>尚無文章</h2>
+          <p>點擊「上傳文章」來分享你的第一篇技術文章！</p>
+        </div>`
+      return
+    }
+
+    list.innerHTML = articles.map(a => `
+      <div class="article-card" data-id="${a.id}">
+        <div class="card-header">
+          <a class="article-title" href="article.html?id=${encodeURIComponent(a.id)}">${escHtml(a.title)}</a>
+          <div class="card-actions">
+            <a class="btn-sm btn-read" href="article.html?id=${encodeURIComponent(a.id)}">閱讀</a>
+            <button class="btn-sm btn-delete" onclick="deleteArticle('${a.id}')">刪除</button>
+          </div>
+        </div>
+        ${a.description ? `<p class="article-desc">${escHtml(a.description)}</p>` : ''}
+        <div class="article-meta">
+          <span class="meta-chip">📅 ${formatDate(a.uploadDate)}</span>
+          <span class="meta-chip">📄 ${escHtml(a.originalName)}</span>
+          <span class="meta-chip">💾 ${formatSize(a.size)}</span>
+        </div>
+      </div>`).join('')
+  }
+
+  function escHtml (str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+  }
+
+  async function deleteArticle (id) {
+    if (!confirm('確定要刪除這篇文章嗎？')) return
+    try {
+      const res = await fetch(`/api/articles/${encodeURIComponent(id)}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('Failed')
+      showToast('文章已刪除')
+      await loadArticles()
+    } catch {
+      showToast('刪除失敗，請稍後再試', true)
+    }
+  }
+
+  function showToast (msg, isError = false) {
+    const t = document.getElementById('toast')
+    t.textContent = msg
+    t.className = isError ? 'error' : ''
+    t.classList.add('show')
+    setTimeout(() => t.classList.remove('show'), 3000)
+  }
+
+  // Search
+  document.getElementById('search').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase()
+    const filtered = allArticles.filter(a =>
+      a.title.toLowerCase().includes(q) ||
+      (a.description || '').toLowerCase().includes(q)
+    )
+    renderArticles(filtered)
+  })
+
+  loadArticles()
+</script>
+</body>
+</html>

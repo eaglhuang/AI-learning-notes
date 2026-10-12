@@ -1,0 +1,5 @@
+node_modules/
+articles/
+articles-metadata.json
+*.log
+.env

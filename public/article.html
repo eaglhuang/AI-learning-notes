@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>文章 — AI 學習筆記</title>
+  <style>
+    :root {
+      --primary: #4f6ef7;
+      --bg: #f8f9fc;
+      --card-bg: #ffffff;
+      --text: #1e2235;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #4f6ef7 0%, #7c3aed 100%);
+      color: #fff;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .back-btn {
+      background: rgba(255,255,255,.2);
+      border: none;
+      color: #fff;
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none;
+      transition: background .2s;
+      flex-shrink: 0;
+    }
+    .back-btn:hover { background: rgba(255,255,255,.35); }
+    .header-info { min-width: 0; }
+    .header-info h1 {
+      font-size: 1.15rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .header-meta { font-size: .82rem; opacity: .8; margin-top: 3px; }
+
+    /* ── Wrapper ── */
+    main { max-width: 900px; margin: 0 auto; padding: 32px 24px 60px; }
+
+    /* ── Meta card ── */
+    .meta-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 12px rgba(0,0,0,.07);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .meta-info { flex: 1; min-width: 200px; }
+    .meta-info h2 { font-size: 1.4rem; line-height: 1.4; }
+    .meta-desc { color: var(--muted); margin-top: 6px; font-size: .93rem; line-height: 1.6; }
+    .meta-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .meta-chip {
+      background: #f1f5f9;
+      border-radius: 20px;
+      padding: 3px 12px;
+      font-size: .82rem;
+      color: var(--muted);
+    }
+
+    /* ── Article frame ── */
+    .article-frame-wrap {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 12px rgba(0,0,0,.07);
+      overflow: hidden;
+    }
+    .frame-toolbar {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .82rem;
+      color: var(--muted);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #f87171; }
+    .dot-y { background: #fbbf24; }
+    .dot-g { background: #4ade80; }
+    #article-frame {
+      width: 100%;
+      border: none;
+      min-height: 600px;
+      display: block;
+    }
+
+    /* ── Loading / Error ── */
+    .state-box {
+      text-align: center;
+      padding: 80px 24px;
+      color: var(--muted);
+    }
+    .state-box h2 { font-size: 1.2rem; margin-bottom: 8px; color: var(--text); }
+    .spinner {
+      display: inline-block;
+      width: 36px; height: 36px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="back-btn" aria-label="返回首頁">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <path d="M19 12H5M12 5l-7 7 7 7"/>
+    </svg>
+  </a>
+  <div class="header-info">
+    <h1 id="header-title">載入中...</h1>
+    <div class="header-meta" id="header-meta"></div>
+  </div>
+</header>
+
+<main id="main-content">
+  <div class="state-box">
+    <div class="spinner"></div>
+    <p>正在載入文章...</p>
+  </div>
+</main>
+
+<script>
+  const params = new URLSearchParams(location.search)
+  const id = params.get('id')
+
+  function formatDate (iso) {
+    return new Date(iso).toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' })
+  }
+  function formatSize (bytes) {
+    if (bytes < 1024) return bytes + ' B'
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
+  }
+  function escHtml (str) {
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  }
+
+  async function load () {
+    if (!id) { showError('缺少文章 ID'); return }
+
+    try {
+      const res = await fetch(`/api/articles/${encodeURIComponent(id)}`)
+      if (!res.ok) throw new Error('not found')
+      const article = await res.json()
+
+      // Update page title & header
+      document.title = `${article.title} — AI 學習筆記`
+      document.getElementById('header-title').textContent = article.title
+      document.getElementById('header-meta').textContent =
+        `${formatDate(article.uploadDate)}　${article.originalName}　${formatSize(article.size)}`
+
+      // Render content
+      document.getElementById('main-content').innerHTML = `
+        <div class="meta-card">
+          <div class="meta-info">
+            <h2>${escHtml(article.title)}</h2>
+            ${article.description ? `<p class="meta-desc">${escHtml(article.description)}</p>` : ''}
+            <div class="meta-chips">
+              <span class="meta-chip">📅 ${formatDate(article.uploadDate)}</span>
+              <span class="meta-chip">📄 ${escHtml(article.originalName)}</span>
+              <span class="meta-chip">💾 ${formatSize(article.size)}</span>
+            </div>
+          </div>
+        </div>
+        <div class="article-frame-wrap">
+          <div class="frame-toolbar">
+            <div class="dot dot-r"></div>
+            <div class="dot dot-y"></div>
+            <div class="dot dot-g"></div>
+            <span style="margin-left:4px">${escHtml(article.originalName)}</span>
+          </div>
+          <iframe
+            id="article-frame"
+            src="/api/articles/${encodeURIComponent(id)}/content"
+            sandbox="allow-same-origin allow-scripts"
+            title="${escHtml(article.title)}"
+          ></iframe>
+        </div>`
+
+      // Auto-resize iframe to content height
+      const iframe = document.getElementById('article-frame')
+      iframe.addEventListener('load', () => {
+        try {
+          const h = iframe.contentDocument.body.scrollHeight
+          if (h > 200) iframe.style.height = h + 32 + 'px'
+        } catch {}
+      })
+    } catch {
+      showError('找不到該文章，可能已被刪除')
+    }
+  }
+
+  function showError (msg) {
+    document.getElementById('header-title').textContent = '文章不存在'
+    document.getElementById('main-content').innerHTML = `
+      <div class="state-box">
+        <h2>😕 ${escHtml(msg)}</h2>
+        <p style="margin-top:12px"><a href="/" style="color:#4f6ef7">← 返回部落格首頁</a></p>
+      </div>`
+  }
+
+  load()
+</script>
+</body>
+</html>
